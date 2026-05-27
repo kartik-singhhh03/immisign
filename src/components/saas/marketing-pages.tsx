@@ -2,20 +2,15 @@
 
 import * as React from "react"
 import Link from "next/link"
-import Image from "next/image"
 import {
   ArrowRight,
-  BarChart3,
   BookOpen,
   Building2,
   Check,
   CheckCircle2,
-  Clock3,
+  Clock,
   FileCheck2,
-  FileSignature,
-  Filter,
-  FolderOpen,
-  Library,
+  Info,
   LockKeyhole,
   MessageSquare,
   Scale,
@@ -24,172 +19,15 @@ import {
   Sparkles,
   Users,
   Workflow,
+  FileText,
+  TrendingUp,
+  Fingerprint,
+  Globe,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-
-const platformFeatures = [
-  {
-    icon: FileSignature,
-    title: "Agreement automation",
-    text: "Create MARA-ready agreements with guided matter, fee, terms and signer workflows.",
-  },
-  {
-    icon: Library,
-    title: "Document library",
-    text: "Organise approved templates, client documents and internal resources by matter type.",
-  },
-  {
-    icon: Users,
-    title: "Multi-RMA collaboration",
-    text: "Assign work, control access and keep every practitioner aligned across client files.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Enterprise security",
-    text: "Role-based access, audit history and secure document handling for regulated teams.",
-  },
-  {
-    icon: BarChart3,
-    title: "Practice analytics",
-    text: "Track agreements sent, signatures completed, revenue and document activity.",
-  },
-  {
-    icon: Workflow,
-    title: "Workflow visibility",
-    text: "See every pending signature, stalled agreement and client action in one calm workspace.",
-  },
-]
-
-const migrationProblems = [
-  "Manual agreements slow down high-volume practices.",
-  "Generic e-sign tools do not understand migration matter structures.",
-  "Teams lose context across clients, signers, fees and documents.",
-  "Compliance evidence is scattered across email, PDFs and spreadsheets.",
-]
-
-const faqs = [
-  {
-    q: "Can we switch plans later?",
-    a: "Yes. You can upgrade or adjust your plan as your practice grows.",
-  },
-  {
-    q: "Is a credit card required for the trial?",
-    a: "No. Teams can start a 14-day trial without entering card details.",
-  },
-  {
-    q: "Do you support multi-RMA teams?",
-    a: "Yes. Agency plans include team roles, access controls and collaboration workflows.",
-  },
-]
-
-const resources = [
-  {
-    type: "Guide",
-    title: "How to structure compliant service agreements",
-    category: "Compliance",
-    time: "8 min read",
-  },
-  {
-    type: "Template",
-    title: "Partner visa agreement checklist",
-    category: "Templates",
-    time: "Download",
-  },
-  {
-    type: "Article",
-    title: "Reducing signature delays in migration practices",
-    category: "Operations",
-    time: "6 min read",
-  },
-  {
-    type: "Guide",
-    title: "Building an audit-ready document workflow",
-    category: "Security",
-    time: "10 min read",
-  },
-  {
-    type: "Template",
-    title: "Client onboarding email pack",
-    category: "Templates",
-    time: "Download",
-  },
-  {
-    type: "Article",
-    title: "What high-performing RMAs measure each week",
-    category: "Analytics",
-    time: "5 min read",
-  },
-]
-
-function PageShell({
-  eyebrow,
-  title,
-  highlight,
-  description,
-  children,
-}: {
-  eyebrow: string
-  title: string
-  highlight?: string
-  description: string
-  children?: React.ReactNode
-}) {
-  return (
-    <div className="bg-white text-[#081B2E] antialiased">
-      <section className="relative overflow-hidden border-b border-emerald-900/5 bg-[radial-gradient(circle_at_top_right,rgba(13,159,140,0.12),transparent_38%),linear-gradient(180deg,#f3fcf9_0%,#ffffff_92%)] pt-24 pb-12">
-        <div className="container mx-auto grid max-w-[1400px] gap-12 px-6 py-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white px-4 py-2 text-xs font-bold text-[#0A5B52] shadow-sm">
-              <Sparkles className="h-4 w-4 text-[#0D9F8C]" />
-              {eyebrow}
-            </div>
-            <h1 className="mt-7 font-serif text-5xl font-normal leading-[1.05] tracking-[-0.03em] text-[#081b36] md:text-6xl lg:text-[4.5rem]">
-              {title}
-              {highlight && <span className="block text-[#0D9F8C] italic">{highlight}</span>}
-            </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600 font-medium">
-              {description}
-            </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Button className="h-12 rounded-xl bg-[#0D9F8C] px-8 font-bold shadow-[0_12px_24px_rgba(13,159,140,0.15)] transition-all duration-300 hover:bg-[#0A5B52] hover:shadow-[0_16px_30px_rgba(13,159,140,0.25)] hover:-translate-y-0.5">
-                Start 14-Day Free Trial
-                <ArrowRight className="h-4 w-4 ml-1" />
-              </Button>
-              <Button
-                variant="outline"
-                className="h-12 rounded-xl border-slate-200 bg-white px-8 font-bold text-[#0A5B52] shadow-sm transition-all duration-300 hover:bg-emerald-50/50 hover:border-slate-350 hover:-translate-y-0.5"
-              >
-                Book a Demo
-              </Button>
-            </div>
-          </div>
-          <DashboardPreview />
-        </div>
-      </section>
-      {children}
-    </div>
-  )
-}
-
-function DashboardPreview() {
-  return (
-    <div className="relative min-w-0">
-      <div className="absolute -inset-6 rounded-[2rem] bg-[#0D9F8C]/6 blur-3xl" />
-      <div className="relative overflow-hidden rounded-2xl border border-white bg-white shadow-[0_30px_80px_rgba(10,91,82,0.12)] transition-all duration-300 hover:-translate-y-1">
-        <Image
-          src="/images/demo_dashboard.png"
-          alt="ImmiSign product dashboard"
-          width={1764}
-          height={1012}
-          className="h-auto w-full max-w-full"
-        />
-      </div>
-    </div>
-  )
-}
 
 function SectionHeader({
   eyebrow,
@@ -201,54 +39,34 @@ function SectionHeader({
   text?: string
 }) {
   return (
-    <div className="mx-auto max-w-3xl text-center">
+    <div className="mx-auto max-w-3xl text-center mb-16">
       {eyebrow && (
-        <div className="text-xs font-bold uppercase tracking-[0.18em] text-[#0D9F8C]">
+        <div className="text-xs font-bold uppercase tracking-[0.18em] text-[#0D9F8C] mb-4">
           {eyebrow}
         </div>
       )}
-      <h2 className="mt-4 font-serif text-3xl font-normal leading-tight tracking-[-0.025em] text-[#081a36] md:text-4xl lg:text-5xl">
+      <h2 className="font-serif text-3xl font-normal leading-tight tracking-[-0.025em] text-[#081a36] md:text-4xl lg:text-5xl">
         {title}
       </h2>
-      {text && <p className="mt-4 text-base leading-7 text-slate-500 font-medium">{text}</p>}
+      {text && <p className="mt-4 text-base leading-7 text-slate-500 font-semibold">{text}</p>}
     </div>
-  )
-}
-
-function FeatureCard({
-  icon: Icon,
-  title,
-  text,
-}: {
-  icon: React.ComponentType<{ className?: string }>
-  title: string
-  text: string
-}) {
-  return (
-    <Card className="rounded-xl border-slate-200 bg-white shadow-[0_12px_40px_rgba(15,23,42,0.04)] transition-all duration-300 hover:-translate-y-1 hover:border-emerald-200 hover:shadow-[0_20px_50px_rgba(13,159,140,0.12)]">
-      <CardContent className="p-7">
-        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-50 text-[#0D9F8C]">
-          <Icon className="h-6 w-6" />
-        </div>
-        <h3 className="mt-5 text-lg font-black">{title}</h3>
-        <p className="mt-3 text-sm leading-6 text-slate-600">{text}</p>
-      </CardContent>
-    </Card>
   )
 }
 
 function CTA() {
   return (
-    <section className="bg-white pb-20">
+    <section className="bg-white pb-24 md:pb-32">
       <div className="container mx-auto max-w-[1400px] px-6">
-        <div className="flex flex-col items-start justify-between gap-8 rounded-2xl border border-emerald-100 bg-[linear-gradient(90deg,#e9fbf5_0%,#f7fffd_100%)] px-8 py-9 shadow-[0_18px_50px_rgba(13,159,140,0.08)] md:flex-row md:items-center md:px-12">
+        <div className="flex flex-col items-start justify-between gap-8 rounded-2xl border border-emerald-100 bg-[radial-gradient(circle_at_12%_0%,rgba(51,196,141,0.12),transparent_28%),linear-gradient(90deg,#e9fbf5_0%,#f7fffd_100%)] px-8 py-12 shadow-[0_18px_50px_rgba(13,159,140,0.08)] md:flex-row md:items-center md:px-14">
           <div>
-            <h2 className="text-2xl font-black">Ready to simplify your migration practice?</h2>
-            <p className="mt-2 text-slate-600">Launch a calmer, more compliant agreement workflow this week.</p>
+            <h2 className="font-serif text-2xl font-normal text-[#081b36] md:text-3xl">Ready to simplify your migration practice?</h2>
+            <p className="mt-2 text-sm md:text-base text-slate-500 font-semibold">Launch a calmer, more compliant agreement workflow this week.</p>
           </div>
-          <Button className="h-12 rounded-lg bg-[#0D9F8C] px-8 font-bold hover:bg-[#0A5B52]">
-            Start Free Trial
-            <ArrowRight className="h-4 w-4" />
+          <Button asChild className="h-12 rounded-xl bg-[#0D9F8C] px-8 font-bold hover:bg-[#0A5B52] shadow-sm">
+            <Link href="/signup">
+              Start Free Trial
+              <ArrowRight className="h-4 w-4 ml-1" />
+            </Link>
           </Button>
         </div>
       </div>
@@ -256,362 +74,817 @@ function CTA() {
   )
 }
 
+// ----------------------------------------------------
+// 1. FEATURES PAGE
+// ----------------------------------------------------
 export function FeaturesPage() {
   return (
-    <PageShell
-      eyebrow="Platform capabilities"
-      title="A complete operating layer"
-      highlight="for migration practices."
-      description="ImmiSign brings agreements, documents, signatures, audit trails and analytics together in one purpose-built workspace for Australian migration professionals."
-    >
-      <section className="py-20">
-        <div className="container mx-auto max-w-[1400px] px-6">
-          <SectionHeader
-            title="Built around the real work your practice does every day."
-            text="Every module is designed for regulated document workflows, client accountability and clear team handoffs."
-          />
-          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {platformFeatures.map((feature) => (
-              <FeatureCard key={feature.title} {...feature} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-[#F7FAF8] py-20">
-        <div className="container mx-auto grid max-w-[1400px] gap-8 px-6 lg:grid-cols-3">
-          {[
-            {
-              title: "Agreement workflow",
-              text: "Step-by-step agreement creation with fees, matter details, terms, preview and send review.",
-              icon: Workflow,
-            },
-            {
-              title: "Document management",
-              text: "Centralise reusable templates and sent files without losing client or matter context.",
-              icon: FolderOpen,
-            },
-            {
-              title: "Enterprise security",
-              text: "Give leaders confidence with secure access, audit trails and role-based controls.",
-              icon: LockKeyhole,
-            },
-          ].map((item) => (
-            <div key={item.title} className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-              <item.icon className="h-8 w-8 text-[#0D9F8C]" />
-              <h3 className="mt-6 text-2xl font-black">{item.title}</h3>
-              <p className="mt-3 leading-7 text-slate-600">{item.text}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="py-20">
-        <div className="container mx-auto max-w-[1400px] px-6">
-          <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-            <div>
-              <div className="text-sm font-black uppercase tracking-[0.18em] text-[#0D9F8C]">
-                Analytics and integrations
-              </div>
-              <h2 className="mt-4 text-4xl font-black leading-tight">
-                Make every signature, document and client action visible.
-              </h2>
-              <p className="mt-5 leading-8 text-slate-600">
-                Leadership can see throughput, stalled work, document usage and
-                team performance without chasing spreadsheets or email threads.
-              </p>
-              <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                {["Matter-based reporting", "Signature analytics", "CSV exports", "API-ready structure"].map((item) => (
-                  <div key={item} className="flex items-center gap-3 font-bold">
-                    <CheckCircle2 className="h-5 w-5 text-[#0D9F8C]" />
-                    {item}
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="rounded-2xl bg-[#061f1c] p-6 text-white shadow-[0_30px_80px_rgba(6,31,28,0.24)]">
-              <div className="grid gap-4 sm:grid-cols-3">
-                {["Agreements", "Signatures", "Revenue"].map((label, index) => (
-                  <div key={label} className="rounded-xl bg-white/[0.08] p-5">
-                    <div className="text-sm text-emerald-50/70">{label}</div>
-                    <div className="mt-3 text-3xl font-black">{[84, 92, 128][index]}%</div>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-6 h-64 rounded-xl bg-[linear-gradient(180deg,rgba(51,196,141,0.22),rgba(51,196,141,0.02))] p-6">
-                <div className="flex h-full items-end gap-3">
-                  {[35, 52, 46, 70, 62, 82, 76, 94].map((height, index) => (
-                    <div key={index} className="flex-1 rounded-t-lg bg-[#33C48D]" style={{ height: `${height}%` }} />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      <CTA />
-    </PageShell>
-  )
-}
-
-export function MigrationAgentsPage() {
-  return (
-    <PageShell
-      eyebrow="For migration agents"
-      title="Designed for the pressure"
-      highlight="inside migration work."
-      description="Generic signing tools stop at the PDF. ImmiSign supports the full practice workflow: clients, matters, fees, agreements, evidence and team accountability."
-    >
-      <section className="py-20">
-        <div className="container mx-auto max-w-[1400px] px-6">
-          <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
-            <div>
-              <SectionHeader
-                eyebrow="The problem"
-                title="Migration practices need more than e-signature."
-                text="They need repeatable compliance workflows and a trustworthy operational record."
-              />
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {migrationProblems.map((problem) => (
-                <div key={problem} className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-                  <Scale className="h-6 w-6 text-[#0D9F8C]" />
-                  <p className="mt-4 font-bold leading-6">{problem}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-[#F7FAF8] py-20">
-        <div className="container mx-auto max-w-[1400px] px-6">
-          <SectionHeader title="A workflow built around Australian migration matters." />
-          <div className="mt-12 grid gap-5 md:grid-cols-6">
-            {["Client", "Matter", "Fees", "Terms", "Signature", "Audit"].map((step, index) => (
-              <div key={step} className="relative rounded-xl border border-emerald-100 bg-white p-5 shadow-sm">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#0D9F8C] text-sm font-black text-white">
-                  {index + 1}
-                </div>
-                <h3 className="mt-5 font-black">{step}</h3>
-                <p className="mt-2 text-sm leading-6 text-slate-600">
-                  {[
-                    "Capture client details once.",
-                    "Select matter type and scope.",
-                    "Structure professional fees.",
-                    "Apply approved clauses.",
-                    "Send with signer tracking.",
-                    "Retain a complete record.",
-                  ][index]}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-20">
-        <div className="container mx-auto grid max-w-[1400px] gap-8 px-6 lg:grid-cols-3">
-          {[
-            { icon: FileCheck2, title: "MARA compliance", text: "Consistent templates and tracked agreement versions help standardise your practice." },
-            { icon: Clock3, title: "Audit logs", text: "Every send, view, signature and update is visible in the matter record." },
-            { icon: MessageSquare, title: "Team collaboration", text: "RMAs and admin teams work from the same source of truth." },
-          ].map((item) => (
-            <FeatureCard key={item.title} {...item} />
-          ))}
-        </div>
-      </section>
-      <CTA />
-    </PageShell>
-  )
-}
-
-export function PricingPage() {
-  return (
     <div className="bg-white text-[#081B2E] antialiased">
-      <section className="border-b border-slate-100 bg-[#f8fcfb] py-24">
-        <div className="container mx-auto max-w-[1200px] px-6 text-center">
-          <div className="inline-flex rounded-full border border-emerald-100/60 bg-white p-1 shadow-sm">
-            <button className="rounded-full bg-[#0D9F8C] px-5 py-2 text-sm font-bold text-white shadow-sm">Monthly</button>
-            <button className="rounded-full px-5 py-2 text-sm font-bold text-slate-500 hover:text-slate-800 transition-colors">Yearly - save 20%</button>
-          </div>
-          <h1 className="mt-8 font-serif text-5xl font-normal leading-[1.05] tracking-[-0.03em] text-[#081b36] md:text-6xl lg:text-7xl">
-            Pricing that scales with <span className="italic text-[#0D9F8C]">your practice.</span>
-          </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-slate-600">
-            Start lean, then add team workflows, reporting and enterprise controls as your agency grows.
-          </p>
-        </div>
-      </section>
-
-      <section className="py-16">
-        <div className="container mx-auto grid max-w-[1200px] gap-6 px-6 lg:grid-cols-3">
-          {[
-            { name: "Starter", price: "$49", text: "For solo RMAs getting started.", features: ["25 agreements/month", "Core templates", "Document library", "Email support"] },
-            { name: "Pro", price: "$129", text: "For growing practices.", features: ["Unlimited agreements", "Multi-RMA collaboration", "Analytics", "Priority support"], popular: true },
-            { name: "Agency", price: "Custom", text: "For larger teams and enterprise needs.", features: ["Advanced roles", "Custom templates", "Security review", "Dedicated onboarding"] },
-          ].map((plan) => (
-            <Card key={plan.name} className={`rounded-2xl ${plan.popular ? "border-[#0D9F8C] shadow-[0_30px_80px_rgba(13,159,140,0.2)]" : "border-slate-200"}`}>
-              <CardContent className="p-8">
-                {plan.popular && <div className="mb-5 inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-[#0D9F8C]">Most popular</div>}
-                <h2 className="text-2xl font-black">{plan.name}</h2>
-                <div className="mt-5 flex items-end gap-1">
-                  <span className="text-5xl font-black">{plan.price}</span>
-                  {plan.price !== "Custom" && <span className="pb-2 text-slate-500">/mo</span>}
-                </div>
-                <p className="mt-4 text-slate-600">{plan.text}</p>
-                <Button className={`mt-7 h-11 w-full rounded-lg font-bold ${plan.popular ? "bg-[#0D9F8C] hover:bg-[#0A5B52]" : "bg-[#081B2E] hover:bg-slate-800"}`}>
-                  {plan.price === "Custom" ? "Contact sales" : "Start trial"}
-                </Button>
-                <div className="mt-7 space-y-4">
-                  {plan.features.map((feature) => (
-                    <div key={feature} className="flex items-center gap-3 text-sm font-semibold">
-                      <Check className="h-4 w-4 text-[#0D9F8C]" />
-                      {feature}
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      <section className="bg-[#F7FAF8] py-16">
-        <div className="container mx-auto max-w-[1100px] px-6">
-          <SectionHeader title="Compare core capabilities" />
-          <div className="mt-10 overflow-hidden rounded-2xl border border-slate-200 bg-white">
-            {["MARA templates", "Document library", "Team roles", "Analytics", "Priority onboarding"].map((row, index) => (
-              <div key={row} className="grid grid-cols-4 border-b border-slate-100 p-4 text-sm last:border-b-0">
-                <div className="font-bold">{row}</div>
-                <div className="text-center">{index < 2 ? "Included" : "-"}</div>
-                <div className="text-center font-bold text-[#0D9F8C]">Included</div>
-                <div className="text-center font-bold text-[#0D9F8C]">Included</div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-12 grid gap-4 md:grid-cols-3">
-            {faqs.map((faq) => (
-              <div key={faq.q} className="rounded-xl border border-slate-200 bg-white p-6">
-                <h3 className="font-black">{faq.q}</h3>
-                <p className="mt-3 text-sm leading-6 text-slate-600">{faq.a}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-      <CTA />
-    </div>
-  )
-}
-
-export function ResourcesPage() {
-  return (
-    <div className="bg-white text-[#081B2E] antialiased">
-      <section className="bg-[#f8fcfb] py-24 border-b border-slate-100">
+      {/* Centered Editorial Hero */}
+      <section className="relative overflow-hidden border-b border-emerald-900/5 bg-[radial-gradient(circle_at_top,rgba(13,159,140,0.12),transparent_55%),linear-gradient(180deg,#f3fcf9_0%,#ffffff_95%)] pt-32 pb-20 text-center">
         <div className="container mx-auto max-w-[1200px] px-6">
-          <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
-            <div>
-              <div className="text-xs font-bold uppercase tracking-[0.18em] text-[#0D9F8C]">Resources</div>
-              <h1 className="mt-4 font-serif text-5xl font-normal leading-[1.05] tracking-[-0.03em] text-[#081b36] md:text-6xl">A practical library for <span className="italic text-[#0D9F8C]">modern migration practices.</span></h1>
-              <p className="mt-5 text-lg leading-8 text-slate-600">Guides, templates and operating resources to help teams move faster with confidence.</p>
-            </div>
-            <div className="rounded-2xl border border-emerald-100 bg-white p-6 shadow-sm">
-              <div className="text-sm font-black text-[#0D9F8C]">Featured guide</div>
-              <h2 className="mt-3 text-2xl font-black">The complete agreement workflow checklist</h2>
-              <p className="mt-3 leading-7 text-slate-600">A practical guide to standardising agreement preparation, review, sending and audit trails.</p>
-            </div>
+          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white px-4 py-2 text-xs font-bold text-[#0A5B52] shadow-sm mb-6">
+            <Sparkles className="h-4 w-4 text-[#0D9F8C]" />
+            Platform Capabilities
           </div>
-          <div className="mt-10 flex flex-col gap-3 md:flex-row">
-            <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <Input className="h-12 rounded-lg border-slate-200 bg-white pl-11" placeholder="Search guides, templates and articles" />
-            </div>
-            <Button variant="outline" className="h-12 rounded-lg bg-white font-bold">
-              <Filter className="h-4 w-4" />
-              Filter
+          <h1 className="font-sans text-5xl font-extrabold leading-[1.08] tracking-[-0.04em] text-[#081b36] md:text-7xl max-w-4xl mx-auto">
+            Everything your migration practice needs.<br />
+            <span className="font-serif font-normal text-[#0D9F8C] italic tracking-[-0.025em] text-[0.92em]">In one intelligent workspace.</span>
+          </h1>
+          <p className="mt-6 max-w-2xl mx-auto text-base md:text-lg leading-relaxed text-slate-600 font-medium">
+            ImmiSign brings agreements, documents, signatures, audit trails and analytics together in one purpose-built workspace for Australian migration professionals.
+          </p>
+          <div className="mt-8 flex flex-col gap-4 sm:flex-row justify-center items-center">
+            <Button asChild className="h-12 rounded-xl bg-[#0D9F8C] px-8 font-bold shadow-[0_12px_24px_rgba(13,159,140,0.15)] transition-all duration-300 hover:bg-[#0A5B52]">
+              <Link href="/signup">Start 14-Day Free Trial</Link>
+            </Button>
+            <Button asChild variant="outline" className="h-12 rounded-xl border-slate-200 bg-white px-8 font-bold text-[#0A5B52] shadow-sm transition-all duration-300 hover:bg-slate-50">
+              <Link href="/contact">Book a Demo</Link>
             </Button>
           </div>
         </div>
       </section>
 
-      <section className="py-16">
-        <div className="container mx-auto max-w-[1200px] px-6">
-          <div className="mb-8 flex flex-wrap gap-3">
-            {["All", "Compliance", "Templates", "Operations", "Analytics", "Security"].map((category, index) => (
-              <button key={category} className={`rounded-full px-4 py-2 text-sm font-bold ${index === 0 ? "bg-[#0D9F8C] text-white" : "bg-slate-100 text-slate-700"}`}>{category}</button>
-            ))}
+      {/* Bento Grid Visuals Section */}
+      <section className="py-24 bg-white relative border-b border-slate-100/60">
+        <div className="container mx-auto max-w-[1400px] px-6">
+          <SectionHeader
+            eyebrow="Interactive Workspace"
+            title="A visual operating system for regulated practices"
+          />
+          
+          {/* Bento Grid */}
+          <div className="grid gap-6 md:grid-cols-12 auto-rows-[200px] mt-12">
+            
+            {/* Card 1: E-Sign Status Widget (Large 7 cols, 2 rows) */}
+            <div className="md:col-span-7 md:row-span-2 rounded-2xl border border-slate-200/60 bg-[#fbfdfc] p-8 shadow-sm flex flex-col justify-between hover:shadow-elevated hover:border-[#0D9F8C]/20 transition-all duration-300">
+              <div>
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-[10px] font-black uppercase text-[#0D9F8C] tracking-wider">Live Transaction Tracker</span>
+                  <span className="px-3 py-1 rounded-full bg-emerald-50 text-[#0D9F8C] text-[9px] font-black uppercase">Verified Signed</span>
+                </div>
+                <h3 className="text-xl font-extrabold text-[#081b36]">Biometric Document Hash Log</h3>
+                <p className="text-xs text-slate-400 font-semibold mt-1">Real-time cryptographic audit trails proving signer authenticity.</p>
+              </div>
+              <div className="mt-6 rounded-xl border border-slate-200/40 bg-white p-4 space-y-3 shadow-inner">
+                <div className="flex justify-between items-center text-xs font-bold text-slate-500">
+                  <span>Applicant</span>
+                  <span className="text-[#081b36] font-semibold">Simran Kaur (Subclass 820)</span>
+                </div>
+                <div className="flex justify-between items-center text-xs font-bold text-slate-500">
+                  <span>Practitioner Auth</span>
+                  <span className="text-[#081b36] font-semibold">Rajwant Singh (MARN 1794016)</span>
+                </div>
+                <div className="flex justify-between items-center text-xs font-bold text-slate-500">
+                  <span>SMS Token IP</span>
+                  <span className="text-emerald-600 font-mono font-semibold">203.0.113.82 (ap-southeast-2)</span>
+                </div>
+                <div className="flex justify-between items-center text-[9px] font-mono text-slate-400 bg-slate-50 p-2 rounded border border-slate-100 overflow-hidden text-ellipsis whitespace-nowrap">
+                  <span>SHA-256: 8a4c10f8b9e69c2d1b7a5e9f4c3a2b10f9e8d7c6b5a4f3e2d1c0</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 2: Compliance Checklist (5 cols, 2 rows) */}
+            <div className="md:col-span-5 md:row-span-2 rounded-2xl border border-slate-200/60 bg-[#fbfdfc] p-8 shadow-sm flex flex-col justify-between hover:shadow-elevated hover:border-[#0D9F8C]/20 transition-all duration-300">
+              <div>
+                <span className="text-[10px] font-black uppercase text-teal-600 tracking-wider">Regulatory Shield</span>
+                <h3 className="text-lg font-extrabold text-[#081b36] mt-2">OMARA Compliance Guard</h3>
+                <p className="text-xs text-slate-400 font-semibold mt-1">Automated template locking matching mandatory disclosure rules.</p>
+              </div>
+              <div className="space-y-3 mt-4">
+                {[
+                  "Client MARN details verified",
+                  "Consumer Guide documentation attached",
+                  "Itemized Professional Fee Schedules set",
+                  "Refund terms & disbursements logs ready"
+                ].map((rule) => (
+                  <div key={rule} className="flex gap-3 items-center">
+                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-50 text-[#0D9F8C] shrink-0">
+                      <Check className="h-3 w-3 stroke-[3]" />
+                    </div>
+                    <span className="text-xs font-bold text-slate-600">{rule}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Card 3: Uptime and Data Hosting (4 cols, 1 row) */}
+            <div className="md:col-span-4 rounded-2xl border border-slate-200/60 bg-[#fbfdfc] p-6 shadow-sm flex flex-col justify-between hover:shadow-elevated hover:border-[#0D9F8C]/20 transition-all duration-300">
+              <div className="flex justify-between items-start">
+                <div className="h-8 w-8 rounded-lg bg-cyan-50 text-cyan-600 flex items-center justify-center shadow-sm">
+                  <Globe className="h-4 w-4" />
+                </div>
+                <span className="px-2 py-0.5 rounded bg-emerald-100/50 text-[#0D9F8C] text-[9px] font-black">99.9% Uptime</span>
+              </div>
+              <div>
+                <h4 className="text-xs font-extrabold text-[#081b36]">Sydney Hosting</h4>
+                <p className="text-[10px] text-slate-400 font-semibold">100% on-shore database backups.</p>
+              </div>
+            </div>
+
+            {/* Card 4: Metrics (4 cols, 1 row) */}
+            <div className="md:col-span-4 rounded-2xl border border-slate-200/60 bg-[#fbfdfc] p-6 shadow-sm flex flex-col justify-between hover:shadow-elevated hover:border-[#0D9F8C]/20 transition-all duration-300">
+              <div className="flex justify-between items-start">
+                <div className="h-8 w-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center shadow-sm">
+                  <TrendingUp className="h-4 w-4" />
+                </div>
+                <span className="text-xs font-black text-purple-600">85% Faster</span>
+              </div>
+              <div>
+                <h4 className="text-xs font-extrabold text-[#081b36]">45-Minute Turnaround</h4>
+                <p className="text-[10px] text-slate-400 font-semibold">Average agreement turnaround speed.</p>
+              </div>
+            </div>
+
+            {/* Card 5: Team Workspace (4 cols, 1 row) */}
+            <div className="md:col-span-4 rounded-2xl border border-slate-200/60 bg-[#fbfdfc] p-6 shadow-sm flex flex-col justify-between hover:shadow-elevated hover:border-[#0D9F8C]/20 transition-all duration-300">
+              <div className="flex justify-between items-start">
+                <div className="h-8 w-8 rounded-lg bg-pink-50 text-pink-600 flex items-center justify-center shadow-sm">
+                  <Users className="h-4 w-4" />
+                </div>
+                <span className="px-2 py-0.5 rounded bg-pink-50 text-pink-600 text-[9px] font-black">Admin + RMA</span>
+              </div>
+              <div>
+                <h4 className="text-xs font-extrabold text-[#081b36]">Granular Workspace Isolation</h4>
+                <p className="text-[10px] text-slate-400 font-semibold">Role restrictions based on assignee portfolios.</p>
+              </div>
+            </div>
+
           </div>
-          <div className="grid gap-6 md:grid-cols-3">
-            {resources.map((item) => (
-              <Card key={item.title} className="rounded-xl border-slate-200">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between text-xs font-black uppercase tracking-[0.16em] text-[#0D9F8C]">
-                    <span>{item.type}</span>
-                    <span>{item.category}</span>
+        </div>
+      </section>
+
+      {/* Detailed Alternating Capability Segments */}
+      <section className="py-24 bg-[#f9fbf9] border-b border-slate-100/60">
+        <div className="container mx-auto max-w-[1200px] px-6 space-y-32">
+          
+          {/* Section 1: Workflow Automation */}
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <span className="text-xs font-extrabold uppercase tracking-widest text-[#0D9F8C]">Workflow Automation</span>
+              <h3 className="font-serif text-3xl font-normal leading-tight text-[#081b36] mt-4 md:text-4xl">
+                Automated Service Retainers
+              </h3>
+              <p className="mt-4 text-slate-500 font-semibold leading-relaxed text-sm md:text-base">
+                Ditch the copy-paste errors. Build customized visa structures with standardized retainers, itemized disbursements, and refund policy locks across all matter subclasses.
+              </p>
+              <ul className="space-y-3 mt-6">
+                {["Flexible client milestones mapping", "Custom itemized disbursement lists", "Department fee variables automatic inclusions"].map((li) => (
+                  <li key={li} className="flex gap-2 items-center text-xs font-bold text-slate-600">
+                    <Check className="h-4 w-4 text-[#0D9F8C]" />
+                    {li}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-xl border border-slate-200/60 bg-white p-6 shadow-sm">
+              <div className="flex justify-between items-center border-b border-slate-100 pb-3 mb-4 text-xs font-bold text-[#081b36]">
+                <span>Retainer Settings</span>
+                <span className="text-xs font-extrabold text-[#0D9F8C]">Subclass 189 Retainer</span>
+              </div>
+              <div className="space-y-3">
+                <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                  <span className="text-[9px] text-slate-400 font-black uppercase">Milestone 1: Intake Draft</span>
+                  <div className="flex justify-between items-center mt-1">
+                    <span className="text-xs font-bold text-[#081b36]">50% Upfront Retainer</span>
+                    <span className="text-xs font-black text-[#0D9F8C]">$2,250.00</span>
                   </div>
-                  <h3 className="mt-5 min-h-[64px] text-xl font-black leading-tight">{item.title}</h3>
-                  <div className="mt-6 flex items-center justify-between text-sm text-slate-500">
-                    <span>{item.time}</span>
-                    <ArrowRight className="h-4 w-4" />
+                </div>
+                <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                  <span className="text-[9px] text-slate-400 font-black uppercase">Milestone 2: DHA Lodgement</span>
+                  <div className="flex justify-between items-center mt-1">
+                    <span className="text-xs font-bold text-[#081b36]">50% Milestone Settlement</span>
+                    <span className="text-xs font-black text-[#0D9F8C]">$2,250.00</span>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Section 2: Document Generation */}
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="order-last md:order-first rounded-xl border border-slate-200/60 bg-white p-6 shadow-sm space-y-4">
+              <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
+                <div className="h-8 w-8 rounded bg-emerald-50 text-[#0D9F8C] flex items-center justify-center font-bold">A</div>
+                <div>
+                  <h4 className="text-xs font-extrabold text-[#081b36]">Client Vault Archive</h4>
+                  <p className="text-[9px] text-slate-400 font-bold">2 active files, 1 verified signed</p>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center p-2 rounded bg-slate-50 border border-slate-100 text-xs">
+                  <span className="font-bold text-slate-600">signed_retainer_820.pdf</span>
+                  <span className="px-2 py-0.5 rounded bg-emerald-100/50 text-[#0D9F8C] font-black text-[9px]">SIGNED</span>
+                </div>
+                <div className="flex justify-between items-center p-2 rounded bg-slate-50 border border-slate-100 text-xs">
+                  <span className="font-bold text-slate-600">passport_identity_verif.pdf</span>
+                  <span className="px-2 py-0.5 rounded bg-amber-100/50 text-amber-700 font-black text-[9px]">AWAITING</span>
+                </div>
+              </div>
+            </div>
+            <div>
+              <span className="text-xs font-extrabold uppercase tracking-widest text-teal-600">Document Generation</span>
+              <h3 className="font-serif text-3xl font-normal leading-tight text-[#081b36] mt-4 md:text-4xl">
+                Centralized Secure File Vault
+              </h3>
+              <p className="mt-4 text-slate-500 font-semibold leading-relaxed text-sm md:text-base">
+                Consolidate all client passport proofs, evidence records, and signed agreements within a single secure legal-grade portal folder.
+              </p>
+              <ul className="space-y-3 mt-6">
+                {["Secure 256-bit client-facing intake links", "Organized matter subclasses directories", "Audit compliance document storage records"].map((li) => (
+                  <li key={li} className="flex gap-2 items-center text-xs font-bold text-slate-600">
+                    <Check className="h-4 w-4 text-[#0D9F8C]" />
+                    {li}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Section 3: E-Signatures & Security */}
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <span className="text-xs font-extrabold uppercase tracking-widest text-purple-600">E-Signatures & Audit Trails</span>
+              <h3 className="font-serif text-3xl font-normal leading-tight text-[#081b36] mt-4 md:text-4xl">
+                Biometric Identity Stamp
+              </h3>
+              <p className="mt-4 text-slate-500 font-semibold leading-relaxed text-sm md:text-base">
+                Every signature turnaround records full transactional histories. Confirmed client IP details, timestamp audits, and SMS identity tokens provide legally robust audit compliance documents.
+              </p>
+              <ul className="space-y-3 mt-6">
+                {["Tamper-evident hash validation certifications", "SMS biometric authentication layers", "Sovereign Australian data custody guidelines"].map((li) => (
+                  <li key={li} className="flex gap-2 items-center text-xs font-bold text-slate-600">
+                    <Check className="h-4 w-4 text-[#0D9F8C]" />
+                    {li}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-xl border border-slate-200/60 bg-white p-6 shadow-sm">
+              <div className="flex justify-between items-center text-xs font-bold text-slate-400 mb-4">
+                <span>Sign Verification Certificate</span>
+                <span className="text-emerald-600 font-black">Passed</span>
+              </div>
+              <div className="p-4 bg-emerald-50/50 rounded-xl border border-emerald-100 flex gap-4 items-center">
+                <Fingerprint className="h-8 w-8 text-[#0D9F8C]" />
+                <div>
+                  <h4 className="text-xs font-extrabold text-[#081b36]">SHA-256 Integrity Verification</h4>
+                  <p className="text-[10px] text-slate-500 font-semibold">Document timestamp sealed on ap-southeast-2 Sydney server</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* Integrations Grid Showcase */}
+      <section className="bg-white py-24 border-b border-slate-100/60">
+        <div className="container mx-auto max-w-[1200px] px-6 text-center">
+          <span className="text-xs font-extrabold uppercase tracking-widest text-[#0D9F8C]">Ecosystem Connections</span>
+          <h2 className="mt-4 font-serif text-3xl font-normal leading-tight text-[#081b36] md:text-4xl lg:text-5xl">
+            Integrates with your existing workflow
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-slate-500 font-semibold leading-relaxed text-sm md:text-base">
+            Keep your legal systems connected. ImmiSign syncs with standard practice management, database, and invoicing protocols.
+          </p>
+
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 md:grid-cols-4">
+            {[
+              { name: "Xero Syncing", desc: "Instantly create client invoices and match milestones." },
+              { name: "Stripe Billing", desc: "Receive immediate upfront deposits directly via credit cards." },
+              { name: "Google Drive Backup", desc: "Automatically export finalized signed PDF retainers." },
+              { name: "Email Portals", desc: "Dispatch OMARA forms via your custom agency domain." }
+            ].map((item) => (
+              <div key={item.name} className="rounded-xl border border-emerald-100 bg-white p-6 shadow-sm text-left">
+                <h4 className="text-sm font-extrabold text-[#0A5B52]">{item.name}</h4>
+                <p className="mt-2 text-xs text-slate-500 font-semibold leading-relaxed">{item.desc}</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
+
+      <CTA />
     </div>
   )
 }
 
-export function AboutPage() {
+export function MigrationAgentsPage() {
+  const problems = [
+    { title: "Manual Retainers Slow Growth", text: "Drafting OMARA-ready agreements for every Subclass 820 or 189 manually drains hours that could be spent advising." },
+    { title: "Generic E-Sign Lacks Context", text: "Standard tools don't understand migration billing. They don't support itemized disbursement schedules or legal variables." },
+    { title: "Scattered Compliance Evidences", text: "If files are divided across drives and emails, audit preparations become a stressful, unorganized race." },
+    { title: "Lack of Internal Team Lockout", text: "Without permissions, administrative assistants can accidentally edit legal clause language before sending." }
+  ]
+
+  const timelineSteps = [
+    {
+      phase: "01",
+      title: "Client Intake",
+      desc: "Collect passport details, personal files, and history parameters securely upfront.",
+      icon: Users
+    },
+    {
+      phase: "02",
+      title: "Retainer Compilation",
+      desc: "Generate OMARA-vetted service structures, milestone payments, and subclass schedules.",
+      icon: FileText
+    },
+    {
+      phase: "03",
+      title: "Biometric Signing",
+      desc: "Authenticate applicant identity via dual-factor email and secure SMS verification.",
+      icon: Fingerprint
+    },
+    {
+      phase: "04",
+      title: "Visa Submission",
+      desc: "Lodge with the Department of Home Affairs, archiving standard OMARA notices.",
+      icon: FileCheck2
+    },
+    {
+      phase: "05",
+      title: "Practice Compliance",
+      desc: "Retain legally binding, tamper-evident audit records on-shore for 7 years.",
+      icon: ShieldCheck
+    }
+  ]
+
   return (
-    <div className="bg-white text-[#081B2E]">
-      <section className="bg-[#F7FAF8] py-20">
-        <div className="container mx-auto grid max-w-[1200px] gap-12 px-6 lg:grid-cols-2 lg:items-center">
-          <div>
-            <div className="text-sm font-black uppercase tracking-[0.18em] text-[#0D9F8C]">About ImmiSign</div>
-            <h1 className="mt-4 text-5xl font-black tracking-tight md:text-6xl">Built by people who understand regulated migration work.</h1>
-            <p className="mt-6 text-lg leading-8 text-slate-600">We built ImmiSign because migration teams deserve software that respects the seriousness of client documentation, compliance and trust.</p>
+    <div className="bg-white text-[#081B2E] antialiased">
+      {/* Editorial Storytelling Hero */}
+      <section className="relative overflow-hidden border-b border-emerald-900/5 bg-[radial-gradient(circle_at_top_right,rgba(13,159,140,0.12),transparent_38%),linear-gradient(180deg,#f3fcf9_0%,#ffffff_92%)] pt-32 pb-24">
+        <div className="container mx-auto max-w-[1400px] px-6 grid gap-12 lg:grid-cols-[1.1fr_0.9fr] items-center">
+          <div className="animate-enter max-w-2xl">
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white px-4 py-2 text-xs font-bold text-[#0A5B52] shadow-sm mb-6">
+              <Scale className="h-4 w-4 text-[#0D9F8C]" />
+              RMA Operational Software
+            </div>
+            <h1 className="font-sans text-5xl font-extrabold leading-[1.05] tracking-[-0.04em] text-[#081b36] md:text-6xl lg:text-[4rem]">
+              Designed for the real pressure <br />
+              <span className="font-serif font-normal text-[#0D9F8C] italic">of Australian migration work.</span>
+            </h1>
+            <p className="mt-6 text-base md:text-lg leading-relaxed text-slate-600 font-medium">
+              Managing strict lodgement deadlines, applicant anxieties, and compliance reviews is stressful enough. Compiling and sending your client service agreements should not be.
+            </p>
+            <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+              <Button asChild className="h-12 rounded-xl bg-[#0D9F8C] px-8 font-bold shadow-[0_12px_24px_rgba(13,159,140,0.15)] transition-all duration-300 hover:bg-[#0A5B52]">
+                <Link href="/signup">Start Solo RMA Trial</Link>
+              </Button>
+              <Button asChild variant="outline" className="h-12 rounded-xl border-slate-200 bg-white px-8 font-bold text-[#0A5B52] shadow-sm transition-all duration-300 hover:bg-slate-50">
+                <Link href="/contact">Connect With Onboarding</Link>
+              </Button>
+            </div>
           </div>
-          <div className="rounded-2xl bg-[#061f1c] p-8 text-white shadow-[0_30px_80px_rgba(6,31,28,0.2)]">
-            <Building2 className="h-10 w-10 text-[#33C48D]" />
-            <h2 className="mt-8 text-3xl font-black">Our mission</h2>
-            <p className="mt-4 leading-8 text-emerald-50/80">Help Australian migration professionals run more compliant, more efficient and more client-friendly practices.</p>
-          </div>
-        </div>
-      </section>
-      <section className="py-20">
-        <div className="container mx-auto max-w-[1200px] px-6">
-          <div className="grid gap-6 md:grid-cols-3">
-            {[
-              { title: "Industry focus", text: "Designed for matter types, signers, fees and agreement workflows migration teams already use." },
-              { title: "Trust and security", text: "A product posture built around regulated documents, privacy and access control." },
-              { title: "Premium support", text: "Responsive onboarding and practical guidance for busy professional teams." },
-            ].map((item) => (
-              <Card key={item.title} className="rounded-xl border-slate-200">
-                <CardContent className="p-7">
-                  <h3 className="text-xl font-black">{item.title}</h3>
-                  <p className="mt-3 leading-7 text-slate-600">{item.text}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-          <div className="mt-16">
-            <SectionHeader title="A focused team building for a focused profession." />
-            <div className="mt-10 grid gap-6 md:grid-cols-3">
-              {["Product", "Migration operations", "Security"].map((team) => (
-                <div key={team} className="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
-                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-xl font-black text-[#0D9F8C]">{team[0]}</div>
-                  <h3 className="mt-5 font-black">{team} team</h3>
-                  <p className="mt-2 text-sm text-slate-600">Focused on building calm, reliable software for professional services.</p>
+          
+          {/* Right visual: Client Lifecycle Timeline diagram */}
+          <div className="relative rounded-2xl border border-slate-200/50 bg-white/60 p-8 shadow-sm backdrop-blur-md">
+            <h3 className="text-sm font-black text-[#081b36] uppercase tracking-wider mb-6">Client Lifecycle Pipeline</h3>
+            <div className="space-y-6 relative">
+              <div className="absolute left-4 top-2 bottom-2 w-0.5 bg-gradient-to-b from-[#33C48D] via-[#0D9F8C] to-slate-200" />
+              {timelineSteps.map((step) => (
+                <div key={step.phase} className="flex gap-4 items-start relative z-10">
+                  <div className="h-9 w-9 rounded-full bg-white border-2 border-[#0D9F8C] text-[#0D9F8C] flex items-center justify-center text-xs font-black shadow-sm shrink-0">
+                    {step.phase}
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-extrabold text-[#081b36]">{step.title}</h4>
+                    <p className="text-xs text-slate-500 font-semibold leading-relaxed mt-0.5">{step.desc}</p>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         </div>
       </section>
+
+      {/* Problem Matrix */}
+      <section className="py-24 bg-white">
+        <div className="container mx-auto max-w-[1400px] px-6">
+          <SectionHeader
+            eyebrow="The Practice Dilemma"
+            title="Migration practices need more than generic e-signature."
+            text="They require standardized legal structures, on-shore database backups, and repeatable compliance records."
+          />
+
+          <div className="grid gap-6 md:grid-cols-2 mt-12">
+            {problems.map((prob) => (
+              <div key={prob.title} className="rounded-2xl border border-slate-200 bg-[#fbfdfc] p-8 shadow-sm hover:shadow-md transition-all duration-300">
+                <Scale className="h-6 w-6 text-[#0D9F8C]" />
+                <h4 className="mt-4 text-base font-extrabold text-[#081b36]">{prob.title}</h4>
+                <p className="mt-2 text-sm text-slate-500 font-semibold leading-relaxed">{prob.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Comparative Risk Check Table */}
+      <section className="bg-[#f9fbf9] py-24 border-y border-slate-100">
+        <div className="container mx-auto max-w-[1000px] px-6">
+          <SectionHeader
+            eyebrow="Compliance Audit Analysis"
+            title="Generic tools vs. ImmiSign Legal-Tech"
+            text="Understand the structural compliance advantages built specifically for migration firms."
+          />
+
+          <div className="mt-12 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div className="grid grid-cols-3 bg-[#fbfdfc] border-b border-slate-200/80 p-5 text-xs font-black text-[#081b36] uppercase tracking-wider">
+              <div>Compliance Feature</div>
+              <div className="text-center text-slate-400">Generic E-Sign (DocuSign/Adobe)</div>
+              <div className="text-center text-[#0D9F8C]">ImmiSign Legal-Tech</div>
+            </div>
+            {[
+              { f: "OMARA Template Lockout", g: "Static blank PDFs / Manual drafts", i: "Dynamic locked subclass templates" },
+              { f: "Sovereign Data Residency", g: "Stored offshore in global servers", i: "100% Hosted on-shore in Sydney, NSW" },
+              { f: "Identity Audits", g: "Simple email confirmation link", i: "Biometric SMS + Email double verification" },
+              { f: "Compliance Logs Retention", g: "Standard variable logs", i: "Immutable logs sealed for 7 years" },
+              { f: "Workspace Portfolios Access", g: "Shared generic storage folders", i: "Granular assignee role separations" }
+            ].map((row, idx) => (
+              <div key={idx} className="grid grid-cols-3 border-b border-slate-100 p-5 text-xs sm:text-sm last:border-b-0">
+                <div className="font-extrabold text-[#081b36]">{row.f}</div>
+                <div className="text-center font-semibold text-slate-400">{row.g}</div>
+                <div className="text-center font-bold text-[#0D9F8C]">{row.i}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <CTA />
+    </div>
+  )
+}
+
+// ----------------------------------------------------
+// 3. PRICING PAGE
+// ----------------------------------------------------
+export function PricingPage() {
+  const [billingCycle, setBillingCycle] = React.useState<"monthly" | "yearly">("yearly")
+
+  const pricingPlans = [
+    {
+      name: "Starter",
+      monthlyPrice: 49,
+      yearlyPrice: 39,
+      desc: "For solo RMAs getting started.",
+      features: [
+        "25 OMARA agreements/month",
+        "Core subclass templates",
+        "Sovereign Sydney file backup",
+        "Email support",
+        "Standard templates library",
+      ]
+    },
+    {
+      name: "Pro",
+      monthlyPrice: 129,
+      yearlyPrice: 99,
+      desc: "For growing migration practices.",
+      features: [
+        "Unlimited OMARA agreements",
+        "Multi-RMA workspaces collaboration",
+        "Biometric SMS signature logs",
+        "Custom legal clause locker",
+        "Advanced pipeline reports",
+      ],
+      popular: true
+    },
+    {
+      name: "Agency",
+      monthlyPrice: "Custom",
+      yearlyPrice: "Custom",
+      desc: "For larger legal teams & multi-offices.",
+      features: [
+        "Bespoke legal review alignments",
+        "Fully managed templates conversion",
+        "Dedicated onboarding manager",
+        "API integration endpoints",
+        "Strict tenant data isolations",
+      ]
+    }
+  ]
+
+  const comparisonRows = [
+    { feature: "OMARA Template Lockout", starter: "Included", pro: "Included", agency: "Included" },
+    { feature: "Sovereign Sydney Storage", starter: "Included", pro: "Included", agency: "Included" },
+    { feature: "Multi-RMA Workspaces", starter: "-", pro: "Included", agency: "Included" },
+    { feature: "Biometric SMS Verification", starter: "-", pro: "Included", agency: "Included" },
+    { feature: "API Database Integrations", starter: "-", pro: "-", agency: "Included" },
+    { feature: "Custom SLA Support", starter: "-", pro: "-", agency: "Included" },
+  ]
+
+  return (
+    <div className="bg-white text-[#081B2E] antialiased">
+      {/* Hero Header */}
+      <section className="relative overflow-hidden border-b border-emerald-900/5 bg-[radial-gradient(circle_at_top_right,rgba(13,159,140,0.12),transparent_38%),linear-gradient(180deg,#f3fcf9_0%,#ffffff_92%)] pt-28 pb-14 text-center">
+        <div className="container mx-auto max-w-[1200px] px-6">
+          <div className="inline-flex rounded-full border border-emerald-100 bg-white p-1 shadow-sm mb-8">
+            <button
+              onClick={() => setBillingCycle("monthly")}
+              className={`rounded-full px-5 py-2 text-xs font-bold transition-all duration-300 ${billingCycle === "monthly" ? "bg-[#0D9F8C] text-white shadow-sm" : "text-slate-500 hover:text-slate-800"}`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setBillingCycle("yearly")}
+              className={`rounded-full px-5 py-2 text-xs font-bold transition-all duration-300 ${billingCycle === "yearly" ? "bg-[#0D9F8C] text-white shadow-sm" : "text-slate-500 hover:text-slate-800"}`}
+            >
+              Yearly (Save 20%)
+            </button>
+          </div>
+
+          <h1 className="font-sans text-5xl font-extrabold leading-[1.05] tracking-[-0.04em] text-[#081b36] md:text-6xl lg:text-7xl">
+            Pricing that scales with <br />
+            <span className="font-serif font-normal text-[#0D9F8C] italic">your practice.</span>
+          </h1>
+          <p className="mx-auto mt-6 max-w-2xl text-base md:text-lg leading-relaxed text-slate-600 font-medium">
+            Start small, then unlock robust RMAs collaboration, custom clause lockers, and advanced security as your agency expands.
+          </p>
+        </div>
+      </section>
+
+      {/* Plan Cards Grid */}
+      <section className="py-24">
+        <div className="container mx-auto grid max-w-[1200px] gap-8 px-6 lg:grid-cols-3">
+          {pricingPlans.map((plan) => {
+            const isCustom = plan.monthlyPrice === "Custom"
+            const priceVal = billingCycle === "yearly" ? plan.yearlyPrice : plan.monthlyPrice
+            
+            return (
+              <Card
+                key={plan.name}
+                className={`rounded-2xl border bg-white p-8 flex flex-col justify-between transition-all duration-300 ${plan.popular ? "border-[#0D9F8C] shadow-elevated" : "border-slate-200/80 shadow-sm"}`}
+              >
+                <div>
+                  {plan.popular && <span className="mb-5 inline-flex rounded-full bg-emerald-50 px-3 py-1 text-[10px] font-black text-[#0D9F8C] uppercase tracking-wider">Most popular</span>}
+                  <h3 className="text-2xl font-extrabold text-[#081b36]">{plan.name}</h3>
+                  <p className="text-xs text-slate-400 font-semibold mt-1">{plan.desc}</p>
+                  
+                  <div className="mt-6 flex items-end gap-1">
+                    <span className="text-5xl font-black text-[#081b36]">
+                      {isCustom ? "Custom" : `$${priceVal}`}
+                    </span>
+                    {!isCustom && <span className="pb-1.5 text-sm text-slate-400 font-bold">/mo</span>}
+                  </div>
+                  {billingCycle === "yearly" && !isCustom && (
+                    <span className="text-[10px] font-bold text-[#0D9F8C] block mt-1">Billed annually</span>
+                  )}
+
+                  <div className="mt-8 space-y-4 pt-6 border-t border-slate-100">
+                    {plan.features.map((feature) => (
+                      <div key={feature} className="flex items-center gap-3 text-xs font-bold text-slate-600">
+                        <Check className="h-4 w-4 shrink-0 text-[#0D9F8C]" />
+                        {feature}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-8">
+                  <Button
+                    asChild
+                    className={`h-11 w-full rounded-xl font-bold transition-all duration-300 ${plan.popular ? "bg-[#0D9F8C] hover:bg-[#0A5B52] shadow-sm" : "bg-[#081B2E] hover:bg-slate-800 text-white"}`}
+                  >
+                    <Link href={isCustom ? "/contact" : "/signup"}>
+                      {isCustom ? "Contact Sales" : "Start Free Trial"}
+                    </Link>
+                  </Button>
+                </div>
+              </Card>
+            )
+          })}
+        </div>
+      </section>
+
+      {/* Feature Comparison Table */}
+      <section className="bg-[#f9fbf9] py-24 border-y border-slate-100">
+        <div className="container mx-auto max-w-[1000px] px-6">
+          <SectionHeader title="Compare core capabilities" />
+
+          <div className="mt-12 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div className="grid grid-cols-4 bg-[#fbfdfc] border-b border-slate-200/80 p-5 text-xs font-extrabold text-[#081b36] uppercase tracking-wider">
+              <div>Capability</div>
+              <div className="text-center">Starter</div>
+              <div className="text-center">Pro</div>
+              <div className="text-center">Agency</div>
+            </div>
+            {comparisonRows.map((row) => (
+              <div key={row.feature} className="grid grid-cols-4 border-b border-slate-100 p-5 text-sm last:border-b-0">
+                <div className="font-extrabold text-[#081b36]">{row.feature}</div>
+                <div className="text-center font-semibold text-slate-500">{row.starter}</div>
+                <div className={`text-center font-bold ${row.pro === "Included" ? "text-[#0D9F8C]" : "text-slate-400"}`}>{row.pro}</div>
+                <div className="text-center font-bold text-[#0D9F8C]">{row.agency}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <CTA />
+    </div>
+  )
+}
+
+// ----------------------------------------------------
+// 4. RESOURCES PAGE
+// ----------------------------------------------------
+export function ResourcesPage() {
+  const [searchQuery, setSearchQuery] = React.useState("")
+  const [selectedCategory, setSelectedCategory] = React.useState("All")
+
+  const allResources = [
+    {
+      type: "Guide",
+      title: "How to structure compliant OMARA service agreements",
+      category: "Compliance",
+      desc: "An outline of mandatory disclosure items, disbursements scheduling rules, and the OMARA Code guidelines.",
+      time: "8 min read",
+    },
+    {
+      type: "Template",
+      title: "Subclass 820 Partner Visa retainer checklist",
+      category: "Templates",
+      desc: "Ready-to-use variables structure and fee payment breakdown guide matching Australian guidelines.",
+      time: "Download (PDF)",
+    },
+    {
+      type: "Article",
+      title: "Reducing signature delays in migration practices",
+      category: "Operations",
+      desc: "Operational tips on deploying client onboarding sequences and SMS notifications to cut turnaround times.",
+      time: "6 min read",
+    },
+    {
+      type: "Guide",
+      title: "Building an audit-ready document custody workflow",
+      category: "Security",
+      desc: "A security check detailing ISO-27001 parameters, Australian data hosting sovereignty, and audit logs.",
+      time: "10 min read",
+    },
+    {
+      type: "Template",
+      title: "Standard client onboarding retainer email pack",
+      category: "Templates",
+      desc: "Professional templates package containing intake emails, review sequences, and OMARA guides links.",
+      time: "Download (TXT)",
+    },
+    {
+      type: "Article",
+      title: "Key metric systems high-performing RMAs track",
+      category: "Analytics",
+      desc: "How leading practitioners calculate client throughput speeds, signature rates, and matter revenue.",
+      time: "5 min read",
+    },
+  ]
+
+  // Dynamic filter logic
+  const filteredResources = allResources.filter((item) => {
+    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          item.desc.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesCategory = selectedCategory === "All" || item.category === selectedCategory
+    return matchesSearch && matchesCategory
+  })
+
+  return (
+    <div className="bg-white text-[#081B2E] antialiased">
+      {/* Hero Header */}
+      <section className="bg-[#f8fcfb] py-28 border-b border-slate-100">
+        <div className="container mx-auto max-w-[1200px] px-6">
+          <div className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-end mb-12">
+            <div>
+              <span className="text-xs font-extrabold uppercase tracking-widest text-[#0D9F8C]">Resource Library</span>
+              <h1 className="mt-4 font-sans text-5xl font-extrabold leading-[1.05] tracking-[-0.04em] text-[#081b36] md:text-6xl">
+                A practical library for <br />
+                <span className="font-serif font-normal text-[#0D9F8C] italic">modern migration practices.</span>
+              </h1>
+              <p className="mt-6 text-base md:text-lg leading-relaxed text-slate-600 font-medium">
+                Guides, templates and operating resources to help teams move faster with absolute compliance.
+              </p>
+            </div>
+            
+            {/* Featured guide card */}
+            <div className="rounded-2xl border border-emerald-100 bg-white p-8 shadow-sm">
+              <span className="text-xs font-extrabold uppercase text-[#0D9F8C]">Featured Guide</span>
+              <h3 className="mt-3 text-xl font-extrabold text-[#081b36]">The OMARA Agreement Preparation Handbook</h3>
+              <p className="mt-2 text-sm leading-relaxed text-slate-500 font-semibold">
+                An end-to-end regulatory guide to compiling compliant professional fee agreements, retainers, and disclosures safely.
+              </p>
+            </div>
+          </div>
+
+          {/* Interactive filter search controls */}
+          <div className="flex flex-col gap-4 md:flex-row mt-12">
+            <div className="relative flex-1">
+              <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="h-12 rounded-xl border-slate-200 bg-white pl-11 shadow-sm font-semibold"
+                placeholder="Search resources, templates, and compliance guides..."
+              />
+            </div>
+            
+            <div className="flex flex-wrap gap-2">
+              {["All", "Compliance", "Templates", "Operations", "Analytics", "Security"].map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`rounded-xl px-4 py-2 text-xs font-bold transition-all duration-300 ${selectedCategory === cat ? "bg-[#0D9F8C] text-white shadow-sm" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Grid of Results */}
+      <section className="py-24">
+        <div className="container mx-auto max-w-[1200px] px-6">
+          {filteredResources.length === 0 ? (
+            <div className="text-center py-20 rounded-2xl border border-dashed border-slate-200 bg-[#fbfdfc]">
+              <Info className="mx-auto h-8 w-8 text-[#0D9F8C]" />
+              <h3 className="mt-4 text-lg font-bold text-[#081b36]">No Resources Found</h3>
+              <p className="text-xs text-slate-400 font-semibold mt-1">Try refining your search text or select another category above.</p>
+            </div>
+          ) : (
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {filteredResources.map((item) => (
+                <Card key={item.title} className="rounded-xl border-slate-200/80 bg-white p-7 shadow-sm flex flex-col justify-between hover:shadow-elevated transition-all duration-300">
+                  <div>
+                    <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-wider text-[#0D9F8C] mb-4">
+                      <span>{item.type}</span>
+                      <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">{item.category}</span>
+                    </div>
+                    <h4 className="text-base font-extrabold text-[#081b36] min-h-[48px] leading-snug">{item.title}</h4>
+                    <p className="mt-2 text-xs text-slate-500 font-semibold leading-relaxed min-h-[64px]">{item.desc}</p>
+                  </div>
+                  
+                  <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#0A5B52]">
+                    <span>{item.time}</span>
+                    <ArrowRight className="h-4 w-4 text-[#0D9F8C]" />
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+    </div>
+  )
+}
+
+// ----------------------------------------------------
+// 5. ABOUT PAGE
+// ----------------------------------------------------
+export function AboutPage() {
+  return (
+    <div className="bg-white text-[#081B2E]">
+      <section className="bg-[#f9fbf9] py-28 border-b border-slate-100">
+        <div className="container mx-auto grid max-w-[1200px] gap-12 px-6 lg:grid-cols-2 lg:items-center">
+          <div>
+            <span className="text-xs font-extrabold uppercase tracking-widest text-[#0D9F8C]">Our Origin</span>
+            <h1 className="mt-4 font-sans text-5xl font-extrabold tracking-tight text-[#081b36] md:text-6xl">
+              Built by people who understand <span className="font-serif font-normal text-[#0D9F8C] italic">regulated legal tech.</span>
+            </h1>
+            <p className="mt-6 text-base md:text-lg leading-relaxed text-slate-600 font-medium">
+              We built ImmiSign because Australian migration professionals manage high stakes personal details and deserve software designed around absolute security, compliance, and on-shore custody.
+            </p>
+          </div>
+          <div className="rounded-2xl bg-gradient-to-br from-[#021815] to-[#000504] p-8 text-white shadow-elevated border border-emerald-950">
+            <Building2 className="h-10 w-10 text-[#33C48D]" />
+            <h3 className="mt-8 font-serif text-3xl font-normal text-white">Our mission</h3>
+            <p className="mt-4 text-sm leading-relaxed text-emerald-100/80 font-semibold">
+              Empower regulated migration agents to eliminate administration friction, standardize compliant retains, and secure client records securely.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Core Values */}
+      <section className="py-24">
+        <div className="container mx-auto max-w-[1200px] px-6">
+          <SectionHeader title="Our structural values" />
+
+          <div className="grid gap-8 md:grid-cols-3 mt-12">
+            {[
+              { title: "Absolute Compliance", text: "We trace domestic legal frameworks, ensuring agreements never breach OMARA Code guidelines." },
+              { title: "Sovereign Custody", desc: "No offshore compromises. All operational records reside completely inside Australia." },
+              { title: "Uncompromising Reliability", text: "High-performance systems built for legal pipelines, backed by responsive domestic support teams." }
+            ].map((val) => (
+              <Card key={val.title} className="rounded-xl border border-slate-200 bg-white p-7 shadow-sm">
+                <h4 className="text-lg font-extrabold text-[#081b36]">{val.title}</h4>
+                <p className="mt-2 text-sm text-slate-500 font-semibold leading-relaxed">{val.text || val.desc}</p>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <CTA />
     </div>
   )
@@ -634,106 +907,92 @@ export function PlaceholderMarketingPage({ title }: { title: string }) {
   )
 }
 
+// ----------------------------------------------------
+// 6. SECURITY PAGE
+// ----------------------------------------------------
 export function SecurityPage() {
+  const pillars = [
+    {
+      icon: ShieldCheck,
+      title: "Sovereign Sydney Hosting",
+      desc: "All personal identities, passports, and signed legal agreements are stored entirely on active AWS clusters in Sydney, Australia under domestic jurisdiction."
+    },
+    {
+      icon: LockKeyhole,
+      title: "AES-256 State Encryption",
+      desc: "Data layers are encrypted utilizing industry-standard AES-256 at rest and secure TLS 1.3 encryption protocols in transit."
+    },
+    {
+      icon: Clock,
+      title: "Immutable Digital Audits",
+      desc: "Every send, review, and signature creates an encrypted digital certificate, compiling legally robust transaction stamps."
+    },
+    {
+      icon: Users,
+      title: "Practitioner isolation",
+      desc: "Granular multi-tenant workspaces ensure RMAs are restricted strictly to clients matching their portfolio profiles."
+    },
+    {
+      icon: FileCheck2,
+      title: "SOC-2 & ISO Aligned",
+      desc: "Internal development, network failovers, and backup cycles map precisely to SOC-2 and ISO-27001 security standards."
+    },
+    {
+      icon: Workflow,
+      title: "High Availability Backups",
+      desc: "Real-time replica clusters guarantee a 99.9% uptime metric, securing practice continuous delivery."
+    }
+  ]
+
   return (
     <div className="bg-white text-[#081B2E] antialiased">
       {/* Hero Section */}
-      <section className="relative overflow-hidden border-b border-emerald-900/5 bg-[radial-gradient(circle_at_top_right,rgba(13,159,140,0.12),transparent_38%),linear-gradient(180deg,#f3fcf9_0%,#ffffff_92%)] pt-28 pb-16">
-        <div className="container mx-auto max-w-[1200px] px-6 text-center">
+      <section className="relative overflow-hidden border-b border-emerald-900/5 bg-[radial-gradient(circle_at_top_right,rgba(13,159,140,0.12),transparent_38%),linear-gradient(180deg,#f3fcf9_0%,#ffffff_92%)] pt-28 pb-14 text-center">
+        <div className="container mx-auto max-w-[1200px] px-6">
           <div className="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white px-4 py-2 text-xs font-bold text-[#0A5B52] shadow-sm mb-6">
             <ShieldCheck className="h-4 w-4 text-[#0D9F8C]" />
-            Enterprise-Grade Protection
+            Enterprise Protection Posture
           </div>
-          <h1 className="font-serif text-5xl font-normal leading-[1.05] tracking-[-0.03em] text-[#081b36] md:text-6xl lg:text-7xl">
-            Australian data custody. <br />
-            <span className="italic text-[#0D9F8C]">Uncompromising security.</span>
+          <h1 className="font-sans text-5xl font-extrabold leading-[1.05] tracking-[-0.04em] text-[#081b36] md:text-6xl lg:text-7xl">
+            Sovereign Australian data. <br />
+            <span className="font-serif font-normal text-[#0D9F8C] italic">Uncompromising compliance.</span>
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-600 font-medium">
-            ImmiSign is engineered specifically for regulated legal-tech demands, ensuring the absolute confidentiality, integrity, and availability of your migration records.
+          <p className="mx-auto mt-6 max-w-2xl text-base md:text-lg leading-relaxed text-slate-600 font-medium">
+            ImmiSign delivers the bank-grade infrastructure needed to secure migration client matters and protect sensitive identity documents.
           </p>
         </div>
       </section>
 
       {/* Grid of Security Pillars */}
-      <section className="py-20">
+      <section className="py-24">
         <div className="container mx-auto max-w-[1200px] px-6">
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            <Card className="rounded-2xl border-slate-200 bg-white p-8 shadow-sm">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-[#0D9F8C]">
-                <ShieldCheck className="h-6 w-6" />
-              </div>
-              <h3 className="mt-6 text-xl font-bold text-[#081b36]">AWS Sydney Local Hosting</h3>
-              <p className="mt-3 text-sm leading-6 text-slate-600 font-medium">
-                All client agreements, personal identity records, and visa documents are stored entirely on shore in Sydney, Australia. Never leaves Australian jurisdiction.
-              </p>
-            </Card>
-
-            <Card className="rounded-2xl border-slate-200 bg-white p-8 shadow-sm">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-[#0D9F8C]">
-                <LockKeyhole className="h-6 w-6" />
-              </div>
-              <h3 className="mt-6 text-xl font-bold text-[#081b36]">AES-256 Document Encryption</h3>
-              <p className="mt-3 text-sm leading-6 text-slate-600 font-medium">
-                Every document is encrypted at rest using AES-256 standard and in transit via TLS 1.3. Your practice agreements remain secure and tamper-proof.
-              </p>
-            </Card>
-
-            <Card className="rounded-2xl border-slate-200 bg-white p-8 shadow-sm">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-[#0D9F8C]">
-                <Clock3 className="h-6 w-6" />
-              </div>
-              <h3 className="mt-6 text-xl font-bold text-[#081b36]">Immutable Audit Logs</h3>
-              <p className="mt-3 text-sm leading-6 text-slate-600 font-medium">
-                Every action is digitally stamped. Gain a complete, legally robust chain of custody record detailing exactly who sent, viewed, signed, or modified each document.
-              </p>
-            </Card>
-
-            <Card className="rounded-2xl border-slate-200 bg-white p-8 shadow-sm">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-[#0D9F8C]">
-                <Users className="h-6 w-6" />
-              </div>
-              <h3 className="mt-6 text-xl font-bold text-[#081b36]">ISO 27001 Standards</h3>
-              <p className="mt-3 text-sm leading-6 text-slate-600 font-medium">
-                Our operations, code reviews, and hosting architectures strictly align with ISO/IEC 27001 information security management principles.
-              </p>
-            </Card>
-
-            <Card className="rounded-2xl border-slate-200 bg-white p-8 shadow-sm">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-[#0D9F8C]">
-                <FileCheck2 className="h-6 w-6" />
-              </div>
-              <h3 className="mt-6 text-xl font-bold text-[#081b36]">Practitioner Access Controls</h3>
-              <p className="mt-3 text-sm leading-6 text-slate-600 font-medium">
-                Restrict workspace actions with granular role-based access. Control exactly which RMAs, support staff, or admin teams can view specific client matters.
-              </p>
-            </Card>
-
-            <Card className="rounded-2xl border-slate-200 bg-white p-8 shadow-sm">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-[#0D9F8C]">
-                <Workflow className="h-6 w-6" />
-              </div>
-              <h3 className="mt-6 text-xl font-bold text-[#081b36]">High Availability & Failovers</h3>
-              <p className="mt-3 text-sm leading-6 text-slate-600 font-medium">
-                Operate with peace of mind. Our active-active multi-region databases feature real-time backups and guarantee a 99.9% uptime for continuous practice delivery.
-              </p>
-            </Card>
+            {pillars.map((pil) => (
+              <Card key={pil.title} className="rounded-2xl border border-slate-200/80 bg-white p-8 shadow-sm">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-[#0D9F8C] shadow-sm mb-6">
+                  <pil.icon className="h-5 w-5" />
+                </div>
+                <h3 className="text-lg font-extrabold text-[#081b36]">{pil.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-500 font-semibold">{pil.desc}</p>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Compliance / Privacy section */}
-      <section className="bg-[#F7FAF8] py-20">
+      {/* Compliance / Privacy Section */}
+      <section className="bg-[#f9fbf9] py-24 border-y border-slate-100">
         <div className="container mx-auto max-w-[1000px] px-6 text-center">
           <h2 className="font-serif text-3xl font-normal tracking-tight text-[#081b36] md:text-4xl">
-            Strictly aligned with the <span className="italic text-[#0D9F8C]">Privacy Act 1988</span> and MARA guidelines.
+            Strictly aligned with the <span className="italic text-[#0D9F8C]">Privacy Act 1988.</span>
           </h2>
-          <p className="mt-4 max-w-2xl mx-auto text-slate-600 leading-7 font-medium">
-            Migration agents manage sensitive personal information: passport numbers, family history, financials, and legal credentials. ImmiSign provides the absolute protection required to ensure complete code compliance.
+          <p className="mt-4 max-w-2xl mx-auto text-slate-500 font-semibold leading-relaxed text-sm md:text-base">
+            Migration agents manage critical applicant histories, passport records, family structures, and finances. ImmiSign provides OMARA-level data preservation records out of the box.
           </p>
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 md:grid-cols-4">
-            {["Australian Hosted", "MFA Mandatory Option", "HIPAA/SOC-2 Aligned", "Daily Automated Backups"].map((badge) => (
-              <div key={badge} className="rounded-xl border border-emerald-100 bg-white p-4 font-bold text-[#0A5B52] shadow-sm text-sm">
-                {badge}
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+            {["Sovereign Hosted", "Strict TLS 1.3", "MFA Mandatory", "Hourly Backups"].map((tag) => (
+              <div key={tag} className="rounded-xl border border-emerald-100 bg-white p-4 font-bold text-[#0A5B52] shadow-sm text-xs uppercase tracking-wider">
+                {tag}
               </div>
             ))}
           </div>
@@ -745,8 +1004,10 @@ export function SecurityPage() {
   )
 }
 
+// ----------------------------------------------------
+// 7. CONTACT PAGE
+// ----------------------------------------------------
 export function ContactPage() {
-  const [submitted, setSubmitted] = React.useState(false)
   const [formData, setFormData] = React.useState({
     name: "",
     email: "",
@@ -756,185 +1017,212 @@ export function ContactPage() {
     throughput: "under-50",
     message: "",
   })
+  const [isSubmitting, setIsSubmitting] = React.useState(false)
+  const [isSubmitted, setIsSubmitted] = React.useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    setSubmitted(true)
+    if (!formData.name || !formData.email) return
+
+    setIsSubmitting(true)
+    // Simulate API Intake lookup
+    setTimeout(() => {
+      setIsSubmitting(false)
+      setIsSubmitted(true)
+    }, 1500)
   }
 
   return (
     <div className="bg-white text-[#081B2E] antialiased">
-      <section className="relative overflow-hidden border-b border-emerald-900/5 bg-[radial-gradient(circle_at_top_right,rgba(13,159,140,0.12),transparent_38%),linear-gradient(180deg,#f3fcf9_0%,#ffffff_92%)] pt-28 pb-16">
-        <div className="container mx-auto max-w-[1200px] px-6 text-center">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden border-b border-emerald-900/5 bg-[radial-gradient(circle_at_top_right,rgba(13,159,140,0.12),transparent_38%),linear-gradient(180deg,#f3fcf9_0%,#ffffff_92%)] pt-28 pb-14 text-center">
+        <div className="container mx-auto max-w-[1200px] px-6">
           <div className="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white px-4 py-2 text-xs font-bold text-[#0A5B52] shadow-sm mb-6">
             <MessageSquare className="h-4 w-4 text-[#0D9F8C]" />
-            Get in touch
+            Connect with Legal-Tech Advisors
           </div>
-          <h1 className="font-serif text-5xl font-normal leading-[1.05] tracking-[-0.03em] text-[#081b36] md:text-6xl lg:text-7xl">
+          <h1 className="font-sans text-5xl font-extrabold leading-[1.05] tracking-[-0.04em] text-[#081b36] md:text-6xl lg:text-7xl">
             We are here to support <br />
-            <span className="italic text-[#0D9F8C]">your practice.</span>
+            <span className="font-serif font-normal text-[#0D9F8C] italic">your practice.</span>
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-600 font-medium">
-            Have questions about MARA templates, custom integrations, enterprise bulk pricing, or security? Talk to our Sydney-based legal tech team.
+          <p className="mx-auto mt-6 max-w-2xl text-base md:text-lg leading-relaxed text-slate-600 font-medium">
+            Have structural OMARA questions, custom document library integrations, or need dedicated agency onboarding? Connect with our Sydney-based specialist team.
           </p>
         </div>
       </section>
 
-      <section className="py-20">
-        <div className="container mx-auto max-w-[1200px] px-6">
-          <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr]">
-            {/* Contact Form */}
-            <Card className="rounded-2xl border-slate-200/80 bg-white p-8 shadow-sm">
-              {submitted ? (
-                <div className="text-center py-12">
-                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-[#0D9F8C] mb-6">
-                    <CheckCircle2 className="h-10 w-10" />
-                  </div>
-                  <h3 className="text-3xl font-black text-[#081b36]">Inquiry Received</h3>
-                  <p className="mt-3 text-slate-600 font-medium max-w-md mx-auto">
-                    Thanks for reaching out, {formData.name}! One of our onboarding specialists will review your agency size of {formData.practitioners} {parseInt(formData.practitioners) === 1 ? "practitioner" : "practitioners"} and get in touch within the next 2 business hours.
-                  </p>
-                  <Button onClick={() => setSubmitted(false)} className="mt-8 bg-[#0D9F8C] hover:bg-[#0A5B52]">
-                    Send another message
-                  </Button>
+      {/* Main Form and Location Side panel */}
+      <section className="py-24">
+        <div className="container mx-auto max-w-[1200px] px-6 grid gap-12 lg:grid-cols-[1.1fr_0.9fr]">
+          {/* Intake Card */}
+          <Card className="rounded-2xl border border-slate-200/80 bg-white p-8 shadow-sm">
+            {isSubmitted ? (
+              <div className="text-center py-12 animate-enter">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-[#0D9F8C] mb-6">
+                  <CheckCircle2 className="h-8 w-8" />
                 </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div>
-                    <h3 className="text-2xl font-black text-[#081b36]">Intake Contact Form</h3>
-                    <p className="text-sm text-slate-500 font-medium mt-1">Please provide details about your practice so we can connect you with the right support.</p>
-                  </div>
+                <h3 className="text-2xl font-extrabold text-[#081b36]">Request Submitted Successfully</h3>
+                <p className="mt-3 text-sm text-slate-500 font-semibold max-w-md mx-auto leading-relaxed">
+                  Thanks for reaching out, {formData.name}! A Sydney-based onboarding advisor has received your agency profile request and will contact you within the next 2 business hours.
+                </p>
+                <Button
+                  onClick={() => {
+                    setIsSubmitted(false)
+                    setFormData({
+                      name: "",
+                      email: "",
+                      agency: "",
+                      marn: "",
+                      practitioners: "1",
+                      throughput: "under-50",
+                      message: "",
+                    })
+                  }}
+                  className="mt-8 bg-[#0D9F8C] hover:bg-[#0A5B52] rounded-xl font-bold"
+                >
+                  Submit another inquiry
+                </Button>
+              </div>
+            ) : (
+              <form onSubmit={handleFormSubmit} className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-extrabold text-[#081b36]">Intake Contact Form</h3>
+                  <p className="text-xs text-slate-400 font-semibold mt-1">Please provide operational details to route your inquiry to the correct domestic advisor.</p>
+                </div>
 
-                  <div className="grid gap-6 sm:grid-cols-2">
-                    <div className="space-y-2">
-                      <label className="text-xs font-black uppercase tracking-wider text-slate-500">Full Name</label>
-                      <Input
-                        required
-                        placeholder="e.g. Rajwant Singh"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="h-11 rounded-xl border-slate-200/80"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-xs font-black uppercase tracking-wider text-slate-500">Email Address</label>
-                      <Input
-                        required
-                        type="email"
-                        placeholder="e.g. rajwant@singhimmigration.com.au"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="h-11 rounded-xl border-slate-200/80"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid gap-6 sm:grid-cols-2">
-                    <div className="space-y-2">
-                      <label className="text-xs font-black uppercase tracking-wider text-slate-500">Agency Name</label>
-                      <Input
-                        required
-                        placeholder="e.g. Singh Immigration"
-                        value={formData.agency}
-                        onChange={(e) => setFormData({ ...formData, agency: e.target.value })}
-                        className="h-11 rounded-xl border-slate-200/80"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-xs font-black uppercase tracking-wider text-slate-500">MARN (Optional)</label>
-                      <Input
-                        placeholder="7-digit Registration Number"
-                        value={formData.marn}
-                        onChange={(e) => setFormData({ ...formData, marn: e.target.value })}
-                        className="h-11 rounded-xl border-slate-200/80"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid gap-6 sm:grid-cols-2">
-                    <div className="space-y-2">
-                      <label className="text-xs font-black uppercase tracking-wider text-slate-500">Practitioner Count</label>
-                      <select
-                        value={formData.practitioners}
-                        onChange={(e) => setFormData({ ...formData, practitioners: e.target.value })}
-                        className="flex h-11 w-full rounded-xl border border-slate-200/80 bg-white px-3 py-2 text-sm font-semibold ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        <option value="1">Solo Practitioner (1 RMA)</option>
-                        <option value="2-5">2 to 5 Practitioners</option>
-                        <option value="6-15">6 to 15 Practitioners</option>
-                        <option value="16+">16+ Practitioners / Enterprise</option>
-                      </select>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-xs font-black uppercase tracking-wider text-slate-500">Visa Matter Volume (per month)</label>
-                      <select
-                        value={formData.throughput}
-                        onChange={(e) => setFormData({ ...formData, throughput: e.target.value })}
-                        className="flex h-11 w-full rounded-xl border border-slate-200/80 bg-white px-3 py-2 text-sm font-semibold ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        <option value="under-50">Under 50 matters/month</option>
-                        <option value="50-150">50 to 150 matters/month</option>
-                        <option value="150+">150+ matters/month</option>
-                      </select>
-                    </div>
-                  </div>
-
+                <div className="grid gap-6 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <label className="text-xs font-black uppercase tracking-wider text-slate-500">Message / How can we help?</label>
-                    <textarea
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-500">Full Name</label>
+                    <Input
                       required
-                      placeholder="Please tell us about your needs..."
-                      value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      className="flex min-h-[120px] w-full rounded-xl border border-slate-200/80 bg-white px-3 py-2 text-sm font-semibold placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      placeholder="e.g. Rajwant Singh"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="h-11 rounded-xl border-slate-200/80"
                     />
                   </div>
-
-                  <Button type="submit" className="h-12 w-full rounded-xl bg-[#0D9F8C] font-bold hover:bg-[#0A5B52] shadow-[0_12px_24px_rgba(13,159,140,0.15)] transition-all duration-300">
-                    Submit Agency Request
-                    <ArrowRight className="h-4 w-4 ml-1" />
-                  </Button>
-                </form>
-              )}
-            </Card>
-
-            {/* Sidebar Contact Info */}
-            <div className="flex flex-col justify-between py-2">
-              <div className="space-y-8">
-                <div>
-                  <h3 className="text-xs font-black uppercase tracking-widest text-[#0D9F8C]">Our Office</h3>
-                  <h4 className="text-3xl font-serif text-[#081b36] mt-3">Sydney HQ</h4>
-                  <p className="mt-3 text-slate-600 leading-7 font-medium">
-                    Level 14, 175 Pitt Street<br />
-                    Sydney NSW 2000, Australia
-                  </p>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-500">Email Address</label>
+                    <Input
+                      required
+                      type="email"
+                      placeholder="e.g. rajwant@australisvisa.com.au"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="h-11 rounded-xl border-slate-200/80"
+                    />
+                  </div>
                 </div>
 
-                <div>
-                  <h3 className="text-xs font-black uppercase tracking-widest text-[#0D9F8C]">Support Hours</h3>
-                  <p className="mt-3 text-slate-600 leading-7 font-medium">
-                    <strong>Monday – Friday:</strong> 8:30 AM – 6:00 PM AEST<br />
-                    <strong>Weekend:</strong> Emergency document emergency support only.
-                  </p>
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-500">Agency Name</label>
+                    <Input
+                      required
+                      placeholder="e.g. Australis Visa Partners"
+                      value={formData.agency}
+                      onChange={(e) => setFormData({ ...formData, agency: e.target.value })}
+                      className="h-11 rounded-xl border-slate-200/80"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-500">MARN (Registered Agents Only)</label>
+                    <Input
+                      placeholder="7-digit MARN identifier"
+                      value={formData.marn}
+                      onChange={(e) => setFormData({ ...formData, marn: e.target.value })}
+                      className="h-11 rounded-xl border-slate-200/80"
+                    />
+                  </div>
                 </div>
 
-                <div>
-                  <h3 className="text-xs font-black uppercase tracking-widest text-[#0D9F8C]">Direct Contacts</h3>
-                  <p className="mt-3 text-slate-600 leading-7 font-medium">
-                    <strong>Sales:</strong> hello@immisign.com.au<br />
-                    <strong>Support:</strong> support@immisign.com.au<br />
-                    <strong>Phone:</strong> +61 (02) 8005 7416
-                  </p>
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-500">Practitioner Count</label>
+                    <select
+                      value={formData.practitioners}
+                      onChange={(e) => setFormData({ ...formData, practitioners: e.target.value })}
+                      className="flex h-11 w-full rounded-xl border border-slate-200/80 bg-white px-3 py-2 text-sm font-semibold text-[#081b36] focus:outline-none focus:ring-2 focus:ring-[#0D9F8C]"
+                    >
+                      <option value="1">Solo Practitioner (1 RMA)</option>
+                      <option value="2-5">2 to 5 Practitioners</option>
+                      <option value="6-15">6 to 15 Practitioners</option>
+                      <option value="16+">16+ Practitioners / Enterprise</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-500">Milestone Volume</label>
+                    <select
+                      value={formData.throughput}
+                      onChange={(e) => setFormData({ ...formData, throughput: e.target.value })}
+                      className="flex h-11 w-full rounded-xl border border-slate-200/80 bg-white px-3 py-2 text-sm font-semibold text-[#081b36] focus:outline-none focus:ring-2 focus:ring-[#0D9F8C]"
+                    >
+                      <option value="under-50">Under 50 agreements/month</option>
+                      <option value="50-150">50 to 150 agreements/month</option>
+                      <option value="150+">150+ agreements/month</option>
+                    </select>
+                  </div>
                 </div>
-              </div>
 
-              <div className="mt-12 rounded-2xl bg-[#061f1c] p-6 text-white shadow-sm border border-emerald-950">
-                <ShieldCheck className="h-8 w-8 text-[#33C48D]" />
-                <h4 className="text-xl font-bold mt-4">100% On-shore Support</h4>
-                <p className="text-sm text-emerald-100/70 leading-6 font-medium mt-2">
-                  All customer support, data hosting, operations, and development are kept completely inside Australia for absolute privacy and safety compliance.
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-wider text-slate-500">Inquiry details</label>
+                  <textarea
+                    required
+                    placeholder="Describe your practice onboarding, data migration, or compliance needs..."
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    className="flex min-h-[120px] w-full rounded-xl border border-slate-200/80 bg-white px-3 py-2 text-sm font-semibold text-[#081b36] focus:outline-none focus:ring-2 focus:ring-[#0D9F8C]"
+                  />
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="h-12 w-full rounded-xl bg-[#0D9F8C] hover:bg-[#0A5B52] font-bold shadow-[0_12px_24px_rgba(13,159,140,0.15)] transition-all duration-300"
+                >
+                  {isSubmitting ? "Submitting Inquiry..." : "Submit Practice Request"}
+                  {!isSubmitting && <ArrowRight className="h-4 w-4 ml-1" />}
+                </Button>
+              </form>
+            )}
+          </Card>
+
+          {/* Location Sidepanel */}
+          <div className="flex flex-col justify-between py-2">
+            <div className="space-y-8">
+              <div>
+                <span className="text-xs font-extrabold uppercase tracking-widest text-[#0D9F8C]">Our Office</span>
+                <h4 className="font-serif text-3xl text-[#081b36] mt-2">Sydney HQ</h4>
+                <p className="mt-2 text-sm text-slate-500 font-semibold leading-relaxed">
+                  Level 14, 175 Pitt Street <br />
+                  Sydney NSW 2000, Australia
                 </p>
               </div>
+
+              <div>
+                <span className="text-xs font-extrabold uppercase tracking-widest text-[#0D9F8C]">Advising Hours</span>
+                <p className="mt-2 text-sm text-slate-500 font-semibold leading-relaxed">
+                  <strong>Monday – Friday:</strong> 8:30 AM – 6:00 PM AEST <br />
+                  <strong>Weekend:</strong> Emergency backup operations support.
+                </p>
+              </div>
+
+              <div>
+                <span className="text-xs font-extrabold uppercase tracking-widest text-[#0D9F8C]">Direct Contacts</span>
+                <p className="mt-2 text-sm text-slate-500 font-semibold leading-relaxed">
+                  <strong>Sales Inquiry:</strong> hello@immisign.com.au <br />
+                  <strong>Practice Support:</strong> support@immisign.com.au <br />
+                  <strong>Call center:</strong> +61 (02) 8005 7416
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-12 rounded-2xl bg-gradient-to-br from-[#021815] to-[#000504] p-6 text-white shadow-sm border border-emerald-950">
+              <ShieldCheck className="h-8 w-8 text-[#33C48D]" />
+              <h4 className="text-lg font-bold mt-4">100% On-shore Delivery</h4>
+              <p className="text-xs text-emerald-100/70 leading-relaxed font-semibold mt-2">
+                All client databases, document attachments, development iterations, and operational support are kept fully within Australia for absolute structural privacy.
+              </p>
             </div>
           </div>
         </div>

@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useAuthStore } from "@/store/authStore"
 import Link from "next/link"
 import {
   ArrowRight,
@@ -25,6 +26,10 @@ import {
   ShieldCheck,
   Trash2,
   X,
+  Palette,
+  Users,
+  ShieldAlert,
+  Check,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -2720,40 +2725,195 @@ export function ReportsPage() {
   )
 }
 
+/*
 export function SettingsPage({ section = "Agency Profile" }: { section?: string }) {
-  const items = [
-    ["Agency Profile", "/settings/agency"],
-    ["Team", "/settings/team"],
-    ["Branding", "/settings/branding"],
-    ["Clauses", "/settings/clauses"],
-    ["Matter Types", "/settings/matter-types"],
-    ["Payment Schedules", "/settings/payment-schedules"],
-    ["Defaults", "/settings/defaults"],
-    ["Security", "/settings/security"],
+  const { 
+    activeWorkspace, 
+    simulatedRole, 
+    user, 
+    invitePractitioner, 
+    updateWorkspaceBranding 
+  } = useAuthStore()
+
+  // Fallback defaults if hot reloads clear session
+  const currentWorkspace = activeWorkspace || {
+    name: "AVC Migration Partners",
+    slug: "avc-migration",
+    initials: "AM",
+    color: "#0D9F8C",
+    address: "Level 14, 175 Pitt Street, Sydney NSW 2000",
+    marn: "1794016",
+    abn: "45 128 349 820",
+    team: [
+      { name: "Rajwant Singh", role: "Principal RMA", marn: "MARN 1794016", status: "Active", email: "rajwant@avcmigration.com.au" }
+    ]
+  }
+  const currentRole = simulatedRole || user?.role || "Owner"
+  const currentSlug = currentWorkspace.slug
+
+  // Settings navigation items split into Workspace and Personal
+  const workspaceItems = [
+    ["Agency Profile", "Agency Profile"],
+    ["Branding", "Branding"],
+    ["Team Setup", "Team"],
+    ["Clauses Library", "Clauses"],
+    ["Matter Defaults", "Matter Types"],
   ] as const
+
+  const personalItems = [
+    ["My Profile", "My Profile"],
+    ["MFA Security", "Security"],
+  ] as const
+
+  // Global Float Toast State
+  const [toastMessage, setToastMessage] = React.useState<string | null>(null)
+  const triggerToast = (msg: string) => {
+    setToastMessage(msg)
+    setTimeout(() => setToastMessage(null), 3500)
+  }
+
+  // 1. Team State & Invitation Modal
+  const [isInviteOpen, setIsInviteOpen] = React.useState(false)
+  const [inviteName, setInviteName] = React.useState("")
+  const [inviteEmail, setInviteEmail] = React.useState("")
+  const [inviteMarn, setInviteMarn] = React.useState("")
+  const [inviteRole, setInviteRole] = React.useState("Migration Agent")
+  const [inviteProgress, setInviteProgress] = React.useState(0)
+  const [inviting, setInviting] = React.useState(false)
+
+  const handleInviteSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!inviteName || !inviteEmail) return
+    setInviting(true)
+    setInviteProgress(0)
+
+    const interval = setInterval(() => {
+      setInviteProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval)
+          setInviting(false)
+          setIsInviteOpen(false)
+
+          invitePractitioner(
+            inviteName,
+            inviteEmail,
+            inviteRole,
+            inviteMarn
+          )
+
+          triggerToast(`Workspace invitation sent to ${inviteName}!`)
+          
+          // Reset states
+          setInviteName("")
+          setInviteEmail("")
+          setInviteMarn("")
+          return 100
+        }
+        return prev + 25
+      })
+    }, 150)
+  }
+
+  // 2. Branding State
+  const [brandColor, setBrandColor] = React.useState(currentWorkspace.color)
+  const [brandInitials, setBrandInitials] = React.useState(currentWorkspace.initials)
+
+  const handleSaveBranding = () => {
+    updateWorkspaceBranding(brandColor, brandInitials)
+    triggerToast("Workspace branding settings updated successfully!")
+  }
+
+  // Sync brand details if active workspace changes
+  React.useEffect(() => {
+    if (activeWorkspace) {
+      setBrandColor(activeWorkspace.color)
+      setBrandInitials(activeWorkspace.initials)
+    }
+  }, [activeWorkspace])
+
+  // 3. Clauses State & Add Clause Modal
+  interface ClauseItem {
+    key: string
+    title: string
+    text: string
+  }
+  const [clausesList, setClausesList] = React.useState<ClauseItem[]>([
+    { key: "CLAUSE-820-FEE", title: "Partner Visa Instalment Structure", text: "Specifies professional fees structured into 50% upfront retainer and 50% lodging milestone." },
+    { key: "CLAUSE-OMARA-MANDATE", title: "OMARA Consumer Guide Mandate", text: "Explicitly references consumer rights, OMARA Code of Conduct, and client files access terms." },
+    { key: "CLAUSE-REFUND-DISCLAIMER", title: "Lodgement Fee Refund Disclaimer", text: "Declares that Department of Home Affairs visa fees are strictly non-refundable upon lodgement." },
+  ])
+  const [isClauseOpen, setIsClauseOpen] = React.useState(false)
+  const [clauseKey, setClauseKey] = React.useState("")
+  const [clauseTitle, setClauseTitle] = React.useState("")
+  const [clauseText, setClauseText] = React.useState("")
+
+  const handleClauseSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!clauseKey || !clauseTitle || !clauseText) return
+
+    const newClause: ClauseItem = {
+      key: clauseKey.toUpperCase().replace(/\s+/g, "-"),
+      title: clauseTitle,
+      text: clauseText
+    }
+    setClausesList([newClause, ...clausesList])
+    setIsClauseOpen(false)
+    triggerToast(`Boilerplate clause ${newClause.key} added successfully!`)
+
+    // Reset states
+    setClauseKey("")
+    setClauseTitle("")
+    setClauseText("")
+  }
+
+  // 4. Security Settings State
+  const [mfaEnabled, setMfaEnabled] = React.useState(true)
+  const [mfaUpdating, setMfaUpdating] = React.useState(false)
+  const [activeSessions, setActiveSessions] = React.useState([
+    { ip: "203.0.113.19", device: "Chrome on macOS (Sydney, AU)", time: "Current Session", id: "sess-1" },
+    { ip: "203.0.113.82", device: "Safari on iOS (Melbourne, AU)", time: "Yesterday, 4:18 PM", id: "sess-2" },
+    { ip: "198.51.100.41", device: "Firefox on Windows (Brisbane, AU)", time: "3 days ago", id: "sess-3" },
+  ])
+
+  const handleMfaToggle = () => {
+    setMfaUpdating(true)
+    setTimeout(() => {
+      setMfaEnabled(!mfaEnabled)
+      setMfaUpdating(false)
+      triggerToast(`MFA security enforcement has been ${!mfaEnabled ? "ENABLED" : "DISABLED"}!`)
+    }, 500)
+  }
+
+  const revokeSession = (id: string, ip: string) => {
+    setActiveSessions(prev => prev.filter(s => s.id !== id))
+    triggerToast(`Session for IP ${ip} has been terminated successfully.`)
+  }
+
+  // Permissions lock warning check
+  const isSettingsRestricted = currentRole === "Assistant" || currentRole === "Read-only staff"
 
   const renderAgencyProfile = () => (
     <div className="space-y-6">
       <div className="grid gap-5 md:grid-cols-2">
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           Business Name
-          <Input className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" defaultValue="Singh & Associates Migration" />
+          <Input className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" defaultValue={currentWorkspace.name} disabled={isSettingsRestricted} />
         </label>
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           ABN (Australian Business Number)
-          <Input className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" defaultValue="45 128 349 820" />
+          <Input className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" defaultValue={currentWorkspace.abn} disabled={isSettingsRestricted} />
         </label>
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           Principal MARN Registration
-          <Input className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" defaultValue="1794016" />
+          <Input className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" defaultValue={currentWorkspace.marn} disabled={isSettingsRestricted} />
         </label>
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           Office Address
-          <Input className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" defaultValue="Level 14, 175 Pitt Street, Sydney NSW 2000" />
+          <Input className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" defaultValue={currentWorkspace.address} disabled={isSettingsRestricted} />
         </label>
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           Practice Timezone
-          <select className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]">
+          <select disabled={isSettingsRestricted} className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]">
             <option value="AEST">Australian Eastern Standard Time (AEST) - Sydney</option>
             <option value="AWST">Australian Western Standard Time (AWST) - Perth</option>
             <option value="ACST">Australian Central Standard Time (ACST) - Adelaide</option>
@@ -2764,19 +2924,13 @@ export function SettingsPage({ section = "Agency Profile" }: { section?: string 
           <Input className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" defaultValue="OMARA Australia" disabled />
         </label>
       </div>
-      <Button className="rounded-xl bg-[#0D9F8C] font-bold shadow-sm hover:bg-[#0A5B52]">Save Profile</Button>
+      {!isSettingsRestricted && (
+        <Button onClick={() => triggerToast("Agency profile details updated successfully!")} className="rounded-xl bg-[#0D9F8C] font-bold shadow-sm hover:bg-[#0A5B52]">Save Profile</Button>
+      )}
     </div>
   )
 
   const renderTeam = () => {
-    const teamMembers = [
-      { name: "Rajwant Singh", role: "Principal RMA", marn: "MARN 1794016", status: "Active", email: "rajwant@immisign.com.au" },
-      { name: "Priya Mehta", role: "Registered Migration Agent", marn: "MARN 2189402", status: "Active", email: "priya@immisign.com.au" },
-      { name: "Aman Gill", role: "Visa Case Administrator", marn: "N/A", status: "Active", email: "aman@immisign.com.au" },
-    ]
-    return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
           <div>
             <h3 className="text-sm font-bold text-[#081B2E]">Workspace Practitioners</h3>
             <p className="text-xs text-slate-400 mt-1 font-semibold">Manage registered agents and assistant user seats.</p>
@@ -3120,6 +3274,1053 @@ export function BillingPage() {
           <div key={invoice} className="flex items-center justify-between p-5 hover:bg-slate-50/40 transition-colors">
             <span className="font-bold text-sm text-[#081B2E]">{invoice}</span>
             <Button variant="outline" className="h-9 rounded-xl border-slate-200 bg-white px-4 text-xs font-bold hover:bg-slate-50">Download</Button>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+*/
+
+export function SettingsPage({ section = "Agency Profile" }: { section?: string }) {
+  const { 
+    activeWorkspace, 
+    simulatedRole, 
+    user, 
+    invitePractitioner, 
+    updateWorkspaceBranding 
+  } = useAuthStore()
+
+  // Fallback defaults if hot reloads clear session
+  const currentWorkspace = activeWorkspace || {
+    name: "AVC Migration Partners",
+    slug: "avc-migration",
+    initials: "AM",
+    color: "#0D9F8C",
+    address: "Level 14, 175 Pitt Street, Sydney NSW 2000",
+    marn: "1794016",
+    abn: "45 128 349 820",
+    team: [
+      { name: "Rajwant Singh", role: "Principal RMA", marn: "MARN 1794016", status: "Active", email: "rajwant@avcmigration.com.au" }
+    ]
+  }
+
+  const currentRole = simulatedRole || user?.role || "Owner"
+  const currentSlug = currentWorkspace.slug
+
+  // Settings navigation items split into Workspace and Personal
+  const workspaceItems = [
+    ["Agency Profile", "Agency Profile"],
+    ["Branding", "Branding"],
+    ["Team Setup", "Team"],
+    ["Clauses Library", "Clauses"],
+    ["Matter Defaults", "Matter Types"],
+  ] as const
+
+  const personalItems = [
+    ["My Profile", "My Profile"],
+    ["MFA Security", "Security"],
+  ] as const
+
+  // Global Float Toast State
+  const [toastMessage, setToastMessage] = React.useState<string | null>(null)
+  const triggerToast = (msg: string) => {
+    setToastMessage(msg)
+    setTimeout(() => setToastMessage(null), 3500)
+  }
+
+  // 1. Team State & Invitation Modal
+  const [isInviteOpen, setIsInviteOpen] = React.useState(false)
+  const [inviteName, setInviteName] = React.useState("")
+  const [inviteEmail, setInviteEmail] = React.useState("")
+  const [inviteMarn, setInviteMarn] = React.useState("")
+  const [inviteRole, setInviteRole] = React.useState("Migration Agent")
+  const [inviteProgress, setInviteProgress] = React.useState(0)
+  const [inviting, setInviting] = React.useState(false)
+
+  const handleInviteSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!inviteName || !inviteEmail) return
+    setInviting(true)
+    setInviteProgress(0)
+
+    const interval = setInterval(() => {
+      setInviteProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval)
+          setInviting(false)
+          setIsInviteOpen(false)
+
+          invitePractitioner(
+            inviteName,
+            inviteEmail,
+            inviteRole,
+            inviteMarn
+          )
+
+          triggerToast(`Workspace invitation sent to ${inviteName}!`)
+          
+          // Reset states
+          setInviteName("")
+          setInviteEmail("")
+          setInviteMarn("")
+          return 100
+        }
+        return prev + 25
+      })
+    }, 150)
+  }
+
+  // 2. Branding State
+  const [brandColor, setBrandColor] = React.useState(currentWorkspace.color)
+  const [brandInitials, setBrandInitials] = React.useState(currentWorkspace.initials)
+
+  const handleSaveBranding = () => {
+    updateWorkspaceBranding(brandColor, brandInitials)
+    triggerToast("Workspace branding settings updated successfully!")
+  }
+
+  // Sync brand details if active workspace changes
+  React.useEffect(() => {
+    if (activeWorkspace) {
+      setBrandColor(activeWorkspace.color)
+      setBrandInitials(activeWorkspace.initials)
+    }
+  }, [activeWorkspace])
+
+  // 3. Clauses State & Add Clause Modal
+  interface ClauseItem {
+    key: string
+    title: string
+    text: string
+  }
+  const [clausesList, setClausesList] = React.useState<ClauseItem[]>([
+    { key: "CLAUSE-820-FEE", title: "Partner Visa Instalment Structure", text: "Specifies professional fees structured into 50% upfront retainer and 50% lodging milestone." },
+    { key: "CLAUSE-OMARA-MANDATE", title: "OMARA Consumer Guide Mandate", text: "Explicitly references consumer rights, OMARA Code of Conduct, and client files access terms." },
+    { key: "CLAUSE-REFUND-DISCLAIMER", title: "Lodgement Fee Refund Disclaimer", text: "Declares that Department of Home Affairs visa fees are strictly non-refundable upon lodgement." },
+  ])
+  const [isClauseOpen, setIsClauseOpen] = React.useState(false)
+  const [clauseKey, setClauseKey] = React.useState("")
+  const [clauseTitle, setClauseTitle] = React.useState("")
+  const [clauseText, setClauseText] = React.useState("")
+
+  const handleClauseSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!clauseKey || !clauseTitle || !clauseText) return
+
+    const newClause: ClauseItem = {
+      key: clauseKey.toUpperCase().replace(/\s+/g, "-"),
+      title: clauseTitle,
+      text: clauseText
+    }
+    setClausesList([newClause, ...clausesList])
+    setIsClauseOpen(false)
+    triggerToast(`Boilerplate clause ${newClause.key} added successfully!`)
+
+    // Reset states
+    setClauseKey("")
+    setClauseTitle("")
+    setClauseText("")
+  }
+
+  // 4. Security Settings State
+  const [mfaEnabled, setMfaEnabled] = React.useState(true)
+  const [mfaUpdating, setMfaUpdating] = React.useState(false)
+  const [activeSessions, setActiveSessions] = React.useState([
+    { ip: "203.0.113.19", device: "Chrome on macOS (Sydney, AU)", time: "Current Session", id: "sess-1" },
+    { ip: "203.0.113.82", device: "Safari on iOS (Melbourne, AU)", time: "Yesterday, 4:18 PM", id: "sess-2" },
+    { ip: "198.51.100.41", device: "Firefox on Windows (Brisbane, AU)", time: "3 days ago", id: "sess-3" },
+  ])
+
+  const handleMfaToggle = () => {
+    setMfaUpdating(true)
+    setTimeout(() => {
+      setMfaEnabled(!mfaEnabled)
+      setMfaUpdating(false)
+      triggerToast(`MFA security enforcement has been ${!mfaEnabled ? "ENABLED" : "DISABLED"}!`)
+    }, 500)
+  }
+
+  const revokeSession = (id: string, ip: string) => {
+    setActiveSessions(prev => prev.filter(s => s.id !== id))
+    triggerToast(`Session for IP ${ip} has been terminated successfully.`)
+  }
+
+  // Permissions lock warning check
+  const isSettingsRestricted = currentRole === "Assistant" || currentRole === "Read-only staff"
+
+  const renderAgencyProfile = () => (
+    <div className="space-y-6">
+      <div className="grid gap-5 md:grid-cols-2">
+        <label className="grid gap-2 text-xs font-bold text-slate-500">
+          Business Name
+          <Input className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" defaultValue={currentWorkspace.name} disabled={isSettingsRestricted} />
+        </label>
+        <label className="grid gap-2 text-xs font-bold text-slate-500">
+          ABN (Australian Business Number)
+          <Input className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" defaultValue={currentWorkspace.abn} disabled={isSettingsRestricted} />
+        </label>
+        <label className="grid gap-2 text-xs font-bold text-slate-500">
+          Principal MARN Registration
+          <Input className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" defaultValue={currentWorkspace.marn} disabled={isSettingsRestricted} />
+        </label>
+        <label className="grid gap-2 text-xs font-bold text-slate-500">
+          Office Address
+          <Input className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" defaultValue={currentWorkspace.address} disabled={isSettingsRestricted} />
+        </label>
+        <label className="grid gap-2 text-xs font-bold text-slate-500">
+          Practice Timezone
+          <select disabled={isSettingsRestricted} className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]">
+            <option value="AEST">Australian Eastern Standard Time (AEST) - Sydney</option>
+            <option value="AWST">Australian Western Standard Time (AWST) - Perth</option>
+            <option value="ACST">Australian Central Standard Time (ACST) - Adelaide</option>
+          </select>
+        </label>
+        <label className="grid gap-2 text-xs font-bold text-slate-500">
+          Regulatory Authority Jurisdiction
+          <Input className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" defaultValue="OMARA Australia" disabled />
+        </label>
+      </div>
+      {!isSettingsRestricted && (
+        <Button onClick={() => triggerToast("Agency profile details updated successfully!")} className="rounded-xl bg-[#0D9F8C] font-bold shadow-sm hover:bg-[#0A5B52]">Save Profile</Button>
+      )}
+    </div>
+  )
+
+  const renderBranding = () => (
+    <div className="space-y-6">
+      <div className="rounded-xl bg-slate-50 p-4 border border-slate-100 flex items-start gap-3">
+        <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded bg-emerald-100 text-emerald-700">
+          <Palette className="h-3.5 w-3.5" />
+        </div>
+        <div>
+          <h4 className="text-xs font-bold text-slate-700">Dynamic Workspace Theme Injection</h4>
+          <p className="text-[11px] text-slate-400 font-semibold mt-0.5 leading-relaxed">
+            Changing these branding details will immediately refresh the sidebar, primary button backgrounds, and avatar states across the active tenant session.
+          </p>
+        </div>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <div className="space-y-4">
+          <label className="grid gap-2 text-xs font-bold text-slate-500">
+            Active Corporate Accent Color
+            <div className="flex items-center gap-3 mt-1">
+              <span className="h-9 w-9 rounded-xl border border-slate-200 shadow-sm shrink-0 transition-colors duration-300" style={{ backgroundColor: brandColor }}></span>
+              <select 
+                disabled={isSettingsRestricted} 
+                value={brandColor} 
+                onChange={(e) => setBrandColor(e.target.value)} 
+                className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]"
+              >
+                <option value="#0D9F8C">Emerald Green (Compliance Default)</option>
+                <option value="#2563EB">Sapphire Blue (Corporate Trust)</option>
+                <option value="#D97706">Amber Gold (Advisory Premium)</option>
+                <option value="#475569">Slate Gray (Minimalist Calm)</option>
+              </select>
+            </div>
+          </label>
+
+          <label className="grid gap-2 text-xs font-bold text-slate-500">
+            Workspace Initials (Sidebar Avatar)
+            <Input 
+              disabled={isSettingsRestricted} 
+              maxLength={3} 
+              value={brandInitials} 
+              onChange={(e) => setBrandInitials(e.target.value)} 
+              className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C] uppercase font-bold"
+            />
+          </label>
+        </div>
+
+        <div className="space-y-4">
+          <label className="grid gap-2 text-xs font-bold text-slate-500">
+            Brand Preview (Live Simulation)
+            <div className="rounded-2xl border border-slate-200/50 bg-slate-50/50 p-6 flex flex-col items-center justify-center text-center">
+              <div 
+                className="flex h-14 w-14 items-center justify-center rounded-full text-white text-lg font-black shadow-md transition-all duration-300 mb-3"
+                style={{ backgroundColor: brandColor }}
+              >
+                {brandInitials || "IS"}
+              </div>
+              <div className="text-xs font-bold text-[#081B2E]">{currentWorkspace.name}</div>
+              <p className="text-[10px] text-slate-400 font-semibold mt-1">Tenant Subdomain: https://immisign.com/{currentSlug}</p>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      {!isSettingsRestricted && (
+        <Button onClick={handleSaveBranding} className="rounded-xl bg-[#0D9F8C] font-bold shadow-sm hover:bg-[#0A5B52]">Save Branding</Button>
+      )}
+    </div>
+  )
+
+  const renderTeamSetup = () => (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+        <div>
+          <h3 className="text-sm font-bold text-[#081B2E]">Workspace Team Members ({currentWorkspace.team ? currentWorkspace.team.length : 1})</h3>
+          <p className="text-xs text-slate-400 mt-1 font-semibold">Active OMARA practitioners and administrative seats.</p>
+        </div>
+        {!isSettingsRestricted && (
+          <Button 
+            onClick={() => setIsInviteOpen(true)}
+            size="sm" 
+            className="rounded-xl bg-[#0D9F8C] font-bold hover:bg-[#0A5B52] self-start"
+          >
+            <Plus className="h-4 w-4 mr-1" /> Invite Practitioner
+          </Button>
+        )}
+      </div>
+
+      {/* Team Table */}
+      <div className="rounded-2xl border border-slate-200/50 overflow-hidden divide-y divide-slate-100 bg-white">
+        {currentWorkspace.team && currentWorkspace.team.map((member) => (
+          <div key={member.email} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 hover:bg-slate-50/50 transition-colors gap-3">
+            <div className="flex items-center gap-3">
+              <div 
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-black text-white shadow-sm"
+                style={{ backgroundColor: currentWorkspace.color }}
+              >
+                {member.name.split(" ").map(n => n[0]).join("")}
+              </div>
+              <div>
+                <div className="text-sm font-bold text-[#081B2E] flex items-center gap-1.5">
+                  {member.name}
+                  {member.email === user?.email && (
+                    <span className="rounded bg-slate-100 text-slate-500 px-1.5 py-0.5 text-[9px] font-bold">You</span>
+                  )}
+                </div>
+                <div className="text-[11px] text-slate-400 font-semibold mt-0.5">{member.email} • {member.marn}</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 self-end sm:self-auto">
+              <span className="rounded-full bg-emerald-50 border border-emerald-100 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700">{member.role}</span>
+              <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-600">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span> Active
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Permissions Matrix */}
+      <div>
+        <h4 className="text-xs font-bold text-[#081B2E] mb-3 uppercase tracking-wider">Role Permissions Matrix</h4>
+        <div className="rounded-2xl border border-slate-200/50 overflow-hidden bg-white/40 backdrop-blur-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="border-b border-slate-200 bg-slate-50/70 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  <th className="p-3">Capability</th>
+                  <th className="p-3 text-center">Owner</th>
+                  <th className="p-3 text-center">Agent</th>
+                  <th className="p-3 text-center">Case Admin</th>
+                  <th className="p-3 text-center">Assistant</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-150">
+                {[
+                  ["Sign & Send Agreements", "Full Access", "Full Access", "Create only", "Draft only"],
+                  ["Update Legal Templates", "Full Access", "RMA Approval", "View Only", "Locked"],
+                  ["DHA/OMARA Audit Export", "Full Access", "RMA Specific", "Locked", "Locked"],
+                  ["Workspace Branding", "Full Access", "View Only", "Locked", "Locked"],
+                  ["Billing & Stripe Controls", "Full Access", "Locked", "Locked", "Locked"]
+                ].map(([capability, owner, agent, manager, assistant]) => (
+                  <tr key={capability} className="hover:bg-white/40 transition-colors">
+                    <td className="p-3 font-bold text-[#081B2E]">{capability}</td>
+                    <td className="p-3 text-center font-semibold text-emerald-600 bg-emerald-50/10">{owner}</td>
+                    <td className="p-3 text-center font-semibold text-slate-500">{agent}</td>
+                    <td className="p-3 text-center font-semibold text-slate-500">{manager}</td>
+                    <td className="p-3 text-center font-semibold text-slate-400">{assistant}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+
+  const renderClauses = () => (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h3 className="text-sm font-bold text-[#081B2E]">Visa Clause Libraries ({clausesList.length})</h3>
+          <p className="text-xs text-slate-400 mt-1 font-semibold">Reusable legal boilerplate and terms to drag-and-drop into service agreements.</p>
+        </div>
+        {!isSettingsRestricted && (
+          <Button 
+            onClick={() => setIsClauseOpen(true)}
+            size="sm" 
+            className="rounded-xl bg-[#0D9F8C] font-bold hover:bg-[#0A5B52]"
+          >
+            <Plus className="h-4 w-4 mr-1" /> Add Clause
+          </Button>
+        )}
+      </div>
+
+      <div className="grid gap-4">
+        {clausesList.map((clause) => (
+          <div key={clause.key} className="rounded-xl border border-slate-200/50 bg-white p-5 shadow-sm hover:border-slate-350/50 transition-all duration-200">
+            <div className="flex justify-between items-start gap-4">
+              <div className="space-y-2">
+                <span className="font-mono text-[10px] font-bold text-[#0D9F8C] bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded">{clause.key}</span>
+                <h4 className="text-sm font-bold text-[#081B2E]">{clause.title}</h4>
+                <p className="text-xs text-slate-500 leading-relaxed font-medium">{clause.text}</p>
+              </div>
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 rounded-lg hover:bg-slate-50">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+
+  const renderMatterTypes = () => {
+    const subclasses = [
+      { subclass: "SC 820 / SC 801", title: "Partner Visa (Onshore)", defaultFee: "$4,200", template: "Standard Partner Retainer" },
+      { subclass: "SC 189 / SC 190", title: "Skilled Independent / Nominated", defaultFee: "$2,800", template: "Points Test Service Agreement" },
+      { subclass: "SC 482", title: "Temporary Skill Shortage", defaultFee: "$3,500", template: "Employer Sponsored Agreement" },
+    ]
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h3 className="text-sm font-bold text-[#081B2E]">Visa Subclass Defaults</h3>
+            <p className="text-xs text-slate-400 mt-1 font-semibold">Configure scope, professional fees, and defaults by Department of Home Affairs visa codes.</p>
+          </div>
+          {!isSettingsRestricted && (
+            <Button size="sm" className="rounded-xl bg-[#0D9F8C] font-bold hover:bg-[#0A5B52]">
+              <Plus className="h-4 w-4 mr-1" /> Add Matter Type
+            </Button>
+          )}
+        </div>
+
+        <div className="rounded-2xl border border-slate-200/50 overflow-hidden divide-y divide-slate-100">
+          {subclasses.map((item) => (
+            <div key={item.subclass} className="grid gap-3 p-4 bg-white md:grid-cols-4 md:items-center">
+              <div>
+                <span className="text-xs font-bold text-[#0D9F8C]">{item.subclass}</span>
+                <h4 className="text-sm font-bold text-[#081B2E] mt-0.5">{item.title}</h4>
+              </div>
+              <div className="text-xs font-semibold text-slate-500">
+                <span className="block text-[10px] text-slate-400 uppercase font-bold">Default Fee</span>
+                {item.defaultFee}
+              </div>
+              <div className="text-xs font-semibold text-slate-500">
+                <span className="block text-[10px] text-slate-400 uppercase font-bold">Standard Template</span>
+                {item.template}
+              </div>
+              <div className="flex justify-end">
+                <Button disabled={isSettingsRestricted} variant="outline" size="sm" className="h-8.5 rounded-lg border-slate-200 px-3 text-[11px] font-bold hover:bg-slate-50">Edit defaults</Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  const renderMyProfile = () => (
+    <div className="space-y-6">
+      <div className="flex items-center gap-4 border-b border-slate-100 pb-5">
+        <div 
+          className="flex h-16 w-16 items-center justify-center rounded-full text-white text-xl font-black shadow"
+          style={{ backgroundColor: currentWorkspace.color }}
+        >
+          {user?.avatar || "RS"}
+        </div>
+        <div>
+          <h4 className="text-sm font-bold text-[#081B2E]">{user?.name || "Rajwant Singh"}</h4>
+          <p className="text-xs text-slate-400 font-semibold mt-0.5">{user?.email || "owner@demoagency.com"}</p>
+          <span className="mt-2 inline-block rounded bg-emerald-50 border border-emerald-100 px-2 py-0.5 text-[10px] font-bold text-[#0D9F8C]">{currentRole}</span>
+        </div>
+      </div>
+
+      <div className="grid gap-5 md:grid-cols-2">
+        <label className="grid gap-2 text-xs font-bold text-slate-500">
+          Full Name
+          <Input className="h-11 rounded-xl border-slate-200 bg-white" defaultValue={user?.name || "Rajwant Singh"} />
+        </label>
+        <label className="grid gap-2 text-xs font-bold text-slate-500">
+          Work Email
+          <Input className="h-11 rounded-xl border-slate-200 bg-white" defaultValue={user?.email || "owner@demoagency.com"} disabled />
+        </label>
+        <label className="grid gap-2 text-xs font-bold text-slate-500">
+          Personal MARN (If applicable)
+          <Input className="h-11 rounded-xl border-slate-200 bg-white" defaultValue={user?.marn || "1794016"} />
+        </label>
+        <label className="grid gap-2 text-xs font-bold text-slate-500">
+          Practitioner Phone
+          <Input className="h-11 rounded-xl border-slate-200 bg-white" defaultValue="+61 2 9238 4810" />
+        </label>
+      </div>
+
+      <Button onClick={() => triggerToast("Personal practitioner profile details updated successfully!")} className="rounded-xl bg-[#0D9F8C] font-bold shadow-sm hover:bg-[#0A5B52]">Save Profile</Button>
+    </div>
+  )
+
+  const renderSecurity = () => (
+    <div className="space-y-6">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between p-4 rounded-xl border border-slate-200/50 bg-white">
+          <div>
+            <h4 className="text-xs font-bold text-[#081B2E]">Multi-Factor Authentication (MFA)</h4>
+            <p className="text-[11px] text-slate-400 font-semibold mt-1">Enforce Google Authenticator or SMS token prompt at next sign-in for safety.</p>
+          </div>
+          <button 
+            disabled={mfaUpdating}
+            onClick={handleMfaToggle}
+            className={`flex h-6 w-11 shrink-0 items-center rounded-full p-1 transition-colors duration-200 focus:outline-none ${mfaEnabled ? "bg-[#0D9F8C]" : "bg-slate-250"}`}
+          >
+            <div className={`h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 ${mfaEnabled ? "translate-x-5" : "translate-x-0"}`} />
+          </button>
+        </div>
+
+        <div className="flex items-center justify-between p-4 rounded-xl border border-slate-200/50 bg-white">
+          <div>
+            <h4 className="text-xs font-bold text-[#081B2E]">Practitioner Inactivity Timeout</h4>
+            <p className="text-[11px] text-slate-400 font-semibold mt-1">Automatically sign out after period of idle time.</p>
+          </div>
+          <select className="flex h-9 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]">
+            <option value="15">15 Minutes</option>
+            <option value="30">30 Minutes (Recommended)</option>
+            <option value="60">1 Hour</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <h4 className="text-xs font-bold text-[#081B2E] mb-3">Active Practitioner Sessions</h4>
+        <div className="rounded-xl border border-slate-200/50 overflow-hidden divide-y divide-slate-100 bg-white">
+          {activeSessions.map((session) => (
+            <div key={session.id} className="flex justify-between items-center p-4 text-xs gap-3">
+              <div>
+                <span className="font-mono font-bold text-slate-700">{session.ip}</span>
+                <span className="text-slate-400 font-semibold ml-2 hidden sm:inline">• {session.device}</span>
+                <div className="text-[10px] text-slate-400 font-semibold mt-0.5 sm:hidden">{session.device}</div>
+              </div>
+              <div className="flex items-center gap-3 shrink-0">
+                <span className={`font-bold ${session.time === "Current Session" ? "text-[#0D9F8C]" : "text-slate-400"}`}>{session.time}</span>
+                {session.time !== "Current Session" && (
+                  <button 
+                    onClick={() => revokeSession(session.id, session.ip)}
+                    className="text-xs font-bold text-rose-600 hover:text-rose-700"
+                  >
+                    Revoke
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+
+  const renderContent = () => {
+    switch (section) {
+      case "Agency Profile":
+        return renderAgencyProfile()
+      case "Branding":
+        return renderBranding()
+      case "Team":
+        return renderTeamSetup()
+      case "Clauses":
+        return renderClauses()
+      case "Matter Types":
+        return renderMatterTypes()
+      case "My Profile":
+        return renderMyProfile()
+      case "Security":
+        return renderSecurity()
+      default:
+        return renderAgencyProfile()
+    }
+  }
+
+  return (
+    <div className="relative">
+      {/* Toast Alert */}
+      {toastMessage && (
+        <div className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-xl bg-[#081B2E] px-4 py-3 text-xs font-bold text-white shadow-2xl border border-slate-700/50 animate-in fade-in slide-in-from-bottom-3 duration-300">
+          <CheckCircle2 className="h-4 w-4 text-[#0D9F8C]" />
+          {toastMessage}
+        </div>
+      )}
+
+      {/* Invite Practitioner Drawer Dialog */}
+      <Dialog open={isInviteOpen} onOpenChange={setIsInviteOpen}>
+        <DialogContent className="max-w-md rounded-2xl border-slate-200 p-6 bg-white/95 backdrop-blur-md shadow-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-base font-bold text-[#081B2E] tracking-tight">Invite OMARA Practitioner</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleInviteSubmit} className="space-y-4 mt-3">
+            <label className="grid gap-2 text-xs font-bold text-slate-500">
+              Practitioner Full Name
+              <Input 
+                required
+                value={inviteName} 
+                onChange={(e) => setInviteName(e.target.value)} 
+                className="h-11 rounded-xl border-slate-200 bg-white" 
+                placeholder="e.g. Priya Mehta"
+              />
+            </label>
+            <label className="grid gap-2 text-xs font-bold text-slate-500">
+              Work Email Address
+              <Input 
+                required
+                type="email"
+                value={inviteEmail} 
+                onChange={(e) => setInviteEmail(e.target.value)} 
+                className="h-11 rounded-xl border-slate-200 bg-white" 
+                placeholder="e.g. priya@avcmigration.com.au"
+              />
+            </label>
+            <div className="grid gap-4 grid-cols-2">
+              <label className="grid gap-2 text-xs font-bold text-slate-500">
+                Practitioner Role
+                <select 
+                  value={inviteRole} 
+                  onChange={(e) => setInviteRole(e.target.value)} 
+                  className="flex h-11 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold focus:outline-none"
+                >
+                  <option value="Migration Agent">Migration Agent</option>
+                  <option value="Case Manager">Case Manager</option>
+                  <option value="Assistant">Assistant</option>
+                  <option value="Read-only staff">Read-only staff</option>
+                </select>
+              </label>
+              <label className="grid gap-2 text-xs font-bold text-slate-500">
+                MARN Code (7-digits)
+                <Input 
+                  value={inviteMarn} 
+                  onChange={(e) => setInviteMarn(e.target.value)} 
+                  className="h-11 rounded-xl border-slate-200 bg-white" 
+                  placeholder="e.g. 2189402"
+                />
+              </label>
+            </div>
+
+            {inviting && (
+              <div className="space-y-1">
+                <div className="flex justify-between text-[10px] font-bold text-[#0D9F8C]">
+                  <span>Provisioning secure license...</span>
+                  <span>{inviteProgress}%</span>
+                </div>
+                <div className="h-1 rounded-full bg-slate-100 overflow-hidden">
+                  <div className="h-full bg-[#0D9F8C] transition-all duration-150" style={{ width: `${inviteProgress}%` }}></div>
+                </div>
+              </div>
+            )}
+
+            <div className="flex gap-2 justify-end pt-2">
+              <Button type="button" variant="outline" onClick={() => setIsInviteOpen(false)} className="rounded-xl h-11 text-xs font-bold border-slate-200 bg-white">Cancel</Button>
+              <Button type="submit" disabled={inviting} className="rounded-xl h-11 text-xs font-bold bg-[#0D9F8C] hover:bg-[#0A5B52]">Send Invite Link</Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Clause Drawer Dialog */}
+      <Dialog open={isClauseOpen} onOpenChange={setIsClauseOpen}>
+        <DialogContent className="max-w-md rounded-2xl border-slate-200 p-6 bg-white/95 backdrop-blur-md shadow-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-base font-bold text-[#081B2E] tracking-tight">Create Boileplate Clause</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleClauseSubmit} className="space-y-4 mt-3">
+            <label className="grid gap-2 text-xs font-bold text-slate-500">
+              Clause Library Code Key
+              <Input 
+                required
+                value={clauseKey} 
+                onChange={(e) => setClauseKey(e.target.value)} 
+                className="h-11 rounded-xl border-slate-200 bg-white font-mono uppercase" 
+                placeholder="e.g. CLAUSE-AUDIT-DISCLAIMER"
+              />
+            </label>
+            <label className="grid gap-2 text-xs font-bold text-slate-500">
+              Clause Display Title
+              <Input 
+                required
+                value={clauseTitle} 
+                onChange={(e) => setClauseTitle(e.target.value)} 
+                className="h-11 rounded-xl border-slate-200 bg-white" 
+                placeholder="e.g. 7-Year OMARA Custody Mandate"
+              />
+            </label>
+            <label className="grid gap-2 text-xs font-bold text-slate-500">
+              Clause Boilerplate Text
+              <textarea 
+                required
+                value={clauseText} 
+                onChange={(e) => setClauseText(e.target.value)} 
+                className="flex min-h-[100px] w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]" 
+                placeholder="Enter the full legal wording of the clause..."
+              />
+            </label>
+
+            <div className="flex gap-2 justify-end pt-2">
+              <Button type="button" variant="outline" onClick={() => setIsClauseOpen(false)} className="rounded-xl h-11 text-xs font-bold border-slate-200 bg-white">Cancel</Button>
+              <Button type="submit" className="rounded-xl h-11 text-xs font-bold bg-[#0D9F8C] hover:bg-[#0A5B52]">Save to Library</Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <PageHeader eyebrow="Settings" title={section} description="Enterprise-grade configuration for your agency, team, templates, security and defaults." />
+      
+      {/* Role Restriction Banner */}
+      {isSettingsRestricted && (
+        <div className="mb-6 rounded-xl bg-amber-50 border border-amber-100 p-4 flex items-center gap-3 text-xs text-amber-800 font-medium">
+          <ShieldAlert className="h-5 w-5 text-amber-600 shrink-0" />
+          <div>
+            <span className="font-bold">Restricted Workspace View:</span> Your active simulated role is <span className="font-bold underline">{currentRole}</span>. Settings edits and team invites are locked. Switch to <span className="font-bold">Owner</span> or <span className="font-bold">Admin</span> in the sidebar simulator to test writing.
+          </div>
+        </div>
+      )}
+
+      <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
+        {/* Settings Navigation Sidebar */}
+        <Card className="h-fit rounded-2xl border border-slate-200/50 bg-white/60 p-3 shadow-[0_1px_2px_rgba(8,27,46,0.01),0_8px_24px_rgba(8,27,46,0.02)]">
+          <CardContent className="p-0 space-y-4">
+            <div>
+              <div className="px-3 py-1.5 text-[9px] font-bold text-slate-400 uppercase tracking-wider">Workspace settings</div>
+              <div className="space-y-1 mt-1">
+                {workspaceItems.map(([item, target]) => (
+                  <Link 
+                    key={item} 
+                    href={`/workspace/${currentSlug}/settings?section=${target}`}
+                    className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-bold transition-all duration-200 ${item === section ? "bg-[#0D9F8C] text-white shadow-sm" : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"}`}
+                  >
+                    <span>{item}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <div className="px-3 py-1.5 text-[9px] font-bold text-slate-400 uppercase tracking-wider">Personal settings</div>
+              <div className="space-y-1 mt-1">
+                {personalItems.map(([item, target]) => (
+                  <Link 
+                    key={item} 
+                    href={`/workspace/${currentSlug}/settings?section=${target}`}
+                    className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-bold transition-all duration-200 ${item === section ? "bg-[#0D9F8C] text-white shadow-sm" : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"}`}
+                  >
+                    <span>{item}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Settings Content Area */}
+        <Card className="rounded-2xl border border-slate-200/50 bg-white/60 shadow-[0_1px_2px_rgba(8,27,46,0.01),0_8px_24px_rgba(8,27,46,0.02)]">
+          <CardContent className="p-7">
+            <h2 className="text-lg font-bold tracking-tight text-[#081B2E] mb-5">{section}</h2>
+            {renderContent()}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+}
+
+export function BillingPage() {
+  const { activeWorkspace, simulatedRole, user } = useAuthStore()
+  const currentWorkspace = activeWorkspace || {
+    name: "AVC Migration Partners",
+    slug: "avc-migration",
+    team: [{ name: "Rajwant Singh" }]
+  }
+  const currentRole = simulatedRole || user?.role || "Owner"
+  const isBillingRestricted = currentRole === "Assistant" || currentRole === "Read-only staff" || currentRole === "Migration Agent"
+
+  // Modal Upgrade State
+  const [isUpgradeOpen, setIsUpgradeOpen] = React.useState(false)
+  const [upgradingPlan, setUpgradingPlan] = React.useState(false)
+  const [upgradeSuccess, setUpgradeSuccess] = React.useState(false)
+  const [newSeatCount, setNewSeatCount] = React.useState(5)
+
+  // Global Float Toast State
+  const [toastMessage, setToastMessage] = React.useState<string | null>(null)
+  const triggerToast = (msg: string) => {
+    setToastMessage(msg)
+    setTimeout(() => setToastMessage(null), 3500)
+  }
+
+  const handleSeatUpgrade = (e: React.FormEvent) => {
+    e.preventDefault()
+    setUpgradingPlan(true)
+    setTimeout(() => {
+      setUpgradingPlan(false)
+      setUpgradeSuccess(true)
+      setTimeout(() => {
+        setUpgradeSuccess(false)
+        setIsUpgradeOpen(false)
+        triggerToast(`Billing capacity expanded to ${newSeatCount} seats successfully!`)
+      }, 1500)
+    }, 2000)
+  }
+
+  // Pre-calculated stats
+  const activeSeats = currentWorkspace.team ? currentWorkspace.team.length : 3
+  const totalPaidSeats = 5 // Limit in billing
+  const seatUsagePercent = Math.round((activeSeats / totalPaidSeats) * 100)
+
+  const documentUsage = 185
+  const documentLimit = 500
+  const docUsagePercent = Math.round((documentUsage / documentLimit) * 100)
+
+  const agreementVolume = 32
+  const agreementLimit = 50
+  const agreementPercent = Math.round((agreementVolume / agreementLimit) * 100)
+
+  return (
+    <div className="relative">
+      {/* Toast Alert */}
+      {toastMessage && (
+        <div className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-xl bg-[#081B2E] px-4 py-3 text-xs font-bold text-white shadow-2xl border border-slate-700/50 animate-in fade-in slide-in-from-bottom-3 duration-300">
+          <CheckCircle2 className="h-4 w-4 text-[#0D9F8C]" />
+          {toastMessage}
+        </div>
+      )}
+
+      {/* Upgrade Seats Dialog */}
+      <Dialog open={isUpgradeOpen} onOpenChange={setIsUpgradeOpen}>
+        <DialogContent className="max-w-md rounded-2xl border-slate-200 p-6 bg-white/95 backdrop-blur-md shadow-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-base font-bold text-[#081B2E] tracking-tight">Expand Workspace Seats</DialogTitle>
+          </DialogHeader>
+          
+          {upgradeSuccess ? (
+            <div className="py-8 text-center space-y-3">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 shadow-sm animate-bounce">
+                <Check className="h-6 w-6" />
+              </div>
+              <h3 className="text-sm font-bold text-[#081B2E]">Licenses Provisioned Successfully!</h3>
+              <p className="text-xs text-slate-400 font-semibold max-w-xs mx-auto">Your card ending in 4242 has been billed. Seats are immediately available in the Team Setup settings.</p>
+            </div>
+          ) : (
+            <form onSubmit={handleSeatUpgrade} className="space-y-5 mt-3">
+              <div className="rounded-xl bg-slate-50 p-4 border border-slate-100 text-xs leading-relaxed text-slate-500 font-medium">
+                Adding additional practitioner licenses will increase your monthly Stripe subscription by <span className="font-bold text-[#0D9F8C]">$29/seat</span> (prorated for the active billing cycle).
+              </div>
+              
+              <label className="grid gap-2 text-xs font-bold text-slate-500">
+                New Target Team Seats
+                <div className="flex items-center gap-3">
+                  <Input 
+                    type="number"
+                    min={activeSeats}
+                    max={50}
+                    value={newSeatCount} 
+                    onChange={(e) => setNewSeatCount(Number(e.target.value))} 
+                    className="h-11 rounded-xl border-slate-200 bg-white text-base font-bold focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" 
+                  />
+                  <span className="text-xs text-slate-400 font-bold shrink-0">Currently paid: {totalPaidSeats} seats</span>
+                </div>
+              </label>
+
+              <div className="border-t border-slate-100 pt-4 flex justify-between items-center text-xs">
+                <div>
+                  <span className="block text-[10px] text-slate-400 uppercase font-bold">New Monthly Total</span>
+                  <span className="text-base font-black text-[#081B2E]">${129 + (newSeatCount - 5) * 29}/mo</span>
+                </div>
+                <div className="flex gap-2">
+                  <Button type="button" variant="outline" onClick={() => setIsUpgradeOpen(false)} className="rounded-xl h-11 text-xs font-bold border-slate-200 bg-white">Cancel</Button>
+                  <Button type="submit" disabled={upgradingPlan} className="rounded-xl h-11 text-xs font-bold bg-[#0D9F8C] hover:bg-[#0A5B52]">
+                    {upgradingPlan ? "Processing..." : "Confirm & Charge"}
+                  </Button>
+                </div>
+              </div>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <PageHeader eyebrow="Billing" title="Plan, usage and invoices" description="Stripe-inspired billing controls for current plan, payment methods, invoices and upgrade flows." />
+      
+      {/* Role Restriction Banner */}
+      {isBillingRestricted && (
+        <div className="mb-6 rounded-xl bg-amber-50 border border-amber-100 p-4 flex items-center gap-3 text-xs text-amber-800 font-medium">
+          <ShieldAlert className="h-5 w-5 text-amber-600 shrink-0" />
+          <div>
+            <span className="font-bold">Restricted Billing Access:</span> Your active simulated role is <span className="font-bold underline">{currentRole}</span>. Billing updates, invoices, and Stripe seat provisions are restricted to <span className="font-bold">Owner</span> or <span className="font-bold">Admin</span> users.
+          </div>
+        </div>
+      )}
+
+      <div className="grid gap-6 lg:grid-cols-[1fr_0.7fr]">
+        {/* Stripe Subscription details card */}
+        <Card className="rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-emerald-50/5 via-white to-emerald-50/10 shadow-[0_1px_2px_rgba(8,27,46,0.01),0_8px_24px_rgba(8,27,46,0.02)]">
+          <CardContent className="p-7 flex flex-col justify-between h-full min-h-[300px]">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="rounded bg-emerald-50 border border-emerald-100 px-2 py-0.5 text-[9px] font-black uppercase text-[#0D9F8C] tracking-wider">Active Workspace Plan</span>
+                </div>
+                <h2 className="mt-3 text-3xl font-black tracking-tight text-[#081B2E]">Pro Enterprise</h2>
+                <p className="mt-2 text-sm text-slate-500 font-semibold max-w-md leading-relaxed">
+                  $129/month base + $29/additional agent seat. Custom legal clause libraries, automated OMARA compliance checks, and secure Sydney servers enabled.
+                </p>
+              </div>
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-[#0D9F8C] border border-emerald-100 shadow-sm">
+                <CreditCard className="h-5 w-5" />
+              </div>
+            </div>
+
+            <div className="mt-8 border-t border-slate-100 pt-6 space-y-4">
+              <div className="flex flex-col sm:flex-row justify-between sm:items-center text-xs gap-3">
+                <div>
+                  <span className="text-slate-400 font-bold uppercase text-[9px]">Payment Method</span>
+                  <div className="mt-1 flex items-center gap-2 font-bold text-[#081B2E]">
+                    <span className="bg-slate-100 rounded px-1.5 py-0.5 text-[10px] font-mono">VISA</span>
+                    •••• •••• •••• 4242 (Expires 12/28)
+                  </div>
+                </div>
+                {!isBillingRestricted && (
+                  <Button 
+                    onClick={() => triggerToast("Stripe Customer Billing Portal opened in new tab (Simulated).")}
+                    variant="outline" 
+                    className="h-9.5 rounded-xl border-slate-200 bg-white text-xs font-bold hover:bg-slate-50"
+                  >
+                    Update Card
+                  </Button>
+                )}
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-2.5">
+                {!isBillingRestricted ? (
+                  <>
+                    <Button 
+                      onClick={() => setIsUpgradeOpen(true)}
+                      className="rounded-xl bg-[#0D9F8C] font-bold shadow-[0_8px_20px_rgba(13,159,140,0.18)] hover:bg-[#0A5B52] h-10.5 px-5 text-xs text-white"
+                    >
+                      Expand Seat Licenses
+                    </Button>
+                    <Button 
+                      onClick={() => triggerToast("Upgrade request sent to ImmiSign account representative.")}
+                      variant="outline"
+                      className="rounded-xl border-slate-200 bg-white text-slate-700 font-bold hover:bg-slate-50 h-10.5 px-5 text-xs"
+                    >
+                      Request High-Volume Enterprise Plan
+                    </Button>
+                  </>
+                ) : (
+                  <Button 
+                    disabled
+                    className="rounded-xl bg-slate-100 text-slate-400 font-bold h-10.5 px-5 text-xs border border-slate-200/50 cursor-not-allowed"
+                  >
+                    Locked by Administrator
+                  </Button>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Live seat and usage meter card */}
+        <Card className="rounded-2xl border border-slate-200/50 bg-white/60 shadow-[0_1px_2px_rgba(8,27,46,0.01),0_8px_24px_rgba(8,27,46,0.02)]">
+          <CardContent className="p-7 space-y-6">
+            <h2 className="text-base font-bold tracking-tight text-[#081B2E] border-b border-slate-100 pb-3">Workspace Usage Metrics</h2>
+            
+            {/* Seat Meter */}
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs font-bold text-slate-500">
+                <span className="flex items-center gap-1.5">
+                  <Users className="h-4 w-4 text-slate-400" /> Active Team Seats
+                </span>
+                <span className="font-mono text-[#081B2E]">{activeSeats} / {totalPaidSeats} occupied</span>
+              </div>
+              <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
+                <div 
+                  className="h-full rounded-full bg-[#0D9F8C] transition-all duration-500" 
+                  style={{ width: `${seatUsagePercent}%` }} 
+                />
+              </div>
+              <div className="flex justify-between text-[10px] text-slate-400 font-semibold">
+                <span>{totalPaidSeats - activeSeats} unused seats remaining</span>
+                <span>{seatUsagePercent}%</span>
+              </div>
+            </div>
+
+            {/* Document Assembly Meter */}
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs font-bold text-slate-500">
+                <span className="flex items-center gap-1.5">
+                  <FileText className="h-4 w-4 text-slate-400" /> Secure Documents
+                </span>
+                <span className="font-mono text-[#081B2E]">{documentUsage} / {documentLimit} assembled</span>
+              </div>
+              <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
+                <div 
+                  className="h-full rounded-full bg-[#0D9F8C] transition-all duration-500" 
+                  style={{ width: `${docUsagePercent}%` }} 
+                />
+              </div>
+              <div className="flex justify-between text-[10px] text-slate-400 font-semibold">
+                <span>Resets monthly on next invoice date</span>
+                <span>{docUsagePercent}%</span>
+              </div>
+            </div>
+
+            {/* Agreement signature volume */}
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs font-bold text-slate-500">
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle2 className="h-4 w-4 text-slate-400" /> Active Agreements
+                </span>
+                <span className="font-mono text-[#081B2E]">{agreementVolume} / {agreementLimit} signatures</span>
+              </div>
+              <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
+                <div 
+                  className="h-full rounded-full bg-[#0D9F8C] transition-all duration-500" 
+                  style={{ width: `${agreementPercent}%` }} 
+                />
+              </div>
+              <div className="flex justify-between text-[10px] text-slate-400 font-semibold">
+                <span>Limits capacity to 50 active negotiations</span>
+                <span>{agreementPercent}%</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Stripe Invoices logs */}
+      <div className="mt-6 rounded-2xl border border-slate-200/50 bg-white/60 overflow-hidden shadow-[0_1px_2px_rgba(8,27,46,0.01),0_8px_24px_rgba(8,27,46,0.02)] divide-y divide-slate-150">
+        <div className="p-5 bg-slate-50/50">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">Past Invoices Audit Trail</h3>
+        </div>
+        {[
+          { code: "INV-1048", amount: "$129.00", status: "Paid", date: "May 15, 2026" },
+          { code: "INV-1047", amount: "$129.00", status: "Paid", date: "Apr 15, 2026" },
+          { code: "INV-1046", amount: "$158.00", status: "Paid", date: "Mar 15, 2026 (Includes 1 extra seat)" },
+        ].map((invoice) => (
+          <div key={invoice.code} className="flex items-center justify-between p-4.5 hover:bg-slate-50/40 transition-colors text-xs font-semibold">
+            <div>
+              <span className="font-bold text-sm text-[#081B2E]">{invoice.code}</span>
+              <span className="text-slate-400 font-medium ml-2">• {invoice.date}</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="font-mono font-bold text-slate-700">{invoice.amount}</span>
+              <span className="rounded bg-emerald-50 border border-emerald-100 px-2 py-0.5 text-[9px] font-bold text-emerald-700">{invoice.status}</span>
+              <Button 
+                onClick={() => triggerToast(`Downloading copy of ${invoice.code} in PDF format.`)}
+                variant="outline" 
+                className="h-8.5 rounded-lg border-slate-200 bg-white px-3 text-[11px] font-bold hover:bg-slate-50"
+              >
+                Download PDF
+              </Button>
+            </div>
           </div>
         ))}
       </div>

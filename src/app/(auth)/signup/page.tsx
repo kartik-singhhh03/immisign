@@ -1,42 +1,149 @@
+"use client"
+
+import * as React from "react"
 import Link from "next/link"
-import { CheckCircle2, Sparkles } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { CheckCircle2, Sparkles, ArrowRight } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useAuthStore } from "@/store/authStore"
 
 export default function SignupPage() {
+  const router = useRouter()
+  const { updateOnboardingData, updateOnboardingStep } = useAuthStore()
+
+  // Form states
+  const [firstName, setFirstName] = React.useState("")
+  const [lastName, setLastName] = React.useState("")
+  const [agencyName, setAgencyName] = React.useState("")
+  const [marn, setMarn] = React.useState("")
+  const [email, setEmail] = React.useState("")
+  const [teamSize, setTeamSize] = React.useState("1")
+  const [specialty, setSpecialty] = React.useState("skilled")
+  const [password, setPassword] = React.useState("")
+  const [isLoading, setIsLoading] = React.useState(false)
+
+  const handleSignupSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!agencyName || !email) return
+
+    setIsLoading(true)
+    
+    // Auto-generate slug from agency name
+    const generatedSlug = agencyName
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/[\s_]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+
+    // Update onboarding store data
+    updateOnboardingData({
+      agencyName,
+      slug: generatedSlug || "new-agency",
+      teamSize,
+      specialty,
+      invitedStaff: [],
+      primaryColor: "#0D9F8C", // default emerald
+      logoText: agencyName.split(" ").map(w => w[0]).join("").substring(0, 3).toUpperCase()
+    })
+
+    setTimeout(() => {
+      setIsLoading(false)
+      updateOnboardingStep(2) // proceed to branding setup
+      router.push("/onboarding")
+    }, 800)
+  }
+
   return (
-    <div className="animate-in fade-in-50">
-      <div className="mb-8">
+    <div className="animate-in fade-in-50 duration-300">
+      <div className="mb-6">
         <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-[#0D9F8C]">
           <Sparkles className="h-3.5 w-3.5" />
-          14-day free trial
+          14-day free trial • Multi-Tenant Enterprise
         </div>
         <h1 className="mt-5 text-4xl font-black tracking-tight text-[#081B2E]">
-          Create your agency workspace
+          Create Agency Workspace
         </h1>
         <p className="mt-3 text-sm leading-6 text-slate-600">
-          Set up ImmiSign for your practice. No credit card required.
+          Provision a brand new isolated workspace. No credit card required.
         </p>
       </div>
 
-      <form className="grid gap-5">
+      <form onSubmit={handleSignupSubmit} className="grid gap-4">
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field id="first-name" label="First name" placeholder="Jane" />
-          <Field id="last-name" label="Last name" placeholder="Doe" />
+          <label className="grid gap-2">
+            <Label htmlFor="first-name" className="font-bold text-slate-700">First name</Label>
+            <Input
+              id="first-name"
+              required
+              placeholder="Jane"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              className="h-11 rounded-xl border-slate-200 bg-white"
+            />
+          </label>
+          <label className="grid gap-2">
+            <Label htmlFor="last-name" className="font-bold text-slate-700">Last name</Label>
+            <Input
+              id="last-name"
+              required
+              placeholder="Doe"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              className="h-11 rounded-xl border-slate-200 bg-white"
+            />
+          </label>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field id="agency" label="Agency name" placeholder="MARA Migration Practice" />
-          <Field id="marn" label="MARN Number (7-digit)" placeholder="e.g. 1794016" />
-        </div>
-        
-        <Field id="email" label="Work email" placeholder="jane@agency.com.au" type="email" />
 
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="grid gap-2">
-            <span className="text-sm font-bold text-slate-700">Agency Size</span>
-            <select className="flex h-12 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+            <Label htmlFor="agency" className="font-bold text-slate-700">Agency name</Label>
+            <Input
+              id="agency"
+              required
+              placeholder="AVC Migration Partners"
+              value={agencyName}
+              onChange={(e) => setAgencyName(e.target.value)}
+              className="h-11 rounded-xl border-slate-200 bg-white"
+            />
+          </label>
+          <label className="grid gap-2">
+            <Label htmlFor="marn" className="font-bold text-slate-700">Principal MARN (7-digit)</Label>
+            <Input
+              id="marn"
+              required
+              placeholder="e.g. 1794016"
+              value={marn}
+              onChange={(e) => setMarn(e.target.value)}
+              className="h-11 rounded-xl border-slate-200 bg-white"
+            />
+          </label>
+        </div>
+        
+        <label className="grid gap-2">
+          <Label htmlFor="email" className="font-bold text-slate-700">Work email</Label>
+          <Input
+            id="email"
+            type="email"
+            required
+            placeholder="jane@agency.com.au"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="h-11 rounded-xl border-slate-200 bg-white"
+          />
+        </label>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="grid gap-2">
+            <span className="text-xs font-bold text-slate-500">Agency Size</span>
+            <select 
+              value={teamSize}
+              onChange={(e) => setTeamSize(e.target.value)}
+              className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]"
+            >
               <option value="1">Solo RMA</option>
               <option value="2-5">2-5 Practitioners</option>
               <option value="6-15">6-15 Practitioners</option>
@@ -44,8 +151,12 @@ export default function SignupPage() {
             </select>
           </label>
           <label className="grid gap-2">
-            <span className="text-sm font-bold text-slate-700">Primary Matter Specialisation</span>
-            <select className="flex h-12 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+            <span className="text-xs font-bold text-slate-500">Primary Specialisation</span>
+            <select 
+              value={specialty}
+              onChange={(e) => setSpecialty(e.target.value)}
+              className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]"
+            >
               <option value="skilled">Skilled SC 189/190</option>
               <option value="partner">Partner SC 820/309</option>
               <option value="parent">Parent SC 143</option>
@@ -54,53 +165,50 @@ export default function SignupPage() {
           </label>
         </div>
 
-        <Field id="password" label="Password" placeholder="Create a strong password" type="password" />
-        <Button className="h-12 rounded-xl bg-[#0D9F8C] text-base font-black hover:bg-[#0A5B52]">
-          Start free trial
+        <label className="grid gap-2">
+          <Label htmlFor="password" className="font-bold text-slate-700">Create password</Label>
+          <Input
+            id="password"
+            type="password"
+            required
+            placeholder="Min. 8 characters"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="h-11 rounded-xl border-slate-200 bg-white"
+          />
+        </label>
+
+        <Button 
+          type="submit" 
+          disabled={isLoading}
+          className="h-12 rounded-xl bg-[#0D9F8C] text-base font-black hover:bg-[#0A5B52] shadow-sm flex items-center justify-center gap-2 group mt-2"
+        >
+          {isLoading ? (
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+          ) : (
+            <>
+              <span>Provision Workspace</span>
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </>
+          )}
         </Button>
       </form>
 
-      <div className="mt-6 grid gap-3 rounded-xl border border-emerald-100 bg-[#F7FAF8] p-5">
-        {["MARA-ready agreement templates", "Document library included", "Team-ready onboarding"].map((benefit) => (
-          <div key={benefit} className="flex items-center gap-3 text-sm font-bold text-slate-700">
-            <CheckCircle2 className="h-4 w-4 text-[#0D9F8C]" />
-            {benefit}
+      <div className="mt-5 grid gap-2.5 rounded-xl border border-emerald-100 bg-[#F7FAF8] p-4 text-xs font-bold text-slate-700">
+        {["Custom workspace subdomain setup", "Instant template package mapping", "OMARA compliance sandbox"].map((benefit) => (
+          <div key={benefit} className="flex items-center gap-2.5">
+            <CheckCircle2 className="h-3.5 w-3.5 text-[#0D9F8C] shrink-0" />
+            <span>{benefit}</span>
           </div>
         ))}
       </div>
 
-      <p className="mt-7 text-center text-sm text-slate-500">
+      <p className="mt-5 text-center text-sm text-slate-500">
         Already have an account?{" "}
-        <Link href="/login" className="font-black text-[#0D9F8C]">
+        <Link href="/login" className="font-black text-[#0D9F8C] hover:underline">
           Sign in
         </Link>
       </p>
     </div>
-  )
-}
-
-function Field({
-  id,
-  label,
-  placeholder,
-  type = "text",
-}: {
-  id: string
-  label: string
-  placeholder: string
-  type?: string
-}) {
-  return (
-    <label className="grid gap-2">
-      <Label htmlFor={id} className="font-bold text-slate-700">
-        {label}
-      </Label>
-      <Input
-        id={id}
-        type={type}
-        placeholder={placeholder}
-        className="h-12 rounded-xl border-slate-200 bg-white"
-      />
-    </label>
   )
 }

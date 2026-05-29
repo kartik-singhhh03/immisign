@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { useAuthStore } from "@/store/authStore"
+import { useApprovalStore } from "@/store/approvalStore"
 import Link from "next/link"
 import {
   ArrowRight,
@@ -234,6 +235,18 @@ function MiniChart() {
 }
 
 export function DashboardHomePage() {
+  const activeWorkspace = useAuthStore((state) => state.activeWorkspace)
+  const currentId = activeWorkspace?.id || "w-avc"
+  const currentSlug = activeWorkspace?.slug || "avc-migration"
+  
+  const { approvals, fetchApprovals } = useApprovalStore()
+
+  React.useEffect(() => {
+    fetchApprovals(currentId)
+  }, [currentId, fetchApprovals])
+
+  const pendingApprovals = approvals.filter(a => a.status === 'under_review' || a.status === 'sent_to_client' || a.status === 'partially_reviewed' || a.status === 'changes_requested')
+
   return (
     <div className="animate-enter">
       <PageHeader
@@ -243,27 +256,30 @@ export function DashboardHomePage() {
         action={<Button className="rounded-xl bg-[#0D9F8C] font-bold hover:bg-[#0A5B52]"><Plus className="h-4 w-4" />New Agreement</Button>}
       />
       <div className="mb-6 grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="relative overflow-hidden rounded-[1.6rem] border border-white/10 bg-[radial-gradient(circle_at_18%_0%,rgba(51,196,141,0.24),transparent_34%),linear-gradient(135deg,#062d28,#081B2E)] p-7 text-white shadow-[0_26px_80px_rgba(6,31,28,0.22)]">
-          <div className="text-xs font-black uppercase tracking-[0.2em] text-emerald-100/64">Executive pulse</div>
-          <h2 className="mt-4 max-w-2xl text-3xl font-black leading-tight tracking-[-0.045em]">18 agreements moved forward this week with no overdue signature packets.</h2>
+        <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">
+          <div className="text-xs font-bold uppercase tracking-wider text-slate-500">Executive pulse</div>
+          <h2 className="mt-4 max-w-2xl text-2xl font-bold leading-tight tracking-tight text-slate-900">18 agreements moved forward this week with no overdue signature packets.</h2>
           <div className="mt-7 grid gap-3 sm:grid-cols-3">
             {["Zero overdue", "4 drafts ready", "2 clients need follow-up"].map((item) => (
-              <div key={item} className="rounded-2xl border border-white/10 bg-white/[0.07] p-4 text-sm font-bold text-emerald-50/[0.88] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">{item}</div>
+              <div key={item} className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 border border-slate-100">
+                <Check className="h-4 w-4 text-[#0D9F8C]" />
+                {item}
+              </div>
             ))}
           </div>
         </div>
-        <div className="premium-card rounded-[1.6rem] border-white/70 p-7">
+        <div className="rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Next best action</div>
-              <h2 className="mt-3 text-2xl font-black tracking-[-0.04em]">Review awaiting signatures</h2>
+              <div className="text-xs font-bold uppercase tracking-wider text-slate-500">Next best action</div>
+              <h2 className="mt-3 text-lg font-bold text-slate-900 tracking-tight">Review awaiting signatures</h2>
             </div>
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-[#0D9F8C]">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-[#0D9F8C]">
               <Bell className="h-5 w-5" />
             </div>
           </div>
-          <p className="mt-4 text-sm leading-6 text-slate-600">Two high-value matters have been opened but not signed. Send a polite reminder before end of day.</p>
-          <Button variant="outline" className="mt-6 h-11 rounded-xl bg-white font-bold">Open queue</Button>
+          <p className="mt-4 text-sm leading-6 text-slate-500 font-medium">Two high-value matters have been opened but not signed. Send a polite reminder before end of day.</p>
+          <Button variant="outline" className="mt-6 h-10 w-full rounded-xl bg-white font-semibold border-slate-200 shadow-sm text-slate-700">Open queue</Button>
         </div>
       </div>
       <div className="stagger-children grid gap-5 md:grid-cols-2 xl:grid-cols-4">
@@ -298,7 +314,43 @@ export function DashboardHomePage() {
       </div>
       <div className="mt-6 grid gap-6 xl:grid-cols-[1fr_0.42fr]">
         <div>
-          <h2 className="mb-3 text-xl font-black">Recent agreements</h2>
+          <h2 className="mb-3 text-xl font-black">Pending Approvals</h2>
+          <div className="overflow-hidden rounded-2xl border border-slate-200/50 bg-white/60 shadow-sm">
+            <div className="grid grid-cols-[1.5fr_1fr_1fr_1fr] border-b border-slate-100 bg-slate-50/50 px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <div>Client & Application</div>
+              <div>Agent</div>
+              <div>Status</div>
+              <div>Deadline</div>
+            </div>
+            <div className="divide-y divide-slate-100">
+              {pendingApprovals.slice(0, 5).map((approval) => (
+                <Link
+                  key={approval.id}
+                  href={`/workspace/${currentSlug}/application-approvals/${approval.id}`}
+                  className="group grid grid-cols-[1.5fr_1fr_1fr_1fr] items-center gap-3 px-6 py-4 hover:bg-slate-50 transition-colors"
+                >
+                  <div>
+                    <div className="font-bold text-[#081B2E] group-hover:text-[#0D9F8C] transition-colors">{approval.clientName}</div>
+                    <div className="text-[11px] font-semibold text-slate-400 mt-0.5">{approval.visaSubclass}</div>
+                  </div>
+                  <div className="text-sm font-semibold text-slate-600">{approval.agentName}</div>
+                  <div>
+                    <span className="inline-flex items-center rounded-full border border-amber-200/70 bg-amber-50/90 text-amber-700 px-2.5 py-0.5 text-[11px] font-bold tracking-wide">
+                      {approval.status.replace('_', ' ').toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="text-sm font-medium text-slate-400">
+                    {approval.lodgementDeadline ? new Date(approval.lodgementDeadline).toLocaleDateString() : 'N/A'}
+                  </div>
+                </Link>
+              ))}
+              {pendingApprovals.length === 0 && (
+                <div className="p-8 text-center text-slate-500 font-medium">No pending approvals.</div>
+              )}
+            </div>
+          </div>
+
+          <h2 className="mb-3 mt-8 text-xl font-black">Recent agreements</h2>
           <AgreementTable />
         </div>
         <Card className="rounded-[1.35rem] border-white/70">
@@ -306,10 +358,10 @@ export function DashboardHomePage() {
             <h2 className="text-xl font-black">Quick actions</h2>
             <div className="mt-5 grid gap-3">
               {[
-                { label: "Create agreement", icon: FileSignature, href: "/agreements/new" },
-                { label: "Send document", icon: Send, href: "/documents/send" },
-                { label: "Upload template", icon: UploadCloud, href: "/templates" },
-                { label: "View reports", icon: Download, href: "/reports" },
+                { label: "Create agreement", icon: FileSignature, href: `/workspace/${currentSlug}/agreements/new` },
+                { label: "New Application Review", icon: FileCheck2, href: `/workspace/${currentSlug}/application-approvals` },
+                { label: "Send document", icon: Send, href: "#" },
+                { label: "Upload template", icon: UploadCloud, href: "#" },
               ].map((action) => (
                 <Link key={action.label} href={action.href} className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 font-bold transition-colors hover:bg-[#F7FAF8]">
                   <span className="flex items-center gap-3"><action.icon className="h-5 w-5 text-[#0D9F8C]" />{action.label}</span>

@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { PageTransition } from "./page-transition"
+import { CommandPalette } from "./command-palette"
 import { useAuthStore, User } from "@/store/authStore"
 import {
   DropdownMenu,
@@ -19,6 +20,7 @@ import {
 import {
   LayoutDashboard,
   FileSignature,
+  FileCheck2,
   FileText,
   Send,
   FolderOpen,
@@ -36,7 +38,8 @@ import {
   Users,
   ChevronDown,
   ShieldAlert,
-  Sliders
+  Sliders,
+  Check
 } from "lucide-react"
 
 type SidebarNavItem = {
@@ -55,6 +58,11 @@ const rawSidebarNavItems = [
     title: "Agreements",
     href: "/agreements",
     icon: FileSignature,
+  },
+  {
+    title: "App Approvals",
+    href: "/application-approvals",
+    icon: FileCheck2,
   },
   {
     title: "Send Document",
@@ -173,14 +181,14 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       return (
         <div
           key={item.href}
-          className="group relative flex items-center rounded-xl px-3 py-2.5 text-[13px] font-semibold text-emerald-100/20 cursor-not-allowed select-none border border-transparent"
+          className="group relative flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-300 cursor-not-allowed select-none outline-none"
           title={`Restricted: ${currentRole} cannot access this page`}
         >
-          <Icon className="shrink-0 mr-3 h-[18px] w-[18px] text-emerald-100/10" />
+          <Icon className="shrink-0 mr-3 h-4 w-4 text-slate-300" />
           {!isCollapsed && (
             <span className="flex items-center justify-between w-full">
               <span>{item.title}</span>
-              <span className="text-[10px] bg-red-950/40 text-red-400 border border-red-500/20 px-1.5 py-0.2 rounded font-black">
+              <span className="text-[10px] bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded font-semibold">
                 Locked
               </span>
             </span>
@@ -194,20 +202,17 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         key={item.href}
         href={item.href}
         className={cn(
-          "group relative flex items-center rounded-xl px-3 py-2.5 text-[13px] font-semibold tracking-[-0.01em] transition-all duration-300 ease-out border border-transparent",
+          "group relative flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors outline-none",
           isActive
-            ? "border-white/[0.08] bg-gradient-to-r from-white/[0.09] to-white/[0.02] text-white shadow-[0_12px_24px_rgba(0,0,0,0.22),inset_0_1px_1px_rgba(255,255,255,0.06)]"
-            : "text-emerald-100/60 hover:bg-white/[0.045] hover:text-white"
+            ? "bg-emerald-50 text-[#0D9F8C]"
+            : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
         )}
       >
-        {isActive && (
-          <span className="absolute left-0 top-1/2 h-5 w-[2px] -translate-y-1/2 rounded-r-full bg-gradient-to-b from-[#33C48D] to-[#0D9F8C] shadow-[0_0_12px_rgba(51,196,141,0.85)]" />
-        )}
         <Icon 
           className={cn(
-            "shrink-0 transition-all duration-300 ease-out", 
-            isCollapsed ? "mr-0 h-[18px] w-[18px]" : "mr-3 h-[18px] w-[18px]", 
-            isActive ? "text-[#33C48D] scale-[1.05]" : "text-emerald-100/40 group-hover:text-emerald-100/75 group-hover:scale-105"
+            "shrink-0 transition-colors", 
+            isCollapsed ? "mr-0 h-5 w-5" : "mr-3 h-4 w-4", 
+            isActive ? "text-[#0D9F8C]" : "text-slate-400 group-hover:text-slate-600"
           )} 
         />
         {!isCollapsed && <span className="transition-all duration-300">{item.title}</span>}
@@ -216,27 +221,27 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="flex min-h-screen w-full bg-[#F4F8F6] font-sans text-[#081B2E] app-grain">
+    <div className="flex min-h-screen w-full bg-[#FAFAFA] font-sans text-slate-900">
       
       {/* Desktop Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-20 hidden flex-col border-r border-white/5 bg-[radial-gradient(circle_at_15%_0%,rgba(51,196,141,0.12),transparent_35%),linear-gradient(180deg,#021815_0%,#011210_60%,#000a08_100%)] transition-all duration-300 lg:flex shadow-[20px_0_60px_rgba(2,18,16,0.35),inset_-1px_0_0_rgba(255,255,255,0.02)]",
-          isCollapsed ? "w-[84px]" : "w-[272px]"
+          "fixed inset-y-0 left-0 z-20 hidden flex-col border-r border-slate-200 bg-[#F5F5F5] transition-all duration-300 lg:flex",
+          isCollapsed ? "w-[72px]" : "w-[260px]"
         )}
       >
         {/* Dynamic Workspace Switcher Dropdown */}
-        <div className="flex h-20 shrink-0 items-center justify-between border-b border-white/[0.05] px-4">
+        <div className="flex h-16 shrink-0 items-center justify-between px-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button 
                 className={cn(
-                  "flex items-center gap-2.5 rounded-xl border border-white/5 bg-white/[0.03] p-2 text-left text-white transition-all hover:bg-white/[0.07] focus:outline-none w-full",
-                  isCollapsed && "mx-auto p-1 text-center justify-center border-none bg-transparent"
+                  "flex items-center gap-2.5 rounded-md p-1.5 text-left transition-colors hover:bg-slate-200/50 focus:outline-none w-full",
+                  isCollapsed && "mx-auto justify-center"
                 )}
               >
                 <div 
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl font-black text-white text-xs shadow-md transition-all"
+                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[4px] font-bold text-white text-[10px]"
                   style={{ backgroundColor: currentWorkspace?.color || "#0D9F8C" }}
                 >
                   {currentWorkspace?.initials || "AM"}
@@ -244,23 +249,20 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 {!isCollapsed && (
                   <div className="flex flex-1 items-center justify-between min-w-0">
                     <div className="min-w-0">
-                      <div className="text-sm font-black text-white truncate leading-tight">
+                      <div className="text-sm font-semibold text-slate-800 truncate">
                         {currentWorkspace?.name || "Singh & Associates"}
                       </div>
-                      <div className="text-[10px] font-bold text-emerald-100/40 mt-0.5 truncate uppercase tracking-widest">
-                        Tenant Workspace
-                      </div>
                     </div>
-                    <ChevronDown className="h-4 w-4 text-emerald-100/50 shrink-0 ml-1" />
+                    <ChevronDown className="h-4 w-4 text-slate-400 shrink-0 ml-1" />
                   </div>
                 )}
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-64 rounded-2xl border-white/5 bg-[#011210]/95 text-emerald-100 p-2 shadow-elevated backdrop-blur-xl" align="start">
-              <DropdownMenuLabel className="px-3 py-2 text-xs font-black text-emerald-100/40 uppercase tracking-widest">
-                Active Tenant Spaces
+            <DropdownMenuContent className="w-56 rounded-xl border-slate-200 bg-white p-1.5 shadow-md" align="start">
+              <DropdownMenuLabel className="px-2 py-1.5 text-xs font-semibold text-slate-500">
+                Workspaces
               </DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-white/5" />
+              <DropdownMenuSeparator className="bg-slate-100" />
               {workspaces.map((w) => {
                 const isSelected = w.slug === currentSlug
                 return (
@@ -268,23 +270,20 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                     key={w.slug}
                     onClick={() => handleWorkspaceChange(w.slug)}
                     className={cn(
-                      "rounded-xl p-2.5 cursor-pointer font-bold text-xs flex items-center gap-3 transition-colors text-emerald-100 focus:bg-white/[0.06]",
-                      isSelected && "bg-white/[0.04] text-white border border-white/5"
+                      "rounded-lg p-2 cursor-pointer text-sm flex items-center gap-3 transition-colors text-slate-700 focus:bg-slate-100",
+                      isSelected && "text-slate-900 font-medium bg-slate-50"
                     )}
                   >
                     <div 
-                      className="flex h-7.5 w-7.5 shrink-0 items-center justify-center rounded-lg font-black text-white text-xxs"
+                      className="flex h-5 w-5 shrink-0 items-center justify-center rounded-[4px] font-bold text-white text-[10px]"
                       style={{ backgroundColor: w.color }}
                     >
                       {w.initials}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="truncate text-white">{w.name}</div>
-                      <div className="text-[9px] font-bold text-emerald-150/40 mt-0.5 font-mono truncate">
-                        /{w.slug}
-                      </div>
+                      <div className="truncate">{w.name}</div>
                     </div>
-                    {isSelected && <span className="h-2 w-2 rounded-full bg-emerald-400" />}
+                    {isSelected && <Check className="h-4 w-4 text-slate-600" />}
                   </DropdownMenuItem>
                 )
               })}
@@ -293,43 +292,43 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         </div>
         
         {/* Navigation Sidebar Area */}
-        <div className="flex flex-1 flex-col justify-between overflow-y-auto overflow-x-hidden px-4 py-5">
-          <nav className={cn("flex flex-col gap-1", isCollapsed && "items-center")}>
+        <div className="flex flex-1 flex-col justify-between overflow-y-auto overflow-x-hidden px-3 py-4">
+          <nav className={cn("flex flex-col gap-0.5", isCollapsed && "items-center")}>
             {sidebarNavItems.map(renderNavLink)}
           </nav>
           
-          <div className={cn("mt-8 flex flex-col gap-1 border-t border-white/[0.05] pt-5", isCollapsed && "items-center")}>
+          <div className={cn("mt-8 flex flex-col gap-0.5 pt-4", isCollapsed && "items-center")}>
             {sidebarBottomItems.map(renderNavLink)}
           </div>
         </div>
 
         {/* DEVELOPER SIMULATOR SWITCHER PANEL */}
         {!isCollapsed && (
-          <div className="mx-4 my-2 rounded-xl border border-white/5 bg-white/[0.03] p-3 text-white">
-            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-[#33C48D] mb-2">
+          <div className="mx-3 my-2 rounded-lg border border-slate-200 bg-white p-3 text-slate-800 shadow-sm">
+            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">
               <Sliders className="h-3.5 w-3.5" />
-              Permission Simulator
+              Role Simulator
             </div>
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex w-full items-center justify-between rounded-lg bg-black/30 px-2 py-1.5 text-left text-xs font-bold text-emerald-50 hover:bg-black/50 border border-white/5">
+                <button className="flex w-full items-center justify-between rounded-md bg-slate-50 px-2 py-1.5 text-left text-xs font-semibold text-slate-700 hover:bg-slate-100 border border-slate-200/60 transition-colors">
                   <span className="truncate">{currentRole}</span>
-                  <ChevronDown className="h-3.5 w-3.5 text-emerald-100/50" />
+                  <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-52 rounded-xl border-white/5 bg-[#011210] text-emerald-100 p-1.5 shadow-elevated" align="start">
-                <DropdownMenuLabel className="px-2 py-1.5 text-[10px] font-black uppercase text-emerald-100/40">
-                  Simulate Practitioner Role
+              <DropdownMenuContent className="w-52 rounded-xl border-slate-200 bg-white p-1.5 shadow-md" align="start">
+                <DropdownMenuLabel className="px-2 py-1.5 text-[10px] font-bold uppercase text-slate-500">
+                  Simulate Role
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-white/5" />
+                <DropdownMenuSeparator className="bg-slate-100" />
                 {(["Owner", "Admin", "Migration Agent", "Case Manager", "Assistant", "Read-only staff"] as User["role"][]).map((r) => (
                   <DropdownMenuItem
                     key={r}
                     onClick={() => switchRole(r)}
                     className={cn(
-                      "rounded-lg p-2 cursor-pointer text-xs font-bold transition-colors focus:bg-white/[0.06] text-emerald-100",
-                      currentRole === r && "bg-white/[0.04] text-white"
+                      "rounded-lg p-2 cursor-pointer text-xs font-medium transition-colors text-slate-700 focus:bg-slate-50",
+                      currentRole === r && "bg-slate-100 text-slate-900 font-bold"
                     )}
                   >
                     {r}
@@ -338,28 +337,25 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               </DropdownMenuContent>
             </DropdownMenu>
             
-            <p className="mt-2 text-[9px] text-emerald-100/30 leading-normal font-medium">
-              Swapping roles instantly adjusts active navigation visibility and security lockout policies.
+            <p className="mt-2 text-[9px] text-slate-500 leading-normal font-medium">
+              Dev only: Switch roles instantly to preview dynamic navigation and access controls.
             </p>
           </div>
         )}
 
         {/* Practitioner Profiles & Collapse toggle */}
-        <div className="flex items-center justify-between border-t border-white/[0.05] bg-black/20 p-4">
+        <div className="flex items-center justify-between border-t border-slate-200 p-3">
           {!isCollapsed && (
-            <div className="flex min-w-0 items-center gap-3">
+            <div className="flex min-w-0 items-center gap-2">
               <div 
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border text-sm font-black text-white shadow-md"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
                 style={{ backgroundColor: currentWorkspace?.color || "#0D9F8C" }}
               >
                 {user?.avatar || "JD"}
               </div>
               <div className="flex min-w-0 flex-col">
-                <span className="truncate text-sm font-bold text-white leading-tight">
+                <span className="truncate text-sm font-medium text-slate-800 leading-tight">
                   {user?.name || "Jane Doe"}
-                </span>
-                <span className="text-[10px] font-bold text-emerald-100/40 mt-0.5 font-mono">
-                  {user?.marn ? `MARN ${user.marn}` : "Assistant Access"}
                 </span>
               </div>
             </div>
@@ -368,9 +364,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             variant="ghost"
             size="icon"
             onClick={toggleSidebar}
-            className="h-8 w-8 rounded-xl text-emerald-100/40 hover:bg-white/10 hover:text-white"
+            className="h-8 w-8 rounded-md text-slate-400 hover:bg-slate-200 hover:text-slate-600"
           >
-            {isCollapsed ? <PanelLeftOpen className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}
+            {isCollapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
           </Button>
         </div>
       </aside>
@@ -389,7 +385,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         )}
 
         {/* Top Navbar */}
-        <header className="sticky top-0 z-30 flex h-20 shrink-0 items-center gap-4 border-b border-slate-200/40 bg-white/70 px-6 shadow-[0_1px_2px_rgba(8,27,46,0.01),0_12px_32px_rgba(8,27,46,0.02)] backdrop-blur-xl">
+        <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-4 border-b border-slate-200 bg-white/80 px-4 md:px-6 backdrop-blur-md">
           <div className="flex flex-1 items-center gap-4">
             <Button
               variant="ghost"
@@ -400,28 +396,33 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               <Menu className="h-5 w-5" />
             </Button>
             
-            <div className="relative hidden w-full max-w-xl md:flex">
-              <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <Input
-                type="search"
-                placeholder="Search agreements, clients, documents..."
-                className="h-11 w-full rounded-2xl border-slate-200/50 bg-white/80 pl-11 pr-4 font-semibold shadow-[0_8px_20px_rgba(8,27,46,0.02)] placeholder:text-slate-400 focus-visible:ring-1 focus-visible:ring-[#0D9F8C]"
-              />
+            <div className="relative hidden w-full max-w-md md:flex">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <button
+                onClick={() => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }))}
+                className="flex h-9 w-full items-center justify-between rounded-md border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm font-medium text-slate-500 transition-colors hover:bg-white hover:border-slate-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#0D9F8C]"
+              >
+                <span>Search...</span>
+                <kbd className="hidden rounded border border-slate-200 bg-white px-1.5 font-mono text-[10px] font-medium text-slate-500 sm:inline-block">
+                  ⌘K
+                </kbd>
+              </button>
             </div>
           </div>
           
           <div className="flex items-center gap-3">
+            <CommandPalette />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-xl text-slate-500 hover:bg-white hover:text-slate-900 hover:shadow-subtle transition-all duration-200">
-                  <Bell className="h-5 w-5" />
-                  <span className="absolute right-2.5 top-2.5 flex h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+                <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors">
+                  <Bell className="h-4 w-4" />
+                  <span className="absolute right-2 top-2 flex h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-80 rounded-2xl border-slate-200/60 bg-white/95 p-2 shadow-elevated backdrop-blur-xl" align="end">
-                <DropdownMenuLabel className="p-3">
-                  <div className="text-sm font-black text-[#081B2E]">Notifications</div>
-                  <div className="mt-1 text-xs font-semibold text-slate-500">Practice activity alerts</div>
+              <DropdownMenuContent className="w-80 rounded-xl border-slate-200 bg-white p-2 shadow-lg" align="end">
+                <DropdownMenuLabel className="p-2">
+                  <div className="text-sm font-semibold text-slate-900">Notifications</div>
+                  <div className="mt-0.5 text-xs font-medium text-slate-500">Practice activity alerts</div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-slate-100" />
                 {[
@@ -429,9 +430,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                   "Payment received for INV-1048",
                   "Partner Visa template updated",
                 ].map((item) => (
-                  <DropdownMenuItem key={item} className="rounded-lg p-3">
-                    <span className="mr-3 h-2 w-2 rounded-full bg-[#0D9F8C]" />
-                    <span className="text-sm font-semibold text-slate-700">{item}</span>
+                  <DropdownMenuItem key={item} className="rounded-lg p-2.5 cursor-pointer hover:bg-slate-50">
+                    <span className="mr-3 h-1.5 w-1.5 rounded-full bg-[#0D9F8C]" />
+                    <span className="text-sm font-medium text-slate-700">{item}</span>
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
@@ -441,22 +442,22 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             
             {/* Dynamic Workspace Initials / Role Widget */}
             <div className="hidden flex-col items-end sm:flex text-right">
-              <span className="text-xs font-black text-[#081B2E]">{user?.name || "Jane Doe"}</span>
-              <span className="text-[10px] font-bold text-slate-400 mt-0.5">{currentRole} Badge</span>
+              <span className="text-sm font-semibold text-slate-800">{user?.name || "Jane Doe"}</span>
+              <span className="text-[10px] font-medium text-slate-500 mt-0.5">{currentRole} Access</span>
             </div>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full px-0 hover:bg-transparent">
+                <Button variant="ghost" className="relative h-9 w-9 rounded-full px-0 hover:bg-transparent ml-1">
                   <div 
-                    className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white text-sm font-black text-white shadow-[0_12px_28px_rgba(13,159,140,0.22)] ring-1 ring-emerald-900/5 transition-transform hover:scale-105 duration-300"
+                    className="flex h-full w-full items-center justify-center rounded-full text-xs font-bold text-white shadow-sm ring-2 ring-white"
                     style={{ backgroundColor: currentWorkspace?.color || "#0D9F8C" }}
                   >
                     {user?.avatar || "JD"}
                   </div>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 rounded-2xl border-white/70 bg-white/95 p-2 shadow-elevated backdrop-blur-xl" align="end" forceMount>
+              <DropdownMenuContent className="w-56 rounded-2xl border-slate-200 bg-white p-2 shadow-lg" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal p-2">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-bold leading-none text-gray-900">{user?.name || "Jane Doe"}</p>

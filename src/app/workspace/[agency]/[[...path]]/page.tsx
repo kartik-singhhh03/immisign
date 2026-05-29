@@ -22,6 +22,12 @@ import {
   PlaceholderDashboardPage
 } from "@/components/saas/dashboard-pages"
 
+import {
+  ApplicationApprovalsHomePage,
+  NewApplicationApprovalPage,
+  ApplicationApprovalDetailPage
+} from "@/components/saas/application-approvals/pages"
+
 export default function WorkspaceCatchAllPage() {
   const params = useParams()
   const { activeWorkspace, switchWorkspace } = useAuthStore()
@@ -47,6 +53,15 @@ export default function WorkspaceCatchAllPage() {
     const route = path[0].toLowerCase()
 
     switch (route) {
+      case "application-approvals":
+        if (path[1] === "new") {
+          return <NewApplicationApprovalPage />
+        }
+        if (path[1]) {
+          return <ApplicationApprovalDetailPage id={path[1]} />
+        }
+        return <ApplicationApprovalsHomePage />
+
       case "agreements":
         if (path[1] === "new") {
           return <NewAgreementPage />

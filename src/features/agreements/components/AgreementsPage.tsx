@@ -14,15 +14,15 @@ export function AgreementsPage() {
   }
 
   const agreements = rawAgreements.map((a: any) => ({
-    id: a.id || a.real_id || "AGR-000",
-    client: a.client || "Client Name",
-    email: a.email || "client@example.com",
-    matter: a.matter || "General Matter",
-    fee: a.fee || ".00",
+    id: a.id || a.real_id,
+    client: a.client,
+    email: a.email,
+    matter: a.matter,
+    fee: a.fee,
     status: a.status ? a.status.charAt(0).toUpperCase() + a.status.slice(1) : "Draft",
-    date: a.date || new Date().toLocaleDateString(),
-    scope: a.scope || "General Scope",
-    law: a.law || "NSW"
+    date: a.date,
+    scope: a.scope,
+    law: a.law
   }))
 
   return <AgreementsList initialAgreements={agreements} agencySlug={currentSlug} />

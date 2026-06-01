@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
       await supabase.from('users').insert({ id: userId, agency_id: agencyId, full_name: 'POC User', email: `poc${Date.now()}@test.com`, role: 'owner' } as any);
     } catch (e) {}
 
-    await supabase.from('clients').insert({ id: clientId, agency_id: agencyId, first_name: 'John', last_name: 'Doe', email: 'john@example.com' } as any);
+    await supabase.from('clients').insert({ id: clientId, agency_id: agencyId, first_name: 'John', last_name: 'Doe', email: 'john@email.com' } as any);
     await (supabase.from('templates' as any) as any).insert({ id: templateId, agency_id: agencyId, name: 'POC Template', content: { html: "<h1>Agreement for {{client_name}}</h1><p>Fee: {{fee_amount}}</p>" } });
     await supabase.from('agreements').insert({
       id: agreementId,
@@ -72,3 +72,4 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
+

@@ -51,6 +51,12 @@ export default async function ApprovalDetailsPage({ params }: { params: { agency
   // We mock a document URL for the MVP viewer
   const documentUrl = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
 
+  // Get actual user
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return notFound();
+  }
+
   return (
     <ApprovalDashboard 
       approval={approval} 
@@ -58,6 +64,7 @@ export default async function ApprovalDetailsPage({ params }: { params: { agency
       auditLogs={auditLogs}
       portalUrl={portalUrl}
       documentUrl={documentUrl}
+      userId={user.id}
     />
   );
 }

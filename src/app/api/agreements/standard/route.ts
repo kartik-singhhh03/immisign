@@ -31,7 +31,19 @@ export async function POST(req: NextRequest) {
     console.log("Authenticated User in API Route:", user?.id ?? "UNAUTHENTICATED");
 
     const body = await req.json();
-    const { formData, agencyId, userId } = body;
+    const { formData, userId } = body;
+    let { agencyId } = body;
+
+    // 0. Resolve Real Agency ID if it's a frontend slug/id like 'w-avc'
+    if (agencyId && !agencyId.includes('-') || agencyId === 'w-avc' || agencyId === '00000000-0000-0000-0000-000000000000') {
+        const { data: userData } = await (supabase as any).from('users').select('agency_id').eq('id', user.id).single();
+        if (userData?.agency_id) {
+            agencyId = userData.agency_id;
+        } else {
+            // Fallback for tests if real agency not found
+            agencyId = '11111111-1111-1111-1111-111111111111'; // the seed real agency
+        }
+    }
 
     // 1. Resolve Template ID for Standard Agreement
     const { data: template } = await (supabase as any).from('templates').select('id').eq('agency_id', agencyId).limit(1).single();

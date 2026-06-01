@@ -5,17 +5,20 @@ export class DashboardRepository {
   constructor(private supabase: SupabaseClient) {}
 
   async getMetrics(agencyId: string) {
-    const [{ count: clientsCount }, { count: agreementsCount }, { count: approvalsCount }] = await Promise.all([
+    const [{ count: clientsCount }, { count: agreementsCount, data: agreementsData }, { count: approvalsCount }] = await Promise.all([
       this.supabase.from('clients').select('*', { count: 'exact', head: true }).eq('agency_id', agencyId),
-      this.supabase.from('agreements').select('*', { count: 'exact', head: true }).eq('agency_id', agencyId),
+      this.supabase.from('agreements').select('professional_fee', { count: 'exact' }).eq('agency_id', agencyId),
       this.supabase.from('application_approvals').select('*', { count: 'exact', head: true }).eq('agency_id', agencyId)
     ]);
+
+    const totalRevenue = (agreementsData || []).reduce((sum, a) => sum + (Number(a.professional_fee) || 0), 0);
+    const formattedRevenue = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(totalRevenue);
 
     return {
       activeClients: clientsCount || 0,
       activeAgreements: agreementsCount || 0,
       pendingApprovals: approvalsCount || 0,
-      monthlyRevenue: "$18,400" // Hardcoded for now as billing is complex
+      monthlyRevenue: formattedRevenue
     };
   }
 

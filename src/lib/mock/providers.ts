@@ -21,7 +21,7 @@ export const MockAuthProvider = {
     return true;
   },
   getUser: async () => {
-    return { user: { id: "mock-user-1", email: "demo@example.com", role: "Owner" } };
+    return { user: { id: "mock-user-1", email: "demo@email.com", role: "Owner" } };
   }
 };
 
@@ -76,4 +76,5 @@ export const MockEmailProvider = {
     return { id: "msg_mock123", status: "delivered" };
   }
 };
+
 

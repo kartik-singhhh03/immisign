@@ -44,8 +44,6 @@ INSERT INTO public.agreements (id, agency_id, created_by, title, agreement_numbe
 ('55555555-5555-5555-5555-555555555552', '11111111-1111-1111-1111-111111111111', '22222222-2222-2222-2222-222222222223', 'Agreement - Gurpreet Singh', 'AGR-1049', '33333333-3333-3333-3333-333333333332', '44444444-4444-4444-4444-444444444442', 'Gurpreet Singh', 'gurpreet@example.com', 'draft', 1);
 
 -- Documents
-INSERT INTO public.documents (id, agency_id, agreement_id, uploaded_by, file_name, original_name, file_url, file_size, mime_type) VALUES
-('66666666-6666-6666-6666-666666666661', '11111111-1111-1111-1111-111111111111', '55555555-5555-5555-5555-555555555551', '22222222-2222-2222-2222-222222222221', 'passport.pdf', 'passport.pdf', 'https://example.com/doc', 1024, 'application/pdf');
 
 -- Approvals
 INSERT INTO public.application_approvals (id, agency_id, client_id, created_by, title, visa_subclass, status, review_token) VALUES

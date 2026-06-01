@@ -49,19 +49,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
 
-const agreements = [
-  { id: "AGR-1048", client: "Harpreet Kaur", matter: "Partner Visa - SC 820", fee: "$3,500", status: "Signed", date: "19 May 2026" },
-  { id: "AGR-1047", client: "Gurpreet Singh", matter: "Skilled Migration - SC 190", fee: "$2,200", status: "Awaiting", date: "21 May 2026" },
-  { id: "AGR-1046", client: "Maninder Gill", matter: "Aged Dependent Relative - SC 838", fee: "$4,800", status: "Sent", date: "22 May 2026" },
-  { id: "AGR-1045", client: "Davinder Kaur", matter: "Student Visa - SC 500", fee: "$1,100", status: "Draft", date: "22 May 2026" },
-]
 
-const clients = [
-  { name: "Harpreet Kaur", email: "harpreet@example.com", matters: 3, stage: "Active", value: "$8,700" },
-  { name: "Gurpreet Singh", email: "gurpreet@example.com", matters: 2, stage: "Awaiting signature", value: "$4,200" },
-  { name: "Maninder Gill", email: "maninder@example.com", matters: 1, stage: "Document review", value: "$4,800" },
-  { name: "Davinder Kaur", email: "davinder@example.com", matters: 2, stage: "Drafting", value: "$2,600" },
-]
 
 function statusClass(status: string) {
   if (status === "Signed" || status === "Active") return "border-emerald-200/70 bg-emerald-50/90 text-emerald-700 shadow-[0_0_0_1px_rgba(16,185,129,0.04),0_8px_18px_rgba(16,185,129,0.10)]"

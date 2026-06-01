@@ -14,13 +14,15 @@ export function ApprovalDashboard({
   agencySlug, 
   auditLogs,
   portalUrl,
-  documentUrl 
+  documentUrl,
+  userId
 }: { 
   approval: ApplicationApproval, 
   agencySlug: string, 
   auditLogs: any[],
   portalUrl: string,
-  documentUrl: string
+  documentUrl: string,
+  userId: string
 }) {
   const [sending, setSending] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -29,8 +31,7 @@ export function ApprovalDashboard({
     try {
       setSending(true)
       const role = 'agency_admin' as any
-      // We pass mocked values for user since it's an MVP
-      await sendApprovalForReviewAction(approval.agency_id, '00000000-0000-0000-0000-000000000000', role, approval.id)
+      await sendApprovalForReviewAction(approval.agency_id, userId, role, approval.id)
       alert('Approval request sent successfully! In a real app this would dispatch an email.')
       window.location.reload()
     } catch (e) {

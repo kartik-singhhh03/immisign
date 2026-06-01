@@ -16,7 +16,12 @@ export default async function NewAgreementPage({ params }: { params: { agency: s
   // Fetch the actual authenticated session user ID
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  const userId = user?.id || '00000000-0000-0000-0000-000000000000';
+  
+  if (!user) {
+    return notFound();
+  }
+
+  const userId = user.id;
 
   return (
     <AgreementWizard 

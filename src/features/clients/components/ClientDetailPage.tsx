@@ -5,6 +5,7 @@ import { useAuthStore } from "@/store/authStore"
 import { getRealAgencyId, useClients } from "@/lib/hooks/useSupabaseData"
 import { createClient } from "@/lib/supabase/client"
 import { ClientsRepository } from "@/lib/supabase/repositories"
+import { Role, canEdit, canDelete } from "@/features/auth/types/roles"
 import Link from "next/link"
 import {
   CheckCircle2,
@@ -34,7 +35,11 @@ export function ClientDetailPage() {
   const clientId = path[1]
 
   const activeWorkspace = useAuthStore((s) => s.activeWorkspace)
+  const user = useAuthStore((s) => s.user)
   const currentSlug = activeWorkspace?.slug || "avc-migration"
+  const role = (user?.role || 'Read-only staff') as Role
+  const isEditor = canEdit(role, 'clients')
+  const isDeleter = canDelete(role, 'clients')
 
   const { updateClient, deleteClient } = useClients()
 
@@ -143,7 +148,7 @@ export function ClientDetailPage() {
 
   const joinedDate = client.created_at
     ? new Date(client.created_at).toLocaleDateString("en-AU", { day: "numeric", month: "long", year: "numeric" })
-    : "Unknown"
+    : ""
 
   return (
     <div className="animate-enter space-y-8">
@@ -162,20 +167,24 @@ export function ClientDetailPage() {
           </p>
         </div>
         <div className="flex gap-2 shrink-0">
-          <Button
-            onClick={openEdit}
-            variant="outline"
-            className="rounded-xl border-slate-200 bg-white font-bold h-10 text-xs hover:border-[#0D9F8C]/40"
-          >
-            <Edit2 className="h-3.5 w-3.5 mr-1.5" /> Edit Profile
-          </Button>
-          <Button
-            onClick={() => setIsDeleteOpen(true)}
-            className="rounded-xl bg-rose-50 text-rose-600 border border-rose-100 font-bold h-10 text-xs hover:bg-rose-100"
-            variant="outline"
-          >
-            <Trash2 className="h-3.5 w-3.5 mr-1.5" /> Delete Client
-          </Button>
+          {isEditor && (
+            <Button
+              onClick={openEdit}
+              variant="outline"
+              className="rounded-xl border-slate-200 bg-white font-bold h-10 text-xs hover:border-[#0D9F8C]/40"
+            >
+              <Edit2 className="h-3.5 w-3.5 mr-1.5" /> Edit Profile
+            </Button>
+          )}
+          {isDeleter && (
+            <Button
+              onClick={() => setIsDeleteOpen(true)}
+              className="rounded-xl bg-rose-50 text-rose-600 border border-rose-100 font-bold h-10 text-xs hover:bg-rose-100"
+              variant="outline"
+            >
+              <Trash2 className="h-3.5 w-3.5 mr-1.5" /> Delete Client
+            </Button>
+          )}
         </div>
       </div>
 
@@ -229,23 +238,19 @@ export function ClientDetailPage() {
           <CardContent className="p-6">
             <h2 className="text-lg font-bold tracking-tight text-[#081B2E] mb-5">Matter Timeline</h2>
             <div className="space-y-5">
-              <div className="flex gap-4">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50/60 text-[#0D9F8C] border border-emerald-100/50 shadow-sm">
-                  <CheckCircle2 className="h-5 w-5" />
+              {joinedDate && (
+                <div className="flex gap-4">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50/60 text-[#0D9F8C] border border-emerald-100/50 shadow-sm">
+                    <CheckCircle2 className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-bold text-[#081B2E]">Client Profile Created</div>
+                    <div className="text-xs text-slate-400 font-semibold mt-0.5">{joinedDate}</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="text-sm font-bold text-[#081B2E]">Client Profile Created</div>
-                  <div className="text-xs text-slate-400 font-semibold mt-0.5">{joinedDate}</div>
-                </div>
-              </div>
-              <div className="flex gap-4 opacity-40">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-400 border border-slate-200 shadow-sm">
-                  <CheckCircle2 className="h-5 w-5" />
-                </div>
-                <div>
-                  <div className="text-sm font-bold text-slate-500">Agreement Dispatch</div>
-                  <div className="text-xs text-slate-400 font-semibold mt-0.5">Pending</div>
-                </div>
+              )}
+              <div className="pt-4 text-xs font-semibold text-slate-400">
+                No further timeline events available.
               </div>
             </div>
           </CardContent>

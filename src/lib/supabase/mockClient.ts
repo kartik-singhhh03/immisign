@@ -49,13 +49,13 @@ const mockAgreements = [
     professional_fee: 3500,
     fee: "$3,500",
     matter: "Partner Visa - SC 820",
-    client: { id: "c-1", name: "Harpreet Kaur", email: "harpreet@example.com" },
+    client: { id: "c-1", name: "Harpreet Kaur", email: "harpreet@email.com" },
     creator: { id: "u-owner", name: "Rajwant Singh" },
     documents: [
       { id: "doc-1", file_name: "SC-820_Evidence_Index.pdf", storage_path: "w-avc/AGR-1048/SC-820_Evidence_Index.pdf", size: "12 KB", type: "PDF" }
     ],
     signers: [
-      { id: "s-1", full_name: "Harpreet Kaur", email: "harpreet@example.com", signing_order: 1 }
+      { id: "s-1", full_name: "Harpreet Kaur", email: "harpreet@email.com", signing_order: 1 }
     ]
   },
   {
@@ -67,7 +67,7 @@ const mockAgreements = [
     professional_fee: 2200,
     fee: "$2,200",
     matter: "Skilled Migration - SC 190",
-    client: { id: "c-2", name: "Gurpreet Singh", email: "gurpreet@example.com" },
+    client: { id: "c-2", name: "Gurpreet Singh", email: "gurpreet@email.com" },
     creator: { id: "u-owner", name: "Rajwant Singh" },
     documents: [],
     signers: []
@@ -75,14 +75,14 @@ const mockAgreements = [
 ];
 
 const mockClients = [
-  { id: "c-1", name: "Harpreet Kaur", email: "harpreet@example.com" },
-  { id: "c-2", name: "Gurpreet Singh", email: "gurpreet@example.com" }
+  { id: "c-1", name: "Harpreet Kaur", email: "harpreet@email.com" },
+  { id: "c-2", name: "Gurpreet Singh", email: "gurpreet@email.com" }
 ];
 
 const mockEmailJobs = [
   {
     id: "job-1",
-    recipient: "harpreet@example.com",
+    recipient: "harpreet@email.com",
     type: "agreement_sent",
     payload: { subject: "Agreement Sent", clientName: "Harpreet Kaur" },
     agency_id: "w-avc",
@@ -160,3 +160,4 @@ export const mockClient = {
     })
   }
 };
+

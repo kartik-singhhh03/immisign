@@ -53,27 +53,7 @@ import {
 
 
 
-const agreements = [
-  { id: "AGR-1048", client: "Harpreet Kaur", matter: "Partner Visa - SC 820", fee: "$3,500", status: "Signed", date: "19 May 2026" },
-  { id: "AGR-1047", client: "Gurpreet Singh", matter: "Skilled Migration - SC 190", fee: "$2,200", status: "Awaiting", date: "21 May 2026" },
-  { id: "AGR-1046", client: "Maninder Gill", matter: "Aged Dependent Relative - SC 838", fee: "$4,800", status: "Sent", date: "22 May 2026" },
-  { id: "AGR-1045", client: "Davinder Kaur", matter: "Student Visa - SC 500", fee: "$1,100", status: "Draft", date: "22 May 2026" },
-]
 
-const clients = [
-  { name: "Harpreet Kaur", email: "harpreet@example.com", matters: 3, stage: "Active", value: "$8,700" },
-  { name: "Gurpreet Singh", email: "gurpreet@example.com", matters: 2, stage: "Awaiting signature", value: "$4,200" },
-  { name: "Maninder Gill", email: "maninder@example.com", matters: 1, stage: "Document review", value: "$4,800" },
-  { name: "Davinder Kaur", email: "davinder@example.com", matters: 2, stage: "Drafting", value: "$2,600" },
-]
-
-function statusClass(status: string) {
-  if (status === "Signed" || status === "Active") return "border-emerald-200/70 bg-emerald-50/90 text-emerald-700 shadow-[0_0_0_1px_rgba(16,185,129,0.04),0_8px_18px_rgba(16,185,129,0.10)]"
-  if (status === "Awaiting" || status === "Awaiting signature") return "border-amber-200/70 bg-amber-50/90 text-amber-700 shadow-[0_8px_18px_rgba(245,158,11,0.10)]"
-  if (status === "Sent" || status === "Document review") return "border-blue-200/70 bg-blue-50/90 text-blue-700 shadow-[0_8px_18px_rgba(59,130,246,0.10)]"
-  if (status === "Expired") return "border-red-200/70 bg-red-50/90 text-red-700 shadow-[0_8px_18px_rgba(239,68,68,0.10)]"
-  return "border-slate-200 bg-slate-100/80 text-slate-700"
-}
 
 function PageHeader({
   eyebrow,
@@ -98,141 +78,7 @@ function PageHeader({
   )
 }
 
-function MetricCard({
-  label,
-  value,
-  change,
-  icon: Icon,
-}: {
-  label: string
-  value: string
-  change: string
-  icon: React.ComponentType<{ className?: string }>
-}) {
-  return (
-    <Card className="group rounded-2xl border border-slate-200/50 bg-white/60 shadow-[0_1px_2px_rgba(8,27,46,0.01),0_8px_24px_rgba(8,27,46,0.02)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_1px_2px_rgba(8,27,46,0.02),0_18px_48px_rgba(8,27,46,0.05)] hover:border-slate-350/50">
-      <CardContent className="relative p-6">
-        <div className="absolute right-4 top-4 h-20 w-20 rounded-full bg-[#0D9F8C]/5 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-        <div className="flex items-center justify-between">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-emerald-100/50 bg-gradient-to-b from-[#f3fcf9] to-[#ffffff] text-[#0D9F8C] shadow-[0_4px_12px_rgba(13,159,140,0.05)] group-hover:scale-105 transition-transform duration-300">
-            <Icon className="h-5 w-5" />
-          </div>
-          <span className="rounded-full border border-emerald-100/50 bg-emerald-50/50 px-2.5 py-0.5 text-xs font-bold text-[#0A8F7E]">{change}</span>
-        </div>
-        <div className="mt-6 text-[12px] font-bold uppercase tracking-wider text-slate-400">{label}</div>
-        <div className="mt-1.5 text-3xl font-bold tracking-tight text-[#081B2E]">{value}</div>
-        <div className="mt-4 h-[5px] overflow-hidden rounded-full bg-slate-100/80">
-          <div className="chart-bar h-full rounded-full bg-gradient-to-r from-[#0D9F8C] to-[#33C48D]" style={{ width: "72%" }} />
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
 
-function StatusPill({ status }: { status: string }) {
-  return (
-    <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-bold tracking-wide ${statusClass(status)}`}>
-      {status}
-    </span>
-  )
-}
-
-function Toolbar({ placeholder = "Search" }: { placeholder?: string }) {
-  return (
-    <div className="mb-6 flex flex-col gap-3 md:flex-row">
-      <div className="relative flex-1">
-        <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-        <Input placeholder={placeholder} className="h-12 rounded-2xl border-slate-200/50 bg-white/70 pl-11 shadow-[0_8px_20px_rgba(8,27,46,0.02)] placeholder:text-slate-400 focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" />
-      </div>
-      <Button variant="outline" className="h-12 rounded-2xl border-slate-200/60 bg-white/70 px-5 font-bold hover:bg-slate-50 transition-colors">
-        <Filter className="h-4 w-4" />
-        Filters
-      </Button>
-    </div>
-  )
-}
-
-function AgreementTable() {
-  return (
-    <div className="overflow-hidden rounded-2xl border border-slate-200/50 bg-white/60 shadow-[0_1px_2px_rgba(8,27,46,0.01),0_8px_24px_rgba(8,27,46,0.02)]">
-      <div className="grid grid-cols-[1.1fr_1.2fr_0.7fr_0.8fr_0.8fr_0.2fr] border-b border-slate-100 bg-slate-50/50 px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-400 max-lg:hidden">
-        <div>Client</div>
-        <div>Matter</div>
-        <div>Professional Fee</div>
-        <div>Signing Status</div>
-        <div>Sent Date</div>
-        <div />
-      </div>
-      <div className="divide-y divide-slate-100">
-        {agreements.map((agreement) => (
-          <Link
-            key={agreement.id}
-            href={`/agreements/${agreement.id}`}
-            className="group grid gap-3 px-6 py-4 transition-all duration-200 hover:bg-white/80 lg:grid-cols-[1.1fr_1.2fr_0.7fr_0.8fr_0.8fr_0.2fr] lg:items-center"
-          >
-            <div>
-              <div className="font-bold text-[#081B2E] group-hover:text-[#0D9F8C] transition-colors">{agreement.client}</div>
-              <div className="text-[11px] font-semibold text-slate-400 mt-0.5">{agreement.id}</div>
-            </div>
-            <div className="text-sm font-semibold text-slate-600">{agreement.matter}</div>
-            <div className="text-sm font-bold text-[#081B2E]">{agreement.fee}</div>
-            <div><StatusPill status={agreement.status} /></div>
-            <div className="text-sm font-medium text-slate-400">{agreement.date}</div>
-            <div className="flex justify-end">
-              <MoreHorizontal className="h-5 w-5 text-slate-400 opacity-40 group-hover:opacity-100 transition-opacity" />
-            </div>
-          </Link>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function MiniChart() {
-  return (
-    <Card className="group relative h-80 overflow-hidden rounded-2xl border border-slate-200/50 bg-white/60 p-6 shadow-[0_1px_2px_rgba(8,27,46,0.01),0_8px_24px_rgba(8,27,46,0.02)] transition-all duration-300 hover:shadow-[0_1px_2px_rgba(8,27,46,0.02),0_18px_48px_rgba(8,27,46,0.05)]">
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Throughput</div>
-          <div className="mt-1 text-xl font-bold tracking-tight text-[#081B2E]">Agreement velocity</div>
-        </div>
-        <div className="rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-xs font-bold text-[#0D9F8C] shadow-sm">+18.4% this week</div>
-      </div>
-      <div className="relative mt-8 h-48 w-full">
-        <svg className="absolute inset-0 h-full w-full" viewBox="0 0 720 200" preserveAspectRatio="none" aria-hidden="true">
-          <defs>
-            <linearGradient id="areaFill" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="#0D9F8C" stopOpacity="0.12" />
-              <stop offset="100%" stopColor="#0D9F8C" stopOpacity="0.00" />
-            </linearGradient>
-            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="3" result="blur" />
-              <feComposite in="SourceGraphic" in2="blur" operator="over" />
-            </filter>
-          </defs>
-          {/* Subtle gridlines */}
-          {[20, 60, 100, 140, 180].map((y) => (
-            <line key={y} x1="0" x2="720" y1={y} y2={y} stroke="#f1f5f3" strokeDasharray="6 8" strokeWidth="1" />
-          ))}
-          {/* Curve area */}
-          <path d="M0 150 C80 120 115 110 170 90 C245 65 255 35 320 45 C390 55 395 140 458 130 C520 120 545 95 610 88 C660 82 690 70 720 65 L720 200 L0 200 Z" fill="url(#areaFill)" />
-          {/* Curve line */}
-          <path className="chart-line" d="M0 150 C80 120 115 110 170 90 C245 65 255 35 320 45 C390 55 395 140 458 130 C520 120 545 95 610 88 C660 82 690 70 720 65" fill="none" stroke="#0D9F8C" strokeWidth="3" strokeLinecap="round" style={{ filter: "url(#glow)" }} />
-          {/* Data points */}
-          {[0, 170, 320, 458, 610, 720].map((x, index) => {
-            const y = [150, 90, 45, 130, 88, 65][index]
-            return (
-              <g key={x} className="group/dot cursor-pointer">
-                <circle cx={x} cy={y} r="8" fill="#0D9F8C" fillOpacity="0.12" className="transition-all duration-300 group-hover/dot:fill-opacity-30 group-hover/dot:r-10" />
-                <circle cx={x} cy={y} r="4" fill="#0D9F8C" stroke="white" strokeWidth="2.5" className="shadow-sm transition-all duration-300 group-hover/dot:scale-110" />
-              </g>
-            )
-          })}
-        </svg>
-      </div>
-    </Card>
-  )
-}
 
 export function NewAgreementPage() {
   const currentSlug = useAuthStore(s => s.activeWorkspace?.slug || "avc-migration")
@@ -278,30 +124,32 @@ export function NewAgreementPage() {
   
   const [formData, setFormData] = React.useState({
     // Step 1: Client
-    clientName: "Gurpreet Singh",
-    clientEmail: "gurpreet.singh@gmail.com",
-    clientPhone: "+61 402 984 102",
-    sponsorName: "Amandeep Kaur",
-    responsibleRma: "Rajwant Singh (MARN 1794016)",
+    clientName: "",
+    clientEmail: "",
+    clientPhone: "",
+    sponsorName: "",
+    responsibleRma: "",
     
     // Step 2: Matter
-    visaSubclass: "SC 820 - Partner Visa (Onshore)",
-    matterPriority: "High",
-    lodgementDeadline: "2026-10-15",
-    scopeOfWork: "Comprehensive onshore Partner Visa representation. Formulates standard matter timelines, reviews sponsor credentials, compiles evidentiary index, conducts OMARA compliant pre-lodgement checks, and manages all subsequent DHA inquiries.",
+    visaSubclass: "",
+    matterPriority: "Medium",
+    lodgementDeadline: "",
+    scopeOfWork: "",
     
     // Step 3: Fees
-    professionalFee: "4500",
-    depositRequired: "1500",
+    professionalFee: "",
+    depositRequired: "",
     billingFrequency: "Milestone instalments (50/50 split)",
     gstRequired: "Yes",
     
     // Step 4: Terms
     termsTemplate: "Standard OMARA Compliant Service Agreement",
     governingLaw: "New South Wales (NSW)",
-    additionalClauses: "CLAUSE-OMARA-MANDATE: consumer protection guide delivered. CLAUSE-REFUND-DISCLAIMER: lodgement fees are non-refundable.",
-    customNotes: "Client requires express translation assistance for native language birth certificates from Punjab.",
+    additionalClauses: "",
+    customNotes: "",
   })
+
+  const [templateHtml, setTemplateHtml] = React.useState<string>("");
 
   // Simulated live autosave whenever formData changes
   React.useEffect(() => {
@@ -313,6 +161,18 @@ export function NewAgreementPage() {
     }, 700)
     return () => clearTimeout(timer)
   }, [formData])
+
+  // Fetch actual template content
+  React.useEffect(() => {
+    fetch('/api/templates')
+      .then(res => res.json())
+      .then(data => {
+        if (data.templates && data.templates.length > 0) {
+          setTemplateHtml(data.templates[0].content?.html || "");
+        }
+      })
+      .catch(err => console.error("Failed to load templates:", err));
+  }, []);
 
   const handleFieldChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -567,107 +427,40 @@ export function NewAgreementPage() {
     </div>
   )
 
-  const renderPreviewStep = () => (
-    <div className="space-y-6">
-      {/* Dynamic Paper Style Preview */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-md font-sans max-w-full overflow-hidden text-xs text-[#081B2E] space-y-6 relative">
-        <div className="absolute right-6 top-6 rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-[#0D9F8C] border border-emerald-100">
-          DRAFT PREVIEW
-        </div>
+  const renderPreviewStep = () => {
+    let finalHtml = templateHtml || "<p>No template available.</p>";
+    
+    // Process handlebars placeholders
+    finalHtml = finalHtml.replace(/\{\{client_name\}\}/g, formData.clientName || '_______________');
+    finalHtml = finalHtml.replace(/\{\{client_email\}\}/g, formData.clientEmail || '_______________');
+    finalHtml = finalHtml.replace(/\{\{visa_subclass\}\}/g, formData.visaSubclass || '_______________');
+    finalHtml = finalHtml.replace(/\{\{fee_amount\}\}/g, formData.professionalFee ? `$${formData.professionalFee}` : '_______________');
+    finalHtml = finalHtml.replace(/\{\{deposit_amount\}\}/g, formData.depositRequired ? `$${formData.depositRequired}` : '_______________');
+    finalHtml = finalHtml.replace(/\{\{rma_name\}\}/g, formData.responsibleRma || '_______________');
+    finalHtml = finalHtml.replace(/\{\{scope_of_work\}\}/g, formData.scopeOfWork || '_______________');
 
-        {/* Header logo / details */}
-        <div className="flex justify-between items-start border-b border-slate-100 pb-6">
-          <div>
-            <div className="text-sm font-black text-[#081b36] tracking-tight">ImmiSign Legal-Tech Document</div>
-            <div className="text-xs text-slate-400 font-semibold mt-1">Ref: {formData.visaSubclass.split(" ")[1]}-AGR-PRO</div>
+    return (
+      <div className="space-y-6">
+        <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-md font-sans max-w-full overflow-hidden text-xs text-[#081B2E] space-y-6 relative">
+          <div className="absolute right-6 top-6 rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-[#0D9F8C] border border-emerald-100">
+            ACTUAL TEMPLATE PREVIEW
           </div>
-          <div className="text-right">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Governing Law</span>
-            <div className="text-[11px] font-bold text-[#0D9F8C] mt-0.5">{formData.governingLaw}</div>
-          </div>
+          <div 
+            className="prose max-w-none text-sm font-medium" 
+            dangerouslySetInnerHTML={{ __html: finalHtml }} 
+          />
         </div>
-
-        {/* Parties */}
-        <div className="grid gap-6 sm:grid-cols-2">
-          <div className="rounded-xl bg-slate-50/50 p-4 border border-slate-100">
-            <div className="text-[9px] font-black uppercase tracking-wider text-slate-400">Registered Migration Agent (RMA)</div>
-            <div className="mt-2 font-bold text-sm text-[#081b36]">{formData.responsibleRma.split(" (")[0]}</div>
-            <div className="text-xs font-semibold text-slate-500 mt-1">{formData.responsibleRma.includes("MARN") ? "OMARA MARN: " + formData.responsibleRma.split("MARN ")[1].split(")")[0] : "RMA Registered"}</div>
-            <div className="text-xs text-slate-400 mt-0.5">Sydney Office HQ, NSW</div>
-          </div>
-          <div className="rounded-xl bg-slate-50/50 p-4 border border-slate-100">
-            <div className="text-[9px] font-black uppercase tracking-wider text-slate-400">Client Signatory</div>
-            <div className="mt-2 font-bold text-sm text-[#081b36]">{formData.clientName || "(No Name Provided)"}</div>
-            <div className="text-xs font-semibold text-slate-500 mt-1">{formData.clientEmail || "client@email.com"}</div>
-            <div className="text-xs text-slate-400 mt-0.5">{formData.clientPhone || "+61 400 000 000"}</div>
-          </div>
-        </div>
-
-        {/* Matter Scope */}
-        <div>
-          <h4 className="text-xs font-black uppercase tracking-wider text-[#0D9F8C] border-b border-slate-100 pb-2 mb-3">1. Scope of Registered Services</h4>
-          <p className="leading-relaxed font-semibold text-slate-600">
-            The Agent will prepare, compile, index, and lodge a valid visa application for subclass <strong className="text-[#081b36]">{formData.visaSubclass}</strong> on behalf of <strong className="text-[#081b36]">{formData.clientName}</strong>. 
-            {formData.sponsorName && <> Sponsor support is acknowledged for <strong>{formData.sponsorName}</strong>.</>}
-          </p>
-          <div className="mt-3 p-3 bg-slate-50 rounded-lg text-slate-500 leading-relaxed font-medium italic border border-slate-100/50">
-            &ldquo;{formData.scopeOfWork || "No custom scope details structured."}&rdquo;
-          </div>
-        </div>
-
-        {/* Fees */}
-        <div>
-          <h4 className="text-xs font-black uppercase tracking-wider text-[#0D9F8C] border-b border-slate-100 pb-2 mb-3">2. Professional Fees & Milestone Payments</h4>
-          <div className="rounded-xl border border-slate-150 overflow-hidden divide-y divide-slate-150 font-semibold">
-            <div className="flex justify-between p-3 bg-slate-50/50">
-              <span className="text-slate-500">Base Professional Fee</span>
-              <span className="text-[#081B2E]">${parseFloat(formData.professionalFee || "0").toLocaleString()} AUD</span>
-            </div>
-            {formData.gstRequired === "Yes" && (
-              <div className="flex justify-between p-3">
-                <span className="text-slate-500">Australian GST (10%)</span>
-                <span className="text-[#081B2E]">${calculatedTax.toLocaleString()} AUD</span>
-              </div>
-            )}
-            <div className="flex justify-between p-3 bg-[#f7fffd]">
-              <span className="text-[#0D9F8C] font-black">Total Fee Due</span>
-              <span className="text-[#0D9F8C] font-black text-sm">${totalAmount.toLocaleString()} AUD</span>
-            </div>
-            <div className="flex justify-between p-3">
-              <span className="text-slate-500">Upfront Retainer Deposit Required</span>
-              <span className="text-[#081B2E] font-bold">${parseFloat(formData.depositRequired || "0").toLocaleString()} AUD</span>
-            </div>
-          </div>
-          <p className="mt-3 leading-relaxed text-slate-500 font-semibold text-xs">
-            Billing Frequency: <strong className="text-[#081b36]">{formData.billingFrequency}</strong>. Retainers are securely deposited to a client trust account in compliance with OMARA guidelines.
-          </p>
-        </div>
-
-        {/* Regulatory terms */}
-        <div>
-          <h4 className="text-xs font-black uppercase tracking-wider text-[#0D9F8C] border-b border-slate-100 pb-2 mb-3">3. Standard OMARA Terms & Code of Conduct</h4>
-          <p className="leading-relaxed text-slate-500 font-semibold">
-            This agreement is bound by the Australian Migration Agents Code of Conduct (OMARA). The consumer guide will be provided to the client. Governing Jurisdiction remains inside <strong className="text-[#081b36]">{formData.governingLaw}</strong>.
-          </p>
-          {formData.customNotes && (
-            <div className="mt-3 p-3 border-l-2 border-[#0D9F8C] bg-slate-50 text-xs font-semibold text-slate-600">
-              <span className="font-bold block text-slate-800 text-[9px] uppercase tracking-wider mb-1">Practitioner Note:</span>
-              {formData.customNotes}
-            </div>
-          )}
+        <div className="mt-7 flex justify-between">
+          <Button variant="outline" onClick={() => setCurrentStep(3)} className="rounded-xl border-slate-200 bg-white font-bold px-6">
+            Back
+          </Button>
+          <Button onClick={() => setCurrentStep(5)} className="rounded-xl bg-[#0D9F8C] font-bold px-6 shadow-md hover:bg-[#0A5B52]">
+            Confirm & Send <ArrowRight className="h-4 w-4 ml-1.5" />
+          </Button>
         </div>
       </div>
-
-      <div className="mt-7 flex justify-between">
-        <Button variant="outline" onClick={() => setCurrentStep(3)} className="rounded-xl border-slate-200 bg-white font-bold px-6">
-          Back
-        </Button>
-        <Button onClick={() => setCurrentStep(5)} className="rounded-xl bg-[#0D9F8C] font-bold px-6 shadow-md hover:bg-[#0A5B52]">
-          Proceed to Dispatches <ArrowRight className="h-4 w-4 ml-1.5" />
-        </Button>
-      </div>
-    </div>
-  )
+    );
+  };
 
   const renderSendStep = () => (
     <div className="space-y-6">

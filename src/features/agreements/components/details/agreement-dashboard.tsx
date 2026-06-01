@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/layout/PageHeader"
 import { StatusPill } from "@/components/saas/dashboard-pages"
 import { Agreement, AuditEvent } from "../../types"
+import { useAuthStore } from "@/store/authStore"
+import { Role, canEdit, canDelete } from "@/features/auth/types/roles"
 
 import { sendAgreementForSignatureAction } from "@/features/agreements/actions/agreements"
 
@@ -22,6 +24,10 @@ export function AgreementDashboard({
   documentUrl: string | null | undefined
 }) {
   const [sending, setSending] = React.useState(false);
+  const user = useAuthStore((s) => s.user)
+  const role = (user?.role || 'Read-only staff') as Role
+  const isEditor = canEdit(role, 'agreements')
+  const isDeleter = canDelete(role, 'agreements')
 
   const handleSend = async () => {
     try {
@@ -46,17 +52,21 @@ export function AgreementDashboard({
         description={`Manage document lifecycle, view execution status, and audit trail for ${agreement.agreement_number}.`}
         action={
           <div className="flex gap-3">
-            <Button variant="outline" className="rounded-xl border-slate-200 bg-white font-bold shadow-sm">
-              <Archive className="h-4 w-4 mr-1.5" /> Archive
-            </Button>
-            <Button 
-              onClick={handleSend}
-              disabled={sending || agreement.status === 'signed' || !documentUrl}
-              className="rounded-xl bg-[#0D9F8C] font-bold shadow-sm hover:bg-[#0A5B52] disabled:opacity-50"
-            >
-              <Send className="h-4 w-4 mr-1.5" /> 
-              {sending ? 'Sending...' : 'Request Signature'}
-            </Button>
+            {isDeleter && (
+              <Button variant="outline" className="rounded-xl border-slate-200 bg-white font-bold shadow-sm">
+                <Archive className="h-4 w-4 mr-1.5" /> Archive
+              </Button>
+            )}
+            {isEditor && (
+              <Button 
+                onClick={handleSend}
+                disabled={sending || agreement.status === 'signed' || !documentUrl}
+                className="rounded-xl bg-[#0D9F8C] font-bold shadow-sm hover:bg-[#0A5B52] disabled:opacity-50"
+              >
+                <Send className="h-4 w-4 mr-1.5" /> 
+                {sending ? 'Sending...' : 'Request Signature'}
+              </Button>
+            )}
           </div>
         }
       />
@@ -111,9 +121,11 @@ export function AgreementDashboard({
                 <h3 className="font-bold text-[#081B2E] text-sm">Generated Document</h3>
               </div>
               <div className="flex gap-2">
-                <Button variant="ghost" size="sm" className="h-8 text-xs font-semibold rounded-lg text-slate-500 hover:text-slate-800">
-                  <RefreshCw className="h-3 w-3 mr-1.5" /> Regenerate
-                </Button>
+                {isEditor && (
+                  <Button variant="ghost" size="sm" className="h-8 text-xs font-semibold rounded-lg text-slate-500 hover:text-slate-800">
+                    <RefreshCw className="h-3 w-3 mr-1.5" /> Regenerate
+                  </Button>
+                )}
                 {documentUrl && (
                   <Button variant="outline" size="sm" className="h-8 text-xs font-bold rounded-lg border-slate-200 shadow-sm" asChild>
                     <a href={documentUrl} target="_blank" rel="noreferrer">

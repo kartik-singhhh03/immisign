@@ -18,8 +18,12 @@ export default async function NewApprovalPage({ params }: { params: { agency: st
   const { data: agency } = await supabase.from('agencies').select('id, slug').eq('slug', params.agency).single();
   if (!agency) return notFound();
 
-  // Mocking auth for MVP
-  const userId = '00000000-0000-0000-0000-000000000000';
+  // Fetch the actual user ID
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return notFound();
+  }
+  const userId = user.id;
 
   return (
     <ApprovalWizard 

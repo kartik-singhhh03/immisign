@@ -37,7 +37,7 @@ export class MockApprovalRepository implements ApprovalRepository {
         title: "Partner Visa Lodgement",
         visaSubclass: "Subclass 820/801",
         clientName: "David Sharma",
-        clientEmail: "david@example.com",
+        clientEmail: "david@email.com",
         agentName: "Rajwant Singh",
         agent_id: "u-owner",
         status: "under_review",
@@ -191,4 +191,5 @@ export class MockApprovalRepository implements ApprovalRepository {
     this.saveApprovals(newApprovals)
   }
 }
+
 

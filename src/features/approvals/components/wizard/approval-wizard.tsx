@@ -15,10 +15,10 @@ export function ApprovalWizard({ agencyId, agencySlug, userId }: { agencyId: str
   const [dispatched, setDispatched] = useState(false)
   
   const [formData, setFormData] = useState({
-    title: "Partner Visa Lodgement",
-    visaSubclass: "Subclass 820",
-    clientName: "Jaskaran Singh",
-    clientEmail: "jaskaran@example.com",
+    title: "",
+    visaSubclass: "",
+    clientName: "",
+    clientEmail: "",
     notes: ""
   })
 

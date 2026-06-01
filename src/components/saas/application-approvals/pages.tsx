@@ -191,9 +191,9 @@ export function NewApplicationApprovalPage() {
               <div className="space-y-2">
                 <label className="text-sm font-bold text-slate-700">Client Email</label>
                 <Input 
-                  value={formData.clientEmail} 
+                  value={formData.clientEmail}
                   onChange={(e) => setFormData({...formData, clientEmail: e.target.value})}
-                  placeholder="john@example.com" 
+                  placeholder="client@email.com" 
                   className="bg-slate-50 h-12 rounded-xl"
                 />
               </div>

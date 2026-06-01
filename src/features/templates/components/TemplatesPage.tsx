@@ -54,6 +54,7 @@ export function TemplatesPage() {
   const [description, setDescription] = React.useState('');
   const [html, setHtml] = React.useState('<h1>{{client_name}}</h1><p>{{fee_amount}}</p>');
   const [previewHtml, setPreviewHtml] = React.useState('');
+  const [previewTemplate, setPreviewTemplate] = React.useState<TemplateRow | null>(null);
 
   const loadTemplates = React.useCallback(async () => {
     setLoading(true);
@@ -205,6 +206,7 @@ export function TemplatesPage() {
                     <DropdownMenuItem
                       onClick={() => {
                         setPreviewHtml(t.content?.html || '<p>Empty</p>');
+                        setPreviewTemplate(t);
                         setPreviewOpen(true);
                       }}
                     >
@@ -275,12 +277,18 @@ export function TemplatesPage() {
       <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
-            <DialogTitle>Preview</DialogTitle>
+            <DialogTitle className="text-xl font-bold">{previewTemplate?.name || 'Preview'}</DialogTitle>
+            {previewTemplate?.description && (
+              <p className="text-sm text-slate-500 font-medium">{previewTemplate.description}</p>
+            )}
           </DialogHeader>
-          <div
-            className="prose max-w-none rounded-xl border bg-white p-6 text-sm"
-            dangerouslySetInnerHTML={{ __html: previewHtml }}
-          />
+          <div className="mt-4 border-t border-slate-100 pt-4">
+            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Template Content</h3>
+            <div
+              className="prose max-w-none rounded-xl border border-slate-200 bg-slate-50/50 p-6 text-sm"
+              dangerouslySetInnerHTML={{ __html: previewHtml }}
+            />
+          </div>
         </DialogContent>
       </Dialog>
     </div>

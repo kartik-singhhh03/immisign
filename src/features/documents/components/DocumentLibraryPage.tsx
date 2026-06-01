@@ -90,26 +90,7 @@ export function DocumentLibraryPage() {
 
   const { data: documentsList, addDocument, loading } = useDocuments();
   
-  const __oldDocs: DocumentItem[] = [];
 
-  // Mock template select options for simulated drag/drop choose
-  const mockLocalTemplateOptions = [
-    {
-      name: "SC_482_Sponsor_Declaration_Requirements.pdf",
-      category: "Skilled Migration",
-      size: "1.1 MB",
-    },
-    {
-      name: "Parent_Visa_Subclass_103_Evidentiary_Grid.docx",
-      category: "Parent Visa",
-      size: "2.4 MB",
-    },
-    {
-      name: "AAT_Visa_Refusal_Submission_Structure.pdf",
-      category: "Appeals",
-      size: "3.6 MB",
-    },
-  ];
 
   // Filter lists
   const filteredDocs = (documentsList || []).filter((doc: any) => {

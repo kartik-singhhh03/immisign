@@ -2,6 +2,7 @@ import { stripe } from './client';
 import { SAAS_PLANS, getPlanByPriceId, PlanConfig } from './plans';
 import { createAdminClient } from '../supabase/admin';
 import { isSafeDevMode } from '../config';
+import { getAppUrl } from '@/lib/app-url';
 
 export class StripeService {
 
@@ -14,12 +15,12 @@ export class StripeService {
         }
 
         const admin = createAdminClient();
-        const { data: agency, error } = await admin.from('agencies').select('stripe_customer_id').eq('id', agencyId).single();
+        const { data: agency, error } = await admin.from('agencies').select('stripe_customer_id' as any).eq('id', agencyId).single() as any;
 
         if (error) throw new Error('Agency retrieval failed in billing');
 
-        if (agency.stripe_customer_id) {
-            return agency.stripe_customer_id;
+        if (agency && (agency as any).stripe_customer_id) {
+            return (agency as any).stripe_customer_id;
         }
 
         const customer = await stripe.customers.create({
@@ -30,7 +31,7 @@ export class StripeService {
             }
         });
 
-        await admin.from('agencies').update({ stripe_customer_id: customer.id }).eq('id', agencyId);
+        await (admin.from('agencies') as any).update({ stripe_customer_id: customer.id }).eq('id', agencyId);
         
         return customer.id;
     }
@@ -46,7 +47,7 @@ export class StripeService {
         priceId: string
      ) {
         if (isSafeDevMode) {
-            return { url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/workspace/avc-migration/billing?success=true` };
+            return { url: `${getAppUrl()}/workspace/avc-migration/billing?success=true` };
         }
         
         const customerId = await this.getOrCreateCustomer(agencyId, customerEmail, customerName);
@@ -62,8 +63,8 @@ export class StripeService {
             line_items: [
                 { price: priceId, quantity: 1 }
             ],
-            success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/billing/success?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/billing`,
+            success_url: `${getAppUrl()}/dashboard/billing/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${getAppUrl()}/dashboard/billing`,
             metadata: {
                 agency_id: agencyId,
                 user_id: userId,
@@ -84,12 +85,12 @@ export class StripeService {
      */
     async createBillingPortalSession(customerId: string, returnUrl?: string) {
         if (isSafeDevMode) {
-            return { url: returnUrl || `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/workspace/avc-migration/billing` };
+            return { url: returnUrl || `${getAppUrl()}/workspace/avc-migration/billing` };
         }
 
         const session = await stripe.billingPortal.sessions.create({
             customer: customerId,
-            return_url: returnUrl || `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/billing`,
+            return_url: returnUrl || `${getAppUrl()}/dashboard/billing`,
         });
 
         return { url: session.url };

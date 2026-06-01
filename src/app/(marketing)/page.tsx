@@ -101,7 +101,7 @@ export default function MarketingPage() {
         <div className="container relative mx-auto grid max-w-[1400px] gap-12 px-6 pb-12 pt-4 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:pb-16">
           <div className="animate-enter max-w-2xl">
             <div className="inline-flex items-center gap-2 rounded-full border border-emerald-100/60 bg-white/[0.85] px-4 py-2 text-xs font-black tracking-[-0.01em] text-[#0A5B52] shadow-[0_12px_28px_rgba(13,159,140,0.06)] backdrop-blur-xl">
-              <span className="text-[10px] font-black leading-none text-white bg-[#0D9F8C] px-1.5 py-0.5 rounded-md">AU</span>
+              <span className="text-xs font-black leading-none text-white bg-[#0D9F8C] px-1.5 py-0.5 rounded-md">AU</span>
               Built exclusively for Australian Migration Agents
             </div>
 

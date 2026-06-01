@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { format } from "date-fns"
-import { ArrowLeft, Clock, History, FileCheck2, Share, ShieldCheck } from "lucide-react"
+import { ArrowLeft, Clock, History, FileCheck2, Share, ShieldCheck, Check } from "lucide-react"
 
 export default function ApprovalDetailsPage() {
   const params = useParams()

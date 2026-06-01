@@ -26,7 +26,7 @@ export async function logAuditAction(
 
     const supabase = await createClient();
     
-    await supabase.from('audit_logs').insert([{
+    await (supabase.from('audit_logs') as any).insert([{
       agency_id: agency.id,
       user_id: user?.id || null,
       action,

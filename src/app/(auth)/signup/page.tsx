@@ -9,10 +9,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuthStore } from "@/store/authStore"
+import { createClient } from "@/lib/supabase/client"
 
 export default function SignupPage() {
   const router = useRouter()
+  const supabase = React.useMemo(() => createClient(), [])
   const { updateOnboardingData, updateOnboardingStep } = useAuthStore()
+  const [error, setError] = React.useState<string | null>(null)
 
   // Form states
   const [firstName, setFirstName] = React.useState("")
@@ -25,13 +28,13 @@ export default function SignupPage() {
   const [password, setPassword] = React.useState("")
   const [isLoading, setIsLoading] = React.useState(false)
 
-  const handleSignupSubmit = (e: React.FormEvent) => {
+  const handleSignupSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!agencyName || !email) return
+    if (!agencyName || !email || !password) return
 
     setIsLoading(true)
-    
-    // Auto-generate slug from agency name
+    setError(null)
+
     const generatedSlug = agencyName
       .toLowerCase()
       .trim()
@@ -39,22 +42,46 @@ export default function SignupPage() {
       .replace(/[\s_]+/g, "-")
       .replace(/^-+|-+$/g, "")
 
-    // Update onboarding store data
-    updateOnboardingData({
-      agencyName,
-      slug: generatedSlug || "new-agency",
-      teamSize,
-      specialty,
-      invitedStaff: [],
-      primaryColor: "#0D9F8C", // default emerald
-      logoText: agencyName.split(" ").map(w => w[0]).join("").substring(0, 3).toUpperCase()
-    })
+    try {
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          password,
+          firstName,
+          lastName,
+          agencyName,
+          slug: generatedSlug || "new-agency",
+          marn,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || "Signup failed")
 
-    setTimeout(() => {
-      setIsLoading(false)
-      updateOnboardingStep(2) // proceed to branding setup
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      })
+      if (signInError) throw signInError
+
+      updateOnboardingData({
+        agencyName,
+        slug: data.agency_slug || generatedSlug,
+        teamSize,
+        specialty,
+        invitedStaff: [],
+        primaryColor: "#0D9F8C",
+        logoText: agencyName.split(" ").map((w) => w[0]).join("").substring(0, 3).toUpperCase(),
+      })
+
+      updateOnboardingStep(2)
       router.push("/onboarding")
-    }, 800)
+    } catch (err: any) {
+      setError(err.message)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -177,6 +204,8 @@ export default function SignupPage() {
             className="h-11 rounded-xl border-slate-200 bg-white"
           />
         </label>
+
+        {error && <p className="text-sm font-semibold text-red-600">{error}</p>}
 
         <Button 
           type="submit" 

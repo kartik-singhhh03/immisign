@@ -5,9 +5,8 @@ type Role = Database['public']['Enums']['user_role'];
 
 export async function updateTeamMemberRole(id: string, role: Role) {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from('profiles')
-    .update({ role })
+  const { data, error } = await (supabase.from('users') as any)
+    .update({ role } as any)
     .eq('id', id)
     .select()
     .single();
@@ -19,9 +18,8 @@ export async function updateTeamMemberRole(id: string, role: Role) {
 export async function removeTeamMember(id: string) {
   const supabase = await createClient();
   // Simply remove them from the agency
-  const { error } = await supabase
-    .from('profiles')
-    .update({ agency_id: null })
+  const { error } = await (supabase.from('users') as any)
+    .update({ agency_id: null } as any)
     .eq('id', id);
 
   if (error) throw error;

@@ -17,13 +17,13 @@ export async function POST(req: Request) {
     const { returnUrl } = portalRequestSchema.parse(body);
 
     const admin = createAdminClient();
-    const { data: dbAgency } = await admin.from('agencies').select('stripe_customer_id').eq('id', agency.id).single();
+    const { data: dbAgency } = await admin.from('agencies').select('stripe_customer_id' as any).eq('id', agency.id).single() as any;
 
-    if (!dbAgency || !dbAgency.stripe_customer_id) {
+    if (!dbAgency || !(dbAgency as any).stripe_customer_id) {
        return NextResponse.json({ error: 'No active billing identity established.' }, { status: 400 });
     }
 
-    const session = await stripeService.createBillingPortalSession(dbAgency.stripe_customer_id, returnUrl);
+    const session = await stripeService.createBillingPortalSession((dbAgency as any).stripe_customer_id, returnUrl);
 
     return NextResponse.json({ url: session.url });
   } catch (err: any) {

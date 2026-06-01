@@ -14,8 +14,8 @@ import { useRouter } from "next/navigation"
 
 export function ApprovalList() {
   const router = useRouter()
-  const { activeWorkspace, user, simulatedRole } = useAuthStore()
-  const role = simulatedRole || user?.role
+  const { activeWorkspace, user } = useAuthStore()
+  const role = user?.role
   
   const [approvals, setApprovals] = useState<ApplicationApproval[]>([])
   const [loading, setLoading] = useState(true)

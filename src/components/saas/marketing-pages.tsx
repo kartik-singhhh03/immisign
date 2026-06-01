@@ -120,7 +120,7 @@ export function FeaturesPage() {
             <div className="md:col-span-7 md:row-span-2 rounded-2xl border border-slate-200/60 bg-[#fbfdfc] p-8 shadow-sm flex flex-col justify-between hover:shadow-elevated hover:border-[#0D9F8C]/20 transition-all duration-300">
               <div>
                 <div className="flex justify-between items-center mb-4">
-                  <span className="text-[10px] font-black uppercase text-[#0D9F8C] tracking-wider">Live Transaction Tracker</span>
+                  <span className="text-xs font-black uppercase text-[#0D9F8C] tracking-wider">Live Transaction Tracker</span>
                   <span className="px-3 py-1 rounded-full bg-emerald-50 text-[#0D9F8C] text-[9px] font-black uppercase">Verified Signed</span>
                 </div>
                 <h3 className="text-xl font-extrabold text-[#081b36]">Biometric Document Hash Log</h3>
@@ -148,7 +148,7 @@ export function FeaturesPage() {
             {/* Card 2: Compliance Checklist (5 cols, 2 rows) */}
             <div className="md:col-span-5 md:row-span-2 rounded-2xl border border-slate-200/60 bg-[#fbfdfc] p-8 shadow-sm flex flex-col justify-between hover:shadow-elevated hover:border-[#0D9F8C]/20 transition-all duration-300">
               <div>
-                <span className="text-[10px] font-black uppercase text-teal-600 tracking-wider">Regulatory Shield</span>
+                <span className="text-xs font-black uppercase text-teal-600 tracking-wider">Regulatory Shield</span>
                 <h3 className="text-lg font-extrabold text-[#081b36] mt-2">OMARA Compliance Guard</h3>
                 <p className="text-xs text-slate-400 font-semibold mt-1">Automated template locking matching mandatory disclosure rules.</p>
               </div>
@@ -179,7 +179,7 @@ export function FeaturesPage() {
               </div>
               <div>
                 <h4 className="text-xs font-extrabold text-[#081b36]">Sydney Hosting</h4>
-                <p className="text-[10px] text-slate-400 font-semibold">100% on-shore database backups.</p>
+                <p className="text-xs text-slate-400 font-semibold">100% on-shore database backups.</p>
               </div>
             </div>
 
@@ -193,7 +193,7 @@ export function FeaturesPage() {
               </div>
               <div>
                 <h4 className="text-xs font-extrabold text-[#081b36]">45-Minute Turnaround</h4>
-                <p className="text-[10px] text-slate-400 font-semibold">Average agreement turnaround speed.</p>
+                <p className="text-xs text-slate-400 font-semibold">Average agreement turnaround speed.</p>
               </div>
             </div>
 
@@ -207,7 +207,7 @@ export function FeaturesPage() {
               </div>
               <div>
                 <h4 className="text-xs font-extrabold text-[#081b36]">Granular Workspace Isolation</h4>
-                <p className="text-[10px] text-slate-400 font-semibold">Role restrictions based on assignee portfolios.</p>
+                <p className="text-xs text-slate-400 font-semibold">Role restrictions based on assignee portfolios.</p>
               </div>
             </div>
 
@@ -330,7 +330,7 @@ export function FeaturesPage() {
                 <Fingerprint className="h-8 w-8 text-[#0D9F8C]" />
                 <div>
                   <h4 className="text-xs font-extrabold text-[#081b36]">SHA-256 Integrity Verification</h4>
-                  <p className="text-[10px] text-slate-500 font-semibold">Document timestamp sealed on ap-southeast-2 Sydney server</p>
+                  <p className="text-xs text-slate-500 font-semibold">Document timestamp sealed on ap-southeast-2 Sydney server</p>
                 </div>
               </div>
             </div>
@@ -619,7 +619,7 @@ export function PricingPage() {
                 className={`rounded-2xl border bg-white p-8 flex flex-col justify-between transition-all duration-300 ${plan.popular ? "border-[#0D9F8C] shadow-elevated" : "border-slate-200/80 shadow-sm"}`}
               >
                 <div>
-                  {plan.popular && <span className="mb-5 inline-flex rounded-full bg-emerald-50 px-3 py-1 text-[10px] font-black text-[#0D9F8C] uppercase tracking-wider">Most popular</span>}
+                  {plan.popular && <span className="mb-5 inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-[#0D9F8C] uppercase tracking-wider">Most popular</span>}
                   <h3 className="text-2xl font-extrabold text-[#081b36]">{plan.name}</h3>
                   <p className="text-xs text-slate-400 font-semibold mt-1">{plan.desc}</p>
                   
@@ -630,7 +630,7 @@ export function PricingPage() {
                     {!isCustom && <span className="pb-1.5 text-sm text-slate-400 font-bold">/mo</span>}
                   </div>
                   {billingCycle === "yearly" && !isCustom && (
-                    <span className="text-[10px] font-bold text-[#0D9F8C] block mt-1">Billed annually</span>
+                    <span className="text-xs font-bold text-[#0D9F8C] block mt-1">Billed annually</span>
                   )}
 
                   <div className="mt-8 space-y-4 pt-6 border-t border-slate-100">
@@ -816,7 +816,7 @@ export function ResourcesPage() {
               {filteredResources.map((item) => (
                 <Card key={item.title} className="rounded-xl border-slate-200/80 bg-white p-7 shadow-sm flex flex-col justify-between hover:shadow-elevated transition-all duration-300">
                   <div>
-                    <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-wider text-[#0D9F8C] mb-4">
+                    <div className="flex justify-between items-center text-xs font-black uppercase tracking-wider text-[#0D9F8C] mb-4">
                       <span>{item.type}</span>
                       <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">{item.category}</span>
                     </div>
@@ -1092,7 +1092,7 @@ export function ContactPage() {
 
                 <div className="grid gap-6 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-500">Full Name</label>
+                    <label className="text-xs font-black uppercase tracking-wider text-slate-500">Full Name</label>
                     <Input
                       required
                       placeholder="e.g. Rajwant Singh"
@@ -1102,7 +1102,7 @@ export function ContactPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-500">Email Address</label>
+                    <label className="text-xs font-black uppercase tracking-wider text-slate-500">Email Address</label>
                     <Input
                       required
                       type="email"
@@ -1116,7 +1116,7 @@ export function ContactPage() {
 
                 <div className="grid gap-6 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-500">Agency Name</label>
+                    <label className="text-xs font-black uppercase tracking-wider text-slate-500">Agency Name</label>
                     <Input
                       required
                       placeholder="e.g. Australis Visa Partners"
@@ -1126,7 +1126,7 @@ export function ContactPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-500">MARN (Registered Agents Only)</label>
+                    <label className="text-xs font-black uppercase tracking-wider text-slate-500">MARN (Registered Agents Only)</label>
                     <Input
                       placeholder="7-digit MARN identifier"
                       value={formData.marn}
@@ -1138,7 +1138,7 @@ export function ContactPage() {
 
                 <div className="grid gap-6 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-500">Practitioner Count</label>
+                    <label className="text-xs font-black uppercase tracking-wider text-slate-500">Practitioner Count</label>
                     <select
                       value={formData.practitioners}
                       onChange={(e) => setFormData({ ...formData, practitioners: e.target.value })}
@@ -1151,7 +1151,7 @@ export function ContactPage() {
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-500">Milestone Volume</label>
+                    <label className="text-xs font-black uppercase tracking-wider text-slate-500">Milestone Volume</label>
                     <select
                       value={formData.throughput}
                       onChange={(e) => setFormData({ ...formData, throughput: e.target.value })}
@@ -1165,7 +1165,7 @@ export function ContactPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-wider text-slate-500">Inquiry details</label>
+                  <label className="text-xs font-black uppercase tracking-wider text-slate-500">Inquiry details</label>
                   <textarea
                     required
                     placeholder="Describe your practice onboarding, data migration, or compliance needs..."

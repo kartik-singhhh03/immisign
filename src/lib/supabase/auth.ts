@@ -53,7 +53,7 @@ export async function getCurrentProfile() {
   if (!user) return null;
 
   const { data: profile, error } = await supabase
-    .from('profiles')
+    .from('users')
     .select('*, agency:agencies(*)')
     .eq('id', user.id)
     .single();

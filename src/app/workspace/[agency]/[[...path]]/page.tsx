@@ -1,8 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { useAuthStore } from "@/store/authStore"
+import { uiRoleToDb } from "@/lib/auth/db-roles"
+import { canAccessWorkspacePath } from "@/lib/auth/route-access"
 
 // Import all subpages from saas components
 import { 
@@ -30,19 +32,31 @@ import {
 
 export default function WorkspaceCatchAllPage() {
   const params = useParams()
-  const { activeWorkspace, switchWorkspace } = useAuthStore()
+  const router = useRouter()
+  const activeWorkspace = useAuthStore((state) => state.activeWorkspace)
+  const user = useAuthStore((state) => state.user)
 
   // Extract path and agency parameters
   const agencySlug = params?.agency as string
   const rawPath = params?.path
   const path = Array.isArray(rawPath) ? rawPath : rawPath ? [rawPath] : []
+  const pathKey = path.join("/")
 
-  // Keep workspace state in sync with URL
+  // Keep the URL synced to the authenticated workspace returned by Supabase.
   React.useEffect(() => {
-    if (agencySlug && activeWorkspace?.slug !== agencySlug) {
-      switchWorkspace(agencySlug)
+    if (agencySlug && activeWorkspace && activeWorkspace.slug !== agencySlug) {
+      const nextPath = pathKey ? `/${pathKey}` : "/dashboard"
+      router.replace(`/workspace/${activeWorkspace.slug}${nextPath}`)
     }
-  }, [agencySlug, activeWorkspace, switchWorkspace])
+  }, [agencySlug, activeWorkspace, pathKey, router])
+
+  React.useEffect(() => {
+    if (!user?.role || !pathKey) return
+    const dbRole = uiRoleToDb(user.role)
+    if (!canAccessWorkspacePath(dbRole, pathKey)) {
+      router.replace(`/workspace/${agencySlug}/dashboard?access=denied`)
+    }
+  }, [user?.role, pathKey, agencySlug, router])
 
   // Resolve and render corresponding page component based on the active path array
   const renderSubPage = () => {
@@ -120,8 +134,8 @@ export default function WorkspaceCatchAllPage() {
     }
   }
 
-  // Loading state placeholder if workspace context is synchronising
-  if (agencySlug && activeWorkspace?.slug !== agencySlug) {
+  // Loading state placeholder while AuthProvider resolves the real Cloud Supabase agency.
+  if (agencySlug && (!activeWorkspace || activeWorkspace.slug !== agencySlug)) {
     return (
       <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4 text-center">
         <span className="h-8 w-8 animate-spin rounded-full border-4 border-[#0D9F8C] border-t-transparent" />

@@ -1,101 +1,133 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { verifyWebhookSignature } from '@/lib/signwell/webhooks';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { archiveCompletedSignWellPdf } from '@/lib/signwell/service';
-import { WebhookEventPayload } from '@/lib/signwell/types';
+import { signwellClient } from '@/lib/signwell/client';
+import { AgreementRepository } from '@/features/agreements/repositories/agreement.repository';
+import { AuditRepository } from '@/features/agreements/repositories/audit.repository';
+import { AgreementStatus } from '@/features/agreements/types';
+import { AppError } from '@/lib/utils/errors';
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const rawBody = await req.text();
     const signature = req.headers.get('x-signwell-signature');
 
-    // 1. Verify Webhook Authenticity
     if (!verifyWebhookSignature(rawBody, signature)) {
-      return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized webhook' }, { status: 401 });
     }
 
-    const payload = JSON.parse(rawBody) as WebhookEventPayload;
-    const eventId = payload.event.hash; 
-    const admin = createAdminClient();
+    const event = JSON.parse(rawBody);
+    const eventId = event.id; // Webhook event ID for idempotency
+    const eventType = event.event?.type;
+    const documentId = event.data?.document?.id;
 
-    // 2. Enforce Strict Idempotency via Postgres Constraints
-    // We insert into webhook_logs. If 'event_id' duplicates for 'signwell', it throws constraint error.
-    const { error: logError } = await admin
-      .from('webhook_logs')
-      .insert([{
-        provider: 'signwell',
-        event_id: eventId,
-        event_type: payload.event.event,
-        payload: payload as any,
-        status: 'processing'
-      }]);
-
-    // If it's a conflict constraint, it means we already processed this securely, ignore the loop
-    if (logError && logError.code === '23505') {
-       return NextResponse.json({ status: 'Ignored: already processed' }, { status: 200 });
-    } else if (logError) {
-       console.error("Webhook logging error: ", logError);
-       return NextResponse.json({ error: 'Internal failure' }, { status: 500 });
+    if (!eventType || !documentId) {
+      return NextResponse.json({ received: true, ignored: 'Missing required fields' });
     }
 
-    // 3. Resolve the underlying agreement
-    const signwellDocId = payload.document.id;
-    const { data: agreement, error: localAgErr } = await admin
-       .from('agreements')
-       .select('id, agency_id')
-       .eq('signwell_document_id', signwellDocId)
-       .single();
+    const supabase = createAdminClient();
 
-    if (localAgErr || !agreement) {
-        // Doc not found in our DB, mark log as missing_ref and bypass gracefully
-        await admin.from('webhook_logs').update({ status: 'orphan_reference' }).eq('event_id', eventId);
-        return NextResponse.json({ status: 'Ignored: Orphan reference' }, { status: 200 });
+    // 1. Idempotency Check
+    const { data: existingWebhook } = await supabase
+      .from('processed_webhooks')
+      .select('webhook_id')
+      .eq('webhook_id', eventId)
+      .single();
+
+    if (existingWebhook) {
+      console.log(`Webhook ${eventId} already processed. Ignoring.`);
+      return NextResponse.json({ received: true, ignored: 'Duplicate webhook' });
     }
 
-    // 4. Synchronize state cleanly
-    const eventType = payload.event.event;
-    let newStatus = 'pending';
-    let updatePayload: any = { signwell_status: payload.document.status };
+    // 2. Locate Agreement
+    const { data: agreement } = await supabase
+      .from('agreements')
+      .select('*')
+      .eq('signwell_document_id', documentId)
+      .single();
+
+    if (!agreement) {
+      console.error(`No agreement found for SignWell document ${documentId}`);
+      return NextResponse.json({ received: true, error: 'Agreement not found' }, { status: 404 });
+    }
+
+    const agreementRepo = new AgreementRepository(supabase);
+    const auditRepo = new AuditRepository(supabase);
+
+    // 3. Process Webhook Event Type
+    let newStatus: AgreementStatus | null = null;
+    let auditAction = '';
 
     if (eventType === 'document_viewed') {
-         newStatus = 'viewed';
-    } else if (eventType === 'document_completed') {
-         newStatus = 'completed';
-         updatePayload.signwell_completed_at = payload.document.updated_at;
-         
-         // Enterprise Workflow: Sync the actual completed PDF automatically into the tenant vault
-         try {
-             await archiveCompletedSignWellPdf(agreement.id, signwellDocId, agreement.agency_id);
-         } catch (e) {
-             console.error("Critical: Failed to archive signed pdf during completion hook", e);
-             // Webhook retry queue systems would kick in based upon failing HTTP status or manual job polling
-         }
-
+      // Only transition if not already signed/declined
+      if (['sent'].includes(agreement.status)) newStatus = AgreementStatus.VIEWED;
+      auditAction = 'Document Viewed';
+    } else if (eventType === 'document_signed') {
+      newStatus = AgreementStatus.SIGNED;
+      auditAction = 'Document Signed';
+      
+      // Download and save completed PDF
+      try {
+        const pdfBytes = await signwellClient.downloadCompletedPdf(documentId);
+        const storagePath = `${agreement.agency_id}/${agreement.id}/signed/completed.pdf`;
+        
+        await supabase.storage
+          .from('secure_documents')
+          .upload(storagePath, pdfBytes, { contentType: 'application/pdf', upsert: true });
+          
+        await supabase.from('documents').insert({
+          agency_id: agreement.agency_id,
+          agreement_id: agreement.id,
+          uploaded_by: agreement.created_by,
+          file_name: 'completed.pdf',
+          original_name: 'completed.pdf',
+          file_url: storagePath,
+          file_size: pdfBytes.byteLength,
+          mime_type: 'application/pdf',
+        });
+      } catch (err) {
+        console.error('Failed to preserve signed PDF', err);
+      }
+      
     } else if (eventType === 'document_declined') {
-         newStatus = 'cancelled';
-         updatePayload.signwell_declined_at = payload.document.updated_at;
+      newStatus = AgreementStatus.REJECTED;
+      auditAction = 'Document Declined';
+    } else if (eventType === 'document_expired') {
+      newStatus = AgreementStatus.EXPIRED;
+      auditAction = 'Document Expired';
+    } else {
+      // Unhandled event
+      return NextResponse.json({ received: true, ignored: 'Unhandled event type' });
     }
 
-    updatePayload.status = newStatus;
+    // 4. Update Database
+    if (newStatus) {
+      await agreementRepo.update(agreement.id, { 
+        status: newStatus,
+        ...(newStatus === AgreementStatus.SIGNED ? { completed_at: new Date().toISOString() } : {})
+      });
+    }
 
-    // 5. Update state transactional block
-    await admin.from('agreements').update(updatePayload).eq('id', agreement.id);
-    
-    // Log Audit explicitly
-    await admin.from('audit_logs').insert([{
-       agency_id: agreement.agency_id,
-       entity_type: 'agreement',
-       entity_id: agreement.id,
-       action: `webhook_${eventType}`,
-       metadata: { event_id: eventId, new_status: newStatus }
-    }]);
+    if (auditAction) {
+      await auditRepo.create({
+        agency_id: agreement.agency_id,
+        user_id: undefined, // System webhook
+        entity_type: 'agreement',
+        entity_id: agreement.id,
+        action: auditAction,
+        metadata: { webhook_id: eventId, event_type: eventType }
+      });
+    }
 
-    // Finalize tracking
-    await admin.from('webhook_logs').update({ status: 'success', processed_at: new Date().toISOString() }).eq('event_id', eventId);
+    // 5. Mark as processed
+    await supabase.from('processed_webhooks').insert({
+      webhook_id: eventId,
+      event_type: eventType
+    });
 
-    return NextResponse.json({ status: 'ok' });
-  } catch (err: any) {
-    console.error('Webhook processing error:', err);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ received: true, status: 'processed' });
+  } catch (error) {
+    console.error('SignWell Webhook Error:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

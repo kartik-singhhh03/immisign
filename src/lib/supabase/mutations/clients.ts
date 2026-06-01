@@ -8,9 +8,8 @@ export async function createClientRecord(payload: {
   phone?: string;
 }) {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from('clients')
-    .insert([payload])
+  const { data, error } = await (supabase.from('clients') as any)
+    .insert([payload as any])
     .select()
     .single();
 
@@ -20,9 +19,8 @@ export async function createClientRecord(payload: {
 
 export async function updateClientRecord(id: string, updates: any) {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from('clients')
-    .update(updates)
+  const { data, error } = await (supabase.from('clients') as any)
+    .update(updates as any)
     .eq('id', id)
     .select()
     .single();
@@ -33,7 +31,7 @@ export async function updateClientRecord(id: string, updates: any) {
 
 export async function deleteClientRecord(id: string) {
   const supabase = await createClient();
-  const { error } = await supabase.from('clients').delete().eq('id', id);
+  const { error } = await (supabase.from('clients') as any).delete().eq('id', id);
 
   if (error) throw error;
 }

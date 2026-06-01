@@ -6,9 +6,8 @@ export async function createAgreement(payload: {
   metadata?: any;
 }) {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from('agreements')
-    .insert([payload])
+  const { data, error } = await (supabase.from('agreements') as any)
+    .insert([payload as any])
     .select()
     .single();
 
@@ -18,9 +17,8 @@ export async function createAgreement(payload: {
 
 export async function updateAgreement(id: string, updates: any) {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from('agreements')
-    .update(updates)
+  const { data, error } = await (supabase.from('agreements') as any)
+    .update(updates as any)
     .eq('id', id)
     .select()
     .single();
@@ -31,7 +29,7 @@ export async function updateAgreement(id: string, updates: any) {
 
 export async function deleteAgreement(id: string) {
   const supabase = await createClient();
-  const { error } = await supabase.from('agreements').delete().eq('id', id);
+  const { error } = await (supabase.from('agreements') as any).delete().eq('id', id);
 
   if (error) throw error;
 }

@@ -1,17 +1,12 @@
 // @ts-nocheck
 import { Webhook } from "svix";
 import { headers } from "next/headers";// @ts-nocheckimport { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { Database } from "@/types/database";
-
-const supabase = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { createAdminClient } from "@/lib/supabase/admin";
 
 const webhookSecret = process.env.RESEND_WEBHOOK_SECRET;
 
 export async function POST(req: Request) {
+  const supabase = createAdminClient();
   if (!webhookSecret) {
     console.error("Missing Resend Webhook Secret");
     return NextResponse.json({ error: "Configuration error" }, { status: 500 });

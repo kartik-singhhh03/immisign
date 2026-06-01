@@ -2,6 +2,7 @@ export type ApprovalStatus =
   | "draft" 
   | "preparing" 
   | "internal_review" 
+  | "under_review"
   | "sent_to_client" 
   | "viewed" 
   | "partially_reviewed" 

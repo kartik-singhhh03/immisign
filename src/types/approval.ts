@@ -1,3 +1,4 @@
+/** @deprecated Use src/features/approvals/types/index.ts instead */
 export type ApprovalStatus = 
   | 'draft'
   | 'preparing'
@@ -94,3 +95,4 @@ export interface IApprovalAuditRepository {
   listByApplication(applicationId: string): Promise<ApprovalAuditEvent[]>;
   log(event: Omit<ApprovalAuditEvent, 'id' | 'createdAt'>): Promise<ApprovalAuditEvent>;
 }
+

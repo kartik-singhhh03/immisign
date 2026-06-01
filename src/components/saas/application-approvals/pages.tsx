@@ -4,6 +4,7 @@ import React, { useState } from "react"
 import Link from "next/link"
 import { useAuthStore } from "@/store/authStore"
 import { useApprovalStore } from "@/store/approvalStore"
+import { useApprovals } from "@/lib/hooks/useSupabaseData"
 import { PageHeader } from "@/components/layout/PageHeader"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -21,11 +22,7 @@ export function ApplicationApprovalsHomePage() {
   const currentSlug = activeWorkspace?.slug || "avc-migration"
   const currentId = activeWorkspace?.id || "w-avc"
   
-  const { approvals, fetchApprovals, isLoading } = useApprovalStore()
-
-  React.useEffect(() => {
-    fetchApprovals(currentId)
-  }, [currentId, fetchApprovals])
+  const { data: approvals, loading: isLoading } = useApprovals()
 
   return (
     <div className="animate-enter">
@@ -66,21 +63,21 @@ export function ApplicationApprovalsHomePage() {
           <div></div>
         </div>
         <div className="divide-y divide-slate-100">
-          {approvals.map((approval) => (
+          {approvals?.map((approval: any) => (
             <Link 
               href={`/workspace/${currentSlug}/application-approvals/${approval.id}`}
               key={approval.id} 
               className="grid grid-cols-[1.5fr_1fr_1fr_1.2fr_0.3fr] items-center px-6 py-4 hover:bg-slate-50 transition-colors group cursor-pointer"
             >
               <div>
-                <div className="font-bold text-slate-900 group-hover:text-[#0D9F8C] transition-colors">{approval.clientName}</div>
-                <div className="text-xs font-semibold text-slate-500">{approval.visaSubclass} • {approval.id}</div>
+                <div className="font-bold text-slate-900 group-hover:text-[#0D9F8C] transition-colors">{approval.client}</div>
+                <div className="text-xs font-semibold text-slate-500">{approval.type} • {approval.id}</div>
               </div>
               <div className="flex items-center gap-2">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-[10px] font-bold text-slate-600">
-                  {approval.agentName.charAt(0)}
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-600">
+                  A
                 </div>
-                <span className="text-sm font-medium text-slate-700">{approval.agentName}</span>
+                <span className="text-sm font-medium text-slate-700">Assigned Agent</span>
               </div>
               <div>
                 <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold leading-5 ${
@@ -92,7 +89,7 @@ export function ApplicationApprovalsHomePage() {
                 </span>
               </div>
               <div className="text-sm text-slate-500 font-medium">
-                {approval.lodgementDeadline ? new Date(approval.lodgementDeadline).toLocaleDateString() : 'N/A'}
+                {approval.date}
               </div>
               <div className="flex justify-end">
                 <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 group-hover:text-slate-900">
@@ -101,7 +98,7 @@ export function ApplicationApprovalsHomePage() {
               </div>
             </Link>
           ))}
-          {approvals.length === 0 && (
+          {approvals?.length === 0 && (
             <div className="p-12 text-center text-slate-500">
               <FileCheck2 className="mx-auto h-12 w-12 text-slate-300 mb-3" />
               <p className="font-medium text-slate-900">No application approvals yet</p>
@@ -264,23 +261,23 @@ export function ApplicationApprovalDetailPage({ id }: { id: string }) {
   const activeWorkspace = useAuthStore((state) => state.activeWorkspace)
   const user = useAuthStore((state) => state.user)
   const currentSlug = activeWorkspace?.slug || "avc-migration"
-  const currentId = activeWorkspace?.id || "w-avc"
   
-  const { activeApproval: approval, fetchApprovalById, isLoading } = useApprovalStore()
-
-  React.useEffect(() => {
-    fetchApprovalById(id, currentId)
-  }, [id, currentId, fetchApprovalById])
+  const { data: approvals, loading: isLoading } = useApprovals()
+  const approval = approvals?.find((a: any) => a.id === id) || null;
 
   if (isLoading) return <div className="p-8 text-center text-slate-500">Loading details...</div>
   if (!approval) return <div className="p-8 text-center text-slate-500 font-bold">Approval not found.</div>
 
-  const isApproved = approval.status === 'approved'
+  const isApproved = approval.status === 'Approved'
 
   // Calculate stats
-  const totalVerifications = approval.verificationChecklist.length
-  const completedVerifications = approval.verificationChecklist.filter(v => v.isCompleted).length
+  const verificationChecklist = approval.verificationChecklist || []
+  const totalVerifications = verificationChecklist.length
+  const completedVerifications = verificationChecklist.filter((v: any) => v.isCompleted).length
   const verifiedPercentage = totalVerifications > 0 ? Math.round((completedVerifications / totalVerifications) * 100) : 0
+  
+  const documents = approval.documents || []
+  const auditEvents = approval.auditEvents || []
 
   return (
     <div className="animate-enter max-w-5xl mx-auto py-8">
@@ -291,16 +288,16 @@ export function ApplicationApprovalDetailPage({ id }: { id: string }) {
       <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-8">
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-3xl font-black text-slate-900">{approval.clientName}</h1>
+            <h1 className="text-3xl font-black text-slate-900">{approval.client}</h1>
             <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold leading-5 ${
               isApproved ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
-              approval.status === 'under_review' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
+              approval.status === 'under_review' || approval.status === 'Pending Review' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
               'bg-blue-50 text-blue-700 border border-blue-200'
             }`}>
               {approval.status.replace('_', ' ').toUpperCase()}
             </span>
           </div>
-          <p className="text-slate-500 font-medium">{approval.title} • {approval.visaSubclass} • {approval.id}</p>
+          <p className="text-slate-500 font-medium">{approval.title} • {approval.type} • {approval.id}</p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline" className="font-bold border-slate-200">
@@ -322,7 +319,7 @@ export function ApplicationApprovalDetailPage({ id }: { id: string }) {
                 <FileText className="h-5 w-5 text-[#0D9F8C]"/> Application Documents
               </h2>
               <div className="space-y-3">
-                {approval.documents.map(doc => (
+                {documents.map((doc: any) => (
                   <div key={doc.id} className="flex items-center justify-between p-3 border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors">
                     <div className="flex items-center gap-3">
                       <div className="bg-blue-50 text-blue-600 p-2 rounded-lg">
@@ -336,7 +333,7 @@ export function ApplicationApprovalDetailPage({ id }: { id: string }) {
                     <Button variant="ghost" size="sm" className="text-[#0D9F8C] font-bold text-xs uppercase tracking-wider">Preview</Button>
                   </div>
                 ))}
-                {approval.documents.length === 0 && (
+                {documents.length === 0 && (
                   <div className="text-sm text-slate-500 p-4 bg-slate-50 rounded-xl text-center">No documents uploaded.</div>
                 )}
               </div>
@@ -360,7 +357,7 @@ export function ApplicationApprovalDetailPage({ id }: { id: string }) {
                 </span>
               </div>
               <div className="space-y-3">
-                {approval.verificationChecklist.map(item => (
+                {verificationChecklist.map((item: any) => (
                   <div key={item.id} className="flex items-start gap-3 p-3 border border-slate-100 rounded-xl bg-white">
                     <div className={`mt-0.5 flex-shrink-0 h-5 w-5 rounded-full flex items-center justify-center ${item.isCompleted ? 'bg-[#0D9F8C] text-white' : 'bg-slate-100 border border-slate-200 text-transparent'}`}>
                       <Check className="h-3 w-3" />
@@ -410,7 +407,11 @@ export function ApplicationApprovalDetailPage({ id }: { id: string }) {
           <Card className="border-slate-200/60 shadow-sm rounded-2xl overflow-hidden">
             <CardContent className="p-6">
               <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 mb-4">Audit Trail</h2>
-              <AuditTimeline events={approval.auditEvents} />
+              {auditEvents.length > 0 ? (
+                <AuditTimeline events={auditEvents} />
+              ) : (
+                <div className="text-sm text-slate-500">No events logged yet.</div>
+              )}
             </CardContent>
           </Card>
         </div>

@@ -4,7 +4,7 @@ export const emailJobSchema = z.object({
   recipient: z.string().email(),
   type: z.enum(['agreement_sent', 'agreement_reminder', 'agreement_completed', 'welcome_email', 'security_alert']),
   agencyId: z.string().uuid(),
-  payload: z.record(z.any()), // dynamic specific to the email type
+  payload: z.record(z.string(), z.any()), // dynamic specific to the email type
 });
 
 export const webhookPayloadSchema = z.object({

@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { PageTransition } from "./page-transition"
 import { CommandPalette } from "./command-palette"
 import { useAuthStore, User } from "@/store/authStore"
+import { createClient } from "@/lib/supabase/client"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -116,19 +117,19 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
 
   // Auth Store bindings
+  const supabase = React.useMemo(() => createClient(), [])
   const { 
     user, 
     activeWorkspace, 
-    simulatedRole, 
     workspaces, 
-    switchWorkspace, 
-    switchRole,
+    switchWorkspace,
     logout 
   } = useAuthStore()
+  const isDevEnvironment = process.env.NODE_ENV === 'development'
 
   // Use dynamic fallback if not logged in (to prevent workspace crashes during hot reload)
   const currentWorkspace = activeWorkspace || workspaces[0]
-  const currentRole = simulatedRole || user?.role || "Owner"
+  const currentRole = user?.role || "Owner"
   const currentSlug = currentWorkspace?.slug || "avc-migration"
 
   const toggleSidebar = () => setIsCollapsed(!isCollapsed)
@@ -151,7 +152,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     router.push(`/workspace/${slug}${remainingPath}`)
   }
 
-  const handleLogoutClick = () => {
+  const handleLogoutClick = async () => {
+    await supabase.auth.signOut()
     logout()
     router.push("/login")
   }
@@ -188,7 +190,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           {!isCollapsed && (
             <span className="flex items-center justify-between w-full">
               <span>{item.title}</span>
-              <span className="text-[10px] bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded font-semibold">
+              <span className="text-xs bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded font-semibold">
                 Locked
               </span>
             </span>
@@ -241,7 +243,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 )}
               >
                 <div 
-                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[4px] font-bold text-white text-[10px]"
+                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[4px] font-bold text-white text-xs"
                   style={{ backgroundColor: currentWorkspace?.color || "#0D9F8C" }}
                 >
                   {currentWorkspace?.initials || "AM"}
@@ -275,7 +277,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                     )}
                   >
                     <div 
-                      className="flex h-5 w-5 shrink-0 items-center justify-center rounded-[4px] font-bold text-white text-[10px]"
+                      className="flex h-5 w-5 shrink-0 items-center justify-center rounded-[4px] font-bold text-white text-xs"
                       style={{ backgroundColor: w.color }}
                     >
                       {w.initials}
@@ -302,46 +304,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
 
-        {/* DEVELOPER SIMULATOR SWITCHER PANEL */}
-        {!isCollapsed && (
-          <div className="mx-3 my-2 rounded-lg border border-slate-200 bg-white p-3 text-slate-800 shadow-sm">
-            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">
-              <Sliders className="h-3.5 w-3.5" />
-              Role Simulator
-            </div>
-            
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="flex w-full items-center justify-between rounded-md bg-slate-50 px-2 py-1.5 text-left text-xs font-semibold text-slate-700 hover:bg-slate-100 border border-slate-200/60 transition-colors">
-                  <span className="truncate">{currentRole}</span>
-                  <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-52 rounded-xl border-slate-200 bg-white p-1.5 shadow-md" align="start">
-                <DropdownMenuLabel className="px-2 py-1.5 text-[10px] font-bold uppercase text-slate-500">
-                  Simulate Role
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-slate-100" />
-                {(["Owner", "Admin", "Migration Agent", "Case Manager", "Assistant", "Read-only staff"] as User["role"][]).map((r) => (
-                  <DropdownMenuItem
-                    key={r}
-                    onClick={() => switchRole(r)}
-                    className={cn(
-                      "rounded-lg p-2 cursor-pointer text-xs font-medium transition-colors text-slate-700 focus:bg-slate-50",
-                      currentRole === r && "bg-slate-100 text-slate-900 font-bold"
-                    )}
-                  >
-                    {r}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-            
-            <p className="mt-2 text-[9px] text-slate-500 leading-normal font-medium">
-              Dev only: Switch roles instantly to preview dynamic navigation and access controls.
-            </p>
-          </div>
-        )}
 
         {/* Practitioner Profiles & Collapse toggle */}
         <div className="flex items-center justify-between border-t border-slate-200 p-3">
@@ -374,15 +336,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       {/* Main Content Pane */}
       <div className={cn("flex flex-1 flex-col transition-all duration-300", isCollapsed ? "lg:pl-[84px]" : "lg:pl-[272px]")}>
         
-        {/* Dynamic Simulated Role Banner Alert */}
-        {simulatedRole && simulatedRole !== user?.role && (
-          <div className="bg-amber-600 px-6 py-2 text-center text-xs font-bold text-white flex items-center justify-center gap-2 shadow-sm animate-in slide-in-from-top duration-300">
-            <ShieldAlert className="h-4 w-4 shrink-0" />
-            <span>
-              <strong>Developer Simulator Active:</strong> You are viewing the platform as an <strong className="underline">{currentRole}</strong> user. Original session account: {user?.email}.
-            </span>
-          </div>
-        )}
+
 
         {/* Top Navbar */}
         <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-4 border-b border-slate-200 bg-white/80 px-4 md:px-6 backdrop-blur-md">
@@ -403,7 +357,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 className="flex h-9 w-full items-center justify-between rounded-md border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm font-medium text-slate-500 transition-colors hover:bg-white hover:border-slate-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#0D9F8C]"
               >
                 <span>Search...</span>
-                <kbd className="hidden rounded border border-slate-200 bg-white px-1.5 font-mono text-[10px] font-medium text-slate-500 sm:inline-block">
+                <kbd className="hidden rounded border border-slate-200 bg-white px-1.5 font-mono text-xs font-medium text-slate-500 sm:inline-block">
                   ⌘K
                 </kbd>
               </button>
@@ -443,7 +397,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             {/* Dynamic Workspace Initials / Role Widget */}
             <div className="hidden flex-col items-end sm:flex text-right">
               <span className="text-sm font-semibold text-slate-800">{user?.name || "Jane Doe"}</span>
-              <span className="text-[10px] font-medium text-slate-500 mt-0.5">{currentRole} Access</span>
+              <span className="text-xs font-medium text-slate-500 mt-0.5">{currentRole} Access</span>
             </div>
 
             <DropdownMenu>

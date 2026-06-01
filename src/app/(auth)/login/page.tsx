@@ -9,11 +9,13 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useAuthStore } from "@/store/authStore"
+import { createClient } from "@/lib/supabase/client"
+
+const isDevEnvironment = process.env.NODE_ENV === 'development'
 
 export default function LoginPage() {
   const router = useRouter()
-  const { login } = useAuthStore()
+  const supabase = React.useMemo(() => createClient(), [])
 
   // Form states
   const [email, setEmail] = React.useState("")
@@ -27,9 +29,39 @@ export default function LoginPage() {
   // Collapsible Developer Panel state
   const [showDevPanel, setShowDevPanel] = React.useState(true)
 
+  const resolveSignedInWorkspace = async (
+    userId: string,
+    fallback: { slug: string; name: string },
+  ) => {
+    const { data: profile, error: profileError } = await (supabase as any)
+      .from("users")
+      .select("agency_id")
+      .eq("id", userId)
+      .single()
+
+    if (profileError || !profile?.agency_id) {
+      return fallback
+    }
+
+    const { data: agency, error: agencyError } = await (supabase as any)
+      .from("agencies")
+      .select("name, slug")
+      .eq("id", profile.agency_id)
+      .single()
+
+    if (agencyError || !agency?.slug) {
+      return fallback
+    }
+
+    return {
+      slug: agency.slug,
+      name: agency.name || fallback.name,
+    }
+  }
+
   // Quick Login seeded accounts
   const demoAccounts = [
-    { name: "Rajwant Singh", email: "owner@demoagency.com", role: "Agency Owner", workspace: "AVC Migration", slug: "avc-migration", color: "#0D9F8C", initial: "RS" },
+    { name: "Rajwant Singh", email: "testowner_1780228890060@demoagency.com", role: "Agency Owner", workspace: "AVC Migration", slug: "valid-agency-1780228892494", color: "#0D9F8C", initial: "RS" },
     { name: "Priya Mehta", email: "agent@demoagency.com", role: "Migration Agent", workspace: "AVC Migration", slug: "avc-migration", color: "#0D9F8C", initial: "PM" },
     { name: "Sarah Jenkins", email: "manager@demoagency.com", role: "Case Manager", workspace: "Global Visa Partners", slug: "global-visa", color: "#2563EB", initial: "SJ" },
     { name: "Aman Gill", email: "assistant@demoagency.com", role: "Assistant", workspace: "AVC Migration", slug: "avc-migration", color: "#0D9F8C", initial: "AG" },
@@ -74,37 +106,52 @@ export default function LoginPage() {
     }
   }, [email])
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email) return
 
     setIsLoading(true)
-    setLoadingMsg("Checking credentials...")
+    setLoadingMsg("Authenticating...")
 
-    setTimeout(() => {
-      const slug = detectedWorkspace?.slug || "avc-migration"
-      login(email, slug)
-      setLoadingMsg(`Routing into ${detectedWorkspace?.name || "AVC Migration"} workspace...`)
-      
-      setTimeout(() => {
-        router.push(`/workspace/${slug}/dashboard`)
-      }, 800)
-    }, 1000)
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    if (error) {
+      alert("Login failed: " + error.message)
+      setIsLoading(false)
+      return
+    }
+
+    const workspace = await resolveSignedInWorkspace(data.user.id, {
+      slug: detectedWorkspace?.slug || "avc-migration",
+      name: detectedWorkspace?.name || "AVC Migration",
+    })
+    setLoadingMsg(`Routing into ${workspace.name} workspace...`)
+    
+    router.push(`/workspace/${workspace.slug}/dashboard`)
   }
 
-  const handleQuickLogin = (demoEmail: string, slug: string, workspaceName: string) => {
+  const handleQuickLogin = async (demoEmail: string, slug: string, workspaceName: string) => {
     setIsLoading(true)
     setEmail(demoEmail)
-    setLoadingMsg(`Seeding session context for ${workspaceName}...`)
+    setLoadingMsg(`Authenticating as ${workspaceName} user...`)
 
-    setTimeout(() => {
-      login(demoEmail, slug)
-      setLoadingMsg(`Entering ${workspaceName} safe workspace...`)
-      
-      setTimeout(() => {
-        router.push(`/workspace/${slug}/dashboard`)
-      }, 700)
-    }, 900)
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: demoEmail,
+      password: "password123", // Use the seeded dummy password
+    })
+
+    if (error) {
+      alert("Login failed: " + error.message)
+      setIsLoading(false)
+      return
+    }
+
+    const workspace = await resolveSignedInWorkspace(data.user.id, { slug, name: workspaceName })
+    setLoadingMsg(`Entering ${workspace.name} safe workspace...`)
+    router.push(`/workspace/${workspace.slug}/dashboard`)
   }
 
   return (
@@ -237,13 +284,13 @@ export default function LoginPage() {
         <span className="relative bg-white px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Enterprise SSO Direct</span>
       </div>
 
-      {/* Google and MS SSO Buttons */}
+      {/* Google and MS SSO Buttons — dev-only quick login stubs */}
       <div className="grid gap-3 sm:grid-cols-2">
         <Button 
           variant="outline" 
           type="button" 
-          disabled={isLoading}
-          onClick={() => handleQuickLogin("owner@demoagency.com", "avc-migration", "AVC Migration")}
+          disabled={isLoading || !isDevEnvironment}
+          onClick={() => isDevEnvironment && handleQuickLogin("testowner_1780228890060@demoagency.com", "valid-agency-1780228890060", "AVC Migration")}
           className="h-11 rounded-xl border-slate-200 bg-white hover:bg-slate-50 font-bold text-xs flex items-center justify-center gap-2 text-slate-700"
         >
           <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24">
@@ -258,7 +305,7 @@ export default function LoginPage() {
           variant="outline" 
           type="button" 
           disabled={isLoading}
-          onClick={() => handleQuickLogin("manager@demoagency.com", "global-visa", "Global Visa Partners")}
+          onClick={() => isDevEnvironment && handleQuickLogin("manager@demoagency.com", "global-visa", "Global Visa Partners")}
           className="h-11 rounded-xl border-slate-200 bg-white hover:bg-slate-50 font-bold text-xs flex items-center justify-center gap-2 text-slate-700"
         >
           <svg className="h-4 w-4 text-[#0078D4]" viewBox="0 0 23 23" fill="currentColor"><path d="M0 0h11v11H0zM12 0h11v11H12zM0 12h11v11H0zM12 12h11v11H12z"/></svg>
@@ -266,7 +313,8 @@ export default function LoginPage() {
         </Button>
       </div>
 
-      {/* DEVELOPER STAGING DEMO ACCOUNTS PANEL */}
+      {/* DEVELOPER STAGING DEMO ACCOUNTS PANEL — hidden in production builds */}
+      {isDevEnvironment && (
       <div className="mt-6 rounded-2xl border border-dashed border-emerald-500/30 bg-[#F5FAF7] p-5">
         <button 
           type="button"
@@ -277,7 +325,7 @@ export default function LoginPage() {
             <Terminal className="h-4 w-4" />
             Developer Staging Accounts
           </div>
-          <span className="text-[10px] rounded bg-emerald-100/50 px-2 py-0.5 text-emerald-800">
+          <span className="text-xs rounded bg-emerald-100/50 px-2 py-0.5 text-emerald-800">
             {showDevPanel ? "Collapse" : "Expand"}
           </span>
         </button>
@@ -304,7 +352,7 @@ export default function LoginPage() {
                   </div>
                   <div className="min-w-0">
                     <div className="text-[11px] font-black text-[#081B2E] truncate">{account.name}</div>
-                    <div className="text-[10px] font-semibold text-slate-400 mt-0.5 truncate">{account.role}</div>
+                    <div className="text-xs font-semibold text-slate-400 mt-0.5 truncate">{account.role}</div>
                     <div className="text-[9px] font-black text-emerald-600 bg-emerald-50 px-1 py-0.2 rounded mt-1 inline-block">
                       {account.workspace}
                     </div>
@@ -315,6 +363,7 @@ export default function LoginPage() {
           </div>
         )}
       </div>
+      )}
 
       <p className="mt-6 text-center text-sm text-slate-500">
         New Agency?{" "}

@@ -1,3 +1,4 @@
+/** @deprecated Use src/features/auth/store instead */
 import { isSafeDevMode } from "@/lib/config";
 
 // Feature flags for safe dev mode
@@ -75,3 +76,4 @@ export const MockEmailProvider = {
     return { id: "msg_mock123", status: "delivered" };
   }
 };
+

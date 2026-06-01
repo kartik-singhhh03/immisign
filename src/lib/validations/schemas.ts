@@ -22,5 +22,5 @@ export const clientSchema = z.object({
 export const agreementSchema = z.object({
   clientId: z.string().uuid('Invalid client ID.'),
   title: z.string().min(1, 'Title is required.'),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
 });

@@ -18,12 +18,14 @@ export interface SignWellDocumentRequest {
   name: string;
   subject?: string;
   message?: string;
-  signers: SignWellSignerRequest[];
+  recipients: SignWellSignerRequest[];
   expires_in?: number;
   reminders?: boolean;
   apply_signing_order?: boolean;
   decline_redirect_url?: string;
   redirect_url?: string;
+  with_signature_page?: boolean;
+  draft?: boolean;
 }
 
 export interface SignWellDocumentResponse {

@@ -1,3 +1,4 @@
+/** @deprecated Use src/features/approvals/types/index.ts instead */
 export type ApprovalStatus = 
   | "draft" 
   | "uploaded" 
@@ -54,3 +55,4 @@ export interface AuditEvent {
   actor: string
   ipAddress?: string
 }
+

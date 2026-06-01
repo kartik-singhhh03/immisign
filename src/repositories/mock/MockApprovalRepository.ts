@@ -1,3 +1,4 @@
+/** @deprecated Use real repository from src/features/approvals/repositories instead */
 import { ApprovalRepository } from "@/repositories/interfaces/ApprovalRepository"
 import { 
   ApplicationApproval, 
@@ -190,3 +191,4 @@ export class MockApprovalRepository implements ApprovalRepository {
     this.saveApprovals(newApprovals)
   }
 }
+

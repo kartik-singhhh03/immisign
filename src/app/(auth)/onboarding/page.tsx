@@ -23,7 +23,7 @@ import { useAuthStore } from "@/store/authStore"
 
 export default function OnboardingPage() {
   const router = useRouter()
-  const { onboardingStep, onboardingData, updateOnboardingStep, updateOnboardingData, login } = useAuthStore()
+  const { onboardingStep, onboardingData, updateOnboardingStep, updateOnboardingData } = useAuthStore()
 
   // Step 1: Profile
   const [agencyName, setAgencyName] = React.useState(onboardingData.agencyName || "")
@@ -72,16 +72,7 @@ export default function OnboardingPage() {
   // Step 5 Loader triggers
   React.useEffect(() => {
     if (onboardingStep === 5) {
-      const interval = setInterval(() => {
-        setProvisionProgress((prev) => {
-          if (prev >= 100) {
-            clearInterval(interval)
-            return 100
-          }
-          return prev + 1.5
-        })
-      }, 50)
-      return () => clearInterval(interval)
+      setProvisionProgress(100)
     }
   }, [onboardingStep])
 
@@ -148,10 +139,9 @@ export default function OnboardingPage() {
   }
 
   const handleLaunch = () => {
-    // Perform simulated login
-    const userEmail = invitedList[0]?.email || "principal@demoagency.com"
-    login(userEmail, slug)
-    router.push(`/workspace/${slug}/dashboard`)
+    const workspaceSlug = slug || onboardingData.slug
+    if (!workspaceSlug) return
+    router.push(`/workspace/${workspaceSlug}/dashboard`)
   }
 
   return (
@@ -216,7 +206,7 @@ export default function OnboardingPage() {
                   className="h-9 border-none bg-transparent font-black text-[#0D9F8C] px-1 focus-visible:ring-0"
                 />
               </div>
-              <p className="text-[10px] text-slate-400 font-semibold">Only lowercase letters, numbers, and hyphens allowed.</p>
+              <p className="text-xs text-slate-400 font-semibold">Only lowercase letters, numbers, and hyphens allowed.</p>
             </div>
           </div>
 
@@ -282,7 +272,7 @@ export default function OnboardingPage() {
 
             {/* LIVE THEME PREVIEW */}
             <div className="rounded-2xl border border-slate-200/50 bg-[#F7FAF8] p-4">
-              <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Live Tenant Preview</div>
+              <div className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Live Tenant Preview</div>
               <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-subtle flex items-center gap-3">
                 <div 
                   className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl font-black text-white text-sm transition-all duration-300 shadow-md"
@@ -336,10 +326,10 @@ export default function OnboardingPage() {
           </div>
 
           <div className="grid gap-3 border border-slate-150 rounded-2xl p-4 bg-slate-50/30">
-            <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Add Member Invitation</div>
+            <div className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Add Member Invitation</div>
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="grid gap-1">
-                <span className="text-[10px] font-bold text-slate-500">Full Name</span>
+                <span className="text-xs font-bold text-slate-500">Full Name</span>
                 <Input
                   placeholder="Priya Mehta"
                   value={teamName}
@@ -348,7 +338,7 @@ export default function OnboardingPage() {
                 />
               </label>
               <label className="grid gap-1">
-                <span className="text-[10px] font-bold text-slate-500">Work Email</span>
+                <span className="text-xs font-bold text-slate-500">Work Email</span>
                 <Input
                   placeholder="priya@agency.com.au"
                   value={teamEmail}
@@ -360,7 +350,7 @@ export default function OnboardingPage() {
             
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="grid gap-1">
-                <span className="text-[10px] font-bold text-slate-500">RMA MARN (Optional)</span>
+                <span className="text-xs font-bold text-slate-500">RMA MARN (Optional)</span>
                 <Input
                   placeholder="e.g. 2189402"
                   value={teamMarn}
@@ -369,7 +359,7 @@ export default function OnboardingPage() {
                 />
               </label>
               <label className="grid gap-1">
-                <span className="text-[10px] font-bold text-slate-500">System Permission Role</span>
+                <span className="text-xs font-bold text-slate-500">System Permission Role</span>
                 <select 
                   value={teamRole}
                   onChange={(e) => setTeamRole(e.target.value)}
@@ -395,7 +385,7 @@ export default function OnboardingPage() {
 
           {/* PENDING INVITES LIST */}
           <div className="space-y-2.5">
-            <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Invited Staff ({invitedList.length})</div>
+            <div className="text-xs font-black text-slate-400 uppercase tracking-widest">Invited Staff ({invitedList.length})</div>
             {invitedList.length === 0 ? (
               <div className="rounded-xl border border-dashed border-slate-200 p-5 text-center text-xs font-bold text-slate-400 bg-white">
                 No team invites added yet. You can also configure them later in Settings.
@@ -406,7 +396,7 @@ export default function OnboardingPage() {
                   <div key={staff.email} className="flex items-center justify-between p-3">
                     <div className="min-w-0">
                       <div className="text-xs font-bold text-[#081B2E]">{staff.name}</div>
-                      <div className="text-[10px] font-semibold text-slate-400 mt-0.5">
+                      <div className="text-xs font-semibold text-slate-400 mt-0.5">
                         {staff.email} • {staff.marn !== "N/A" ? `MARN ${staff.marn}` : "No MARN"}
                       </div>
                     </div>
@@ -477,7 +467,7 @@ export default function OnboardingPage() {
                     <div className="text-xs font-black text-[#081B2E] capitalize">
                       {spec === "skilled" ? "Skilled Migration" : "Family & Partner"}
                     </div>
-                    <p className="text-[10px] text-slate-400 mt-1 font-semibold leading-normal">
+                    <p className="text-xs text-slate-400 mt-1 font-semibold leading-normal">
                       {spec === "skilled" ? "SC 189, 190, 482 visa classes." : "SC 820, 309, 143 parental streams."}
                     </p>
                   </button>

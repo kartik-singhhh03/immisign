@@ -51,7 +51,8 @@ export function AgreementWizard({ agencyId, agencySlug, userId }: { agencyId: st
       setLoadingStep(0)
 
       const payload = {
-        agencyId,
+        // agencyId intentionally omitted — the API resolves it from the
+        // authenticated session (users.agency_id) to guarantee a real UUID.
         userId,
         formData: {
           clientName: formData.clientName,
@@ -79,6 +80,7 @@ export function AgreementWizard({ agencyId, agencySlug, userId }: { agencyId: st
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       })
+
 
       if (!res.ok) {
         const errorData = await res.json()

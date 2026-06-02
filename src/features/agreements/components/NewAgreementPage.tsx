@@ -91,11 +91,10 @@ export function NewAgreementPage() {
   const handleDispatch = async () => {
     setSaving(true)
     try {
-      const activeWorkspace = useAuthStore.getState().activeWorkspace;
       const user = useAuthStore.getState().user;
       
-      if (!activeWorkspace || !user) {
-        throw new Error("No active workspace or user session");
+      if (!user) {
+        throw new Error("No active user session. Please log in again.");
       }
 
       const res = await fetch('/api/agreements/standard', {
@@ -103,7 +102,8 @@ export function NewAgreementPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           formData,
-          agencyId: activeWorkspace.id,
+          // agencyId is intentionally NOT sent — the API resolves it from
+          // the authenticated session (users.agency_id) to guarantee a real UUID.
           userId: user.id
         })
       });

@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createClient as createRawClient } from '@supabase/supabase-js';
 import { DocumentGenerationService } from '@/features/agreements/services/document-generation.service';
 import { SignWellService } from '@/features/agreements/services/signwell.service';
+import { isUuid } from '@/lib/validation/uuid';
 
 export async function POST(req: NextRequest) {
   try {
@@ -31,18 +32,48 @@ export async function POST(req: NextRequest) {
     console.log("Authenticated User in API Route:", user?.id ?? "UNAUTHENTICATED");
 
     const body = await req.json();
-    const { formData, userId } = body;
-    let { agencyId } = body;
+    const { formData } = body;
 
-    // 0. Resolve Real Agency ID if it's a frontend slug/id like 'w-avc'
-    if (agencyId && !agencyId.includes('-') || agencyId === 'w-avc' || agencyId === '00000000-0000-0000-0000-000000000000') {
-        const { data: userData } = await (supabase as any).from('users').select('agency_id').eq('id', user.id).single();
-        if (userData?.agency_id) {
-            agencyId = userData.agency_id;
-        } else {
-            // Fallback for tests if real agency not found
-            agencyId = '11111111-1111-1111-1111-111111111111'; // the seed real agency
-        }
+    // ALWAYS resolve agency_id from the authenticated session — never trust the client-sent value.
+    // This prevents slug/fake-id values from reaching Postgres.
+    if (!user) {
+      return NextResponse.json({
+        success: false,
+        error: 'You must be logged in to create an agreement.'
+      }, { status: 401 });
+    }
+
+    const { data: sessionUser, error: sessionUserError } = await (supabase as any)
+      .from('users')
+      .select('id, agency_id')
+      .eq('id', user.id)
+      .single();
+
+    if (sessionUserError || !sessionUser?.agency_id) {
+      return NextResponse.json({
+        success: false,
+        error: 'Your account is not linked to an agency. Please contact support or complete onboarding.'
+      }, { status: 400 });
+    }
+
+    const agencyId: string = sessionUser.agency_id;
+    const userId: string = user.id;
+
+    // Defensive UUID validation — return 400 before touching Postgres.
+    console.log({ agencyId, typeofAgencyId: typeof agencyId });
+
+    if (!isUuid(agencyId)) {
+      return NextResponse.json({
+        success: false,
+        error: `agency_id resolved to "${agencyId}" which is not a valid UUID. Your account may not be properly linked to an agency — please log out and log back in, or contact support.`
+      }, { status: 400 });
+    }
+
+    if (!isUuid(userId)) {
+      return NextResponse.json({
+        success: false,
+        error: `Authenticated user id resolved to "${userId}" which is not a valid UUID. Please log out and log back in.`
+      }, { status: 400 });
     }
 
     // 1. Resolve Template ID for Standard Agreement

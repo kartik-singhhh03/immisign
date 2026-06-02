@@ -1,10 +1,15 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { AuditEvent, AuditEventSchema } from '../types';
+import { assertUuid } from '@/lib/validation/uuid';
 
 export class AuditRepository {
   constructor(private readonly supabase: SupabaseClient) {}
 
   async create(event: Partial<AuditEvent>): Promise<AuditEvent> {
+    assertUuid(event.agency_id, 'agency_id');
+    assertUuid(event.user_id, 'user_id');
+    assertUuid(event.entity_id, 'entity_id');
+
     const { data, error } = await this.supabase
       .from('audit_logs')
       .insert({

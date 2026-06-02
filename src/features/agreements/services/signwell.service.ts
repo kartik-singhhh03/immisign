@@ -1,21 +1,26 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { signwellClient } from '@/lib/signwell/client';
 import { AgreementRepository } from '../repositories/agreement.repository';
-import { AuditRepository } from '../repositories/audit.repository';
 import { AgreementStateMachine } from './state-machine';
 import { AgreementStatus } from '../types';
 import { Role } from '@/features/auth/types/roles';
+import { AuditService } from './audit.service';
+import { assertUuid } from '@/lib/validation/uuid';
 
 export class SignWellService {
   private agreementRepo: AgreementRepository;
-  private auditRepo: AuditRepository;
+  private auditService: AuditService;
 
   constructor(private supabase: SupabaseClient) {
     this.agreementRepo = new AgreementRepository(supabase);
-    this.auditRepo = new AuditRepository(supabase);
+    this.auditService = new AuditService(supabase);
   }
 
   async sendForSignature(agencyId: string, userId: string, role: Role, agreementId: string) {
+    assertUuid(agencyId, 'agency_id');
+    assertUuid(userId, 'user_id');
+    assertUuid(agreementId, 'agreement_id');
+
     // 1. Validate state
     const agreement = await this.agreementRepo.getById(agreementId);
     if (!agreement || agreement.agency_id !== agencyId) throw new Error("Agreement not found");
@@ -137,14 +142,13 @@ export class SignWellService {
       sent_at: new Date().toISOString()
     });
 
-    await this.auditRepo.create({
-      agency_id: agencyId,
-      user_id: userId,
-      entity_type: 'agreement',
-      entity_id: agreementId,
-      action: 'Agreement Sent for Signature (Simulated)',
-      metadata: { signwell_document_id: signwellData.id, simulated: true }
-    });
+    await this.auditService.logEvent(
+      agencyId,
+      userId,
+      agreementId,
+      'Agreement Sent for Signature (Simulated)',
+      { signwell_document_id: signwellData.id, simulated: true },
+    );
 
     return signwellData;
   }

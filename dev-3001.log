@@ -7,47 +7,136 @@
   - Environments: .env.local
 
  ✓ Starting...
- ✓ Ready in 3.1s
- ○ Compiling /login ...
- ✓ Compiled /login in 4.5s (779 modules)
- GET /login 200 in 5180ms
- ✓ Compiled in 717ms (373 modules)
- ○ Compiling /favicon.ico ...
- ✓ Compiled /favicon.ico in 750ms (438 modules)
- GET /favicon.ico 200 in 854ms
- GET /login 200 in 509ms
- GET /favicon.ico 200 in 33ms
- GET /login 200 in 127ms
- GET /favicon.ico 200 in 33ms
- GET /login 200 in 88ms
- GET /favicon.ico 200 in 29ms
- GET /login 200 in 59ms
- GET /favicon.ico 200 in 20ms
- ○ Compiling /workspace/[agency]/dashboard ...
- ✓ Compiled /workspace/[agency]/dashboard in 3.4s (1942 modules)
- GET /workspace/valid-agency-1780228892494/dashboard 200 in 238ms
- ○ Compiling /workspace/[agency]/[[...path]] ...
- ✓ Compiled /workspace/[agency]/[[...path]] in 1012ms (1978 modules)
- GET /workspace/valid-agency-1780228892494/clients 200 in 2121ms
- ○ Compiling /workspace/[agency]/agreements ...
- ✓ Compiled /workspace/[agency]/agreements in 865ms (2056 modules)
- GET /workspace/valid-agency-1780228892494/agreements 200 in 3369ms
- ○ Compiling /workspace/[agency]/agreements/new ...
- ✓ Compiled /workspace/[agency]/agreements/new in 1047ms (2066 modules)
- GET /workspace/valid-agency-1780228892494/agreements/new 200 in 2177ms
- GET /workspace/valid-agency-1780228892494/documents/library 200 in 79ms
- GET /workspace/valid-agency-1780228892494/documents/send 200 in 103ms
- GET /workspace/valid-agency-1780228892494/templates 200 in 64ms
- GET /workspace/valid-agency-1780228892494/analytics 200 in 48ms
- GET /workspace/valid-agency-1780228892494/reports 200 in 73ms
- ○ Compiling /workspace/[agency]/billing ...
- ✓ Compiled /workspace/[agency]/billing in 775ms (2091 modules)
- GET /workspace/valid-agency-1780228892494/billing 200 in 1784ms
- ✓ Compiled /workspace/[agency]/settings in 463ms (2088 modules)
- GET /workspace/valid-agency-1780228892494/settings 200 in 1334ms
- ○ Compiling / ...
- ✓ Compiled / in 1473ms (2039 modules)
- GET / 200 in 1765ms
- GET / 200 in 65ms
- ✓ Compiled /workspace/[agency]/agreements in 421ms (1123 modules)
- ✓ Compiled /workspace/[agency]/agreements/new in 208ms (1130 modules)
+ ✓ Ready in 2.7s
+ ○ Compiling /api/agreements/standard ...
+Authenticated User in API Route: 35429e46-2966-416d-b8ff-c7e31613b7a6
+{
+  agencyId: '1cd4007e-bbe1-4205-9481-233e2fe90ee7',
+  typeofAgencyId: 'string'
+}
+Step 5: Generating PDF
+PDF Generation Result: {
+  storagePath: '1cd4007e-bbe1-4205-9481-233e2fe90ee7/agreements/1abe898a-33a7-488d-865c-848b875cfbaf/agreement-AGR-487164.pdf',
+  size: 103900,
+  timeMs: 6442
+}
+Step 6: Pushing to SignWell
+SIMULATING SIGNWELL DISPATCH. Payload: {
+  "test_mode": true,
+  "name": "Service Agreement - Dispatch UUID Fix 1780379938663",
+  "files": [
+    {
+      "name": "Agreement.pdf",
+      "file_url": "https://wnohcmgmyhamsbmkiybc.supabase.co/storage/v1/object/sign/secure_documents/1cd4007e-bbe1-4205-9481-233e2fe90ee7/agreements/1abe898a-33a7-488d-865c-848b875cfbaf/agreement-AGR-487164.pdf?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8zYTYyNjkwYy04YzkzLTRiNDAtYWM2Ni1jYzU4YmNhODllMTQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJzZWN1cmVfZG9jdW1lbnRzLzFjZDQwMDdlLWJiZTEtNDIwNS05NDgxLTIzM2UyZmU5MGVlNy9hZ3JlZW1lbnRzLzFhYmU4OThhLTMzYTctNDg4ZC04NjVjLTg0OGI4NzVjZmJhZi9hZ3JlZW1lbnQtQUdSLTQ4NzE2NC5wZGYiLCJpYXQiOjE3ODAzNzk5NTEsImV4cCI6MTc4MDM4MzU1MX0.ot0CRVgcSQrmqMCASUP2DYctA9gOi8LVxf6M6Tt1QAU"
+    }
+  ],
+  "recipients": [
+    {
+      "id": "main_applicant",
+      "name": "Phase4C Agreement Client 1780305147039",
+      "email": "contactsweatandcode@gmail.com",
+      "routing_order": 1,
+      "role": "Client"
+    },
+    {
+      "id": "migration_agent",
+      "name": "Test Cloud Owner",
+      "email": "testowner_1780228890060@demoagency.com",
+      "routing_order": 2,
+      "role": "Migration Agent"
+    }
+  ],
+  "expires_in": 30,
+  "with_signature_page": true,
+  "draft": true
+}
+SIMULATING SIGNWELL SEND for Document ID: sim_doc_c36e1406-4f3a-4b6e-b981-4e90b86b5d8b
+SignWell Result: {
+  id: 'sim_doc_c36e1406-4f3a-4b6e-b981-4e90b86b5d8b',
+  status: 'sent',
+  recipients: [
+    {
+      id: 'main_applicant',
+      name: 'Phase4C Agreement Client 1780305147039',
+      email: 'contactsweatandcode@gmail.com',
+      routing_order: 1,
+      role: 'Client'
+    },
+    {
+      id: 'migration_agent',
+      name: 'Test Cloud Owner',
+      email: 'testowner_1780228890060@demoagency.com',
+      routing_order: 2,
+      role: 'Migration Agent'
+    }
+  ],
+  simulated: true
+}
+ POST /api/agreements/standard 200 in 14833ms
+ GET /login 200 in 4813ms
+ GET /favicon.ico 200 in 363ms
+ GET /workspace/valid-agency-1780228892494/agreements/new 200 in 2534ms
+Authenticated User in API Route: 35429e46-2966-416d-b8ff-c7e31613b7a6
+{
+  agencyId: '1cd4007e-bbe1-4205-9481-233e2fe90ee7',
+  typeofAgencyId: 'string'
+}
+Step 5: Generating PDF
+PDF Generation Result: {
+  storagePath: '1cd4007e-bbe1-4205-9481-233e2fe90ee7/agreements/15265218-a65c-4ecb-9d4c-70ceedcb26c0/agreement-AGR-726523.pdf',
+  size: 103182,
+  timeMs: 5998
+}
+Step 6: Pushing to SignWell
+SIMULATING SIGNWELL DISPATCH. Payload: {
+  "test_mode": true,
+  "name": "Service Agreement - Gurpreet Singh",
+  "files": [
+    {
+      "name": "Agreement.pdf",
+      "file_url": "https://wnohcmgmyhamsbmkiybc.supabase.co/storage/v1/object/sign/secure_documents/1cd4007e-bbe1-4205-9481-233e2fe90ee7/agreements/15265218-a65c-4ecb-9d4c-70ceedcb26c0/agreement-AGR-726523.pdf?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8zYTYyNjkwYy04YzkzLTRiNDAtYWM2Ni1jYzU4YmNhODllMTQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJzZWN1cmVfZG9jdW1lbnRzLzFjZDQwMDdlLWJiZTEtNDIwNS05NDgxLTIzM2UyZmU5MGVlNy9hZ3JlZW1lbnRzLzE1MjY1MjE4LWE2NWMtNGVjYi05ZDRjLTcwY2VlZGNiMjZjMC9hZ3JlZW1lbnQtQUdSLTcyNjUyMy5wZGYiLCJpYXQiOjE3ODAzODAwMDksImV4cCI6MTc4MDM4MzYwOX0.V_p6YTI3R0P1w9QfdFJ1PKxy0cHVzpua7Sq8opi4r-U"
+    }
+  ],
+  "recipients": [
+    {
+      "id": "main_applicant",
+      "name": "Gurpreet Singh",
+      "email": "gurpreet.singh@gmail.com",
+      "routing_order": 1,
+      "role": "Client"
+    },
+    {
+      "id": "migration_agent",
+      "name": "Test Cloud Owner",
+      "email": "testowner_1780228890060@demoagency.com",
+      "routing_order": 2,
+      "role": "Migration Agent"
+    }
+  ],
+  "expires_in": 30,
+  "with_signature_page": true,
+  "draft": true
+}
+SIMULATING SIGNWELL SEND for Document ID: sim_doc_1037c224-ea47-4bff-967d-d9168383c223
+SignWell Result: {
+  id: 'sim_doc_1037c224-ea47-4bff-967d-d9168383c223',
+  status: 'sent',
+  recipients: [
+    {
+      id: 'main_applicant',
+      name: 'Gurpreet Singh',
+      email: 'gurpreet.singh@gmail.com',
+      routing_order: 1,
+      role: 'Client'
+    },
+    {
+      id: 'migration_agent',
+      name: 'Test Cloud Owner',
+      email: 'testowner_1780228890060@demoagency.com',
+      routing_order: 2,
+      role: 'Migration Agent'
+    }
+  ],
+  simulated: true
+}
+ POST /api/agreements/standard 200 in 12078ms

@@ -1,10 +1,14 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Agreement, AgreementSchema } from '../types';
+import { assertUuid } from '@/lib/validation/uuid';
 
 export class AgreementRepository {
   constructor(private readonly supabase: SupabaseClient) {}
 
   async create(agreement: Partial<Agreement>): Promise<Agreement> {
+    assertUuid(agreement.agency_id, 'agency_id');
+    assertUuid(agreement.created_by, 'created_by');
+
     const { data, error } = await this.supabase
       .from('agreements')
       .insert(agreement)
@@ -28,6 +32,10 @@ export class AgreementRepository {
   }
 
   async update(id: string, updates: Partial<Agreement>): Promise<Agreement> {
+    assertUuid(id, 'agreement_id');
+    if (updates.agency_id) assertUuid(updates.agency_id, 'agency_id');
+    if (updates.created_by) assertUuid(updates.created_by, 'created_by');
+
     const { data, error } = await this.supabase
       .from('agreements')
       .update(updates)

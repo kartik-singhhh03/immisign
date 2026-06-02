@@ -212,7 +212,10 @@ export function SettingsPage({ section = "" }: { section?: string }) {
       clearInterval(interval)
       setInviteProgress(100)
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Invitation failed')
+      if (!res.ok) {
+        const detail = data.detail ? `: ${data.detail}` : ''
+        throw new Error((data.error || 'Invitation failed') + detail)
+      }
       triggerToast(`Workspace invitation sent to ${inviteName}!`)
       setIsInviteOpen(false)
       setInviteName("")
@@ -923,12 +926,12 @@ export function SettingsPage({ section = "" }: { section?: string }) {
                   onChange={(e) => setInviteRole(e.target.value)}
                   className="flex h-11 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold focus:outline-none"
                 >
-                  <option value="Owner">Owner</option>
-                  <option value="Admin">Admin</option>
-                  <option value="Migration Agent">Migration Agent</option>
-                  <option value="Case Manager">Case Manager</option>
-                  <option value="Assistant">Assistant</option>
-                  <option value="Read-only staff">Read-only staff</option>
+                  <option value="owner">Owner</option>
+                  <option value="admin">Admin</option>
+                  <option value="agent">Migration Agent</option>
+                  <option value="manager">Case Manager</option>
+                  <option value="viewer">Read-only staff</option>
+                  <option value="support">Assistant</option>
                 </select>
               </label>
               <label className="grid gap-2 text-xs font-bold text-slate-500">

@@ -1,6 +1,44 @@
 import puppeteer from 'puppeteer-core';
 import chromium from '@sparticuz/chromium';
+import fs from 'fs';
 import os from 'os';
+import path from 'path';
+
+chromium.setGraphicsMode = false;
+
+function isLocalEnvironment(): boolean {
+  return process.env.NODE_ENV === 'development' || !process.env.VERCEL;
+}
+
+function resolveLocalChromePath(): string {
+  if (os.platform() === 'win32') {
+    return 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
+  }
+  if (os.platform() === 'darwin') {
+    return '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+  }
+  return '/usr/bin/google-chrome';
+}
+
+async function resolveChromiumExecutablePath(): Promise<string> {
+  const binCandidates = [
+    path.join(process.cwd(), 'node_modules', '@sparticuz', 'chromium', 'bin'),
+    path.join(process.cwd(), 'node_modules', '@sparticuz', 'chromium', 'build'),
+  ];
+
+  for (const binDir of binCandidates) {
+    if (fs.existsSync(binDir)) {
+      console.log('PDF_CHROMIUM_BIN_FOUND', binDir);
+      return chromium.executablePath(binDir);
+    }
+  }
+
+  console.warn('PDF_CHROMIUM_BIN_NOT_FOUND', {
+    cwd: process.cwd(),
+    candidates: binCandidates,
+  });
+  return chromium.executablePath();
+}
 
 export class PDFService {
   /**
@@ -8,40 +46,38 @@ export class PDFService {
    * On local development environments, it falls back to the native OS Chrome installation.
    */
   static async generatePdf(html: string): Promise<Buffer> {
-    const isLocal = process.env.NODE_ENV === 'development' || !process.env.VERCEL_ENV;
-    
-    let executablePath = null;
-    if (isLocal) {
-      if (os.platform() === 'win32') {
-        executablePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
-      } else if (os.platform() === 'darwin') {
-        executablePath = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-      } else {
-        executablePath = '/usr/bin/google-chrome';
-      }
-    } else {
-      executablePath = await chromium.executablePath();
-    }
+    const isLocal = isLocalEnvironment();
+
+    const executablePath = isLocal
+      ? resolveLocalChromePath()
+      : await resolveChromiumExecutablePath();
+
+    console.log('PDF_LAUNCH_CONFIG', {
+      isLocal,
+      executablePath: isLocal ? executablePath : '[chromium-resolved]',
+      vercel: Boolean(process.env.VERCEL),
+    });
 
     const browser = await puppeteer.launch({
-      args: isLocal ? [] : (await chromium.args) as any,
-      defaultViewport: isLocal ? { width: 1200, height: 800 } : ((chromium as any).defaultViewport as any),
-      executablePath: executablePath,
-      headless: isLocal ? true : ((chromium as any).headless as any),
+      args: isLocal ? ['--no-sandbox', '--disable-setuid-sandbox'] : chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath,
+      headless: chromium.headless,
     });
 
-    const page = await browser.newPage();
-    
-    // Using networkidle0 to ensure images/fonts are loaded before printing
-    await page.setContent(html, { waitUntil: 'networkidle0' as any });
-    
-    const pdfUint8Array = await page.pdf({
-      format: 'A4',
-      printBackground: true,
-      margin: { top: '20mm', right: '20mm', bottom: '20mm', left: '20mm' }
-    });
+    try {
+      const page = await browser.newPage();
+      await page.setContent(html, { waitUntil: 'networkidle0' });
 
-    await browser.close();
-    return Buffer.from(pdfUint8Array);
+      const pdfUint8Array = await page.pdf({
+        format: 'A4',
+        printBackground: true,
+        margin: { top: '20mm', right: '20mm', bottom: '20mm', left: '20mm' },
+      });
+
+      return Buffer.from(pdfUint8Array);
+    } finally {
+      await browser.close();
+    }
   }
 }

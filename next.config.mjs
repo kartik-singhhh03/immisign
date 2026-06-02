@@ -9,6 +9,15 @@ const nextConfig = {
   },
   experimental: {
     optimizePackageImports: ['lucide-react'],
+    serverComponentsExternalPackages: ['@sparticuz/chromium', 'puppeteer-core'],
+    outputFileTracingIncludes: {
+      '/api/agreements/standard': [
+        './node_modules/@sparticuz/chromium/**',
+      ],
+      '/api/poc/generate-pdf': [
+        './node_modules/@sparticuz/chromium/**',
+      ],
+    },
   },
   // Premium Vercel Deployment & Security Header Configurations
   async headers() {

@@ -84,6 +84,9 @@ export function AgreementWizard({ agencyId, agencySlug, userId }: { agencyId: st
 
       if (!res.ok) {
         const errorData = await res.json()
+        if (errorData.agreementId && errorData.stage === 'pdf_generation_failed') {
+          throw new Error(`${errorData.error} (Agreement ${errorData.agreementId} saved as draft — retry PDF from agreement details.)`)
+        }
         throw new Error(errorData.error || `HTTP ${res.status}`)
       }
 

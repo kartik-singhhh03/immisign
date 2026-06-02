@@ -1,0 +1,15 @@
+{
+  "functions": {
+    "src/app/api/agreements/standard/route.ts": {
+      "maxDuration": 60,
+      "includeFiles": "node_modules/@sparticuz/chromium/**"
+    },
+    "src/app/api/poc/generate-pdf/route.ts": {
+      "maxDuration": 60,
+      "includeFiles": "node_modules/@sparticuz/chromium/**"
+    },
+    "src/app/api/team/invite/route.ts": {
+      "maxDuration": 30
+    }
+  }
+}

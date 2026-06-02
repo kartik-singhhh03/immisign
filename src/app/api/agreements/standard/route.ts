@@ -165,15 +165,49 @@ export async function POST(req: NextRequest) {
     });
     if (pErr) throw new Error(`Payment schedule insert failed: ${pErr.message}`);
 
-    // 5. Generate PDF Document
+    // 5. Generate PDF Document — agreement record already exists; do not roll it back on PDF failure
     console.log("Step 5: Generating PDF");
     const docService = new DocumentGenerationService(supabase);
-    const result = await docService.generateDocument(agencyId, userId, agreementId);
-    console.log("PDF Generation Result:", {
-      size: result.size,
-      timeMs: result.timeMs,
-      storagePath: stripSensitiveUrlParams(result.storagePath),
-    });
+    let result: { storagePath: string; size: number; timeMs: number } | null = null;
+    try {
+      result = await docService.generateDocument(agencyId, userId, agreementId);
+      console.log("PDF Generation Result:", {
+        size: result.size,
+        timeMs: result.timeMs,
+        storagePath: stripSensitiveUrlParams(result.storagePath),
+      });
+    } catch (pdfError: any) {
+      const pdfMessage = pdfError?.message || 'PDF generation failed';
+      console.error("PDF_GENERATION_FAILED", pdfError?.stack || pdfMessage);
+
+      await (supabase as any).from('agreements').update({
+        status: 'draft',
+        metadata: {
+          ...agreementMetadata,
+          pdf_generation_error: pdfMessage,
+          pdf_generation_failed_at: new Date().toISOString(),
+        },
+      }).eq('id', agreementId).eq('agency_id', agencyId);
+
+      await (supabase as any).from('activity_logs').insert({
+        id: crypto.randomUUID(),
+        agency_id: agencyId,
+        user_id: userId,
+        type: 'agreement',
+        title: 'Agreement PDF Generation Failed',
+        description: `Service Agreement for ${formData.clientName} was created but PDF generation failed: ${pdfMessage}`,
+        reference_id: agreementId,
+        reference_type: 'agreement',
+      });
+
+      return NextResponse.json({
+        success: false,
+        stage: 'pdf_generation_failed',
+        error: pdfMessage,
+        agreementId,
+        stack: process.env.NODE_ENV === 'development' ? pdfError?.stack : undefined,
+      }, { status: 502 });
+    }
 
     // 6. Push to SignWell. If the external provider rejects the request,
     // keep the generated PDF and DB rows, but do not pretend dispatch worked.

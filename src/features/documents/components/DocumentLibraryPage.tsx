@@ -568,16 +568,7 @@ export function DocumentLibraryPage() {
 
                 {/* Actions Panel */}
                 <div className="border-t border-slate-150 pt-4 space-y-2">
-                  <div className="grid gap-2 grid-cols-2">
-                    <Button
-                      asChild
-                      onClick={() => setSelectedDoc(null)}
-                      className="h-10 rounded-xl bg-[#0D9F8C] hover:bg-[#0A5B52] font-bold text-xs text-white"
-                    >
-                      <Link href={`/workspace/${currentSlug}/agreements/new`}>
-                        Use in Wizard
-                      </Link>
-                    </Button>
+                  <div className="grid gap-2 grid-cols-1">
                     <Button
                       asChild
                       onClick={() => setSelectedDoc(null)}

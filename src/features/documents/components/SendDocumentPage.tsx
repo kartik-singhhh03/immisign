@@ -27,7 +27,7 @@ export function SendDocumentPage() {
   const user = useAuthStore(s => s.user)
   const steps = ["Type", "Upload", "Signers", "Email", "Review", "Send"]
   const [currentStep, setCurrentStep] = React.useState(0)
-  const [agreementType, setAgreementType] = React.useState<"standard" | "custom" | null>(null)
+  const [agreementType, setAgreementType] = React.useState<"custom" | null>("custom")
   const [lastSaved, setLastSaved] = React.useState("Just now")
   const [saving, setSaving] = React.useState(false)
 
@@ -194,27 +194,7 @@ export function SendDocumentPage() {
 
   const renderTypeStep = () => (
     <div className="space-y-6">
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card 
-          onClick={() => {
-            setAgreementType("standard")
-            window.location.href = `/workspace/${currentSlug}/agreements/new`
-          }}
-          className="cursor-pointer transition-all duration-300 hover:shadow-md hover:border-[#0D9F8C]/50 group"
-        >
-          <CardContent className="p-8 text-center space-y-4">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-[#0D9F8C] group-hover:scale-110 transition-transform">
-              <FileSignature className="h-8 w-8" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-[#081B2E]">Use Standard Template</h3>
-              <p className="mt-2 text-sm text-slate-500">
-                Generate an OMARA compliant agreement using our dynamic template engine.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
+      <div className="grid gap-6 md:grid-cols-1">
         <Card 
           onClick={() => {
             setAgreementType("custom")
@@ -229,7 +209,7 @@ export function SendDocumentPage() {
             <div>
               <h3 className="text-lg font-bold text-[#081B2E]">Upload Custom Agreement</h3>
               <p className="mt-2 text-sm text-slate-500">
-                Upload your own PDF or DOCX agreement and route it for signatures.
+                Upload arbitrary PDF or DOCX files and route for signatures.
               </p>
             </div>
           </CardContent>

@@ -32,7 +32,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${instrumentSerif.variable} font-sans antialiased bg-background text-foreground min-h-screen flex flex-col`}>
+      <body className={`${geistSans.variable} ${instrumentSerif.variable} font-sans antialiased bg-background text-foreground min-h-screen flex flex-col overflow-x-hidden`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <AuthProvider>
             {children}

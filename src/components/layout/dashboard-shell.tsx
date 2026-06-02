@@ -223,7 +223,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="flex min-h-screen w-full bg-[#FAFAFA] font-sans text-slate-900">
+    <div className="flex min-h-screen w-full overflow-x-hidden bg-[#FAFAFA] font-sans text-slate-900">
       
       {/* Desktop Sidebar */}
       <aside
@@ -334,7 +334,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* Main Content Pane */}
-      <div className={cn("flex flex-1 flex-col transition-all duration-300", isCollapsed ? "lg:pl-[84px]" : "lg:pl-[272px]")}>
+      <div className={cn("flex flex-1 flex-col transition-all duration-300 overflow-x-hidden", isCollapsed ? "lg:pl-[84px]" : "lg:pl-[272px]")}>
         
 
 

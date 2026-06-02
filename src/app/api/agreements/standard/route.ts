@@ -44,6 +44,7 @@ export async function POST(req: NextRequest) {
       }, { status: 401 });
     }
 
+    console.log('AGREEMENT_USER_RESOLUTION_START', JSON.stringify({ auth_user_id: user.id }));
     const { data: sessionUser, error: sessionUserError } = await (supabase as any)
       .from('users')
       .select('id, agency_id')
@@ -51,6 +52,10 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (sessionUserError || !sessionUser?.agency_id) {
+      console.error('AGREEMENT_USER_RESOLUTION_FAILED', JSON.stringify({
+        auth_user_id: user.id,
+        error: sessionUserError?.message || 'missing users row or agency_id',
+      }));
       return NextResponse.json({
         success: false,
         error: 'Your account is not linked to an agency. Please contact support or complete onboarding.'
@@ -59,6 +64,11 @@ export async function POST(req: NextRequest) {
 
     const agencyId: string = sessionUser.agency_id;
     const userId: string = user.id;
+    console.log('AGREEMENT_USER_RESOLUTION_SUCCESS', JSON.stringify({
+      auth_user_id: user.id,
+      database_user_id: sessionUser.id,
+      agency_id: agencyId,
+    }));
 
     // Defensive UUID validation — return 400 before touching Postgres.
     console.log({ agencyId, typeofAgencyId: typeof agencyId });

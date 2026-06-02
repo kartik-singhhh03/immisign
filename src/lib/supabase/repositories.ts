@@ -93,28 +93,40 @@ export class ActivityLogsRepository {
 export class ClientsRepository {
   constructor(private supabase: SupabaseClient) {}
 
-  async list(agencyId: string) {
-    const { data, error } = await this.supabase
+  async list(agencyId: string, options: { page?: number; limit?: number; search?: string } = {}) {
+    const { page = 1, limit = 10, search = '' } = options;
+    const offset = (page - 1) * limit;
+
+    let query = this.supabase
       .from('clients')
-      .select('id, agency_id, name, email, phone, created_at, updated_at, agreements(id, status, payment_schedules(total_amount, currency))')
+      .select('id, agency_id, name, email, phone, created_at, updated_at, agreements(id, status, payment_schedules(total_amount, currency))', { count: 'exact' })
       .eq('agency_id', agencyId)
-      .order('created_at', { ascending: false });
-    
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
+
+    if (search) {
+      query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%`);
+    }
+
+    const { data, error, count } = await query;
     if (error) throw error;
     
-    return data.map(c => ({
-      id: c.id,
-      name: c.name,
-      email: c.email,
-      phone: c.phone || '',
-      matters: Array.isArray((c as any).agreements) ? (c as any).agreements.length : 0,
-      stage: Array.isArray((c as any).agreements) && (c as any).agreements.some((a: any) => ['pending', 'sent', 'viewed'].includes(a.status))
-        ? 'In progress'
-        : 'Active',
-      value: this.formatAgreementValue((c as any).agreements || []),
-      created_at: c.created_at,
-      updated_at: c.updated_at
-    }));
+    return {
+      data: data.map(c => ({
+        id: c.id,
+        name: c.name,
+        email: c.email,
+        phone: c.phone || '',
+        matters: Array.isArray((c as any).agreements) ? (c as any).agreements.length : 0,
+        stage: Array.isArray((c as any).agreements) && (c as any).agreements.some((a: any) => ['pending', 'sent', 'viewed'].includes(a.status))
+          ? 'In progress'
+          : 'Active',
+        value: this.formatAgreementValue((c as any).agreements || []),
+        created_at: c.created_at,
+        updated_at: c.updated_at
+      })),
+      count: count || 0
+    };
   }
 
   private formatAgreementValue(agreements: any[]) {
@@ -193,27 +205,39 @@ export class ClientsRepository {
 export class AgreementsRepository {
   constructor(private supabase: SupabaseClient) {}
 
-  async list(agencyId: string) {
-    const { data, error } = await this.supabase
+  async list(agencyId: string, options: { page?: number; limit?: number; search?: string } = {}) {
+    const { page = 1, limit = 10, search = '' } = options;
+    const offset = (page - 1) * limit;
+
+    let query = this.supabase
       .from('agreements')
-      .select('*, clients(name, email), matter_types(name)')
+      .select('*, clients!inner(name, email), matter_types(name)', { count: 'exact' })
       .eq('agency_id', agencyId)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
       
+    if (search) {
+      query = query.or(`clients.name.ilike.%${search}%,clients.email.ilike.%${search}%`);
+    }
+
+    const { data, error, count } = await query;
     if (error) throw error;
     
-    return data.map(a => ({
-      id: a.agreement_number || a.id,
-      real_id: a.id,
-      client: a.clients?.name || a.client_name,
-      email: a.clients?.email || a.client_email,
-      matter: a.matter_types?.name || 'Standard Matter',
-      fee: '$' + (a.professional_fee || 3500).toLocaleString(),
-      status: a.status === 'pending' ? 'Sent' : a.status === 'signed' ? 'Signed' : 'Draft',
-      date: new Date(a.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-      scope: 'Professional services representation',
-      law: 'New South Wales (NSW)'
-    }));
+    return {
+      data: data.map(a => ({
+        id: a.agreement_number || a.id,
+        real_id: a.id,
+        client: a.clients?.name || a.client_name,
+        email: a.clients?.email || a.client_email,
+        matter: a.matter_types?.name || 'Standard Matter',
+        fee: '$' + (a.professional_fee || 3500).toLocaleString(),
+        status: a.status === 'pending' ? 'Sent' : a.status === 'signed' ? 'Signed' : 'Draft',
+        date: new Date(a.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+        scope: 'Professional services representation',
+        law: 'New South Wales (NSW)'
+      })),
+      count: count || 0
+    };
   }
 
   async getById(id: string) {
@@ -240,23 +264,35 @@ export class AgreementsRepository {
 export class ApprovalsRepository {
   constructor(private supabase: SupabaseClient) {}
 
-  async list(agencyId: string) {
-    const { data, error } = await this.supabase
+  async list(agencyId: string, options: { page?: number; limit?: number; search?: string } = {}) {
+    const { page = 1, limit = 10, search = '' } = options;
+    const offset = (page - 1) * limit;
+
+    let query = this.supabase
       .from('application_approvals')
-      .select('*, clients(name)')
+      .select('*, clients!inner(name)', { count: 'exact' })
       .eq('agency_id', agencyId)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
     
+    if (search) {
+      query = query.or(`title.ilike.%${search}%,clients.name.ilike.%${search}%`);
+    }
+
+    const { data, error, count } = await query;
     if (error) throw error;
     
-    return data.map(a => ({
-      id: a.id,
-      title: a.title,
-      client: a.clients?.name || 'Unknown Client',
-      type: a.visa_subclass || 'Visa',
-      status: a.status === 'pending' ? 'Pending Review' : a.status === 'approved' ? 'Approved' : 'Changes Requested',
-      date: new Date(a.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
-    }));
+    return {
+      data: data.map(a => ({
+        id: a.id,
+        title: a.title,
+        client: a.clients?.name || 'Unknown Client',
+        type: a.visa_subclass || 'Visa',
+        status: a.status === 'pending' ? 'Pending Review' : a.status === 'approved' ? 'Approved' : 'Changes Requested',
+        date: new Date(a.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+      })),
+      count: count || 0
+    };
   }
 
   async getById(id: string) {
@@ -273,13 +309,22 @@ export class ApprovalsRepository {
 export class DocumentsRepository {
   constructor(private supabase: SupabaseClient) {}
 
-  async list(agencyId: string) {
-    const { data, error } = await this.supabase
+  async list(agencyId: string, options: { page?: number; limit?: number; search?: string } = {}) {
+    const { page = 1, limit = 10, search = '' } = options;
+    const offset = (page - 1) * limit;
+
+    let query = this.supabase
       .from('documents')
-      .select('*')
+      .select('*', { count: 'exact' })
       .eq('agency_id', agencyId)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
     
+    if (search) {
+      query = query.ilike('file_name', `%${search}%`);
+    }
+
+    const { data, error, count } = await query;
     if (error) throw error;
 
     // Separate paths by bucket based on agreement_id
@@ -310,8 +355,6 @@ export class DocumentsRepository {
             signedUrlsMap[u.path] = u.signedUrl;
           }
         });
-      } else if (secureUrlError) {
-        console.error("Error creating secure signed URLs:", secureUrlError);
       }
     }
 
@@ -327,8 +370,6 @@ export class DocumentsRepository {
             signedUrlsMap[u.path] = u.signedUrl;
           }
         });
-      } else if (regularUrlError) {
-        console.error("Error creating documents signed URLs:", regularUrlError);
       }
     }
 
@@ -347,7 +388,7 @@ export class DocumentsRepository {
       };
     });
 
-    return docsWithSignedUrls;
+    return { data: docsWithSignedUrls, count: count || 0 };
   }
 
   async create(document: { file: File; agency_id: string; uploaded_by: string; agreement_id?: string; }) {
@@ -378,5 +419,202 @@ export class DocumentsRepository {
 
     if (error) throw error;
     return data;
+  }
+}
+
+export class TeamRepository {
+  constructor(private supabase: SupabaseClient) {}
+
+  async list(agencyId: string) {
+    const { data, error } = await this.supabase
+      .from('users')
+      .select('*')
+      .eq('agency_id', agencyId)
+      .order('created_at', { ascending: true });
+    
+    if (error) throw error;
+    return data;
+  }
+
+  async updateRole(userId: string, role: string) {
+    const { data, error } = await this.supabase
+      .from('users')
+      .update({ role, updated_at: new Date().toISOString() })
+      .eq('id', userId)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  }
+
+  async updateStatus(userId: string, is_active: boolean) {
+    const { data, error } = await this.supabase
+      .from('users')
+      .update({ is_active, updated_at: new Date().toISOString() })
+      .eq('id', userId)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  }
+
+  async delete(userId: string) {
+    const { error } = await this.supabase
+      .from('users')
+      .delete()
+      .eq('id', userId);
+    if (error) throw error;
+    return true;
+  }
+}
+
+export class InvitationsRepository {
+  constructor(private supabase: SupabaseClient) {}
+
+  async listPending(agencyId: string) {
+    const { data, error } = await this.supabase
+      .from('invitations')
+      .select('*')
+      .eq('agency_id', agencyId)
+      .is('accepted_at', null)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data;
+  }
+
+  async cancel(inviteId: string) {
+    const { error } = await this.supabase
+      .from('invitations')
+      .delete()
+      .eq('id', inviteId);
+    if (error) throw error;
+    return true;
+  }
+}
+
+export class AgencyRepository {
+  constructor(private supabase: SupabaseClient) {}
+
+  async updateProfile(agencyId: string, updates: any) {
+    const { data, error } = await this.supabase
+      .from('agencies')
+      .update({
+        name: updates.name,
+        timezone: updates.timezone,
+        address: updates.address,
+        marn: updates.marn,
+        abn: updates.abn,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', agencyId)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  }
+}
+
+export class BrandingRepository {
+  constructor(private supabase: SupabaseClient) {}
+
+  async updateBranding(agencyId: string, updates: any) {
+    const { data, error } = await this.supabase
+      .from('branding_settings')
+      .upsert({
+        agency_id: agencyId,
+        primary_color: updates.primary_color,
+        logo_url: updates.logo_url,
+        email_footer: updates.email_footer,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'agency_id' })
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  }
+
+  async getBranding(agencyId: string) {
+    const { data, error } = await this.supabase
+      .from('branding_settings')
+      .select('*')
+      .eq('agency_id', agencyId)
+      .single();
+    if (error && error.code !== 'PGRST116') throw error;
+    return data;
+  }
+}
+
+export class MatterDefaultsRepository {
+  constructor(private supabase: SupabaseClient) {}
+
+  async updateDefaults(agencyId: string, updates: any) {
+    // Falls back gracefully if table doesn't exist during dev
+    const { data, error } = await this.supabase
+      .from('matter_defaults')
+      .upsert({
+        agency_id: agencyId,
+        default_professional_fee: updates.default_professional_fee,
+        default_payment_terms: updates.default_payment_terms,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'agency_id' })
+      .select()
+      .single();
+    
+    if (error) {
+       console.warn("Matter defaults upsert failed, possibly missing table:", error.message);
+       return null;
+    }
+    return data;
+  }
+
+  async getDefaults(agencyId: string) {
+    const { data, error } = await this.supabase
+      .from('matter_defaults')
+      .select('*')
+      .eq('agency_id', agencyId)
+      .single();
+    if (error && error.code !== 'PGRST116') {
+        console.warn("Matter defaults fetch failed:", error.message);
+        return null;
+    }
+    return data;
+  }
+}
+
+export class ClausesRepository {
+  constructor(private supabase: SupabaseClient) {}
+
+  async list(agencyId: string) {
+    const { data, error } = await this.supabase
+      .from('agreement_clauses')
+      .select('*')
+      .eq('agency_id', agencyId)
+      .order('order_index', { ascending: true });
+    if (error) throw error;
+    return data;
+  }
+
+  async create(agencyId: string, clause: any) {
+    const { data, error } = await this.supabase
+      .from('agreement_clauses')
+      .insert({
+        agency_id: agencyId,
+        title: clause.title,
+        content: clause.content,
+        is_mandatory: clause.is_mandatory || false,
+      })
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  }
+
+  async delete(clauseId: string) {
+    const { error } = await this.supabase
+      .from('agreement_clauses')
+      .delete()
+      .eq('id', clauseId);
+    if (error) throw error;
+    return true;
   }
 }

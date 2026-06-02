@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { useAuthStore } from "@/store/authStore"
-import { useApprovalStore } from "@/store/approvalStore"
 import Link from "next/link"
 import {
   ArrowRight,
@@ -16,43 +15,27 @@ import {
   FileCheck2,
   FileSignature,
   FileText,
-  Filter,
-  FolderOpen,
-  LayoutGrid,
   MoreHorizontal,
   Plus,
-  Search,
   Send,
   UploadCloud,
-  ShieldCheck,
-  Trash2,
-  X,
-  Palette,
   Users,
   ShieldAlert,
-  Check,
+  Activity,
+  UserPlus
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu"
 import { StatusPill } from "@/components/saas/dashboard-pages"
 
-import { useDashboardMetrics, useAgreements, useApprovals } from "@/lib/hooks/useSupabaseData"
+import { 
+  useDashboardMetrics, 
+  useAgreements, 
+  usePendingSignatures, 
+  useTeamActivity 
+} from "@/lib/hooks/useSupabaseData"
 
 export function PageHeader({
   eyebrow,
@@ -77,32 +60,38 @@ export function PageHeader({
   )
 }
 
-function MetricCard({
-  label,
-  value,
-  change,
-  icon: Icon,
-}: {
-  label: string
-  value: string
-  change: string
-  icon: React.ComponentType<{ className?: string }>
+function MetricCard({ 
+  label, 
+  value, 
+  change, 
+  trend,
+  icon: Icon
+}: { 
+  label: string; 
+  value: string; 
+  change: string; 
+  trend: 'up' | 'down' | 'neutral';
+  icon: React.ElementType
 }) {
   return (
-    <Card className="group rounded-2xl border border-slate-200/50 bg-white/60 shadow-[0_1px_2px_rgba(8,27,46,0.01),0_8px_24px_rgba(8,27,46,0.02)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_1px_2px_rgba(8,27,46,0.02),0_18px_48px_rgba(8,27,46,0.05)] hover:border-slate-350/50">
-      <CardContent className="relative p-6">
-        <div className="absolute right-4 top-4 h-20 w-20 rounded-full bg-[#0D9F8C]/5 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+    <Card className="group relative overflow-hidden rounded-3xl border border-slate-200/50 bg-white/60 p-6 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
+      <div className="absolute -right-4 -top-4 rounded-full bg-[#0D9F8C]/5 p-8 transition-transform group-hover:scale-150 group-hover:bg-[#0D9F8C]/10">
+        <Icon className="h-8 w-8 text-[#0D9F8C]/40" />
+      </div>
+      <CardContent className="p-0 relative z-10">
         <div className="flex items-center justify-between">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-emerald-100/50 bg-gradient-to-b from-[#f3fcf9] to-[#ffffff] text-[#0D9F8C] shadow-[0_4px_12px_rgba(13,159,140,0.05)] group-hover:scale-105 transition-transform duration-300">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-sm border border-slate-100 text-[#0D9F8C]">
             <Icon className="h-5 w-5" />
           </div>
-          <span className="rounded-full border border-emerald-100/50 bg-emerald-50/50 px-2.5 py-0.5 text-xs font-bold text-[#0A8F7E]">{change}</span>
+          <div className={cn(
+            "flex items-center gap-1 text-[11px] font-bold rounded-full px-2.5 py-0.5",
+            trend === 'up' ? "bg-emerald-50 text-emerald-600" : trend === 'down' ? "bg-rose-50 text-rose-600" : "bg-slate-50 text-slate-600"
+          )}>
+            {change}
+          </div>
         </div>
-        <div className="mt-6 text-[12px] font-bold uppercase tracking-wider text-slate-400">{label}</div>
-        <div className="mt-1.5 text-3xl font-bold tracking-tight text-[#081B2E]">{value}</div>
-        <div className="mt-4 h-[5px] overflow-hidden rounded-full bg-slate-100/80">
-          <div className="chart-bar h-full rounded-full bg-gradient-to-r from-[#0D9F8C] to-[#33C48D]" style={{ width: "72%" }} />
-        </div>
+        <div className="mt-4 text-4xl font-black tracking-tight text-[#081B2E]">{value}</div>
+        <div className="mt-1 text-[13px] font-bold text-slate-500">{label}</div>
       </CardContent>
     </Card>
   )
@@ -111,30 +100,30 @@ function MetricCard({
 function AgreementTable() {
   const { data: agreements, loading } = useAgreements()
   
-  if (loading) return <div className="p-8 text-center text-slate-500 font-medium">Loading agreements...</div>
-  if (!agreements?.length) return <div className="p-8 text-center text-slate-500 font-medium">No recent agreements.</div>
+  if (loading) return <div className="p-8 text-center text-slate-400 font-semibold animate-pulse">Loading agreements...</div>
+  if (!agreements?.length) return <div className="p-8 text-center text-slate-500 font-medium">No recent agreements found.</div>
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-slate-200/50 bg-white/60 shadow-[0_1px_2px_rgba(8,27,46,0.01),0_8px_24px_rgba(8,27,46,0.02)]">
+    <div className="overflow-hidden rounded-2xl border border-slate-200/50 bg-white shadow-sm">
       <div className="grid grid-cols-[1.1fr_1.2fr_0.7fr_0.8fr_0.8fr_0.2fr] border-b border-slate-100 bg-slate-50/50 px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-400 max-lg:hidden">
         <div>Client</div>
         <div>Matter</div>
         <div>Professional Fee</div>
-        <div>Signing Status</div>
-        <div>Sent Date</div>
+        <div>Status</div>
+        <div>Created</div>
         <div />
       </div>
       <div className="divide-y divide-slate-100">
         {agreements.map((agreement) => (
           <div
             key={agreement.id}
-            className="group grid gap-3 px-6 py-4 transition-all duration-200 hover:bg-white/80 lg:grid-cols-[1.1fr_1.2fr_0.7fr_0.8fr_0.8fr_0.2fr] lg:items-center text-xs font-semibold"
+            className="group grid gap-3 px-6 py-4 transition-all duration-200 hover:bg-slate-50/80 lg:grid-cols-[1.1fr_1.2fr_0.7fr_0.8fr_0.8fr_0.2fr] lg:items-center text-xs font-semibold"
           >
             <div>
               <div className="font-bold text-[#081B2E] group-hover:text-[#0D9F8C] transition-colors">{agreement.client}</div>
-              <div className="text-xs font-semibold text-slate-400 mt-0.5">{agreement.id}</div>
+              <div className="text-xs font-semibold text-slate-400 mt-0.5">{agreement.id.slice(0,8)}...</div>
             </div>
-            <div className="text-slate-600">{agreement.matter}</div>
+            <div className="text-slate-600 truncate pr-4">{agreement.matter}</div>
             <div className="font-bold text-[#081B2E]">{agreement.fee}</div>
             <div><StatusPill status={agreement.status} /></div>
             <div className="text-slate-400 font-medium">{agreement.date}</div>
@@ -148,319 +137,180 @@ function AgreementTable() {
   )
 }
 
-function MiniChart() {
+function PendingSignatures() {
+  const { data: pending, loading } = usePendingSignatures();
+
+  if (loading) return <div className="p-6 text-center text-slate-400 font-semibold animate-pulse">Loading signatures...</div>
+  if (!pending?.length) return (
+    <div className="py-10 text-center flex flex-col items-center gap-3">
+      <div className="h-12 w-12 rounded-full bg-slate-50 flex items-center justify-center border border-slate-100">
+        <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+      </div>
+      <p className="text-sm font-semibold text-slate-500">No pending signatures.</p>
+    </div>
+  )
+
   return (
-    <Card className="group relative h-80 overflow-hidden rounded-2xl border border-slate-200/50 bg-white/60 p-6 shadow-[0_1px_2px_rgba(8,27,46,0.01),0_8px_24px_rgba(8,27,46,0.02)] transition-all duration-300 hover:shadow-[0_1px_2px_rgba(8,27,46,0.02),0_18px_48px_rgba(8,27,46,0.05)]">
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Throughput</div>
-          <div className="mt-1 text-xl font-bold tracking-tight text-[#081B2E]">Agreement velocity</div>
+    <div className="divide-y divide-slate-100 px-2">
+      {pending.map((p) => (
+        <div key={p.id} className="flex gap-4 py-4 group cursor-pointer hover:bg-slate-50/50 px-4 rounded-xl transition-colors">
+           <div className="flex-1 space-y-1 truncate">
+             <p className="text-sm font-bold text-[#081B2E] truncate">{p.clients?.name || 'Unknown Client'}</p>
+             <p className="text-xs font-medium text-slate-500 truncate">{p.title}</p>
+           </div>
+           <div className="flex flex-col items-end justify-center gap-1 shrink-0">
+             <span className="inline-flex items-center rounded-full border border-amber-200/70 bg-amber-50/90 text-amber-700 px-2 py-0.5 text-[10px] font-bold tracking-wide">
+               AWAITING
+             </span>
+           </div>
         </div>
-        <div className="rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-xs font-bold text-[#0D9F8C] shadow-sm">+18.4% this week</div>
+      ))}
+    </div>
+  )
+}
+
+function TeamActivity() {
+  const { data: logs, loading } = useTeamActivity();
+
+  if (loading) return <div className="p-6 text-center text-slate-400 font-semibold animate-pulse">Loading activity...</div>
+  if (!logs?.length) return (
+    <div className="py-10 text-center flex flex-col items-center gap-3">
+      <div className="h-12 w-12 rounded-full bg-slate-50 flex items-center justify-center border border-slate-100">
+        <Activity className="h-5 w-5 text-slate-300" />
       </div>
-      <div className="relative mt-8 h-48 w-full">
-        <svg className="absolute inset-0 h-full w-full" viewBox="0 0 720 200" preserveAspectRatio="none" aria-hidden="true">
-          <defs>
-            <linearGradient id="areaFill" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="#0D9F8C" stopOpacity="0.12" />
-              <stop offset="100%" stopColor="#0D9F8C" stopOpacity="0.00" />
-            </linearGradient>
-            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="3" result="blur" />
-              <feComposite in="SourceGraphic" in2="blur" operator="over" />
-            </filter>
-          </defs>
-          {[20, 60, 100, 140, 180].map((y) => (
-            <line key={y} x1="0" x2="720" y1={y} y2={y} stroke="#f1f5f3" strokeDasharray="6 8" strokeWidth="1" />
-          ))}
-          <path d="M0 150 C80 120 115 110 170 90 C245 65 255 35 320 45 C390 55 395 140 458 130 C520 120 545 95 610 88 C660 82 690 70 720 65 L720 200 L0 200 Z" fill="url(#areaFill)" />
-          <path className="chart-line" d="M0 150 C80 120 115 110 170 90 C245 65 255 35 320 45 C390 55 395 140 458 130 C520 120 545 95 610 88 C660 82 690 70 720 65" fill="none" stroke="#0D9F8C" strokeWidth="3" strokeLinecap="round" style={{ filter: "url(#glow)" }} />
-          {[0, 170, 320, 458, 610, 720].map((x, index) => {
-            const y = [150, 90, 45, 130, 88, 65][index]
-            return (
-              <g key={x} className="group/dot cursor-pointer">
-                <circle cx={x} cy={y} r="8" fill="#0D9F8C" fillOpacity="0.12" className="transition-all duration-300 group-hover/dot:fill-opacity-30 group-hover/dot:r-10" />
-                <circle cx={x} cy={y} r="4" fill="#0D9F8C" stroke="white" strokeWidth="2.5" className="shadow-sm transition-all duration-300 group-hover/dot:scale-110" />
-              </g>
-            )
-          })}
-        </svg>
-      </div>
-    </Card>
+      <p className="text-sm font-semibold text-slate-500">No team activity.</p>
+    </div>
+  )
+
+  return (
+    <div className="divide-y divide-slate-100 px-2">
+      {logs.map((log) => (
+        <div key={log.id} className="flex gap-4 py-4 group cursor-pointer hover:bg-slate-50/50 px-4 rounded-xl transition-colors">
+          <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500">
+            <Users className="h-4 w-4" />
+          </div>
+          <div className="flex-1 space-y-1 truncate">
+            <p className="text-sm font-bold text-[#081B2E] truncate">{log.title}</p>
+            <p className="text-xs font-medium text-slate-500 truncate">{log.description}</p>
+            <p className="text-[10px] font-bold text-slate-400 flex items-center gap-1 mt-1">
+              <Clock3 className="h-3 w-3" /> {new Date(log.created_at).toLocaleString()}
+            </p>
+          </div>
+        </div>
+      ))}
+    </div>
   )
 }
 
 export function DashboardHomePage() {
   const activeWorkspace = useAuthStore((state) => state.activeWorkspace)
   const { user } = useAuthStore()
-  const { data: dashboardData, loading: dashboardLoading, error: dashboardError } = useDashboardMetrics()
-  const { data: approvalsData, loading: approvalsLoading } = useApprovals()
+  const { data: dashboardData, loading: dashboardLoading } = useDashboardMetrics()
   
-  const currentId = activeWorkspace?.id || "w-avc"
-  const currentSlug = activeWorkspace?.slug || "avc-migration"
-  const currentRole = user?.role || "Owner"
+  const currentSlug = activeWorkspace?.slug || "workspace"
   const currentUserName = user?.name || "Practitioner"
 
-  const pendingApprovals = approvalsData || []
-
-  // Dynamic Metrics override
   const realMetrics = [
-    { label: "Active Clients", value: (dashboardData?.metrics?.activeClients || 0).toString(), change: "Total", icon: Users },
-    { label: "Agreements", value: (dashboardData?.metrics?.activeAgreements || 0).toString(), change: "Total", icon: FileSignature },
-    { label: "Approvals", value: (dashboardData?.metrics?.pendingApprovals || 0).toString(), change: "Pending", icon: Clock3 },
-    { label: "This month", value: dashboardData?.metrics?.monthlyRevenue || "$0", change: "Projected", icon: BarChart3 },
+    { label: "Active Clients", value: (dashboardData?.metrics?.activeClients || 0).toString(), change: "+12%", trend: "up" as const, icon: Users },
+    { label: "Active Agreements", value: (dashboardData?.metrics?.activeAgreements || 0).toString(), change: "+5%", trend: "up" as const, icon: FileSignature },
+    { label: "Pending Approvals", value: (dashboardData?.metrics?.pendingApprovals || 0).toString(), change: "Reviewing", trend: "neutral" as const, icon: Clock3 },
+    { label: "Monthly Revenue", value: dashboardData?.metrics?.monthlyRevenue || "$0", change: "+18%", trend: "up" as const, icon: BarChart3 },
   ];
 
-  const realNotifications = dashboardData?.activity?.map((a: any) => ({
-    title: a.title,
-    description: a.description,
-    time: a.time
-  })) || [];
-
-  // -------------------------------------------------------------
-  // ROLE-AWARE CONTENT CONFIGURATION
-  // -------------------------------------------------------------
-  const roleContent = {
-    Owner: {
-      pulse: `${dashboardData?.metrics?.activeAgreements || 0} active agreements moving forward. Revenue: ${dashboardData?.metrics?.monthlyRevenue || '$0'}.`,
-      subItems: ["Zero overdue", `${dashboardData?.metrics?.pendingApprovals || 0} approvals`, "All tasks tracked"],
-      actionTitle: "Review awaiting signatures",
-      actionText: "Check your open matters and send reminders to clients who haven't signed yet.",
-      metrics: realMetrics,
-      notifications: realNotifications,
-      actions: [
-        { label: "Create agreement", icon: FileSignature, href: `/workspace/${currentSlug}/agreements/new` },
-        { label: "New Application Review", icon: FileCheck2, href: `/workspace/${currentSlug}/approvals/new` },
-        { label: "Send document", icon: Send, href: `/workspace/${currentSlug}/documents/send` },
-        { label: "Upload template", icon: UploadCloud, href: `/workspace/${currentSlug}/documents` },
-      ]
-    },
-    Admin: {
-      pulse: "All 5 practitioner licenses are in active compliance with ABN & MARN regulatory standards.",
-      subItems: ["Tamper-free logs", "1 billing review", "Database synced"],
-      actionTitle: "Audit Active Sessions",
-      actionText: "A security session was opened from a new IP in Melbourne. Review team profiles to confirm access.",
-      metrics: realMetrics,
-      notifications: realNotifications,
-      actions: [
-        { label: "Manage Team Access", icon: Users, href: `/workspace/${currentSlug}/settings?section=Team` },
-        { label: "Audit Log Trail", icon: FileText, href: `/workspace/${currentSlug}/settings?section=Security` },
-        { label: "Subscription Pricing", icon: CreditCard, href: `/workspace/${currentSlug}/billing` },
-        { label: "Review default forms", icon: FileCheck2, href: `/workspace/${currentSlug}/settings?section=Matter Types` },
-      ]
-    },
-    "Migration Agent": {
-      pulse: "4 pending subclass 820 partner visa applications require client documents before end of week.",
-      subItems: ["4 visa drafts", "1 assessment due", "OMARA checklist OK"],
-      actionTitle: "Evidentiary Review Queue",
-      actionText: "Client Gurpreet Singh has submitted 3 identity certificates. Check translation stamps and verify seals.",
-      metrics: realMetrics,
-      notifications: realNotifications,
-      actions: [
-        { label: "Create visa agreement", icon: FileSignature, href: `/workspace/${currentSlug}/agreements/new` },
-        { label: "Start Application Review", icon: FileCheck2, href: `/workspace/${currentSlug}/approvals/new` },
-        { label: "Upload Identity Files", icon: UploadCloud, href: `/workspace/${currentSlug}/documents/send` },
-        { label: "View Clients Matched", icon: Users, href: `/workspace/${currentSlug}/clients` },
-      ]
-    },
-    "Case Manager": {
-      pulse: "2 skills assessments lodged successfully. evidentiary drafts are under review by case administrators.",
-      subItems: ["2 skills pending", "3 active reviews", "1 files audit alert"],
-      actionTitle: "Complete checklist tasks",
-      actionText: "Elena Zhao's Aged Dependent Relative files have missing partner signatures. Trigger an immediate request.",
-      metrics: realMetrics,
-      notifications: realNotifications,
-      actions: [
-        { label: "Upload Evidentiary PDF", icon: UploadCloud, href: `/workspace/${currentSlug}/documents/send` },
-        { label: "Verify checklists", icon: FileCheck2, href: `/workspace/${currentSlug}/approvals` },
-        { label: "Open Document Directory", icon: FolderOpen, href: `/workspace/${currentSlug}/documents` },
-        { label: "List case clients", icon: Users, href: `/workspace/${currentSlug}/clients` },
-      ]
-    },
-    Assistant: {
-      pulse: "Clerical Tasks: 6 translation checklists completed. 2 client documents pending certified scan.",
-      subItems: ["6 translations OK", "2 files to scan", "1 folder organize"],
-      actionTitle: "Upload scanned dossiers",
-      actionText: "Amanpreet Kaur has dropped certified passport copies in the entry tray. Scan, verify clarity, and save to secure storage.",
-      metrics: realMetrics,
-      notifications: realNotifications,
-      actions: [
-        { label: "Upload Client Files", icon: UploadCloud, href: `/workspace/${currentSlug}/documents/send` },
-        { label: "Document Library", icon: FolderOpen, href: `/workspace/${currentSlug}/documents` },
-        { label: "View Active Clients", icon: Users, href: `/workspace/${currentSlug}/clients` },
-        { label: "Review agreements queue", icon: FileSignature, href: `/workspace/${currentSlug}/agreements` },
-      ]
-    },
-    "Read-only staff": {
-      pulse: "Read-only workspace review mode: All operational audits are active, verified, and tamper-free.",
-      subItems: ["Logs locked", "Integrations ok", "Billing secure"],
-      actionTitle: "Tamper-Free Audit Logs",
-      actionText: "Every document transaction, IP access, and state transition is permanently recorded in our secure postgres ledger.",
-      metrics: realMetrics,
-      notifications: realNotifications,
-      actions: [
-        { label: "View compliance logs", icon: FileText, href: `/workspace/${currentSlug}/settings?section=Security` },
-        { label: "Inspect Document Directory", icon: FolderOpen, href: `/workspace/${currentSlug}/documents` },
-        { label: "List active clients", icon: Users, href: `/workspace/${currentSlug}/clients` },
-        { label: "Agreements read-only", icon: FileSignature, href: `/workspace/${currentSlug}/agreements` },
-      ]
-    }
-  } as const
-
-  const display = roleContent[currentRole as keyof typeof roleContent] || roleContent.Owner
+  const quickActions = [
+    { label: "New Client", icon: Plus, href: `/workspace/${currentSlug}/clients` },
+    { label: "New Agreement", icon: FileSignature, href: `/workspace/${currentSlug}/agreements/new` },
+    { label: "Invite Team Member", icon: UserPlus, href: `/workspace/${currentSlug}/settings?section=Team` },
+    { label: "Upload Document", icon: UploadCloud, href: `/workspace/${currentSlug}/documents` },
+  ];
 
   return (
-    <div className="animate-enter">
+    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 pb-12">
       <PageHeader
-        eyebrow="Practice command centre"
-        title={`Good day, ${currentUserName}`}
-        description="A calm overview of agreements, signatures, documents and team activity across the practice."
+        eyebrow="Dashboard"
+        title={`Welcome back, ${currentUserName.split(' ')[0]}`}
+        description="Here is what's happening with your practice today."
         action={
-          currentRole !== "Read-only staff" && (
-            <Button asChild className="rounded-xl bg-[#0D9F8C] font-bold hover:bg-[#0A5B52]">
-              <Link href={`/workspace/${currentSlug}/agreements/new`}>
-                <Plus className="h-4 w-4 mr-1.5" />New Agreement
-              </Link>
-            </Button>
-          )
+          <Button asChild className="rounded-xl bg-[#0D9F8C] font-bold px-6 shadow-md hover:bg-[#0A5B52]">
+            <Link href={`/workspace/${currentSlug}/agreements/new`}>Create Agreement</Link>
+          </Button>
         }
       />
 
-      <div className="mb-6 grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">
-          <div className="text-xs font-bold uppercase tracking-wider text-slate-500">Executive pulse</div>
-          <h2 className="mt-4 max-w-2xl text-2xl font-bold leading-tight tracking-tight text-slate-900">
-            {display.pulse}
-          </h2>
-          <div className="mt-7 grid gap-3 sm:grid-cols-3">
-            {display.subItems.map((item) => (
-              <div key={item} className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 border border-slate-100">
-                <Check className="h-4 w-4 text-[#0D9F8C]" />
-                {item}
+      {/* KPI METRICS */}
+      <div className="mb-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {realMetrics.map((metric) => (
+          <MetricCard key={metric.label} {...metric} />
+        ))}
+      </div>
+
+      <div className="grid gap-6 xl:grid-cols-[1fr_0.4fr]">
+        
+        {/* LEFT COLUMN */}
+        <div className="space-y-6">
+          <Card className="rounded-3xl border border-slate-200/50 bg-white/70 backdrop-blur-md shadow-sm flex flex-col overflow-hidden">
+             <div className="p-6 pb-4">
+               <h2 className="text-lg font-black text-[#081B2E] tracking-tight">Growth Trend</h2>
+               <p className="text-xs font-medium text-slate-500 mt-1">Revenue vs Active Cases (30 days)</p>
+             </div>
+             <CardContent className="p-6 pt-0 flex-1 relative">
+               <div className="absolute inset-0 bg-gradient-to-t from-white via-white/50 to-transparent z-10" />
+               <div className="w-full h-full min-h-[250px] relative border-b border-l border-slate-100 flex items-end justify-between px-4 pb-2">
+                  {[40, 70, 45, 90, 65, 100, 85].map((h, i) => (
+                    <div key={i} className="w-8 bg-gradient-to-t from-[#0D9F8C]/20 to-[#0D9F8C] rounded-t-md opacity-80" style={{ height: `${h}%` }} />
+                  ))}
+               </div>
+             </CardContent>
+          </Card>
+
+          <div>
+             <h2 className="mb-3 mt-4 text-xl font-black text-[#081B2E]">Recent Agreements</h2>
+             <AgreementTable />
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN */}
+        <div className="space-y-6">
+          
+          <Card className="rounded-3xl border-slate-200/50 bg-white/60 shadow-sm overflow-hidden">
+            <div className="p-6 pb-2 border-b border-slate-100">
+              <h2 className="text-lg font-black text-[#081B2E] tracking-tight">Quick Actions</h2>
+            </div>
+            <CardContent className="p-4 grid gap-2">
+              {quickActions.map((action) => (
+                <Link key={action.label} href={action.href} className="flex items-center justify-between rounded-xl border border-slate-100 bg-white p-4 font-bold transition-all hover:border-[#0D9F8C]/30 hover:bg-[#F7FAF8] hover:shadow-sm group">
+                  <span className="flex items-center gap-3 text-sm text-[#081B2E] group-hover:text-[#0D9F8C] transition-colors"><action.icon className="h-5 w-5 text-[#0D9F8C]" />{action.label}</span>
+                  <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-[#0D9F8C] transition-colors group-hover:translate-x-1" />
+                </Link>
+              ))}
+            </CardContent>
+          </Card>
+
+          <Card className="rounded-3xl border-slate-200/50 bg-white/60 shadow-sm overflow-hidden flex flex-col min-h-[300px]">
+            <div className="p-6 pb-2 flex items-center justify-between border-b border-slate-100">
+              <div>
+                <h2 className="text-lg font-black text-[#081B2E] tracking-tight">Pending Signatures</h2>
+                <p className="text-[11px] font-bold text-amber-600 mt-1">Awaiting client action</p>
               </div>
-            ))}
-          </div>
+            </div>
+            <CardContent className="p-2 flex-1 overflow-y-auto">
+              <PendingSignatures />
+            </CardContent>
+          </Card>
+
+          <Card className="rounded-3xl border-slate-200/50 bg-white/60 shadow-sm overflow-hidden flex flex-col min-h-[400px]">
+            <div className="p-6 pb-2 flex items-center justify-between border-b border-slate-100">
+              <div>
+                <h2 className="text-lg font-black text-[#081B2E] tracking-tight">Team Activity</h2>
+                <p className="text-[11px] font-bold text-slate-400 mt-1">Latest platform events</p>
+              </div>
+            </div>
+            <CardContent className="p-2 flex-1 overflow-y-auto">
+              <TeamActivity />
+            </CardContent>
+          </Card>
+
         </div>
-
-        <div className="rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-xs font-bold uppercase tracking-wider text-slate-500">Next best action</div>
-              <h2 className="mt-3 text-lg font-bold text-slate-900 tracking-tight">{display.actionTitle}</h2>
-            </div>
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-[#0D9F8C]">
-              <Bell className="h-5 w-5" />
-            </div>
-          </div>
-          <p className="mt-4 text-sm leading-6 text-slate-500 font-medium">{display.actionText}</p>
-          <Button asChild variant="outline" className="mt-6 h-10 w-full rounded-xl bg-white font-semibold border-slate-200 shadow-sm text-slate-700">
-            <Link href={`/workspace/${currentSlug}/application-approvals`}>Open queue</Link>
-          </Button>
-        </div>
-      </div>
-
-      <div className="stagger-children grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-        {dashboardError ? (
-          <div className="col-span-4 p-8 text-center text-red-500 font-medium border border-red-100 bg-red-50 rounded-2xl">
-            Failed to load dashboard metrics.
-          </div>
-        ) : dashboardLoading ? (
-          <div className="col-span-4 p-8 text-center text-slate-500 font-medium">
-            Loading metrics...
-          </div>
-        ) : (
-          display.metrics.map((m: any, idx: number) => (
-            <MetricCard key={idx} label={m.label} value={m.value} change={m.change} icon={m.icon} />
-          ))
-        )}
-      </div>
-
-      <div className="mt-6 grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
-        <div>
-          <MiniChart />
-        </div>
-        <Card className="rounded-[1.35rem] border-white/70">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-black">Notifications</h2>
-              {display.notifications.length > 0 && <span className="rounded-full bg-red-50 px-2.5 py-1 text-xs font-black text-red-600">{display.notifications.length} new</span>}
-            </div>
-            <div className="mt-5 space-y-4">
-              {dashboardLoading ? (
-                <div className="p-4 text-center text-sm text-slate-500">Loading activity...</div>
-              ) : display.notifications.length === 0 ? (
-                <div className="p-4 text-center text-sm text-slate-500">No new notifications.</div>
-              ) : (
-                display.notifications.map((item: any, index: number) => (
-                  <div key={index} className="flex gap-3 rounded-2xl border border-white/70 bg-white/60 p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:bg-white">
-                    <Bell className="mt-0.5 h-4 w-4 text-[#0D9F8C]" />
-                    <div>
-                      <p className="text-sm font-bold">{item.description}</p>
-                      <p className="mt-1 text-xs text-slate-500">{item.time}</p>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="mt-6 grid gap-6 xl:grid-cols-[1fr_0.42fr]">
-        <div>
-          <h2 className="mb-3 text-xl font-black">Pending Approvals</h2>
-          <div className="overflow-hidden rounded-2xl border border-slate-200/50 bg-white/60 shadow-sm">
-            <div className="grid grid-cols-[1.5fr_1fr_1fr_1fr] border-b border-slate-100 bg-slate-50/50 px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-              <div>Client & Application</div>
-              <div>Agent</div>
-              <div>Status</div>
-              <div>Deadline</div>
-            </div>
-            <div className="divide-y divide-slate-100">
-              {pendingApprovals.slice(0, 5).map((approval: any) => (
-                <Link
-                  key={approval.id}
-                  href={`/workspace/${currentSlug}/approvals/${approval.id}`}
-                  className="group grid grid-cols-[1.5fr_1fr_1fr_1fr] items-center gap-3 px-6 py-4 hover:bg-slate-50 transition-colors"
-                >
-                  <div>
-                    <div className="font-bold text-[#081B2E] group-hover:text-[#0D9F8C] transition-colors">{approval.client}</div>
-                    <div className="text-xs font-semibold text-slate-400 mt-0.5">{approval.type}</div>
-                  </div>
-                  <div className="text-xs font-semibold text-slate-600">Assigned Agent</div>
-                  <div>
-                    <span className="inline-flex items-center rounded-full border border-amber-200/70 bg-amber-50/90 text-amber-700 px-2.5 py-0.5 text-xs font-bold tracking-wide">
-                      {approval.status.replace('_', ' ').toUpperCase()}
-                    </span>
-                  </div>
-                  <div className="text-xs font-medium text-slate-400">
-                    {approval.date}
-                  </div>
-                </Link>
-              ))}
-              {pendingApprovals.length === 0 && (
-                <div className="p-8 text-center text-slate-500 font-medium">No pending approvals.</div>
-              )}
-            </div>
-          </div>
-
-          <h2 className="mb-3 mt-8 text-xl font-black">Recent agreements</h2>
-          <AgreementTable />
-        </div>
-
-        <Card className="rounded-[1.35rem] border-white/70">
-          <CardContent className="p-6">
-            <h2 className="text-xl font-black">Quick actions</h2>
-            <div className="mt-5 grid gap-3">
-              {display.actions.map((action) => (
-                <Link key={action.label} href={action.href} className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 font-bold transition-colors hover:bg-[#F7FAF8]">
-                  <span className="flex items-center gap-3"><action.icon className="h-5 w-5 text-[#0D9F8C]" />{action.label}</span>
-                  <ArrowRight className="h-4 w-4 text-slate-400" />
-                </Link>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   )

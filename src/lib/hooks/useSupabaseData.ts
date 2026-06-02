@@ -10,7 +10,8 @@ import {
   AgreementsRepository, 
   ApprovalsRepository,
   DocumentsRepository,
-  ActivityLogsRepository
+  ActivityLogsRepository,
+  TeamRepository
 } from '@/lib/supabase/repositories';
 
 
@@ -62,8 +63,10 @@ export function useDashboardMetrics() {
   return { data, loading, error, refetch: fetch };
 }
 
-export function useClients() {
+export function useClients(initialOptions: { page?: number; limit?: number; search?: string } = {}) {
   const [data, setData] = useState<any[]>([]);
+  const [count, setCount] = useState(0);
+  const [options, setOptions] = useState(initialOptions);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   
@@ -82,18 +85,20 @@ export function useClients() {
       const actId = await getRealAgencyId(supabase, activeWorkspace.id);
       if (!actId) {
         setData([]);
+        setCount(0);
         setError(new Error('Authenticated agency could not be resolved.'));
         return;
       }
-      const clients = await repo.list(actId);
-      setData(clients);
+      const result = await repo.list(actId, options);
+      setData(result.data);
+      setCount(result.count);
       setError(null);
     } catch (e: any) {
       setError(e);
     } finally {
       setLoading(false);
     }
-  }, [activeWorkspace?.id, repo, supabase]);
+  }, [activeWorkspace?.id, repo, supabase, options.page, options.limit, options.search]);
 
   useEffect(() => { fetch() }, [fetch]);
 
@@ -157,11 +162,13 @@ export function useClients() {
     await fetch();
   };
 
-  return { data, loading, error, refetch: fetch, addClient, updateClient, deleteClient };
+  return { data, count, options, setOptions, loading, error, refetch: fetch, addClient, updateClient, deleteClient };
 }
 
-export function useAgreements() {
+export function useAgreements(initialOptions: { page?: number; limit?: number; search?: string } = {}) {
   const [data, setData] = useState<any[]>([]);
+  const [count, setCount] = useState(0);
+  const [options, setOptions] = useState(initialOptions);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   
@@ -179,18 +186,20 @@ export function useAgreements() {
       const actId = await getRealAgencyId(supabase, activeWorkspace.id);
       if (!actId) {
         setData([]);
+        setCount(0);
         setError(new Error('Authenticated agency could not be resolved.'));
         return;
       }
-      const agreements = await repo.list(actId);
-      setData(agreements);
+      const result = await repo.list(actId, options);
+      setData(result.data);
+      setCount(result.count);
       setError(null);
     } catch (e: any) {
       setError(e);
     } finally {
       setLoading(false);
     }
-  }, [activeWorkspace?.id, repo, supabase]);
+  }, [activeWorkspace?.id, repo, supabase, options.page, options.limit, options.search]);
 
   useEffect(() => { fetch() }, [fetch]);
 
@@ -203,11 +212,13 @@ export function useAgreements() {
     return newAgreement;
   };
 
-  return { data, loading, error, refetch: fetch, addAgreement };
+  return { data, count, options, setOptions, loading, error, refetch: fetch, addAgreement };
 }
 
-export function useApprovals() {
+export function useApprovals(initialOptions: { page?: number; limit?: number; search?: string } = {}) {
   const [data, setData] = useState<any[]>([]);
+  const [count, setCount] = useState(0);
+  const [options, setOptions] = useState(initialOptions);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   
@@ -225,26 +236,30 @@ export function useApprovals() {
       const actId = await getRealAgencyId(supabase, activeWorkspace.id);
       if (!actId) {
         setData([]);
+        setCount(0);
         setError(new Error('Authenticated agency could not be resolved.'));
         return;
       }
-      const approvals = await repo.list(actId);
-      setData(approvals);
+      const result = await repo.list(actId, options);
+      setData(result.data);
+      setCount(result.count);
       setError(null);
     } catch (e: any) {
       setError(e);
     } finally {
       setLoading(false);
     }
-  }, [activeWorkspace?.id, repo, supabase]);
+  }, [activeWorkspace?.id, repo, supabase, options.page, options.limit, options.search]);
 
   useEffect(() => { fetch() }, [fetch]);
 
-  return { data, loading, error, refetch: fetch };
+  return { data, count, options, setOptions, loading, error, refetch: fetch };
 }
 
-export function useDocuments() {
+export function useDocuments(initialOptions: { page?: number; limit?: number; search?: string } = {}) {
   const [data, setData] = useState<any[]>([]);
+  const [count, setCount] = useState(0);
+  const [options, setOptions] = useState(initialOptions);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   
@@ -262,18 +277,20 @@ export function useDocuments() {
       const actId = await getRealAgencyId(supabase, activeWorkspace.id);
       if (!actId) {
         setData([]);
+        setCount(0);
         setError(new Error('Authenticated agency could not be resolved.'));
         return;
       }
-      const docs = await repo.list(actId);
-      setData(docs);
+      const result = await repo.list(actId, options);
+      setData(result.data);
+      setCount(result.count);
       setError(null);
     } catch (e: any) {
       setError(e);
     } finally {
       setLoading(false);
     }
-  }, [activeWorkspace?.id, repo, supabase]);
+  }, [activeWorkspace?.id, repo, supabase, options.page, options.limit, options.search]);
 
   useEffect(() => { fetch() }, [fetch]);
 
@@ -297,5 +314,323 @@ export function useDocuments() {
     return newDoc;
   };
 
-  return { data, loading, error, refetch: fetch, addDocument };
+  return { data, count, options, setOptions, loading, error, refetch: fetch, addDocument };
+}
+
+export function useTeamMembers() {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  
+  const activeWorkspace = useAuthStore((state) => state.activeWorkspace);
+  const supabase = useMemo(() => createClient(), []);
+  const repo = useMemo(() => new TeamRepository(supabase), [supabase]);
+
+  const fetch = useCallback(async () => {
+    if (!activeWorkspace?.id) {
+      setLoading(false);
+      return;
+    }
+    try {
+      setLoading(true);
+      const actId = await getRealAgencyId(supabase, activeWorkspace.id);
+      if (!actId) {
+        setData([]);
+        setError(new Error('Authenticated agency could not be resolved.'));
+        return;
+      }
+      const members = await repo.list(actId);
+      setData(members);
+      setError(null);
+    } catch (e: any) {
+      setError(e);
+    } finally {
+      setLoading(false);
+    }
+  }, [activeWorkspace?.id, repo, supabase]);
+
+  useEffect(() => { fetch() }, [fetch]);
+
+  const updateRole = async (userId: string, role: string) => {
+    await repo.updateRole(userId, role);
+    await fetch();
+  };
+
+  const updateStatus = async (userId: string, is_active: boolean) => {
+    await repo.updateStatus(userId, is_active);
+    await fetch();
+  };
+
+  const removeMember = async (userId: string) => {
+    await repo.delete(userId);
+    await fetch();
+  };
+
+  return { data, loading, error, refetch: fetch, updateRole, updateStatus, removeMember };
+}
+
+import { InvitationsRepository, AgencyRepository, BrandingRepository, MatterDefaultsRepository, ClausesRepository } from '../supabase/repositories';
+
+export function useInvitations() {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const activeWorkspace = useAuthStore((state) => state.activeWorkspace);
+  const supabase = useMemo(() => createClient(), []);
+  const repo = useMemo(() => new InvitationsRepository(supabase), [supabase]);
+
+  const fetch = useCallback(async () => {
+    if (!activeWorkspace?.id) return setLoading(false);
+    try {
+      const actId = await getRealAgencyId(supabase, activeWorkspace.id);
+      if (actId) setData(await repo.listPending(actId));
+    } finally {
+      setLoading(false);
+    }
+  }, [activeWorkspace?.id, repo, supabase]);
+
+  const cancelInvite = async (id: string) => {
+    await repo.cancel(id);
+    await fetch();
+  };
+
+  useEffect(() => { fetch() }, [fetch]);
+  return { data, loading, refetch: fetch, cancelInvite };
+}
+
+export function useAgencyProfile() {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const activeWorkspace = useAuthStore((state) => state.activeWorkspace);
+  const supabase = useMemo(() => createClient(), []);
+  const repo = useMemo(() => new AgencyRepository(supabase), [supabase]);
+  const brandingRepo = useMemo(() => new BrandingRepository(supabase), [supabase]);
+  const defaultsRepo = useMemo(() => new MatterDefaultsRepository(supabase), [supabase]);
+
+  const fetch = useCallback(async () => {
+    if (!activeWorkspace?.id) return setLoading(false);
+    try {
+      const actId = await getRealAgencyId(supabase, activeWorkspace.id);
+      if (actId) {
+        // Fetch agency core
+        const { data: agency } = await supabase.from('agencies').select('*').eq('id', actId).single();
+        const branding = await brandingRepo.getBranding(actId);
+        const defaults = await defaultsRepo.getDefaults(actId);
+        
+        setData({
+           ...agency,
+           branding: branding || {},
+           defaults: defaults || {}
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [activeWorkspace?.id, brandingRepo, defaultsRepo, supabase]);
+
+  const updateProfile = async (updates: any) => {
+    if (!activeWorkspace?.id) return;
+    const actId = await getRealAgencyId(supabase, activeWorkspace.id);
+    if (!actId) return;
+    await repo.updateProfile(actId, updates);
+    await fetch();
+  };
+
+  const updateBranding = async (updates: any) => {
+    if (!activeWorkspace?.id) return;
+    const actId = await getRealAgencyId(supabase, activeWorkspace.id);
+    if (!actId) return;
+    await brandingRepo.updateBranding(actId, updates);
+    await fetch();
+  };
+
+  const updateDefaults = async (updates: any) => {
+    if (!activeWorkspace?.id) return;
+    const actId = await getRealAgencyId(supabase, activeWorkspace.id);
+    if (!actId) return;
+    await defaultsRepo.updateDefaults(actId, updates);
+    await fetch();
+  };
+
+  useEffect(() => { fetch() }, [fetch]);
+  return { data, loading, refetch: fetch, updateProfile, updateBranding, updateDefaults };
+}
+
+export function useClauses() {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const activeWorkspace = useAuthStore((state) => state.activeWorkspace);
+  const supabase = useMemo(() => createClient(), []);
+  const repo = useMemo(() => new ClausesRepository(supabase), [supabase]);
+
+  const fetch = useCallback(async () => {
+    if (!activeWorkspace?.id) return setLoading(false);
+    try {
+      const actId = await getRealAgencyId(supabase, activeWorkspace.id);
+      if (actId) setData(await repo.list(actId));
+    } finally {
+      setLoading(false);
+    }
+  }, [activeWorkspace?.id, repo, supabase]);
+
+  const addClause = async (clause: any) => {
+    if (!activeWorkspace?.id) return;
+    const actId = await getRealAgencyId(supabase, activeWorkspace.id);
+    if (!actId) return;
+    await repo.create(actId, clause);
+    await fetch();
+  };
+
+  const deleteClause = async (id: string) => {
+    await repo.delete(id);
+    await fetch();
+  };
+
+  useEffect(() => { fetch() }, [fetch]);
+  return { data, loading, refetch: fetch, addClause, deleteClause };
+}
+
+export function useUserProfile() {
+  const { user } = useAuthStore();
+  const supabase = useMemo(() => createClient(), []);
+  const [loading, setLoading] = useState(false);
+
+  const updateProfile = async (updates: { full_name?: string; phone?: string }) => {
+    if (!user) return;
+    setLoading(true);
+    await supabase.from('users').update(updates).eq('id', user.id);
+    setLoading(false);
+  };
+
+  const toggleMfa = async (enabled: boolean) => {
+    if (!user) return;
+    setLoading(true);
+    await supabase.from('users').update({ mfa_enabled: enabled }).eq('id', user.id);
+    setLoading(false);
+  };
+
+  return { updateProfile, toggleMfa, loading };
+}
+
+export function usePendingSignatures() {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  const activeWorkspace = useAuthStore((state) => state.activeWorkspace);
+  const supabase = useMemo(() => createClient(), []);
+
+  const fetch = useCallback(async () => {
+    if (!activeWorkspace?.id) { setLoading(false); return; }
+    try {
+      setLoading(true);
+      const actId = await getRealAgencyId(supabase, activeWorkspace.id);
+      if (!actId) return;
+
+      const { data: records } = await supabase
+        .from('agreements')
+        .select('*, clients!inner(name, email)')
+        .eq('agency_id', actId)
+        .eq('status', 'sent')
+        .order('sent_at', { ascending: false })
+        .limit(5);
+      
+      setData(records || []);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  }, [activeWorkspace?.id, supabase]);
+
+  useEffect(() => { fetch() }, [fetch]);
+  return { data, loading, refetch: fetch };
+}
+
+export function useTeamActivity() {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  const activeWorkspace = useAuthStore((state) => state.activeWorkspace);
+  const supabase = useMemo(() => createClient(), []);
+
+  const fetch = useCallback(async () => {
+    if (!activeWorkspace?.id) { setLoading(false); return; }
+    try {
+      setLoading(true);
+      const actId = await getRealAgencyId(supabase, activeWorkspace.id);
+      if (!actId) return;
+
+      const { data: records } = await supabase
+        .from('activity_logs')
+        .select('*, users!left(full_name)')
+        .eq('agency_id', actId)
+        .neq('type', 'client') // Team activity is generally non-client or all
+        .order('created_at', { ascending: false })
+        .limit(10);
+      
+      setData(records || []);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  }, [activeWorkspace?.id, supabase]);
+
+  useEffect(() => { fetch() }, [fetch]);
+  return { data, loading, refetch: fetch };
+}
+
+export function useClientTimeline(clientId?: string) {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const supabase = useMemo(() => createClient(), []);
+
+  const fetch = useCallback(async () => {
+    if (!clientId) { setLoading(false); return; }
+    try {
+      setLoading(true);
+      
+      const timeline: any[] = [];
+      
+      // 1. Client Created
+      const { data: client } = await supabase.from('clients').select('created_at').eq('id', clientId).single();
+      if (client?.created_at) {
+        timeline.push({ type: 'created', title: 'Client Profile Created', date: new Date(client.created_at) });
+      }
+
+      // 2. Agreements
+      const { data: agreements } = await supabase.from('agreements').select('created_at, sent_at, completed_at, status, title').eq('client_id', clientId);
+      if (agreements) {
+        agreements.forEach(ag => {
+          if (ag.created_at) timeline.push({ type: 'agreement_draft', title: `Drafted: ${ag.title}`, date: new Date(ag.created_at) });
+          if (ag.sent_at) timeline.push({ type: 'agreement_sent', title: `Sent for Signature: ${ag.title}`, date: new Date(ag.sent_at) });
+          if (ag.status === 'viewed') timeline.push({ type: 'agreement_viewed', title: `Client Viewed: ${ag.title}`, date: new Date() }); // approximated if no viewed_at
+          if (ag.completed_at || ag.status === 'signed') timeline.push({ type: 'agreement_signed', title: `Signed: ${ag.title}`, date: new Date(ag.completed_at || new Date()) });
+        });
+      }
+
+      // 3. Approvals
+      const { data: approvals } = await supabase.from('application_approvals').select('created_at, updated_at, status, application_type').eq('client_id', clientId);
+      if (approvals) {
+        approvals.forEach(ap => {
+          if (ap.created_at) timeline.push({ type: 'approval_submitted', title: `Approval Submitted: ${ap.application_type}`, date: new Date(ap.created_at) });
+          if (ap.status === 'approved' && ap.updated_at) timeline.push({ type: 'approval_approved', title: `Approved: ${ap.application_type}`, date: new Date(ap.updated_at) });
+        });
+      }
+
+      // 4. Documents
+      // (Skipping complex document join for now, will rely on agreements and approvals as primary milestones)
+
+      // Sort descending
+      timeline.sort((a, b) => b.date.getTime() - a.date.getTime());
+      
+      setData(timeline);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  }, [clientId, supabase]);
+
+  useEffect(() => { fetch() }, [fetch]);
+  return { data, loading, refetch: fetch };
 }

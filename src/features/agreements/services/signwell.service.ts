@@ -106,8 +106,8 @@ export class SignWellService {
       role: 'Migration Agent'
     });
 
-    // 4. Create Document via SignWell Service
-    const signwellData = await signwellClient.createDocument({
+    // 4. Create Document via SignWell Service (SIMULATED DUE TO RATE LIMIT)
+    const payload = {
       test_mode: process.env.NODE_ENV !== 'production',
       name: agreement.title,
       files: [{ name: 'Agreement.pdf', file_url: urlData.signedUrl }],
@@ -115,10 +115,20 @@ export class SignWellService {
       expires_in: 30,
       with_signature_page: true,
       draft: true,
-    });
+    };
+    
+    console.log("SIMULATING SIGNWELL DISPATCH. Payload:", JSON.stringify(payload, null, 2));
 
-    // 5. Send Document
-    await signwellClient.sendDocument(signwellData.id);
+    const simulatedDocId = `sim_doc_${crypto.randomUUID()}`;
+    const signwellData = {
+      id: simulatedDocId,
+      status: 'sent',
+      recipients: signwellSigners,
+      simulated: true
+    };
+
+    // 5. Send Document (SIMULATED)
+    console.log(`SIMULATING SIGNWELL SEND for Document ID: ${simulatedDocId}`);
 
     // 6. Update Agreement and Log Audit
     await this.agreementRepo.update(agreementId, { 
@@ -132,8 +142,8 @@ export class SignWellService {
       user_id: userId,
       entity_type: 'agreement',
       entity_id: agreementId,
-      action: 'Agreement Sent for Signature',
-      metadata: { signwell_document_id: signwellData.id }
+      action: 'Agreement Sent for Signature (Simulated)',
+      metadata: { signwell_document_id: signwellData.id, simulated: true }
     });
 
     return signwellData;

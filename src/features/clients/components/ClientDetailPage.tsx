@@ -2,7 +2,7 @@
 import * as React from "react"
 import { useParams, useRouter } from "next/navigation"
 import { useAuthStore } from "@/store/authStore"
-import { getRealAgencyId, useClients } from "@/lib/hooks/useSupabaseData"
+import { getRealAgencyId, useClients, useClientTimeline } from "@/lib/hooks/useSupabaseData"
 import { createClient } from "@/lib/supabase/client"
 import { ClientsRepository } from "@/lib/supabase/repositories"
 import { Role, canEdit, canDelete } from "@/features/auth/types/roles"
@@ -122,6 +122,8 @@ export function ClientDetailPage() {
     }
   }
 
+  const { data: timelineData, loading: timelineLoading } = useClientTimeline(clientId);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center p-16">
@@ -237,22 +239,31 @@ export function ClientDetailPage() {
         <Card className="rounded-2xl border border-slate-200/50 bg-white/60 shadow-[0_1px_2px_rgba(8,27,46,0.01),0_8px_24px_rgba(8,27,46,0.02)]">
           <CardContent className="p-6">
             <h2 className="text-lg font-bold tracking-tight text-[#081B2E] mb-5">Matter Timeline</h2>
-            <div className="space-y-5">
-              {joinedDate && (
-                <div className="flex gap-4">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50/60 text-[#0D9F8C] border border-emerald-100/50 shadow-sm">
-                    <CheckCircle2 className="h-5 w-5" />
+            
+            {timelineLoading ? (
+              <div className="py-8 text-center text-slate-400 animate-pulse text-sm font-semibold">Loading timeline...</div>
+            ) : timelineData?.length === 0 ? (
+              <div className="py-8 text-center text-slate-400 text-sm font-semibold">No timeline events recorded.</div>
+            ) : (
+              <div className="space-y-6 relative before:absolute before:inset-0 before:ml-4 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
+                {timelineData?.map((event: any, i: number) => (
+                  <div key={i} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                    <div className="flex items-center justify-center w-9 h-9 rounded-full border border-white bg-slate-100 text-slate-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm z-10">
+                      {event.type.includes('sign') ? <FileSignature className="w-4 h-4 text-emerald-600" /> 
+                       : event.type.includes('approval') ? <CheckCircle2 className="w-4 h-4 text-amber-600" />
+                       : <CheckCircle2 className="w-4 h-4" />}
+                    </div>
+                    <div className="w-[calc(100%-3rem)] md:w-[calc(50%-2rem)] p-4 rounded-xl border border-slate-100 bg-white shadow-sm">
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="font-bold text-slate-800 text-sm">{event.title}</div>
+                      </div>
+                      <div className="text-xs font-semibold text-slate-400">{event.date.toLocaleString()}</div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-sm font-bold text-[#081B2E]">Client Profile Created</div>
-                    <div className="text-xs text-slate-400 font-semibold mt-0.5">{joinedDate}</div>
-                  </div>
-                </div>
-              )}
-              <div className="pt-4 text-xs font-semibold text-slate-400">
-                No further timeline events available.
+                ))}
               </div>
-            </div>
+            )}
+            
           </CardContent>
         </Card>
       </div>

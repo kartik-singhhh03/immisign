@@ -3,7 +3,9 @@
 import * as React from "react"
 import { useAuthStore } from "@/store/authStore"
 import { useApprovalStore } from "@/store/approvalStore"
+import { useTeamMembers, useInvitations, useAgencyProfile, useClauses, useUserProfile } from "@/lib/hooks/useSupabaseData"
 import Link from "next/link"
+import { useSearchParams, useParams } from "next/navigation"
 import {
   ArrowRight,
   BarChart3,
@@ -120,187 +122,194 @@ function MetricCard({
 
 
 
-export function SettingsPage({ section = "Agency Profile" }: { section?: string }) {
-  const {
-    activeWorkspace,
-    user,
-    invitePractitioner,
-    updateWorkspaceBranding
-  } = useAuthStore()
+export function SettingsPage({ section = "" }: { section?: string }) {
+  const { activeWorkspace, user, updateWorkspaceBranding } = useAuthStore()
 
-  // Fallback defaults if hot reloads clear session
-  const currentWorkspace = activeWorkspace || {
-    name: "AVC Migration Partners",
-    slug: "avc-migration",
-    initials: "AM",
-    color: "#0D9F8C",
-    address: "Level 14, 175 Pitt Street, Sydney NSW 2000",
-    marn: "1794016",
-    abn: "45 128 349 820",
-    team: [
-      { name: "Rajwant Singh", role: "Principal RMA", marn: "MARN 1794016", status: "Active", email: "rajwant@avcmigration.com.au" }
-    ]
-  }
+  // Hooks
+  const { data: teamMembers, loading: teamLoading, updateRole, updateStatus, removeMember } = useTeamMembers()
+  const { data: invitations, loading: invitesLoading, cancelInvite } = useInvitations()
+  const { data: agencyProfile, loading: agencyLoading, updateProfile, updateBranding, updateDefaults } = useAgencyProfile()
+  const { data: clausesList, loading: clausesLoading, addClause, deleteClause } = useClauses()
+  const { updateProfile: updateUserProfile, toggleMfa, loading: userLoading } = useUserProfile()
 
-  const currentRole = user?.role || "Owner"
+  const currentRole = user?.role || "owner"
+  const isSettingsRestricted = currentRole === "support" || currentRole === "viewer"
+  const currentWorkspace = activeWorkspace || { name: "", slug: "", color: "#0D9F8C", initials: "IS" }
   const currentSlug = currentWorkspace.slug
 
-  // Settings navigation items split into Workspace and Personal
+  const searchParams = useSearchParams()
+
+  // Map old props to query parameter keys for backward compatibility
+  const propToKeyMap: Record<string, string> = {
+    "Agency Profile": "Agency",
+    "Team": "Team",
+    "Branding": "Branding",
+    "Clauses": "Clauses",
+    "Matter Types": "MatterDefaults",
+    "Defaults": "MatterDefaults",
+    "Security": "MFA",
+    "My Profile": "Profile",
+  }
+
+  // Derive the active section key
+  const activeSectionKey = searchParams?.get("section") || propToKeyMap[section] || "Agency"
+
+  const sectionTitleMap: Record<string, string> = {
+    Agency: "Agency Profile",
+    Branding: "Branding",
+    Team: "Team Setup",
+    Clauses: "Clauses Library",
+    MatterDefaults: "Matter Defaults",
+    Profile: "My Profile",
+    MFA: "MFA Security",
+  }
+
+  const currentTitle = sectionTitleMap[activeSectionKey] || "Agency Profile"
+
   const workspaceItems = [
-    ["Agency Profile", "Agency Profile"],
+    ["Agency Profile", "Agency"],
     ["Branding", "Branding"],
     ["Team Setup", "Team"],
     ["Clauses Library", "Clauses"],
-    ["Matter Defaults", "Matter Types"],
+    ["Matter Defaults", "MatterDefaults"],
   ] as const
 
   const personalItems = [
-    ["My Profile", "My Profile"],
-    ["MFA Security", "Security"],
+    ["My Profile", "Profile"],
+    ["MFA Security", "MFA"],
   ] as const
 
-  // Global Float Toast State
   const [toastMessage, setToastMessage] = React.useState<string | null>(null)
   const triggerToast = (msg: string) => {
     setToastMessage(msg)
     setTimeout(() => setToastMessage(null), 3500)
   }
 
-  // 1. Team State & Invitation Modal
+  // Team Invite State
   const [isInviteOpen, setIsInviteOpen] = React.useState(false)
   const [inviteName, setInviteName] = React.useState("")
   const [inviteEmail, setInviteEmail] = React.useState("")
   const [inviteMarn, setInviteMarn] = React.useState("")
-  const [inviteRole, setInviteRole] = React.useState("Migration Agent")
-  const [inviteProgress, setInviteProgress] = React.useState(0)
+  const [inviteRole, setInviteRole] = React.useState("agent")
   const [inviting, setInviting] = React.useState(false)
+  const [inviteProgress, setInviteProgress] = React.useState(0)
 
   const handleInviteSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!inviteName || !inviteEmail) return
     setInviting(true)
+    setInviteProgress(10)
+    const interval = setInterval(() => {
+      setInviteProgress((prev) => Math.min(prev + 15, 90))
+    }, 100)
 
     try {
-      await invitePractitioner(
-        inviteName,
-        inviteEmail,
-        inviteRole,
-        inviteMarn
-      )
-
+      const res = await fetch('/api/team/invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: inviteName, email: inviteEmail, role: inviteRole, marn: inviteMarn }),
+      });
+      clearInterval(interval)
+      setInviteProgress(100)
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Invitation failed')
       triggerToast(`Workspace invitation sent to ${inviteName}!`)
       setIsInviteOpen(false)
       setInviteName("")
       setInviteEmail("")
       setInviteMarn("")
     } catch (err: any) {
+      clearInterval(interval)
       triggerToast("Error: " + err.message)
     } finally {
       setInviting(false)
+      setInviteProgress(0)
     }
   }
 
-  // 2. Branding State
-  const [brandColor, setBrandColor] = React.useState(currentWorkspace.color)
+  // Branding State
+  const [brandColor, setBrandColor] = React.useState(agencyProfile?.branding?.primary_color || "#0D9F8C")
   const [brandInitials, setBrandInitials] = React.useState(currentWorkspace.initials)
+  React.useEffect(() => {
+    if (agencyProfile?.branding) {
+      setBrandColor(agencyProfile.branding.primary_color || "#0D9F8C")
+    }
+  }, [agencyProfile])
 
   const handleSaveBranding = () => {
+    updateBranding({ primary_color: brandColor, logo_url: "" })
     updateWorkspaceBranding(brandColor, brandInitials)
     triggerToast("Workspace branding settings updated successfully!")
   }
 
-  // Sync brand details if active workspace changes
-  React.useEffect(() => {
-    if (activeWorkspace) {
-      setBrandColor(activeWorkspace.color)
-      setBrandInitials(activeWorkspace.initials)
-    }
-  }, [activeWorkspace])
-
-  // 3. Clauses State & Add Clause Modal
-  interface ClauseItem {
-    key: string
-    title: string
-    text: string
-  }
-  const [clausesList, setClausesList] = React.useState<ClauseItem[]>([
-    { key: "CLAUSE-820-FEE", title: "Partner Visa Instalment Structure", text: "Specifies professional fees structured into 50% upfront retainer and 50% lodging milestone." },
-    { key: "CLAUSE-OMARA-MANDATE", title: "OMARA Consumer Guide Mandate", text: "Explicitly references consumer rights, OMARA Code of Conduct, and client files access terms." },
-    { key: "CLAUSE-REFUND-DISCLAIMER", title: "Lodgement Fee Refund Disclaimer", text: "Declares that Department of Home Affairs visa fees are strictly non-refundable upon lodgement." },
-  ])
+  // Clauses State
   const [isClauseOpen, setIsClauseOpen] = React.useState(false)
   const [clauseKey, setClauseKey] = React.useState("")
   const [clauseTitle, setClauseTitle] = React.useState("")
   const [clauseText, setClauseText] = React.useState("")
 
-  const handleClauseSubmit = (e: React.FormEvent) => {
+  const handleClauseSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!clauseKey || !clauseTitle || !clauseText) return
-
-    const newClause: ClauseItem = {
-      key: clauseKey.toUpperCase().replace(/\s+/g, "-"),
-      title: clauseTitle,
-      text: clauseText
-    }
-    setClausesList([newClause, ...clausesList])
+    if (!clauseTitle || !clauseText) return
+    await addClause({ title: clauseTitle, content: clauseText, is_mandatory: false })
     setIsClauseOpen(false)
-    triggerToast(`Boilerplate clause ${newClause.key} added successfully!`)
-
-    // Reset states
-    setClauseKey("")
+    triggerToast(`Clause added successfully!`)
     setClauseTitle("")
     setClauseText("")
   }
 
-  // 4. Security Settings State
-  const [mfaEnabled, setMfaEnabled] = React.useState(true)
-  const [mfaUpdating, setMfaUpdating] = React.useState(false)
-  const [activeSessions, setActiveSessions] = React.useState([
-    { ip: "203.0.113.19", device: "Chrome on macOS (Sydney, AU)", time: "Current Session", id: "sess-1" },
-    { ip: "203.0.113.82", device: "Safari on iOS (Melbourne, AU)", time: "Yesterday, 4:18 PM", id: "sess-2" },
-    { ip: "198.51.100.41", device: "Firefox on Windows (Brisbane, AU)", time: "3 days ago", id: "sess-3" },
-  ])
+  // My Profile State
+  const [myFullName, setMyFullName] = React.useState(user?.user_metadata?.full_name || "")
+  const [myPhone, setMyPhone] = React.useState(user?.phone || "")
+  const [mfaEnabled, setMfaEnabled] = React.useState(user?.mfa_enabled || false)
+
+  const handleSaveMyProfile = async () => {
+    await updateUserProfile({ full_name: myFullName, phone: myPhone })
+    triggerToast("Your profile has been updated.")
+  }
 
   const handleMfaToggle = async () => {
-    setMfaUpdating(true)
-    try {
-      setMfaEnabled(!mfaEnabled)
-      triggerToast(`MFA security enforcement has been ${!mfaEnabled ? "ENABLED" : "DISABLED"}!`)
-    } finally {
-      setMfaUpdating(false)
-    }
+    await toggleMfa(!mfaEnabled)
+    setMfaEnabled(!mfaEnabled)
+    triggerToast(`MFA security enforcement has been ${!mfaEnabled ? "ENABLED" : "DISABLED"}.`)
   }
 
-  const revokeSession = (id: string, ip: string) => {
-    setActiveSessions(prev => prev.filter(s => s.id !== id))
-    triggerToast(`Session for IP ${ip} has been terminated successfully.`)
-  }
-
-  // Permissions lock warning check
-  const isSettingsRestricted = currentRole === "Assistant" || currentRole === "Read-only staff"
+  const handleSaveAgencyProfile = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const updates = {
+      name: formData.get('name'),
+      abn: formData.get('abn'),
+      marn: formData.get('marn'),
+      address: formData.get('address'),
+      timezone: formData.get('timezone'),
+    };
+    await updateProfile(updates);
+    triggerToast("Agency profile details updated successfully!");
+  };
 
   const renderAgencyProfile = () => (
-    <div className="space-y-6">
+    <form onSubmit={handleSaveAgencyProfile} className="space-y-6">
       <div className="grid gap-5 md:grid-cols-2">
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           Business Name
-          <Input className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" defaultValue={currentWorkspace.name} disabled={isSettingsRestricted} />
+          <Input name="name" className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" defaultValue={agencyProfile?.name || currentWorkspace.name} disabled={isSettingsRestricted} />
         </label>
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           ABN (Australian Business Number)
-          <Input className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" defaultValue={currentWorkspace.abn} disabled={isSettingsRestricted} />
+          <Input name="abn" className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" defaultValue={agencyProfile?.abn || currentWorkspace.abn} disabled={isSettingsRestricted} />
         </label>
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           Principal MARN Registration
-          <Input className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" defaultValue={currentWorkspace.marn} disabled={isSettingsRestricted} />
+          <Input name="marn" className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" defaultValue={agencyProfile?.marn || currentWorkspace.marn} disabled={isSettingsRestricted} />
         </label>
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           Office Address
-          <Input className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" defaultValue={currentWorkspace.address} disabled={isSettingsRestricted} />
+          <Input name="address" className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" defaultValue={agencyProfile?.address || currentWorkspace.address} disabled={isSettingsRestricted} />
         </label>
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           Practice Timezone
-          <select disabled={isSettingsRestricted} className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]">
+          <select name="timezone" disabled={isSettingsRestricted} defaultValue={agencyProfile?.timezone || "AEST"} className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]">
             <option value="AEST">Australian Eastern Standard Time (AEST) - Sydney</option>
             <option value="AWST">Australian Western Standard Time (AWST) - Perth</option>
             <option value="ACST">Australian Central Standard Time (ACST) - Adelaide</option>
@@ -312,9 +321,9 @@ export function SettingsPage({ section = "Agency Profile" }: { section?: string 
         </label>
       </div>
       {!isSettingsRestricted && (
-        <Button onClick={() => triggerToast("Agency profile details updated successfully!")} className="rounded-xl bg-[#0D9F8C] font-bold shadow-sm hover:bg-[#0A5B52]">Save Profile</Button>
+        <Button type="submit" className="rounded-xl bg-[#0D9F8C] font-bold shadow-sm hover:bg-[#0A5B52]">Save Profile</Button>
       )}
-    </div>
+    </form>
   )
 
   const renderBranding = () => (
@@ -390,8 +399,8 @@ export function SettingsPage({ section = "Agency Profile" }: { section?: string 
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
         <div>
-          <h3 className="text-sm font-bold text-[#081B2E]">Workspace Team Members ({currentWorkspace.team ? currentWorkspace.team.length : 1})</h3>
-          <p className="text-xs text-slate-400 mt-1 font-semibold">Active OMARA practitioners and administrative seats.</p>
+          <h3 className="text-sm font-bold text-[#081B2E]">Workspace Team Members ({teamMembers ? teamMembers.length : 1})</h3>
+          <p className="text-xs text-slate-400 mt-1 font-semibold">Active practitioners and administrative seats.</p>
         </div>
         {!isSettingsRestricted && (
           <Button
@@ -405,35 +414,117 @@ export function SettingsPage({ section = "Agency Profile" }: { section?: string 
       </div>
 
       {/* Team Table */}
-      <div className="rounded-2xl border border-slate-200/50 overflow-hidden divide-y divide-slate-100 bg-white">
-        {currentWorkspace.team && currentWorkspace.team.map((member) => (
-          <div key={member.email} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 hover:bg-slate-50/50 transition-colors gap-3">
-            <div className="flex items-center gap-3">
-              <div
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-black text-white shadow-sm"
-                style={{ backgroundColor: currentWorkspace.color }}
-              >
-                {member.name.split(" ").map(n => n[0]).join("")}
-              </div>
-              <div>
-                <div className="text-sm font-bold text-[#081B2E] flex items-center gap-1.5">
-                  {member.name}
-                  {member.email === user?.email && (
-                    <span className="rounded bg-slate-100 text-slate-500 px-1.5 py-0.5 text-[9px] font-bold">You</span>
+      <div className="rounded-2xl border border-slate-200/50 overflow-x-auto bg-white shadow-sm mb-6">
+        <table className="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr className="border-b border-slate-200 bg-slate-50/70 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+              <th className="p-4">Name</th>
+              <th className="p-4">Email</th>
+              <th className="p-4">Role</th>
+              <th className="p-4">Status</th>
+              <th className="p-4">Last Login</th>
+              <th className="p-4">Created At</th>
+              <th className="p-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {teamLoading ? (
+              <tr><td colSpan={7} className="p-8 text-center text-slate-500 font-medium">Loading team members...</td></tr>
+            ) : teamMembers.map((member: any) => (
+              <tr key={member.id} className="hover:bg-slate-50/50 transition-colors">
+                <td className="p-4 font-bold text-[#081B2E]">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[10px] font-black text-white shadow-sm" style={{ backgroundColor: currentWorkspace.color }}>
+                      {member.full_name?.split(" ").map((n: string) => n[0]).join("")}
+                    </div>
+                    <span>{member.full_name}</span>
+                    {member.id === user?.id && <span className="rounded bg-slate-100 text-slate-500 px-1.5 py-0.5 text-[9px] font-bold">You</span>}
+                  </div>
+                </td>
+                <td className="p-4 text-slate-500 font-medium">{member.email}</td>
+                <td className="p-4">
+                  <select 
+                    value={member.role}
+                    onChange={(e) => updateRole(member.id, e.target.value)}
+                    disabled={isSettingsRestricted || member.id === user?.id}
+                    className="h-8 rounded-lg border border-slate-200 bg-white px-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C] disabled:bg-slate-50"
+                  >
+                    <option value="owner">Owner</option>
+                    <option value="admin">Admin</option>
+                    <option value="agent">Migration Agent</option>
+                    <option value="manager">Case Manager</option>
+                    <option value="support">Assistant</option>
+                    <option value="viewer">Read-only staff</option>
+                  </select>
+                </td>
+                <td className="p-4">
+                  <span className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold ${member.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>
+                    <span className={`h-1.5 w-1.5 rounded-full ${member.is_active ? 'bg-emerald-500' : 'bg-slate-400'}`}></span>
+                    {member.is_active ? 'Active' : 'Disabled'}
+                  </span>
+                </td>
+                <td className="p-4 text-slate-400">{member.last_login_at ? new Date(member.last_login_at).toLocaleDateString() : 'Never'}</td>
+                <td className="p-4 text-slate-400">{new Date(member.created_at).toLocaleDateString()}</td>
+                <td className="p-4 text-right">
+                  {!isSettingsRestricted && member.id !== user?.id && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-40">
+                        <DropdownMenuItem onClick={() => updateStatus(member.id, !member.is_active)}>
+                          {member.is_active ? 'Disable User' : 'Reactivate User'}
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => removeMember(member.id)} className="text-red-600 focus:text-red-600">
+                          Remove User
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   )}
-                </div>
-                <div className="text-[11px] text-slate-400 font-semibold mt-0.5">{member.email} • {member.marn}</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 self-end sm:self-auto">
-              <span className="rounded-full bg-emerald-50 border border-emerald-100 px-2.5 py-0.5 text-xs font-bold text-emerald-700">{member.role}</span>
-              <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-600">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span> Active
-              </span>
-            </div>
-          </div>
-        ))}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
+
+      {/* Pending Invitations Table */}
+      {(invitations && invitations.length > 0) && (
+        <div className="mb-6">
+          <h4 className="text-xs font-bold text-[#081B2E] mb-3 uppercase tracking-wider">Pending Invitations</h4>
+          <div className="rounded-2xl border border-slate-200/50 overflow-x-auto bg-white shadow-sm">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="border-b border-slate-200 bg-slate-50/70 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  <th className="p-4">Email</th>
+                  <th className="p-4">Role</th>
+                  <th className="p-4">Sent At</th>
+                  <th className="p-4">Expires At</th>
+                  <th className="p-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {invitations.map((inv: any) => (
+                  <tr key={inv.id} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="p-4 font-bold text-slate-700">{inv.email}</td>
+                    <td className="p-4 text-slate-500 capitalize">{inv.role}</td>
+                    <td className="p-4 text-slate-400">{new Date(inv.created_at).toLocaleDateString()}</td>
+                    <td className="p-4 text-slate-400">{new Date(inv.expires_at).toLocaleDateString()}</td>
+                    <td className="p-4 text-right">
+                      <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => cancelInvite(inv.id)}>
+                        Cancel
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Permissions Matrix */}
       <div>
@@ -478,7 +569,7 @@ export function SettingsPage({ section = "Agency Profile" }: { section?: string 
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-sm font-bold text-[#081B2E]">Visa Clause Libraries ({clausesList.length})</h3>
+          <h3 className="text-sm font-bold text-[#081B2E]">Visa Clause Libraries ({clausesList?.length || 0})</h3>
           <p className="text-xs text-slate-400 mt-1 font-semibold">Reusable legal boilerplate and terms to drag-and-drop into service agreements.</p>
         </div>
         {!isSettingsRestricted && (
@@ -493,68 +584,70 @@ export function SettingsPage({ section = "Agency Profile" }: { section?: string 
       </div>
 
       <div className="grid gap-4">
-        {clausesList.map((clause) => (
-          <div key={clause.key} className="rounded-xl border border-slate-200/50 bg-white p-5 shadow-sm hover:border-slate-350/50 transition-all duration-200">
+        {clausesList?.map((clause: any) => (
+          <div key={clause.id} className="rounded-xl border border-slate-200/50 bg-white p-5 shadow-sm hover:border-slate-350/50 transition-all duration-200">
             <div className="flex justify-between items-start gap-4">
               <div className="space-y-2">
-                <span className="font-mono text-xs font-bold text-[#0D9F8C] bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded">{clause.key}</span>
+                <span className="font-mono text-xs font-bold text-[#0D9F8C] bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded">
+                  {clause.is_mandatory ? "MANDATORY" : "OPTIONAL"}
+                </span>
                 <h4 className="text-sm font-bold text-[#081B2E]">{clause.title}</h4>
-                <p className="text-xs text-slate-500 leading-relaxed font-medium">{clause.text}</p>
+                <p className="text-xs text-slate-500 leading-relaxed font-medium whitespace-pre-wrap">{clause.content}</p>
               </div>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 rounded-lg hover:bg-slate-50">
-                <MoreHorizontal className="h-4 w-4" />
+              <Button variant="ghost" size="icon" onClick={() => deleteClause(clause.id)} className="h-8 w-8 text-red-400 hover:text-red-600 rounded-lg hover:bg-red-50">
+                <Trash2 className="h-4 w-4" />
               </Button>
             </div>
           </div>
         ))}
+        {(!clausesList || clausesList.length === 0) && (
+          <div className="p-8 text-center text-slate-500 text-sm border border-slate-200/50 rounded-xl bg-slate-50/50">
+            No clauses found. Add one to get started.
+          </div>
+        )}
       </div>
     </div>
   )
 
-  const renderMatterTypes = () => {
-    const subclasses = [
-      { subclass: "SC 820 / SC 801", title: "Partner Visa (Onshore)", defaultFee: "$4,200", template: "Standard Partner Retainer" },
-      { subclass: "SC 189 / SC 190", title: "Skilled Independent / Nominated", defaultFee: "$2,800", template: "Points Test Service Agreement" },
-      { subclass: "SC 482", title: "Temporary Skill Shortage", defaultFee: "$3,500", template: "Employer Sponsored Agreement" },
-    ]
-    return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h3 className="text-sm font-bold text-[#081B2E]">Visa Subclass Defaults</h3>
-            <p className="text-xs text-slate-400 mt-1 font-semibold">Configure scope, professional fees, and defaults by Department of Home Affairs visa codes.</p>
-          </div>
-          {!isSettingsRestricted && (
-            <Button size="sm" className="rounded-xl bg-[#0D9F8C] font-bold hover:bg-[#0A5B52]">
-              <Plus className="h-4 w-4 mr-1" /> Add Matter Type
-            </Button>
-          )}
-        </div>
+  const handleSaveDefaults = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const updates = {
+      default_professional_fee: parseFloat(formData.get('fee') as string) || 0,
+      default_payment_terms: formData.get('terms'),
+    };
+    await updateDefaults(updates);
+    triggerToast("Global matter defaults updated successfully!");
+  };
 
-        <div className="rounded-2xl border border-slate-200/50 overflow-hidden divide-y divide-slate-100">
-          {subclasses.map((item) => (
-            <div key={item.subclass} className="grid gap-3 p-4 bg-white md:grid-cols-4 md:items-center">
-              <div>
-                <span className="text-xs font-bold text-[#0D9F8C]">{item.subclass}</span>
-                <h4 className="text-sm font-bold text-[#081B2E] mt-0.5">{item.title}</h4>
-              </div>
-              <div className="text-xs font-semibold text-slate-500">
-                <span className="block text-xs text-slate-400 uppercase font-bold">Default Fee</span>
-                {item.defaultFee}
-              </div>
-              <div className="text-xs font-semibold text-slate-500">
-                <span className="block text-xs text-slate-400 uppercase font-bold">Standard Template</span>
-                {item.template}
-              </div>
-              <div className="flex justify-end">
-                <Button disabled={isSettingsRestricted} variant="outline" size="sm" className="h-8.5 rounded-lg border-slate-200 px-3 text-[11px] font-bold hover:bg-slate-50">Edit defaults</Button>
-              </div>
-            </div>
-          ))}
+  const renderMatterTypes = () => (
+    <form onSubmit={handleSaveDefaults} className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h3 className="text-sm font-bold text-[#081B2E]">Global Matter Defaults</h3>
+          <p className="text-xs text-slate-400 mt-1 font-semibold">Set standard fees and default terms for all new matters across the workspace.</p>
         </div>
       </div>
-    )
-  }
+
+      <div className="grid gap-5 md:grid-cols-2">
+        <label className="grid gap-2 text-xs font-bold text-slate-500">
+          Default Professional Fee ($)
+          <Input name="fee" type="number" step="0.01" className="h-11 rounded-xl border-slate-200 bg-white" defaultValue={agencyProfile?.defaults?.default_professional_fee || 0} disabled={isSettingsRestricted} />
+        </label>
+        <label className="grid gap-2 text-xs font-bold text-slate-500">
+          Default Payment Terms
+          <select name="terms" disabled={isSettingsRestricted} defaultValue={agencyProfile?.defaults?.default_payment_terms || "50_upfront_50_lodgement"} className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]">
+            <option value="100_upfront">100% Upfront Retainer</option>
+            <option value="50_upfront_50_lodgement">50% Upfront, 50% on Lodgement (Standard)</option>
+            <option value="custom">Custom Milestone Schedule</option>
+          </select>
+        </label>
+      </div>
+      {!isSettingsRestricted && (
+        <Button type="submit" className="rounded-xl bg-[#0D9F8C] font-bold shadow-sm hover:bg-[#0A5B52]">Save Defaults</Button>
+      )}
+    </form>
+  )
 
   const renderMyProfile = () => (
     <div className="space-y-6">
@@ -563,35 +656,35 @@ export function SettingsPage({ section = "Agency Profile" }: { section?: string 
           className="flex h-16 w-16 items-center justify-center rounded-full text-white text-xl font-black shadow"
           style={{ backgroundColor: currentWorkspace.color }}
         >
-          {user?.avatar || "RS"}
+          {user?.user_metadata?.full_name ? user.user_metadata.full_name.split(" ").map((n: string) => n[0]).join("") : "U"}
         </div>
         <div>
-          <h4 className="text-sm font-bold text-[#081B2E]">{user?.name || "Rajwant Singh"}</h4>
-          <p className="text-xs text-slate-400 font-semibold mt-0.5">{user?.email || "owner@demoagency.com"}</p>
-          <span className="mt-2 inline-block rounded bg-emerald-50 border border-emerald-100 px-2 py-0.5 text-xs font-bold text-[#0D9F8C]">{currentRole}</span>
+          <h4 className="text-sm font-bold text-[#081B2E]">{myFullName || user?.email || "Unknown User"}</h4>
+          <p className="text-xs text-slate-400 font-semibold mt-0.5">{user?.email || ""}</p>
+          <span className="mt-2 inline-block rounded bg-emerald-50 border border-emerald-100 px-2 py-0.5 text-xs font-bold text-[#0D9F8C] capitalize">{currentRole}</span>
         </div>
       </div>
 
       <div className="grid gap-5 md:grid-cols-2">
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           Full Name
-          <Input className="h-11 rounded-xl border-slate-200 bg-white" defaultValue={user?.name || "Rajwant Singh"} />
+          <Input value={myFullName} onChange={(e) => setMyFullName(e.target.value)} className="h-11 rounded-xl border-slate-200 bg-white" />
         </label>
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           Work Email
-          <Input className="h-11 rounded-xl border-slate-200 bg-white" defaultValue={user?.email || "owner@demoagency.com"} disabled />
+          <Input className="h-11 rounded-xl border-slate-200 bg-white" defaultValue={user?.email || ""} disabled />
         </label>
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           Personal MARN (If applicable)
-          <Input className="h-11 rounded-xl border-slate-200 bg-white" defaultValue={user?.marn || "1794016"} />
+          <Input className="h-11 rounded-xl border-slate-200 bg-white" defaultValue={user?.marn || ""} disabled />
         </label>
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           Practitioner Phone
-          <Input className="h-11 rounded-xl border-slate-200 bg-white" defaultValue="+61 2 9238 4810" />
+          <Input value={myPhone} onChange={(e) => setMyPhone(e.target.value)} className="h-11 rounded-xl border-slate-200 bg-white" />
         </label>
       </div>
 
-      <Button onClick={() => triggerToast("Personal practitioner profile details updated successfully!")} className="rounded-xl bg-[#0D9F8C] font-bold shadow-sm hover:bg-[#0A5B52]">Save Profile</Button>
+      <Button onClick={handleSaveMyProfile} disabled={userLoading} className="rounded-xl bg-[#0D9F8C] font-bold shadow-sm hover:bg-[#0A5B52]">Save Profile</Button>
     </div>
   )
 
@@ -604,7 +697,7 @@ export function SettingsPage({ section = "Agency Profile" }: { section?: string 
             <p className="text-[11px] text-slate-400 font-semibold mt-1">Enforce Google Authenticator or SMS token prompt at next sign-in for safety.</p>
           </div>
           <button
-            disabled={mfaUpdating}
+            disabled={userLoading}
             onClick={handleMfaToggle}
             className={`flex h-6 w-11 shrink-0 items-center rounded-full p-1 transition-colors duration-200 focus:outline-none ${mfaEnabled ? "bg-[#0D9F8C]" : "bg-slate-250"}`}
           >
@@ -624,38 +717,12 @@ export function SettingsPage({ section = "Agency Profile" }: { section?: string 
           </select>
         </div>
       </div>
-
-      <div>
-        <h4 className="text-xs font-bold text-[#081B2E] mb-3">Active Practitioner Sessions</h4>
-        <div className="rounded-xl border border-slate-200/50 overflow-hidden divide-y divide-slate-100 bg-white">
-          {activeSessions.map((session) => (
-            <div key={session.id} className="flex justify-between items-center p-4 text-xs gap-3">
-              <div>
-                <span className="font-mono font-bold text-slate-700">{session.ip}</span>
-                <span className="text-slate-400 font-semibold ml-2 hidden sm:inline">• {session.device}</span>
-                <div className="text-xs text-slate-400 font-semibold mt-0.5 sm:hidden">{session.device}</div>
-              </div>
-              <div className="flex items-center gap-3 shrink-0">
-                <span className={`font-bold ${session.time === "Current Session" ? "text-[#0D9F8C]" : "text-slate-400"}`}>{session.time}</span>
-                {session.time !== "Current Session" && (
-                  <button
-                    onClick={() => revokeSession(session.id, session.ip)}
-                    className="text-xs font-bold text-rose-600 hover:text-rose-700"
-                  >
-                    Revoke
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   )
 
   const renderContent = () => {
-    switch (section) {
-      case "Agency Profile":
+    switch (activeSectionKey) {
+      case "Agency":
         return renderAgencyProfile()
       case "Branding":
         return renderBranding()
@@ -663,11 +730,11 @@ export function SettingsPage({ section = "Agency Profile" }: { section?: string 
         return renderTeamSetup()
       case "Clauses":
         return renderClauses()
-      case "Matter Types":
+      case "MatterDefaults":
         return renderMatterTypes()
-      case "My Profile":
+      case "Profile":
         return renderMyProfile()
-      case "Security":
+      case "MFA":
         return renderSecurity()
       default:
         return renderAgencyProfile()
@@ -805,7 +872,7 @@ export function SettingsPage({ section = "Agency Profile" }: { section?: string 
         </DialogContent>
       </Dialog>
 
-      <PageHeader eyebrow="Settings" title={section} description="Enterprise-grade configuration for your agency, team, templates, security and defaults." />
+      <PageHeader eyebrow="Settings" title={currentTitle} description="Enterprise-grade configuration for your agency, team, templates, security and defaults." />
 
       {/* Role Restriction Banner */}
       {isSettingsRestricted && (
@@ -828,7 +895,7 @@ export function SettingsPage({ section = "Agency Profile" }: { section?: string 
                   <Link
                     key={item}
                     href={`/workspace/${currentSlug}/settings?section=${target}`}
-                    className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-bold transition-all duration-200 ${item === section ? "bg-[#0D9F8C] text-white shadow-sm" : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"}`}
+                    className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-bold transition-all duration-200 ${target === activeSectionKey ? "bg-[#0D9F8C] text-white shadow-sm" : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"}`}
                   >
                     <span>{item}</span>
                   </Link>
@@ -843,7 +910,7 @@ export function SettingsPage({ section = "Agency Profile" }: { section?: string 
                   <Link
                     key={item}
                     href={`/workspace/${currentSlug}/settings?section=${target}`}
-                    className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-bold transition-all duration-200 ${item === section ? "bg-[#0D9F8C] text-white shadow-sm" : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"}`}
+                    className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-bold transition-all duration-200 ${target === activeSectionKey ? "bg-[#0D9F8C] text-white shadow-sm" : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"}`}
                   >
                     <span>{item}</span>
                   </Link>
@@ -856,7 +923,7 @@ export function SettingsPage({ section = "Agency Profile" }: { section?: string 
         {/* Settings Content Area */}
         <Card className="rounded-2xl border border-slate-200/50 bg-white/60 shadow-[0_1px_2px_rgba(8,27,46,0.01),0_8px_24px_rgba(8,27,46,0.02)]">
           <CardContent className="p-7">
-            <h2 className="text-lg font-bold tracking-tight text-[#081B2E] mb-5">{section}</h2>
+            <h2 className="text-lg font-bold tracking-tight text-[#081B2E] mb-5">{currentTitle}</h2>
             {renderContent()}
           </CardContent>
         </Card>

@@ -28,15 +28,6 @@ const mockProfile = {
   agency: mockAgency
 };
 
-function isPlaceholderAgencyId(value?: string | null) {
-  if (!value) return true;
-  const normalized = value.toLowerCase();
-  return (
-    normalized === '11111111-1111-1111-1111-111111111111' ||
-    normalized === '00000000-0000-0000-0000-000000000000'
-  );
-}
-
 export async function getCurrentUser() {
   if (isSafeDevMode) {
     return mockUser as any;
@@ -68,10 +59,6 @@ export async function getCurrentProfile() {
     .single();
 
   if (error || !profile) return null;
-  if (isPlaceholderAgencyId((profile as any).agency_id)) {
-    console.error('[AUTH_PROFILE_INVALID_AGENCY]', profile);
-    return null;
-  }
   return profile;
 }
 

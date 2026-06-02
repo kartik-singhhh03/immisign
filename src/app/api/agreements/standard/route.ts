@@ -4,6 +4,7 @@ import { createClient as createRawClient } from '@supabase/supabase-js';
 import { DocumentGenerationService } from '@/features/agreements/services/document-generation.service';
 import { SignWellService } from '@/features/agreements/services/signwell.service';
 import { isUuid } from '@/lib/validation/uuid';
+import { redactSensitiveValue, stripSensitiveUrlParams } from '@/lib/security/sanitize';
 
 export async function POST(req: NextRequest) {
   try {
@@ -29,7 +30,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    console.log("Authenticated User in API Route:", user?.id ?? "UNAUTHENTICATED");
+    console.log("Agreement API auth state:", { hasUser: !!user });
 
     const body = await req.json();
     const { formData } = body;
@@ -158,7 +159,11 @@ export async function POST(req: NextRequest) {
     console.log("Step 5: Generating PDF");
     const docService = new DocumentGenerationService(supabase);
     const result = await docService.generateDocument(agencyId, userId, agreementId);
-    console.log("PDF Generation Result:", result);
+    console.log("PDF Generation Result:", {
+      size: result.size,
+      timeMs: result.timeMs,
+      storagePath: stripSensitiveUrlParams(result.storagePath),
+    });
 
     // 6. Push to SignWell. If the external provider rejects the request,
     // keep the generated PDF and DB rows, but do not pretend dispatch worked.
@@ -167,7 +172,12 @@ export async function POST(req: NextRequest) {
     let swResult: any = null;
     try {
       swResult = await swService.sendForSignature(agencyId, userId, 'owner' as any, agreementId);
-      console.log("SignWell Result:", swResult);
+      console.log("SignWell Result:", redactSensitiveValue({
+        id: swResult?.id,
+        status: swResult?.status,
+        recipientCount: Array.isArray(swResult?.recipients) ? swResult.recipients.length : 0,
+        simulated: swResult?.simulated,
+      }));
     } catch (signwellError: any) {
       const message = signwellError?.message || 'SignWell dispatch failed';
       await (supabase as any).from('agreements').update({

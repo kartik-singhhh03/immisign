@@ -24,6 +24,30 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+*.log
+*.err
+logs/
+debug/
+debug-output/
+*.trace
+*.har
+*.tmp
+*.temp
+tmp/
+temp/
+temp.txt
+lint_errors.txt
+
+# generated local verification artifacts
+dev-*.log
+dev-*.err
+start-test.log
+npm-test.log
+dummy_test_file.pdf
+scripts/proof/
+scratch/
+monolithic-backup*.tsx
+original.tsx
 
 # local env files (never commit secrets)
 .env

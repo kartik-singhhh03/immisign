@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { DocumentGenerationService } from '@/features/agreements/services/document-generation.service';
+import { stripSensitiveUrlParams } from '@/lib/security/sanitize';
 
 export async function GET(req: NextRequest) {
   if (process.env.NODE_ENV === 'production') {
@@ -64,7 +65,7 @@ export async function GET(req: NextRequest) {
         fileSizeBytes: result.size,
         storageSuccess: !fileError,
         storagePath: result.storagePath,
-        retrievalUrl: fileData?.signedUrl
+        retrievalUrl: fileData?.signedUrl ? stripSensitiveUrlParams(fileData.signedUrl) : null
       }
     });
 

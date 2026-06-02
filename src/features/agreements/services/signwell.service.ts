@@ -6,6 +6,7 @@ import { AgreementStatus } from '../types';
 import { Role } from '@/features/auth/types/roles';
 import { AuditService } from './audit.service';
 import { assertUuid } from '@/lib/validation/uuid';
+import { redactSensitiveValue } from '@/lib/security/sanitize';
 
 export class SignWellService {
   private agreementRepo: AgreementRepository;
@@ -122,7 +123,18 @@ export class SignWellService {
       draft: true,
     };
     
-    console.log("SIMULATING SIGNWELL DISPATCH. Payload:", JSON.stringify(payload, null, 2));
+    console.log("SIMULATING SIGNWELL DISPATCH.", redactSensitiveValue({
+      name: payload.name,
+      fileCount: payload.files.length,
+      recipients: payload.recipients.map((recipient) => ({
+        id: recipient.id,
+        routing_order: recipient.routing_order,
+        role: recipient.role,
+      })),
+      expires_in: payload.expires_in,
+      draft: payload.draft,
+      test_mode: payload.test_mode,
+    }));
 
     const simulatedDocId = `sim_doc_${crypto.randomUUID()}`;
     const signwellData = {

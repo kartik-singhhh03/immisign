@@ -84,6 +84,20 @@ export default function SignupPage() {
     }
   }
 
+  const handleGoogleSignup = async () => {
+    setIsLoading(true)
+    setError(null)
+    const redirectTo = `${window.location.origin}/onboarding`
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo },
+    })
+    if (oauthError) {
+      setError(oauthError.message)
+      setIsLoading(false)
+    }
+  }
+
   return (
     <div className="animate-in fade-in-50 duration-300">
       <div className="mb-6">
@@ -238,6 +252,9 @@ export default function SignupPage() {
           Sign in
         </Link>
       </p>
+      <Button type="button" variant="outline" onClick={handleGoogleSignup} disabled={isLoading} className="mt-3 w-full h-11 rounded-xl border-slate-200 bg-white">
+        Continue with Google
+      </Button>
     </div>
   )
 }

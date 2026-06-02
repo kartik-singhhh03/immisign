@@ -1,4 +1,3 @@
-import { resendClient, AgencyBranding } from './client';
 import { createAdminClient } from '../supabase/admin';
 import * as React from 'react';
 import { render } from '@react-email/render';
@@ -7,6 +6,7 @@ import WelcomeEmail from '@/emails/auth/welcome';
 import PasswordResetEmail from '@/emails/auth/password-reset';
 import InvitationEmail from '@/emails/agency/invitation';
 import SubscriptionUpdatedEmail from '@/emails/billing/subscription-updated';
+import { getResendFromEmail, sendEmailWithForensicLogging } from './resend';
 
 const templateRegistry: Record<string, any> = {
     'agreement_sent': AgreementSentEmail,
@@ -58,8 +58,8 @@ export class EmailService {
                    updated_at: new Date().toISOString()
               }).eq('id', jobId);
 
-               const res = await resendClient.emails.send({
-                   from: process.env.RESEND_FROM_EMAIL || 'support@immisign.app',
+               const res = await sendEmailWithForensicLogging({
+                   from: getResendFromEmail(),
                    to: [(job as any).recipient],
                    subject: subject,
                    html: htmlOutput as string,
@@ -69,7 +69,7 @@ export class EmailService {
                    ]
                });
 
-               if (res.error) throw new Error(res.error.message);
+               if ((res as any).error) throw new Error((res as any).error.message);
 
                await (admin.from('email_jobs' as any) as any).update({
                    status: 'sent',

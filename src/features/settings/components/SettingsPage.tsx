@@ -262,6 +262,11 @@ export function SettingsPage({ section = "" }: { section?: string }) {
   const [myFullName, setMyFullName] = React.useState(user?.user_metadata?.full_name || "")
   const [myPhone, setMyPhone] = React.useState(user?.phone || "")
   const [mfaEnabled, setMfaEnabled] = React.useState(user?.mfa_enabled || false)
+  const [signatures, setSignatures] = React.useState<any[]>([])
+  const [typedSignatureName, setTypedSignatureName] = React.useState("")
+  const [drawSignatureData, setDrawSignatureData] = React.useState("")
+  const [uploadSignatureFile, setUploadSignatureFile] = React.useState<File | null>(null)
+  const [signatureLoading, setSignatureLoading] = React.useState(false)
 
   const handleSaveMyProfile = async () => {
     await updateUserProfile({ full_name: myFullName, phone: myPhone })
@@ -272,6 +277,78 @@ export function SettingsPage({ section = "" }: { section?: string }) {
     await toggleMfa(!mfaEnabled)
     setMfaEnabled(!mfaEnabled)
     triggerToast(`MFA security enforcement has been ${!mfaEnabled ? "ENABLED" : "DISABLED"}.`)
+  }
+
+  const loadSignatures = React.useCallback(async () => {
+    try {
+      const res = await fetch('/api/signatures');
+      const payload = await res.json();
+      if (res.ok) setSignatures(payload.signatures || []);
+    } catch {
+      // non-blocking in settings page
+    }
+  }, [])
+
+  React.useEffect(() => {
+    void loadSignatures()
+  }, [loadSignatures])
+
+  const uploadSignature = async (type: 'upload' | 'draw' | 'type') => {
+    setSignatureLoading(true)
+    try {
+      const form = new FormData()
+      form.set('signature_type', type)
+      form.set('is_default', String(signatures.length === 0))
+      if (type === 'upload' && uploadSignatureFile) form.set('file', uploadSignatureFile)
+      if (type === 'draw') form.set('draw_data', drawSignatureData)
+      if (type === 'type') form.set('typed_name', typedSignatureName)
+      const res = await fetch('/api/signatures', { method: 'POST', body: form })
+      const payload = await res.json()
+      if (!res.ok) throw new Error(payload.error || 'Failed to save signature')
+      triggerToast('Signature saved')
+      setTypedSignatureName("")
+      setDrawSignatureData("")
+      setUploadSignatureFile(null)
+      await loadSignatures()
+    } catch (e: unknown) {
+      triggerToast(e instanceof Error ? e.message : 'Failed to save signature')
+    } finally {
+      setSignatureLoading(false)
+    }
+  }
+
+  const makeDefaultSignature = async (id: string) => {
+    setSignatureLoading(true)
+    try {
+      const res = await fetch('/api/signatures/default', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ signatureId: id }),
+      })
+      const payload = await res.json()
+      if (!res.ok) throw new Error(payload.error || 'Failed to set default signature')
+      triggerToast('Default signature updated')
+      await loadSignatures()
+    } catch (e: unknown) {
+      triggerToast(e instanceof Error ? e.message : 'Failed to set default signature')
+    } finally {
+      setSignatureLoading(false)
+    }
+  }
+
+  const deleteSignature = async (id: string) => {
+    setSignatureLoading(true)
+    try {
+      const res = await fetch(`/api/signatures/${id}`, { method: 'DELETE' })
+      const payload = await res.json()
+      if (!res.ok) throw new Error(payload.error || 'Failed to delete signature')
+      triggerToast('Signature deleted')
+      await loadSignatures()
+    } catch (e: unknown) {
+      triggerToast(e instanceof Error ? e.message : 'Failed to delete signature')
+    } finally {
+      setSignatureLoading(false)
+    }
   }
 
   const handleSaveAgencyProfile = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -685,6 +762,65 @@ export function SettingsPage({ section = "" }: { section?: string }) {
       </div>
 
       <Button onClick={handleSaveMyProfile} disabled={userLoading} className="rounded-xl bg-[#0D9F8C] font-bold shadow-sm hover:bg-[#0A5B52]">Save Profile</Button>
+
+      <div className="space-y-4 rounded-xl border border-slate-200/50 bg-white p-4">
+        <h4 className="text-xs font-bold text-[#081B2E]">Signature Management</h4>
+        <p className="text-[11px] text-slate-500 font-semibold">
+          Configure default practitioner signatures for agreement generation workflows.
+        </p>
+
+        <div className="grid gap-3 md:grid-cols-3">
+          <div className="space-y-2">
+            <Label className="text-xs font-bold text-slate-500">Upload Signature</Label>
+            <Input type="file" accept="image/*" onChange={(e) => setUploadSignatureFile(e.target.files?.[0] || null)} className="h-10 rounded-xl border-slate-200" />
+            <Button type="button" variant="outline" disabled={signatureLoading || !uploadSignatureFile} onClick={() => uploadSignature('upload')} className="h-9 text-xs rounded-xl">
+              Save Upload
+            </Button>
+          </div>
+          <div className="space-y-2">
+            <Label className="text-xs font-bold text-slate-500">Draw Signature (data URL)</Label>
+            <Input value={drawSignatureData} onChange={(e) => setDrawSignatureData(e.target.value)} placeholder="Paste canvas data URL" className="h-10 rounded-xl border-slate-200" />
+            <Button type="button" variant="outline" disabled={signatureLoading || !drawSignatureData} onClick={() => uploadSignature('draw')} className="h-9 text-xs rounded-xl">
+              Save Drawn
+            </Button>
+          </div>
+          <div className="space-y-2">
+            <Label className="text-xs font-bold text-slate-500">Type Signature</Label>
+            <Input value={typedSignatureName} onChange={(e) => setTypedSignatureName(e.target.value)} placeholder="e.g. Rajwant Singh" className="h-10 rounded-xl border-slate-200" />
+            <Button type="button" variant="outline" disabled={signatureLoading || !typedSignatureName} onClick={() => uploadSignature('type')} className="h-9 text-xs rounded-xl">
+              Save Typed
+            </Button>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <h5 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Saved Signatures</h5>
+          {signatures.length === 0 ? (
+            <p className="text-xs text-slate-400">No signatures saved yet.</p>
+          ) : (
+            <div className="space-y-2">
+              {signatures.map((sig) => (
+                <div key={sig.id} className="flex items-center justify-between rounded-lg border border-slate-200 p-2">
+                  <div className="text-xs">
+                    <span className="font-bold text-slate-700 capitalize">{sig.signature_type}</span>
+                    {sig.is_default && <span className="ml-2 rounded bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">Default</span>}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {!sig.is_default && (
+                      <Button type="button" variant="ghost" className="h-7 text-xs" onClick={() => makeDefaultSignature(sig.id)}>
+                        Make Default
+                      </Button>
+                    )}
+                    <Button type="button" variant="ghost" className="h-7 text-xs text-red-600" onClick={() => deleteSignature(sig.id)}>
+                      Delete
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   )
 

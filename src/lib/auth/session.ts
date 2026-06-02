@@ -19,13 +19,20 @@ export async function getSessionProfile(): Promise<SessionProfile | null> {
 
   if (authError || !user) return null;
 
-  const { data: profile, error: profileError } = await (supabase as any)
+  const { data: profile, error: profileError } = await supabase
     .from('users')
     .select('id, email, full_name, agency_id, role')
     .eq('id', user.id)
     .single();
 
   if (profileError || !profile?.agency_id) return null;
+  if (
+    profile.agency_id === '11111111-1111-1111-1111-111111111111' ||
+    profile.agency_id === '00000000-0000-0000-0000-000000000000'
+  ) {
+    console.error('[SESSION_PROFILE_INVALID_AGENCY_ID]', profile);
+    return null;
+  }
 
   const dbRole = profile.role as DbRole;
   return {

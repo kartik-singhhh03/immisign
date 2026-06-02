@@ -76,13 +76,13 @@ export default function LoginPage() {
     }
 
     const domain = cleanEmail.split("@")[1]
-    if (domain === "avcmigration.com.au" || cleanEmail === "owner@demoagency.com" || cleanEmail === "agent@demoagency.com" || cleanEmail === "assistant@demoagency.com") {
+    if (domain === "avcmigration.com.au") {
       setDetectedWorkspace({
         name: "AVC Migration",
         slug: "avc-migration",
         color: "#0D9F8C"
       })
-    } else if (domain === "globalvisa.com.au" || cleanEmail === "manager@demoagency.com") {
+    } else if (domain === "globalvisa.com.au") {
       setDetectedWorkspace({
         name: "Global Visa Partners",
         slug: "global-visa",
@@ -152,6 +152,20 @@ export default function LoginPage() {
     const workspace = await resolveSignedInWorkspace(data.user.id, { slug, name: workspaceName })
     setLoadingMsg(`Entering ${workspace.name} safe workspace...`)
     router.push(`/workspace/${workspace.slug}/dashboard`)
+  }
+
+  const handleGoogleLogin = async () => {
+    setIsLoading(true)
+    setLoadingMsg("Redirecting to Google...")
+    const redirectTo = `${window.location.origin}/login`
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo },
+    })
+    if (error) {
+      alert("Google login failed: " + error.message)
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -284,13 +298,13 @@ export default function LoginPage() {
         <span className="relative bg-white px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Enterprise SSO Direct</span>
       </div>
 
-      {/* Google and MS SSO Buttons — dev-only quick login stubs */}
+      {/* OAuth options */}
       <div className="grid gap-3 sm:grid-cols-2">
         <Button 
           variant="outline" 
           type="button" 
-          disabled={isLoading || !isDevEnvironment}
-          onClick={() => isDevEnvironment && handleQuickLogin("testowner_1780228890060@demoagency.com", "valid-agency-1780228890060", "AVC Migration")}
+          disabled={isLoading}
+          onClick={handleGoogleLogin}
           className="h-11 rounded-xl border-slate-200 bg-white hover:bg-slate-50 font-bold text-xs flex items-center justify-center gap-2 text-slate-700"
         >
           <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24">
@@ -299,17 +313,16 @@ export default function LoginPage() {
             <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
             <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
           </svg>
-          Google Workspace SSO
+          Continue with Google
         </Button>
         <Button 
           variant="outline" 
           type="button" 
-          disabled={isLoading}
-          onClick={() => isDevEnvironment && handleQuickLogin("manager@demoagency.com", "global-visa", "Global Visa Partners")}
+          disabled
           className="h-11 rounded-xl border-slate-200 bg-white hover:bg-slate-50 font-bold text-xs flex items-center justify-center gap-2 text-slate-700"
         >
           <svg className="h-4 w-4 text-[#0078D4]" viewBox="0 0 23 23" fill="currentColor"><path d="M0 0h11v11H0zM12 0h11v11H12zM0 12h11v11H0zM12 12h11v11H12z"/></svg>
-          Microsoft Entra ID
+          Coming soon
         </Button>
       </div>
 

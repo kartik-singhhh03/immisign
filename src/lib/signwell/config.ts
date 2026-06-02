@@ -16,6 +16,10 @@ export const signwellConfig = configSchema.parse({
 // Helper for strict runtime checks
 export function validateSignwellConfig() {
   if (signwellConfig.apiKey === 'dummy_for_build') {
-     console.warn('SignWell API Key is not set in environment.');
+     const message = 'SIGNWELL_API_KEY is not set.';
+     if (process.env.NODE_ENV === 'production' || process.env.VERCEL === '1') {
+       throw new Error(message);
+     }
+     console.warn(message);
   }
 }

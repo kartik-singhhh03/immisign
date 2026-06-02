@@ -8,6 +8,7 @@ import { StorageHelpers } from '@/lib/supabase/storage';
 import { AuditService } from './audit.service';
 import { AgreementStateMachine } from './state-machine';
 import { AgreementStatus } from '../types';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 export class DocumentGenerationService {
   private agreementRepo: AgreementRepository;
@@ -50,6 +51,14 @@ export class DocumentGenerationService {
     const { data: matterType } = agreement.matter_type_id ? await this.supabase.from('matter_types').select('*').eq('id', agreement.matter_type_id).single() : { data: null };
     const { data: paymentSchedule } = await this.supabase.from('payment_schedules').select('*').eq('agreement_id', agreementId).single();
     const { data: signers } = await this.supabase.from('agreement_participants').select('role, users(full_name)').eq('agreement_id', agreementId);
+    const admin = createAdminClient();
+    const { data: defaultSignature } = await (admin as any)
+      .from('user_signatures')
+      .select('signature_type, storage_path, typed_name, draw_data')
+      .eq('agency_id', agencyId)
+      .eq('user_id', userId)
+      .eq('is_default', true)
+      .maybeSingle();
 
     const formatCurrency = (val: number | string | undefined) => val ? `$${Number(val).toLocaleString('en-AU', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'TBD';
 
@@ -71,6 +80,21 @@ export class DocumentGenerationService {
 
     const secondaryApplicant = signers?.find(s => s.role === 'secondary_applicant')?.users ? (signers.find(s => s.role === 'secondary_applicant') as any).users.full_name : agreement.metadata?.secondary_applicant_name;
     const sponsor = signers?.find(s => s.role === 'sponsor')?.users ? (signers.find(s => s.role === 'sponsor') as any).users.full_name : agreement.metadata?.sponsor_name;
+
+    let practitionerSignatureBlock = '';
+    const includePractitionerSignature = Boolean((agreement.metadata as any)?.auto_insert_practitioner_signature);
+    if (includePractitionerSignature && defaultSignature) {
+      if (defaultSignature.signature_type === 'upload' && defaultSignature.storage_path) {
+        const { data: signedSig } = await admin.storage.from('signatures').createSignedUrl(defaultSignature.storage_path, 3600);
+        if (signedSig?.signedUrl) {
+          practitionerSignatureBlock = `<img src="${signedSig.signedUrl}" alt="Practitioner signature" style="max-height:64px; max-width:220px; object-fit:contain; display:block; margin-bottom:8px;" />`;
+        }
+      } else if (defaultSignature.signature_type === 'draw' && defaultSignature.draw_data) {
+        practitionerSignatureBlock = `<img src="${defaultSignature.draw_data}" alt="Drawn signature" style="max-height:64px; max-width:220px; object-fit:contain; display:block; margin-bottom:8px;" />`;
+      } else if (defaultSignature.signature_type === 'type' && defaultSignature.typed_name) {
+        practitionerSignatureBlock = `<div style="font-family:'Brush Script MT', cursive; font-size:34px; margin-bottom:8px;">${defaultSignature.typed_name}</div>`;
+      }
+    }
 
     // 6. Merge Variables
     const variables = {
@@ -99,6 +123,7 @@ export class DocumentGenerationService {
       agency_phone: agency?.phone || '0000 000 000',
       rma_name: user?.full_name || 'Registered Migration Agent',
       rma_marn: rma?.mara_number || 'XXXXXXX',
+      practitioner_signature_block: practitionerSignatureBlock,
       ...agreement.metadata,
     };
     
@@ -259,6 +284,7 @@ export class DocumentGenerationService {
                 <p style="font-size: 13px; margin: 0;">{{agency_name}}</p>
                 <p style="font-size: 13px; margin: 0;">{{agency_legal_name}} - ABN: {{agency_abn}}</p>
                 <br/><br/><br/>
+                {{{practitioner_signature_block}}}
                 <p style="font-size: 13px; border-top: 1px dashed #ccc; padding-top: 5px;">Signed by: {{rma_name}}</p>
                 <p style="font-size: 13px;">Date: ...........................................</p>
               </div>

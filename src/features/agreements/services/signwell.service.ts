@@ -112,7 +112,7 @@ export class SignWellService {
       role: 'Migration Agent'
     });
 
-    // 4. Create Document via SignWell Service (SIMULATED DUE TO RATE LIMIT)
+    // 4. Create Document via SignWell Service (REAL API)
     const payload = {
       test_mode: process.env.NODE_ENV !== 'production',
       name: agreement.title,
@@ -123,7 +123,7 @@ export class SignWellService {
       draft: true,
     };
     
-    console.log("SIMULATING SIGNWELL DISPATCH.", redactSensitiveValue({
+    console.log("SIGNWELL_DISPATCH_START", redactSensitiveValue({
       name: payload.name,
       fileCount: payload.files.length,
       recipients: payload.recipients.map((recipient) => ({
@@ -136,21 +136,17 @@ export class SignWellService {
       test_mode: payload.test_mode,
     }));
 
-    const simulatedDocId = `sim_doc_${crypto.randomUUID()}`;
-    const signwellData = {
-      id: simulatedDocId,
-      status: 'sent',
-      recipients: signwellSigners,
-      simulated: true
-    };
+    const signwellData = await signwellClient.createDocument(payload as any);
+    console.log("SIGNWELL_DRAFT_CREATED", redactSensitiveValue({ id: signwellData.id, status: signwellData.status }));
 
-    // 5. Send Document (SIMULATED)
-    console.log(`SIMULATING SIGNWELL SEND for Document ID: ${simulatedDocId}`);
+    // 5. Send Document (must be draft-only)
+    const sentDoc = await signwellClient.sendDocument(signwellData.id);
+    console.log("SIGNWELL_SEND_SUCCESS", redactSensitiveValue({ id: sentDoc.id, status: sentDoc.status }));
 
     // 6. Update Agreement and Log Audit
     await this.agreementRepo.update(agreementId, { 
       status: AgreementStatus.SENT,
-      signwell_document_id: signwellData.id,
+      signwell_document_id: sentDoc.id,
       sent_at: new Date().toISOString()
     });
 
@@ -158,10 +154,10 @@ export class SignWellService {
       agencyId,
       userId,
       agreementId,
-      'Agreement Sent for Signature (Simulated)',
-      { signwell_document_id: signwellData.id, simulated: true },
+      'Agreement Sent for Signature',
+      { signwell_document_id: sentDoc.id },
     );
 
-    return signwellData;
+    return sentDoc;
   }
 }

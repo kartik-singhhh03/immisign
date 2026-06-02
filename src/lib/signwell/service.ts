@@ -29,6 +29,13 @@ export async function createAndSendAgreementPackage(agreementId: string) {
       throw new AppError('Agreement is not in draft state', 'VALIDATION_ERROR');
   }
 
+  if (agreement.signwell_document_id) {
+      console.warn('[SIGNWELL_DISPATCH] Draft agreement already has signwell_document_id. A fresh draft will be created.', {
+        agreementId,
+        existingDocumentId: agreement.signwell_document_id,
+      });
+  }
+
   // 2. Prepare payload
   const filesPayload = await Promise.all(
     agreement.documents.map(async (doc: any) => {
@@ -58,10 +65,13 @@ export async function createAndSendAgreementPackage(agreementId: string) {
       apply_signing_order: true,
       reminders: true,
       expires_in: 30, // Default 30 days
+      draft: true,
   });
 
   // 4. Send Document immediately (SignWell creates in a Draft state unless sent)
+  console.log('[SIGNWELL_SEND_START]', JSON.stringify({ agreementId, signwellDocumentId: signwellData.id }));
   await signwellClient.sendDocument(signwellData.id);
+  console.log('[SIGNWELL_SEND_SUCCESS]', JSON.stringify({ agreementId, signwellDocumentId: signwellData.id }));
 
   // 5. Build transaction object and commit statuses to Database
   const adminClient = createAdminClient();

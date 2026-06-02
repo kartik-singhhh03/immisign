@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { Resend } from 'resend';
-
-const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy');
+import { getResendFromEmail, sendEmailWithForensicLogging } from '@/lib/email/resend';
 
 export async function POST(req: Request) {
   try {
@@ -53,8 +51,8 @@ export async function POST(req: Request) {
     const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/invite/${token}`;
     
     try {
-      await resend.emails.send({
-        from: process.env.RESEND_FROM_EMAIL || 'support@immisign.app',
+      await sendEmailWithForensicLogging({
+        from: getResendFromEmail(),
         to: email,
         subject: 'You have been invited to join an ImmiSign Workspace',
         html: `
@@ -71,8 +69,11 @@ export async function POST(req: Request) {
       });
     } catch (e) {
       console.error("Resend email failed:", e);
-      // Even if email fails locally, return success for the flow (or maybe throw if we strictly want real emails)
-      // The user requested REAL resend emails, so we will throw if it fails in production, but let's just log it if we hit a mock key.
+      await supabase.from('invitations').delete().eq('id', invite.id);
+      return NextResponse.json(
+        { error: 'Invitation email failed to send. Invite rolled back.' },
+        { status: 502 }
+      );
     }
 
     return NextResponse.json({ success: true, invite });

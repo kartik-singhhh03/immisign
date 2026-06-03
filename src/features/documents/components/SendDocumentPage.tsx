@@ -1,6 +1,7 @@
 "use client"
 import * as React from "react"
 import { useRequireWorkspace } from "@/lib/hooks/use-workspace"
+import { useAuthStore } from "@/store/authStore"
 import { useDocuments } from "@/lib/hooks/useSupabaseData"
 import Link from "next/link"
 import {
@@ -22,8 +23,8 @@ import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 
 export function SendDocumentPage() {
-  const { slug: currentSlug } = useRequireWorkspace()
-  const user = useAuthStore(s => s.user)
+  const { slug: currentSlug, agencyId, activeWorkspace } = useRequireWorkspace()
+  const user = useAuthStore((s) => s.user)
   const steps = ["Type", "Upload", "Signers", "Email", "Review", "Send"]
   const [currentStep, setCurrentStep] = React.useState(0)
   const [agreementType, setAgreementType] = React.useState<"custom" | null>("custom")
@@ -140,7 +141,8 @@ export function SendDocumentPage() {
 
     try {
       if (!uploadedFile?.file) throw new Error("No file uploaded");
-      if (!activeWorkspace?.id) throw new Error("No active workspace");
+      const resolvedAgencyId = agencyId || activeWorkspace?.id;
+      if (!resolvedAgencyId) throw new Error("No active workspace");
 
       setSendLogs(curr => [...curr, "Initializing upload sequence..."])
       setSendingProgress(10)
@@ -161,7 +163,7 @@ export function SendDocumentPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           documentId: document.id,
-          agencyId: activeWorkspace.id,
+          agencyId: resolvedAgencyId,
           signers: signersList,
           emailSubject,
           emailMessage
@@ -189,6 +191,14 @@ export function SendDocumentPage() {
       setErrorMessage(err.message || "An unexpected error occurred.")
       setSendLogs(curr => [...curr, "ERROR: " + (err.message || "Upload failed!")])
     }
+  }
+
+  if (!currentSlug) {
+    return (
+      <div className="p-12 text-center text-slate-500 font-medium">
+        Loading workspace...
+      </div>
+    )
   }
 
   const renderTypeStep = () => (

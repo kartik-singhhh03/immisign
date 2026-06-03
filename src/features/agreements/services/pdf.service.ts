@@ -40,12 +40,22 @@ async function resolveChromiumExecutablePath(): Promise<string> {
   return chromium.executablePath();
 }
 
+let pdfGenerationChain: Promise<unknown> = Promise.resolve();
+
 export class PDFService {
   /**
    * Generates a PDF buffer from an HTML string using Serverless-compatible Chromium.
    * On local development environments, it falls back to the native OS Chrome installation.
+   * Serialized to avoid ETXTBSY when multiple PDFs are generated concurrently.
    */
   static async generatePdf(html: string): Promise<Buffer> {
+    const run = () => PDFService.generatePdfInternal(html);
+    const task = pdfGenerationChain.then(run, run);
+    pdfGenerationChain = task.then(() => undefined, () => undefined);
+    return task;
+  }
+
+  private static async generatePdfInternal(html: string): Promise<Buffer> {
     const isLocal = isLocalEnvironment();
 
     const executablePath = isLocal

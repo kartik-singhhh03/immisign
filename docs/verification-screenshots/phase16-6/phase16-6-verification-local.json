@@ -1,0 +1,359 @@
+{
+  "timestamp": "2026-06-03T20:42:17.141Z",
+  "baseUrl": "http://localhost:3001",
+  "slug": "abc-lab",
+  "migration": {
+    "name": "20260606100000_phase16_security_foundation.sql",
+    "applied": true,
+    "applied_at": "2026-06-03T20:35:39.165Z",
+    "result": "PASS"
+  },
+  "database": {
+    "security_audit_logs": {
+      "column_count": 10,
+      "columns": [
+        "id",
+        "agency_id",
+        "user_id",
+        "event_type",
+        "ip_address",
+        "user_agent",
+        "device_label",
+        "browser_label",
+        "metadata",
+        "created_at"
+      ],
+      "indexes": [
+        "security_audit_logs_pkey",
+        "idx_security_audit_logs_agency_created",
+        "idx_security_audit_logs_user_created"
+      ],
+      "rls_policies": [
+        {
+          "policyname": "security_audit_logs_insert_own",
+          "cmd": "INSERT"
+        },
+        {
+          "policyname": "security_audit_logs_select_agency",
+          "cmd": "SELECT"
+        }
+      ],
+      "result": "PASS"
+    },
+    "service_statements": {
+      "column_count": 16,
+      "columns": [
+        "id",
+        "agency_id",
+        "client_id",
+        "agreement_id",
+        "approval_id",
+        "matter_type_id",
+        "statement_number",
+        "status",
+        "visa_subclass",
+        "matter_reference",
+        "issued_at",
+        "metadata",
+        "created_by",
+        "created_at",
+        "updated_at",
+        "deleted_at"
+      ],
+      "indexes": [
+        "service_statements_pkey",
+        "idx_service_statements_agency"
+      ],
+      "rls_policies": [
+        {
+          "policyname": "service_statements_tenant",
+          "cmd": "ALL"
+        }
+      ],
+      "result": "PASS"
+    },
+    "service_statement_items": {
+      "column_count": 10,
+      "columns": [
+        "id",
+        "agency_id",
+        "statement_id",
+        "line_type",
+        "description",
+        "quantity",
+        "unit_amount",
+        "sort_order",
+        "metadata",
+        "created_at"
+      ],
+      "indexes": [
+        "service_statement_items_pkey"
+      ],
+      "rls_policies": [
+        {
+          "policyname": "service_statement_items_tenant",
+          "cmd": "ALL"
+        }
+      ],
+      "result": "PASS"
+    },
+    "users_mfa_columns": {
+      "found": [
+        "mfa_enabled",
+        "deleted_at",
+        "mfa_enrolled_at",
+        "mfa_recovery_codes"
+      ],
+      "result": "PASS"
+    },
+    "foreign_keys": [
+      {
+        "table_name": "security_audit_logs",
+        "column_name": "agency_id",
+        "foreign_table": "agencies"
+      },
+      {
+        "table_name": "security_audit_logs",
+        "column_name": "user_id",
+        "foreign_table": "users"
+      },
+      {
+        "table_name": "service_statement_items",
+        "column_name": "agency_id",
+        "foreign_table": "agencies"
+      },
+      {
+        "table_name": "service_statement_items",
+        "column_name": "statement_id",
+        "foreign_table": "service_statements"
+      },
+      {
+        "table_name": "service_statements",
+        "column_name": "agency_id",
+        "foreign_table": "agencies"
+      },
+      {
+        "table_name": "service_statements",
+        "column_name": "agreement_id",
+        "foreign_table": "agreements"
+      },
+      {
+        "table_name": "service_statements",
+        "column_name": "approval_id",
+        "foreign_table": "application_approvals"
+      },
+      {
+        "table_name": "service_statements",
+        "column_name": "client_id",
+        "foreign_table": "clients"
+      },
+      {
+        "table_name": "service_statements",
+        "column_name": "created_by",
+        "foreign_table": "users"
+      },
+      {
+        "table_name": "service_statements",
+        "column_name": "matter_type_id",
+        "foreign_table": "matter_types"
+      }
+    ]
+  },
+  "rls": {
+    "security_audit_logs_isolated": {
+      "other_agency_log_count": 0,
+      "note": "Full RLS enforcement requires authenticated JWT test; structural policies verified above",
+      "result": "PARTIAL"
+    }
+  },
+  "api": {},
+  "accountDeletion": {
+    "owner_with_subscription": {
+      "subscription_status": "trialing",
+      "label": "owner",
+      "http": 409,
+      "error": "Cancel or complete active agreements before account deletion.",
+      "result": "PASS",
+      "expected": "409 if active/trialing subscription"
+    },
+    "owner_multi_user": {
+      "user_count": 1,
+      "delete_http": 409,
+      "result": "PARTIAL",
+      "note": "Blocked when >1 users"
+    },
+    "owner_active_agreements": {
+      "count": 12,
+      "result": "PARTIAL"
+    }
+  },
+  "clientCentric": {
+    "create_client": {
+      "client_id": "b2686e15-f86b-4c57-9601-8a6d40d7490e",
+      "result": "PASS"
+    },
+    "agreement_api": {
+      "http": 200,
+      "agreement_id": "521654d0-0ab5-48cd-8af1-02a49bbabf9d",
+      "result": "PARTIAL"
+    },
+    "agreement_client_id": {
+      "db_client_id": "b2686e15-f86b-4c57-9601-8a6d40d7490e",
+      "expected": "b2686e15-f86b-4c57-9601-8a6d40d7490e",
+      "result": "PASS"
+    },
+    "approval_api": {
+      "http": 200,
+      "id": "9fb8daa0-132b-46cd-b121-9a3b52168f9a",
+      "result": "PASS"
+    },
+    "no_duplicate_clients": {
+      "count": 1,
+      "result": "PASS"
+    }
+  },
+  "invite": {
+    "recent_invitations": [],
+    "orphan_accepted_without_user": 0,
+    "result": "PARTIAL"
+  },
+  "signwell": {
+    "test_a_same_email_cc": {
+      "http": 422,
+      "error": "The CC email cannot be the same as a signer. Use a different email for \"CC me\" or uncheck CC when testing with your own address as the client.",
+      "result": "PASS",
+      "note": "Expect 422 friendly validation, not 502"
+    },
+    "test_b_distinct_email": {
+      "http": 200,
+      "result": "PARTIAL"
+    },
+    "webhook_db_sample": {
+      "rows": [
+        {
+          "id": "846c34a3-ddf1-410e-beb6-116cd369b119",
+          "status": "sent",
+          "signwell_status": null,
+          "signwell_document_id": "bc390508-94ce-4336-b731-05e6c77a0ba8"
+        },
+        {
+          "id": "521654d0-0ab5-48cd-8af1-02a49bbabf9d",
+          "status": "sent",
+          "signwell_status": null,
+          "signwell_document_id": "aaad5e8b-abd4-49ab-8d9a-7ae4d98ab9c8"
+        },
+        {
+          "id": "b189f3a1-75d8-48c9-995c-017e64778522",
+          "status": "sent",
+          "signwell_status": null,
+          "signwell_document_id": "3bbfd1db-8015-4512-af6a-7a854647533f"
+        }
+      ],
+      "result": "PARTIAL"
+    }
+  },
+  "mfa": {
+    "enroll": {
+      "http": 200,
+      "hasQr": true,
+      "result": "PASS",
+      "note": "Full TOTP verify requires manual authenticator code; enable MFA in Supabase Auth settings"
+    }
+  },
+  "securityCenter": {
+    "audit_logs": {
+      "http": 200,
+      "body": {
+        "success": true,
+        "logs": [
+          {
+            "id": "bd6176d1-dfbe-4901-91ed-462ba6ff1c14",
+            "event_type": "login.success",
+            "ip_address": null,
+            "device_label": "Desktop",
+            "browser_label": "Browser",
+            "metadata": {},
+            "created_at": "2026-06-03T20:39:54.815408+00:00",
+            "user_id": "f49335d8-456b-467d-8fc1-23ab121559b1"
+          },
+          {
+            "id": "aa498d84-d193-4fba-8949-3bc5be6428c0",
+            "event_type": "login.success",
+            "ip_address": null,
+            "device_label": "Desktop",
+            "browser_label": "Browser",
+            "metadata": {},
+            "created_at": "2026-06-03T20:37:10.175098+00:00",
+            "user_id": "f49335d8-456b-467d-8fc1-23ab121559b1"
+          }
+        ]
+      },
+      "result": "PASS"
+    },
+    "mfa_status": {
+      "http": 200,
+      "body": {
+        "success": true,
+        "enrolled": false,
+        "mandatory": true,
+        "factors": [],
+        "recoveryCodesConfigured": false
+      },
+      "result": "PASS"
+    },
+    "sessions": {
+      "http": 200,
+      "body": {
+        "success": true,
+        "sessions": [
+          {
+            "id": "current",
+            "isCurrent": true,
+            "device": "Desktop",
+            "browser": "Browser",
+            "ip": "::1",
+            "location": "Approximate (IP-based)",
+            "lastActivity": "2026-06-03T20:42:27.895Z"
+          },
+          {
+            "id": "log-0",
+            "isCurrent": false,
+            "device": "Desktop",
+            "browser": "Browser",
+            "ip": null,
+            "location": "Approximate (IP-based)",
+            "lastActivity": "2026-06-03T20:39:54.815408+00:00"
+          },
+          {
+            "id": "log-1",
+            "isCurrent": false,
+            "device": "Desktop",
+            "browser": "Browser",
+            "ip": null,
+            "location": "Approximate (IP-based)",
+            "lastActivity": "2026-06-03T20:37:10.175098+00:00"
+          }
+        ]
+      },
+      "result": "PASS"
+    },
+    "login_event": {
+      "http": 200,
+      "result": "PASS"
+    },
+    "audit_after_login": {
+      "count": 3,
+      "latest": {
+        "id": "2ea3e6b9-4a11-4087-84ae-5431be931967",
+        "event_type": "login.success",
+        "ip_address": null,
+        "device_label": "Desktop",
+        "browser_label": "Browser",
+        "metadata": {},
+        "created_at": "2026-06-03T20:42:28.618706+00:00",
+        "user_id": "f49335d8-456b-467d-8fc1-23ab121559b1"
+      },
+      "result": "PASS"
+    }
+  }
+}

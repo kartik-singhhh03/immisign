@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Search, Filter, Plus, FileCheck2 } from "lucide-react"
 import { ApprovalStatusBadge } from "../status-badge"
+import { PageEmptyState } from "@/components/ui/standards"
 import { ApprovalStatus } from "../../types"
 
 type Row = {
@@ -103,7 +104,7 @@ export function ApprovalsList({
         </Select>
       </div>
 
-      <div className="rounded-2xl border border-slate-200/60 bg-white shadow-sm overflow-x-auto">
+      <div className="rounded-2xl border border-slate-200/60 bg-white shadow-sm overflow-x-auto immimate-scroll">
         <div className="min-w-[720px]">
           <div className="grid grid-cols-[1.2fr_1fr_1fr_0.9fr_0.8fr] border-b border-slate-100 bg-slate-50/50 px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-400">
             <div>Application</div>
@@ -114,10 +115,16 @@ export function ApprovalsList({
           </div>
           {loading ? (
             <div className="p-8 text-center text-slate-500">Loading…</div>
+          ) : rows.length === 0 && !search && statusFilter === "all" ? (
+            <div className="p-4">
+              <PageEmptyState
+                module="approvals"
+                actionHref={`/workspace/${agencySlug}/approvals/new`}
+              />
+            </div>
           ) : rows.length === 0 ? (
             <div className="p-12 text-center text-slate-500">
-              <FileCheck2 className="mx-auto h-12 w-12 text-slate-300 mb-3" />
-              <p className="font-medium text-slate-900">No application approvals</p>
+              <p className="font-medium text-slate-900">No approvals match your filters</p>
             </div>
           ) : (
             <div className="divide-y divide-slate-100">

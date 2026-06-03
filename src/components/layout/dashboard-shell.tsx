@@ -258,7 +258,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         </div>
         
         {/* Navigation Sidebar Area */}
-        <div className="flex flex-1 flex-col justify-between overflow-y-auto overflow-x-hidden px-3 py-4">
+        <div className="flex flex-1 flex-col justify-between overflow-y-auto overflow-x-hidden px-3 py-4 immimate-scroll">
           <nav className={cn("flex flex-col gap-0.5", isCollapsed && "items-center")}>
             {sidebarNavItems.map(renderNavLink)}
           </nav>

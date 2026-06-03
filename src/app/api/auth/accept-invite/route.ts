@@ -3,14 +3,17 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createRmaFromInvite } from '@/lib/rma/create-from-invite';
 import { NotificationService, buildWorkspaceActionUrl } from '@/lib/notifications/notification.service';
+import { validatePassword } from '@/lib/auth/password-policy';
+import { logSecurityEvent, getRequestMeta } from '@/lib/security/audit-log';
 
 export async function POST(req: Request) {
   try {
     const supabase = await createClient();
+    const admin = createAdminClient();
     const { token, password, fullName, phone } = await req.json();
 
-    // 1. Fetch invitation
-    const { data: invite, error: inviteError } = await supabase
+    // 1. Fetch invitation (service role — invitee is not authenticated yet)
+    const { data: invite, error: inviteError } = await admin
       .from('invitations')
       .select('*')
       .eq('token', token)
@@ -25,14 +28,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invitation expired.' }, { status: 400 });
     }
 
+    const policy = validatePassword(password);
+    if (!policy.valid) {
+      return NextResponse.json({ error: policy.errors.join(' ') }, { status: 400 });
+    }
+
     // 2. Create Auth User in Supabase
     // Using service role to bypass email confirmation if needed, but since we are doing standard auth signup:
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: invite.email,
       password: password,
       options: {
-        data: { full_name: fullName, role: invite.role }
-      }
+        data: { full_name: fullName },
+      },
     });
 
     if (authError) {
@@ -63,7 +71,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Failed to create workspace user record.' }, { status: 500 });
     }
 
-    const admin = createAdminClient();
     await createRmaFromInvite(admin, userId, {
       agency_id: invite.agency_id,
       email: invite.email,
@@ -73,7 +80,7 @@ export async function POST(req: Request) {
     }, phone);
 
     // 4. Mark invitation as accepted
-    await supabase
+    await admin
       .from('invitations')
       .update({ accepted_at: new Date().toISOString() })
       .eq('id', invite.id);
@@ -115,6 +122,15 @@ export async function POST(req: Request) {
       description: `${fullName} joined the workspace`,
       reference_id: userId,
       reference_type: 'user',
+    });
+
+    const meta = getRequestMeta(req);
+    await logSecurityEvent(admin, {
+      agencyId: invite.agency_id,
+      userId,
+      eventType: 'invite.accepted',
+      ...meta,
+      metadata: { role: invite.role, email: invite.email },
     });
 
     return NextResponse.json({ success: true });

@@ -1,4 +1,5 @@
 import type { SignWellDocumentRequest } from './types';
+import { filterCopiedContactsNotInRecipients } from './recipient-validation';
 
 export type SignwellDispatchSource = {
   wizardForm?: Record<string, unknown> | null;
@@ -31,7 +32,10 @@ function pickString(...values: unknown[]): string | undefined {
 /**
  * Maps wizard / dispatch_options fields to SignWell API fields (not metadata-only).
  */
-export function buildSignwellDispatchExtras(source: SignwellDispatchSource): SignwellDispatchExtras {
+export function buildSignwellDispatchExtras(
+  source: SignwellDispatchSource,
+  recipientEmails: string[] = [],
+): SignwellDispatchExtras {
   const wizard = source.wizardForm || {};
   const dispatch = source.dispatchOptions || {};
 
@@ -69,8 +73,9 @@ export function buildSignwellDispatchExtras(source: SignwellDispatchSource): Sig
     extras.custom_requester_email = sender.email.trim();
   }
 
-  if (copied_contacts.length > 0) {
-    extras.copied_contacts = copied_contacts;
+  const filtered = filterCopiedContactsNotInRecipients(copied_contacts, recipientEmails);
+  if (filtered?.length) {
+    extras.copied_contacts = filtered;
   }
 
   return extras;

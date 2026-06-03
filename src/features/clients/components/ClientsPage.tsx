@@ -50,6 +50,9 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
 import { StatusPill } from "@/components/saas/dashboard-pages"
+import { PageEmptyState } from "@/components/ui/standards"
+import { notifyError, notifySuccess } from "@/lib/ux/feedback"
+import { Skeleton } from "@/components/ui/skeleton"
 
 function PageHeader({
   eyebrow,
@@ -101,8 +104,9 @@ export function ClientsPage() {
       setClientName("")
       setClientEmail("")
       setClientPhone("")
+      notifySuccess("Client created", `${clientName} was added to your workspace.`)
     } catch (err: any) {
-      alert("Error creating client: " + err.message)
+      notifyError("Could not create client", err.message)
     } finally {
       setIsSubmitting(false)
     }
@@ -151,9 +155,17 @@ export function ClientsPage() {
 
       {/* CLIENTS GRID */}
       {loading ? (
-        <div className="p-8 text-center text-slate-500 font-medium">Loading clients...</div>
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-20 w-full rounded-2xl" />
+          ))}
+        </div>
+      ) : clientsList?.length === 0 ? (
+        <PageEmptyState module="clients" onAction={() => setIsOpen(true)} />
       ) : filteredClients.length === 0 ? (
-        <div className="p-8 text-center text-slate-500 font-medium">No clients found.</div>
+        <div className="rounded-2xl border border-dashed border-slate-200 p-10 text-center">
+          <p className="text-sm font-semibold text-slate-500">No clients match your search.</p>
+        </div>
       ) : (
         <div className="grid gap-3">
           {filteredClients.map((client: any) => (

@@ -4,9 +4,11 @@ export async function magicLinkLogin(page, env, email, baseUrl) {
   const admin = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
     auth: { persistSession: false },
   });
+  const redirectTo = baseUrl ? `${baseUrl.replace(/\/$/, '')}/auth/callback` : undefined;
   const { data: linkData, error } = await admin.auth.admin.generateLink({
     type: 'magiclink',
     email,
+    options: redirectTo ? { redirectTo } : undefined,
   });
   if (error || !linkData?.properties?.action_link) {
     throw new Error(error?.message || 'magic link failed');

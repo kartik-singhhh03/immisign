@@ -471,10 +471,11 @@ export function NewAgreementPage() {
           <p className="mt-3 text-slate-600 font-medium max-w-md mx-auto leading-relaxed">
             The OMARA compliant service agreement for subclass <strong className="text-[#081b36]">{formData.visaSubclass.split(" - ")[0]}</strong> has been securely hashed, digitally signed by {formData.responsibleRma.split(" (")[0]}, and dispatched to <strong className="text-[#081b36]">{formData.clientEmail}</strong>.
           </p>
-          <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <span className="rounded-full bg-slate-100 border border-slate-200/50 px-3.5 py-1 text-xs font-bold text-slate-500 font-mono">HASH: SHA-256#820- Singh-Kaur</span>
-            <span className="rounded-full bg-emerald-50 border border-emerald-100 px-3.5 py-1 text-xs font-bold text-[#0D9F8C]">Audit Locked</span>
-          </div>
+          {apiResponse?.agreementId && (
+            <p className="mt-4 text-xs font-mono text-slate-500">
+              Agreement ID: {apiResponse.agreementId}
+            </p>
+          )}
           <div className="mt-8 flex justify-center gap-4">
             <Button asChild variant="outline" className="rounded-xl border-slate-200 bg-white font-bold">
               <Link href={`/workspace/${currentSlug}/agreements`}>View Agreements List</Link>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { createClient } from "@/lib/supabase/client"
+import { passwordPolicyMessage, validatePassword } from "@/lib/auth/password-policy"
 
 export function InviteAcceptForm({ token, email, role }: { token: string, email: string, role: string }) {
   const supabase = React.useMemo(() => createClient(), [])
@@ -46,6 +47,10 @@ export function InviteAcceptForm({ token, email, role }: { token: string, email:
     setError(null)
 
     try {
+      const policy = validatePassword(password)
+      if (!policy.valid) {
+        throw new Error(policy.errors.join(' '))
+      }
       const res = await fetch('/api/auth/accept-invite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -108,8 +113,9 @@ export function InviteAcceptForm({ token, email, role }: { token: string, email:
           required 
           placeholder="••••••••"
           className="bg-white"
-          minLength={6}
+          minLength={12}
         />
+        <p className="text-[11px] text-slate-400 mt-1">{passwordPolicyMessage()}</p>
       </div>
 
       <Button type="submit" disabled={loading || oauthLoading} className="w-full bg-[#0D9F8C] hover:bg-[#0A8F7E] text-white rounded-xl h-12">

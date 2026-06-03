@@ -1,0 +1,47 @@
+{
+  "at": "2026-06-03T20:36:01.508Z",
+  "baseUrl": "http://localhost:3000",
+  "agencySlug": "abc-lab",
+  "results": [
+    {
+      "name": "DB table security_audit_logs",
+      "status": "PASS",
+      "detail": "exists"
+    },
+    {
+      "name": "DB table service_statements",
+      "status": "PASS",
+      "detail": "exists"
+    },
+    {
+      "name": "DB table service_statement_items",
+      "status": "PASS",
+      "detail": "exists"
+    },
+    {
+      "name": "DB clients for agency",
+      "status": "PASS",
+      "detail": "2 clients"
+    },
+    {
+      "name": "DB users MFA columns",
+      "status": "PASS",
+      "detail": "sample 3 rows"
+    },
+    {
+      "name": "API /api/security/audit-logs",
+      "status": "FAIL",
+      "detail": "fetch failed"
+    },
+    {
+      "name": "API /api/security/mfa/status",
+      "status": "FAIL",
+      "detail": "fetch failed"
+    },
+    {
+      "name": "API /api/security/sessions",
+      "status": "FAIL",
+      "detail": "fetch failed"
+    }
+  ]
+}

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { PageHeader } from "@/components/layout/PageHeader"
+import { PageEmptyState } from "@/components/ui/standards"
 import { StatusPill } from "@/components/saas/dashboard-pages" // Reuse the styling pill
 import {
   DropdownMenu,
@@ -74,6 +75,22 @@ export function AgreementsList({ initialAgreements, agencySlug }: { initialAgree
     Awaiting: (getStats("Awaiting") / initialAgreements.length) * 100 || 0,
     Signed: (getStats("Signed") / initialAgreements.length) * 100 || 0,
     Expired: (getStats("Expired") / initialAgreements.length) * 100 || 0,
+  }
+
+  if (initialAgreements.length === 0) {
+    return (
+      <div className="animate-enter space-y-8">
+        <PageHeader
+          eyebrow="Agreements"
+          title="Service agreements"
+          description="MARA-compliant agreements sent for electronic signature."
+        />
+        <PageEmptyState
+          module="agreements"
+          actionHref={`/workspace/${agencySlug}/agreements/new`}
+        />
+      </div>
+    )
   }
 
   return (

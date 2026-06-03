@@ -62,10 +62,30 @@ export function DocumentLibraryPage() {
     size: string;
     type: string;
     date: string;
-    downloads: number;
+    created_at?: string;
+    mime_type?: string;
+    signwell_status?: string | null;
+    signwell_document_id?: string | null;
+    storage_bucket?: string;
     file_url?: string;
     agreement_id?: string;
   }
+
+  const totalBytes = (documentsList || []).reduce(
+    (sum: number, d: DocumentItem) => {
+      const mb = parseFloat(String(d.size).replace(' MB', ''));
+      return sum + (Number.isFinite(mb) ? mb * 1024 * 1024 : 0);
+    },
+    0,
+  );
+  const vaultUsedMb = (totalBytes / 1024 / 1024).toFixed(1);
+  const vaultLimitGb = 1;
+  const vaultPct = Math.min(100, (totalBytes / (vaultLimitGb * 1024 * 1024 * 1024)) * 100);
+  const recentUploads = (documentsList || []).filter((d: DocumentItem) => {
+    if (!d.created_at) return false;
+    const age = Date.now() - new Date(d.created_at).getTime();
+    return age < 7 * 24 * 60 * 60 * 1000;
+  }).length;
 
   const [searchQuery, setSearchQuery] = React.useState("");
   const [activeCategory, setActiveCategory] = React.useState("All");
@@ -87,7 +107,9 @@ export function DocumentLibraryPage() {
   // Custom Dynamic Toast simulation
   const [toastMessage, setToastMessage] = React.useState<string | null>(null);
 
-  const { data: documentsList, addDocument, loading } = useDocuments();
+  const { data: documentsList, addDocument, loading, count: documentCount } = useDocuments({
+    limit: 200,
+  });
   
 
 
@@ -191,27 +213,27 @@ export function DocumentLibraryPage() {
         {[
           {
             label: "Total Documents",
-            value: documentsList?.length || 0,
-            desc: "Across 4 main subclasses",
-            progress: ((documentsList?.length || 0) / 20) * 100,
+            value: documentCount ?? documentsList?.length ?? 0,
+            desc: "In this workspace library",
+            progress: Math.min(100, ((documentCount ?? documentsList?.length ?? 0) / Math.max(1, vaultLimitGb * 200)) * 100),
           },
           {
-            label: "Standard Templates",
-            value: documentsList?.filter((d: any) => d.downloads > 40).length || 0,
-            desc: "Pre-approved OMARA scope",
-            progress: 60,
+            label: "Agreement-linked",
+            value: documentsList?.filter((d: DocumentItem) => d.agreement_id).length || 0,
+            desc: "From agreement PDFs",
+            progress: documentCount ? ((documentsList?.filter((d: DocumentItem) => d.agreement_id).length || 0) / (documentCount || 1)) * 100 : 0,
           },
           {
             label: "Recent Uploads",
-            value: 3,
+            value: recentUploads,
             desc: "Added within past 7 days",
-            progress: 30,
+            progress: documentCount ? (recentUploads / (documentCount || 1)) * 100 : 0,
           },
           {
             label: "Vault Space Used",
-            value: "18.4 MB",
-            desc: "Of 1.0 GB Cloud Custody",
-            progress: 1.84,
+            value: `${vaultUsedMb} MB`,
+            desc: `Of ${vaultLimitGb}.0 GB storage quota`,
+            progress: vaultPct,
           },
         ].map((stat, idx) => (
           <Card
@@ -374,7 +396,7 @@ export function DocumentLibraryPage() {
 
                     {/* Action metadata row */}
                     <div className="flex items-center justify-between border-t border-slate-100 pt-3.5 text-xs text-slate-400 font-bold">
-                      <span>{doc.downloads} downloads</span>
+                      <span>{doc.signwell_status ? `SignWell: ${doc.signwell_status}` : 'Not sent'}</span>
                       <div className="flex items-center gap-1.5 text-slate-400 group-hover:text-[#0D9F8C] transition-colors">
                         <span>Added {doc.date}</span>
                         <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -408,7 +430,7 @@ export function DocumentLibraryPage() {
                 Vault Custody Storage
               </div>
               <h3 className="mt-2 text-2xl font-black tracking-tight text-[#081B2E]">
-                1.8% Allocated
+                {vaultPct.toFixed(1)}% Allocated
               </h3>
             </div>
 
@@ -416,19 +438,17 @@ export function DocumentLibraryPage() {
               <div className="h-2.5 rounded-full bg-slate-100 overflow-hidden border border-slate-200/50">
                 <div
                   className="h-full bg-[#0D9F8C] rounded-full"
-                  style={{ width: "1.84%" }}
+                  style={{ width: `${vaultPct}%` }}
                 />
               </div>
               <div className="flex justify-between text-[9px] text-slate-400 font-bold">
-                <span>18.4 MB Used</span>
-                <span>1.0 GB Cloud Limit</span>
+                <span>{vaultUsedMb} MB Used</span>
+                <span>{vaultLimitGb}.0 GB Limit</span>
               </div>
             </div>
 
             <p className="text-xs leading-relaxed text-slate-500 font-medium">
-              Checklists, client evidence, and OMARA agreements are protected
-              onshore under Australian Privacy principles with automatic AES-256
-              backup locks.
+              Storage usage is calculated from uploaded file sizes in your workspace.
             </p>
           </Card>
 
@@ -458,31 +478,15 @@ export function DocumentLibraryPage() {
                   {selectedDoc.name}
                 </DialogTitle>
                 <div className="text-xs text-slate-400 font-bold mt-1">
-                  ID: {selectedDoc.id} ΓÇó Secure Cloud Custody Records
+                  ID: {selectedDoc.id}
                 </div>
               </DialogHeader>
 
               <div className="space-y-5 text-xs text-[#081B2E]">
-                {/* Security Seal */}
-                <div className="flex justify-between items-center p-3.5 rounded-xl bg-[#f5fbf9]/80 border border-emerald-100/60">
-                  <div className="space-y-0.5">
-                    <span className="text-[8px] text-slate-400 uppercase tracking-wider font-bold">
-                      LODGEMENT INTEGRITY STATUS
-                    </span>
-                    <div className="font-bold text-xs text-[#0D9F8C]">
-                      DHA Compliant & Hashed
-                    </div>
-                  </div>
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-50 text-[#0D9F8C]">
-                    <ShieldCheck className="h-5 w-5" />
-                  </div>
-                </div>
-
-                {/* Grid attributes */}
                 <div className="grid gap-3.5 grid-cols-2">
                   <div className="p-3 rounded-xl border border-slate-100 space-y-1 bg-slate-50/50">
                     <span className="text-[8px] text-slate-400 uppercase tracking-wider font-bold">
-                      Category subclass
+                      Category
                     </span>
                     <div className="font-bold text-slate-700">
                       {selectedDoc.category}
@@ -490,43 +494,44 @@ export function DocumentLibraryPage() {
                   </div>
                   <div className="p-3 rounded-xl border border-slate-100 space-y-1 bg-slate-50/50">
                     <span className="text-[8px] text-slate-400 uppercase tracking-wider font-bold">
-                      Decryption key
+                      SignWell status
                     </span>
-                    <div className="font-mono text-[9px] text-slate-500 font-bold truncate">
-                      SHA-256#DOC-{selectedDoc.id.split("-")[1]}
+                    <div className="font-bold text-slate-700">
+                      {selectedDoc.signwell_status || 'Not sent'}
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <span className="text-[8px] text-slate-400 uppercase tracking-wider font-bold block">
-                    Document Parameters
+                    Document details
                   </span>
                   <div className="divide-y divide-slate-100 rounded-xl border border-slate-100 overflow-hidden font-semibold">
                     <div className="flex justify-between p-2.5 bg-slate-50/30">
-                      <span className="text-slate-400">File Storage Size</span>
+                      <span className="text-slate-400">File size</span>
                       <span>{selectedDoc.size}</span>
                     </div>
                     <div className="flex justify-between p-2.5">
-                      <span className="text-slate-400">
-                        Lodge Extension Format
-                      </span>
-                      <span>{selectedDoc.type} File</span>
+                      <span className="text-slate-400">MIME type</span>
+                      <span>{selectedDoc.mime_type || '—'}</span>
                     </div>
                     <div className="flex justify-between p-2.5 bg-slate-50/30">
-                      <span className="text-slate-400">
-                        Total Downloads Tracking
-                      </span>
-                      <span>{selectedDoc.downloads} Decryptions</span>
+                      <span className="text-slate-400">Uploaded</span>
+                      <span>{selectedDoc.date}</span>
                     </div>
+                    <div className="flex justify-between p-2.5">
+                      <span className="text-slate-400">Storage bucket</span>
+                      <span>{selectedDoc.storage_bucket || '—'}</span>
+                    </div>
+                    {selectedDoc.signwell_document_id && (
+                      <div className="flex justify-between p-2.5 bg-slate-50/30">
+                        <span className="text-slate-400">SignWell document ID</span>
+                        <span className="font-mono text-[9px] truncate max-w-[140px]">
+                          {selectedDoc.signwell_document_id}
+                        </span>
+                      </div>
+                    )}
                   </div>
-                </div>
-
-                {/* Audit timelines */}
-                <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl text-[9px] leading-relaxed text-slate-500 font-medium">
-                  <strong>Audited IP Access Log:</strong> Checked and approved
-                  by registered migration agent under Australian Migration Agent Regulation
-                  guidelines.
                 </div>
 
                 {/* Actions Panel */}
@@ -555,10 +560,10 @@ export function DocumentLibraryPage() {
                     <Button
                       type="button"
                       disabled
-                      title="Document deletion is not part of the first-module demo flow."
+                      title="Delete is not enabled in this release."
                       className="h-10 rounded-xl bg-slate-50 text-slate-400 font-bold text-xs disabled:opacity-70"
                     >
-                      <Trash2 className="h-3.5 w-3.5 mr-1" /> Delete Locked
+                      <Trash2 className="h-3.5 w-3.5 mr-1" /> Delete
                     </Button>
                   </div>
                 </div>

@@ -86,16 +86,6 @@ export class SignWellService {
       .eq('id', userId)
       .single();
 
-    const dispatchExtras = buildSignwellDispatchExtras({
-      wizardForm,
-      dispatchOptions,
-      agreementTitle: agreement.title,
-      sender: {
-        email: senderUser?.email || '',
-        name: senderUser?.full_name || '',
-      },
-    });
-
     const signwellSigners: Array<{ id: string; name: string; email: string; routing_order: number; role: string }> = [];
     const seenEmails = new Set<string>();
 
@@ -140,6 +130,19 @@ export class SignWellService {
     }
 
     // Agent/RMA signature is embedded in the PDF — only external recipients sign via SignWell.
+
+    const dispatchExtras = buildSignwellDispatchExtras(
+      {
+        wizardForm,
+        dispatchOptions,
+        agreementTitle: agreement.title,
+        sender: {
+          email: senderUser?.email || '',
+          name: senderUser?.full_name || '',
+        },
+      },
+      signwellSigners.map((s) => s.email),
+    );
 
     const payload = {
       test_mode: process.env.NODE_ENV !== 'production',

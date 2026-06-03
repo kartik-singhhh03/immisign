@@ -376,16 +376,24 @@ export class DocumentsRepository {
 
     const docsWithSignedUrls = data.map(d => {
       const signedUrl = (d.file_url && signedUrlsMap[d.file_url]) ? signedUrlsMap[d.file_url] : d.file_url;
+      const mime = d.mime_type || '';
       return {
         id: d.id,
         name: d.file_name,
         category: d.agreement_id ? 'Agreement' : 'Manual Upload',
-        size: (d.file_size ? (d.file_size / 1024 / 1024).toFixed(2) + ' MB' : 'Unknown'),
-        type: d.mime_type?.includes('pdf') ? 'PDF' : (d.mime_type?.includes('word') ? 'DOC' : 'FILE'),
-        date: new Date(d.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-        downloads: 0,
+        size: d.file_size != null ? `${(d.file_size / 1024 / 1024).toFixed(2)} MB` : '—',
+        type: mime.includes('pdf') ? 'PDF' : mime.includes('word') ? 'DOC' : mime.split('/').pop()?.toUpperCase() || 'FILE',
+        date: d.created_at
+          ? new Date(d.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+          : '—',
+        created_at: d.created_at,
+        mime_type: mime,
+        signwell_status: d.signwell_status || null,
+        signwell_document_id: d.signwell_document_id || null,
+        uploaded_by: d.uploaded_by,
         file_url: signedUrl,
-        agreement_id: d.agreement_id
+        agreement_id: d.agreement_id,
+        storage_bucket: d.agreement_id ? 'secure_documents' : 'documents',
       };
     });
 

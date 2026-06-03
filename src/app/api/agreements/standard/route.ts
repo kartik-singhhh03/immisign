@@ -8,6 +8,11 @@ import { buildSignersFromWizard } from '@/features/agreements/lib/wizard-signers
 import { isUuid } from '@/lib/validation/uuid';
 import { redactSensitiveValue, stripSensitiveUrlParams } from '@/lib/security/sanitize';
 import { NotificationService, buildWorkspaceActionUrl } from '@/lib/notifications/notification.service';
+import {
+  findDuplicateRecipientEmails,
+  friendlySignwellError,
+  normalizeEmail,
+} from '@/lib/signwell/recipient-validation';
 
 export async function POST(req: NextRequest) {
   try {
@@ -126,8 +131,8 @@ export async function POST(req: NextRequest) {
     }
 
     // 2. Resolve or Create Client
-    let clientId = null;
-    if (formData.clientEmail) {
+    let clientId = formData.clientId || null;
+    if (!clientId && formData.clientEmail) {
        const { data: existingClient } = await (supabase as any).from('clients').select('id').eq('agency_id', agencyId).eq('email', formData.clientEmail).limit(1).single();
        if (existingClient) {
            clientId = existingClient.id;
@@ -282,7 +287,30 @@ export async function POST(req: NextRequest) {
       }, { status: 502 });
     }
 
-    // 6. Push to SignWell. If the external provider rejects the request,
+    // 6. Validate signer emails before SignWell (avoid 422 duplicate recipient / CC).
+    const wizardSignersForValidation = buildSignersFromWizard(formData);
+    const signerEmails = wizardSignersForValidation.map((s) => s.email);
+    const dup = findDuplicateRecipientEmails(signerEmails);
+    if (dup) {
+      return NextResponse.json({
+        success: false,
+        stage: 'signwell_validation',
+        error: `Duplicate signer email: ${dup}. Each signer must have a unique email address.`,
+      }, { status: 422 });
+    }
+    const senderEmailNorm = normalizeEmail(
+      (await supabase.from('users').select('email').eq('id', userId).single()).data?.email || user.email || '',
+    );
+    const ccMe = Boolean(dispatchOptions?.ccMe ?? formData.ccMe);
+    if (ccMe && senderEmailNorm && signerEmails.some((e) => normalizeEmail(e) === senderEmailNorm)) {
+      return NextResponse.json({
+        success: false,
+        stage: 'signwell_validation',
+        error: friendlySignwellError('email already a recipient'),
+      }, { status: 422 });
+    }
+
+    // 7. Push to SignWell. If the external provider rejects the request,
     // keep the generated PDF and DB rows, but do not pretend dispatch worked.
     console.log("Step 6: Pushing to SignWell");
     const swService = new SignWellService(supabase);
@@ -296,7 +324,12 @@ export async function POST(req: NextRequest) {
         simulated: swResult?.simulated,
       }));
     } catch (signwellError: any) {
-      const message = signwellError?.message || 'SignWell dispatch failed';
+      const rawMessage = signwellError?.message || 'SignWell dispatch failed';
+      const message = friendlySignwellError(rawMessage);
+      const isValidation =
+        rawMessage.includes('422') ||
+        rawMessage.includes('already a recipient') ||
+        rawMessage.includes('copied_contact');
       await (supabase as any).from('agreements').update({
         status: 'draft',
         signwell_status: 'failed',
@@ -320,14 +353,14 @@ export async function POST(req: NextRequest) {
 
       return NextResponse.json({
         success: false,
-        stage: 'signwell_dispatch_failed',
+        stage: isValidation ? 'signwell_validation' : 'signwell_dispatch_failed',
         error: message,
         agreementId,
         result,
-      }, { status: 502 });
+      }, { status: isValidation ? 422 : 502 });
     }
 
-    // 7. Insert Activity Log
+    // 8. Insert Activity Log
     await (supabase as any).from('activity_logs').insert({
       id: crypto.randomUUID(),
       agency_id: agencyId,

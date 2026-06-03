@@ -1,0 +1,294 @@
+{
+  "timestamp": "2026-06-03T20:43:33.282Z",
+  "baseUrl": "https://immisign.vercel.app",
+  "slug": "abc-lab",
+  "migration": {
+    "name": "20260606100000_phase16_security_foundation.sql",
+    "applied": true,
+    "applied_at": "2026-06-03T20:35:39.165Z",
+    "result": "PASS"
+  },
+  "database": {
+    "security_audit_logs": {
+      "column_count": 10,
+      "columns": [
+        "id",
+        "agency_id",
+        "user_id",
+        "event_type",
+        "ip_address",
+        "user_agent",
+        "device_label",
+        "browser_label",
+        "metadata",
+        "created_at"
+      ],
+      "indexes": [
+        "security_audit_logs_pkey",
+        "idx_security_audit_logs_agency_created",
+        "idx_security_audit_logs_user_created"
+      ],
+      "rls_policies": [
+        {
+          "policyname": "security_audit_logs_insert_own",
+          "cmd": "INSERT"
+        },
+        {
+          "policyname": "security_audit_logs_select_agency",
+          "cmd": "SELECT"
+        }
+      ],
+      "result": "PASS"
+    },
+    "service_statements": {
+      "column_count": 16,
+      "columns": [
+        "id",
+        "agency_id",
+        "client_id",
+        "agreement_id",
+        "approval_id",
+        "matter_type_id",
+        "statement_number",
+        "status",
+        "visa_subclass",
+        "matter_reference",
+        "issued_at",
+        "metadata",
+        "created_by",
+        "created_at",
+        "updated_at",
+        "deleted_at"
+      ],
+      "indexes": [
+        "service_statements_pkey",
+        "idx_service_statements_agency"
+      ],
+      "rls_policies": [
+        {
+          "policyname": "service_statements_tenant",
+          "cmd": "ALL"
+        }
+      ],
+      "result": "PASS"
+    },
+    "service_statement_items": {
+      "column_count": 10,
+      "columns": [
+        "id",
+        "agency_id",
+        "statement_id",
+        "line_type",
+        "description",
+        "quantity",
+        "unit_amount",
+        "sort_order",
+        "metadata",
+        "created_at"
+      ],
+      "indexes": [
+        "service_statement_items_pkey"
+      ],
+      "rls_policies": [
+        {
+          "policyname": "service_statement_items_tenant",
+          "cmd": "ALL"
+        }
+      ],
+      "result": "PASS"
+    },
+    "users_mfa_columns": {
+      "found": [
+        "mfa_enabled",
+        "deleted_at",
+        "mfa_enrolled_at",
+        "mfa_recovery_codes"
+      ],
+      "result": "PASS"
+    },
+    "foreign_keys": [
+      {
+        "table_name": "security_audit_logs",
+        "column_name": "agency_id",
+        "foreign_table": "agencies"
+      },
+      {
+        "table_name": "security_audit_logs",
+        "column_name": "user_id",
+        "foreign_table": "users"
+      },
+      {
+        "table_name": "service_statement_items",
+        "column_name": "agency_id",
+        "foreign_table": "agencies"
+      },
+      {
+        "table_name": "service_statement_items",
+        "column_name": "statement_id",
+        "foreign_table": "service_statements"
+      },
+      {
+        "table_name": "service_statements",
+        "column_name": "agency_id",
+        "foreign_table": "agencies"
+      },
+      {
+        "table_name": "service_statements",
+        "column_name": "agreement_id",
+        "foreign_table": "agreements"
+      },
+      {
+        "table_name": "service_statements",
+        "column_name": "approval_id",
+        "foreign_table": "application_approvals"
+      },
+      {
+        "table_name": "service_statements",
+        "column_name": "client_id",
+        "foreign_table": "clients"
+      },
+      {
+        "table_name": "service_statements",
+        "column_name": "created_by",
+        "foreign_table": "users"
+      },
+      {
+        "table_name": "service_statements",
+        "column_name": "matter_type_id",
+        "foreign_table": "matter_types"
+      }
+    ]
+  },
+  "rls": {
+    "security_audit_logs_isolated": {
+      "other_agency_log_count": 0,
+      "note": "Full RLS enforcement requires authenticated JWT test; structural policies verified above",
+      "result": "PARTIAL"
+    }
+  },
+  "api": {},
+  "accountDeletion": {
+    "owner_with_subscription": {
+      "subscription_status": "trialing",
+      "label": "owner",
+      "http": 404,
+      "result": "FAIL",
+      "expected": "409 if active/trialing subscription"
+    },
+    "owner_multi_user": {
+      "user_count": 1,
+      "delete_http": 404,
+      "result": "PARTIAL",
+      "note": "Blocked when >1 users"
+    },
+    "owner_active_agreements": {
+      "count": 15,
+      "result": "PARTIAL"
+    }
+  },
+  "clientCentric": {
+    "create_client": {
+      "client_id": "c39fdbef-7fba-4f2d-9549-e6ecc275eff5",
+      "result": "PASS"
+    },
+    "agreement_api": {
+      "http": 200,
+      "agreement_id": "bd2807aa-14ed-4b7a-bced-61f3709f4399",
+      "result": "PARTIAL"
+    },
+    "agreement_client_id": {
+      "db_client_id": "c39fdbef-7fba-4f2d-9549-e6ecc275eff5",
+      "expected": "c39fdbef-7fba-4f2d-9549-e6ecc275eff5",
+      "result": "PASS"
+    },
+    "approval_api": {
+      "http": 200,
+      "id": "bdccf6af-f883-4ad4-9e29-971440d13408",
+      "result": "PASS"
+    },
+    "no_duplicate_clients": {
+      "count": 1,
+      "result": "PASS"
+    }
+  },
+  "invite": {
+    "recent_invitations": [],
+    "orphan_accepted_without_user": 0,
+    "result": "PARTIAL"
+  },
+  "signwell": {
+    "test_a_same_email_cc": {
+      "http": 502,
+      "error": "SignWell API requests failed after 3 retries: SignWell API Error (422): {\"errors\":{\"copied_contacts\":{\"copied_contact_1\":{\"email\":[\"is already a recipient\"]}}}}",
+      "result": "FAIL",
+      "note": "Expect 422 friendly validation, not 502"
+    },
+    "test_b_distinct_email": {
+      "http": 200,
+      "result": "PARTIAL"
+    },
+    "webhook_db_sample": {
+      "rows": [
+        {
+          "id": "939a567d-b0c6-4c37-a562-bbe64cb8f208",
+          "status": "sent",
+          "signwell_status": null,
+          "signwell_document_id": "a06db4ca-d3e7-48d7-b421-95b3c25f39e5"
+        },
+        {
+          "id": "bd2807aa-14ed-4b7a-bced-61f3709f4399",
+          "status": "sent",
+          "signwell_status": null,
+          "signwell_document_id": "724a406d-4047-4862-8dad-c027d40080d5"
+        },
+        {
+          "id": "846c34a3-ddf1-410e-beb6-116cd369b119",
+          "status": "sent",
+          "signwell_status": null,
+          "signwell_document_id": "bc390508-94ce-4336-b731-05e6c77a0ba8"
+        }
+      ],
+      "result": "PARTIAL"
+    }
+  },
+  "mfa": {
+    "enroll": {
+      "http": 404,
+      "hasQr": false,
+      "result": "PARTIAL",
+      "note": "Full TOTP verify requires manual authenticator code; enable MFA in Supabase Auth settings"
+    }
+  },
+  "securityCenter": {
+    "audit_logs": {
+      "http": 404,
+      "body": {
+        "raw": "<!DOCTYPE html><html lang=\"en\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"preload\" href=\"/_next/static/media/4473ecc91f70f139-s.p.woff\" as=\"font\" crossorigin=\"\" type=\"font/woff\"/><link rel=\"preload\" href=\"/_next/static/media/9cc5b37ab"
+      },
+      "result": "FAIL"
+    },
+    "mfa_status": {
+      "http": 404,
+      "body": {
+        "raw": "<!DOCTYPE html><html lang=\"en\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"preload\" href=\"/_next/static/media/4473ecc91f70f139-s.p.woff\" as=\"font\" crossorigin=\"\" type=\"font/woff\"/><link rel=\"preload\" href=\"/_next/static/media/9cc5b37ab"
+      },
+      "result": "FAIL"
+    },
+    "sessions": {
+      "http": 404,
+      "body": {
+        "raw": "<!DOCTYPE html><html lang=\"en\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"preload\" href=\"/_next/static/media/4473ecc91f70f139-s.p.woff\" as=\"font\" crossorigin=\"\" type=\"font/woff\"/><link rel=\"preload\" href=\"/_next/static/media/9cc5b37ab"
+      },
+      "result": "FAIL"
+    },
+    "login_event": {
+      "http": 404,
+      "result": "FAIL"
+    },
+    "audit_after_login": {
+      "count": 0,
+      "latest": null,
+      "result": "PARTIAL"
+    }
+  }
+}

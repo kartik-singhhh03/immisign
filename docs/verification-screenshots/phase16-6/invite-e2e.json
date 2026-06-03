@@ -1,0 +1,42 @@
+{
+  "timestamp": "2026-06-03T20:45:55.746Z",
+  "baseUrl": "http://localhost:3001",
+  "testEmail": "invite166.1780519555746@example.com",
+  "steps": {
+    "invite_created": {
+      "ok": true,
+      "invite": {
+        "id": "d9228013-4d31-4f57-8caa-388d509fda3e",
+        "token": "6cd9cb4b-e76b-4e16-ace7-8249e1ebbf3b",
+        "email": "invite166.1780519555746@example.com",
+        "role": "agent"
+      }
+    },
+    "accept_api": {
+      "http": 400,
+      "body": {
+        "error": "email rate limit exceeded"
+      },
+      "result": "FAIL"
+    },
+    "users_row": {
+      "user": null,
+      "result": "FAIL"
+    },
+    "invitation_accepted": {
+      "accepted_at": null,
+      "result": "FAIL"
+    },
+    "security_audit": {
+      "result": "PARTIAL"
+    },
+    "supabase_auth_user": {
+      "found": false,
+      "result": "FAIL"
+    },
+    "login": {
+      "ok": false,
+      "result": "FAIL"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "at": "2026-06-03T20:42:07.616Z",
+  "baseUrl": "http://localhost:3001",
+  "slug": "abc-lab",
+  "email": "kartiksingh3337@gmail.com",
+  "screenshots": [
+    {
+      "tab": "profile",
+      "path": "docs\\verification-screenshots\\phase16-6\\security-profile.png"
+    },
+    {
+      "tab": "password",
+      "path": "docs\\verification-screenshots\\phase16-6\\security-password.png"
+    },
+    {
+      "tab": "mfa",
+      "path": "docs\\verification-screenshots\\phase16-6\\security-mfa.png"
+    },
+    {
+      "tab": "sessions",
+      "path": "docs\\verification-screenshots\\phase16-6\\security-sessions.png"
+    },
+    {
+      "tab": "logs",
+      "path": "docs\\verification-screenshots\\phase16-6\\security-logs.png"
+    },
+    {
+      "tab": "account",
+      "path": "docs\\verification-screenshots\\phase16-6\\security-account.png"
+    },
+    {
+      "tab": "agreement-wizard",
+      "path": "docs\\verification-screenshots\\phase16-6\\agreement-client-picker.png"
+    }
+  ]
+}

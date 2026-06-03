@@ -21,6 +21,25 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
+import { WorkflowProgress } from "@/components/ui/standards"
+import { notifyError, notifySuccess } from "@/lib/ux/feedback"
+
+const DISPATCH_STEPS = [
+  { id: "upload", label: "Uploading document", description: "Storing file in your secure document library." },
+  { id: "pdf", label: "Preparing PDF", description: "Validating format and preparing for signature." },
+  { id: "signwell", label: "Creating SignWell draft", description: "Registering signers and document." },
+  { id: "send", label: "Sending document", description: "Dispatching signature request to recipients." },
+  { id: "done", label: "Completed", description: "Recipients will receive secure signing links." },
+]
+
+function dispatchStepFromProgress(p: number) {
+  if (p >= 100) return 4
+  if (p >= 80) return 3
+  if (p >= 60) return 2
+  if (p >= 40) return 1
+  if (p > 0) return 0
+  return 0
+}
 
 export function SendDocumentPage() {
   const { slug: currentSlug, agencyId, activeWorkspace } = useRequireWorkspace()
@@ -250,15 +269,19 @@ export function SendDocumentPage() {
       setSendingProgress(10)
 
       // Step 1: Upload to Supabase Storage
-      setSendLogs(curr => [...curr, "Uploading document to secure storage..."])
+      setSendLogs((curr) => [...curr, "Uploading document to secure storage…"])
       const document = await addDocument({ file: uploadedFile.file });
-      setSendingProgress(40)
+      setSendingProgress(35)
+      setSendLogs((curr) => [...curr, "Document stored successfully."])
+      setSendingProgress(45)
 
       if (!document) throw new Error("Document upload returned empty result");
 
       // Step 2: Register Signers & Dispatch
-      setSendLogs(curr => [...curr, "Registering signers and dispatching to SignWell..."])
-      setSendingProgress(60)
+      setSendLogs((curr) => [...curr, "Preparing PDF and creating SignWell draft…"])
+      setSendingProgress(55)
+      setSendLogs((curr) => [...curr, "Registering signers and dispatching to SignWell…"])
+      setSendingProgress(70)
 
       const res = await fetch('/api/documents/send', {
         method: 'POST',
@@ -280,21 +303,20 @@ export function SendDocumentPage() {
         throw new Error(data.error || "Failed to dispatch signature request");
       }
 
-      setSendingProgress(80)
-      setSendLogs(curr => [...curr, "Signature request accepted by SignWell..."])
-      
+      setSendingProgress(85)
+      setSendLogs((curr) => [...curr, "Signature request accepted by SignWell."])
       setSendingProgress(100)
-      setSendLogs(curr => [...curr, "Activity logs recorded. Dispatch completed successfully."])
-      
-      // Allow progress bar to finish animation before showing success
-      setTimeout(() => setSendSuccess(true), 600)
+      setSendLogs((curr) => [...curr, "Activity logged. Dispatch completed successfully."])
+      notifySuccess("Document sent", "Signature requests were dispatched to all signers.")
+      setTimeout(() => setSendSuccess(true), 400)
       
     } catch (err: any) {
       console.error(err);
       setSendingProgress(0)
       setHasError(true)
       setErrorMessage(err.message || "An unexpected error occurred.")
-      setSendLogs(curr => [...curr, "ERROR: " + (err.message || "Upload failed!")])
+      setSendLogs((curr) => [...curr, "ERROR: " + (err.message || "Upload failed!")])
+      notifyError("Document dispatch failed", err.message || "An unexpected error occurred.")
     }
   }
 
@@ -791,31 +813,14 @@ export function SendDocumentPage() {
           </div>
         </div>
       ) : (
-        <div className="w-full max-w-md space-y-8">
-          <div className="space-y-4">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 animate-pulse">
-              <UploadCloud className="h-8 w-8 text-[#0D9F8C] animate-bounce" />
-            </div>
-            <h2 className="text-xl font-bold tracking-tight text-[#081B2E]">Executing Secure Dispatch...</h2>
-          </div>
-
-          <div className="space-y-3">
-            <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-100">
-              <div 
-                className="h-full rounded-full bg-[#0D9F8C] transition-all duration-300 ease-out" 
-                style={{ width: `${sendingProgress}%` }}
-              />
-            </div>
-            <div className="text-xs font-bold text-slate-400">{sendingProgress}% Complete</div>
-          </div>
-
-          <div className="rounded-xl border border-slate-100 bg-slate-50/50 p-4 text-left font-mono text-xs text-slate-500 h-32 overflow-hidden flex flex-col justify-end space-y-1.5 shadow-inner">
-            {sendLogs.map((log, i) => (
-              <div key={i} className="animate-in slide-in-from-bottom-2 fade-in opacity-80">
-                <span className="text-[#0D9F8C] font-bold mr-2">&gt;</span>{log}
-              </div>
-            ))}
-          </div>
+        <div className="w-full max-w-lg">
+          <WorkflowProgress
+            title="Sending document for signature"
+            subtitle="Do not close this window until dispatch completes."
+            steps={DISPATCH_STEPS}
+            activeIndex={dispatchStepFromProgress(sendingProgress)}
+            logs={sendLogs}
+          />
         </div>
       )}
     </div>

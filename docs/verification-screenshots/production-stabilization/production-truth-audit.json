@@ -1,0 +1,127 @@
+{
+  "timestamp": "2026-06-03T20:17:11.922Z",
+  "slug": "abc-lab",
+  "baseUrl": "https://immisign.vercel.app",
+  "database": {
+    "agency": {
+      "id": "df44c95a-3eac-482c-83c6-22551febc791",
+      "slug": "abc-lab",
+      "name": "kartik labs"
+    },
+    "count_matter_types": 2,
+    "count_documents": 6,
+    "count_clients": 2,
+    "count_agreements": 3,
+    "count_users": 1,
+    "matter_types": [
+      {
+        "id": "911e5d83-9b96-4fd2-9b5c-e7becdad81f7",
+        "name": "visa"
+      },
+      {
+        "id": "40abab2a-27e0-4f7a-9aec-2a319095bf95",
+        "name": "student visa"
+      }
+    ],
+    "sample_documents": [
+      {
+        "id": "8525c9e2-9a5b-403d-85bc-827af02dc51f",
+        "file_name": "screencapture-skymanufacturing-2026-06-02-01_15_15.pdf",
+        "file_size": 1721352,
+        "mime_type": "application/pdf",
+        "signwell_status": null,
+        "created_at": "2026-06-03T16:15:39.740Z"
+      },
+      {
+        "id": "5b6a1304-2f7e-4051-a8c4-f86805c03637",
+        "file_name": "agreement-AGR-2026-0003.pdf",
+        "file_size": 66989,
+        "mime_type": "application/pdf",
+        "signwell_status": null,
+        "created_at": "2026-06-03T15:42:52.870Z"
+      },
+      {
+        "id": "7b0d3636-be17-40ed-9786-295267963a38",
+        "file_name": "agreement-AGR-2026-0002.pdf",
+        "file_size": 67147,
+        "mime_type": "application/pdf",
+        "signwell_status": null,
+        "created_at": "2026-06-03T15:37:00.731Z"
+      },
+      {
+        "id": "cf4263ae-159c-484c-91da-8b4db151218c",
+        "file_name": "agreement-AGR-2026-0001.pdf",
+        "file_size": 67146,
+        "mime_type": "application/pdf",
+        "signwell_status": null,
+        "created_at": "2026-06-03T15:35:00.561Z"
+      },
+      {
+        "id": "f4830be5-afd7-4784-b3b7-8f65b634dcab",
+        "file_name": "kartik103internal prac da.pdf.pdf",
+        "file_size": 1272582,
+        "mime_type": "application/pdf",
+        "signwell_status": null,
+        "created_at": "2026-06-03T15:30:47.722Z"
+      }
+    ]
+  },
+  "api": {
+    "dashboard_summary": {
+      "status": 200,
+      "json": {
+        "success": true,
+        "summary": {
+          "approvalWidgets": {
+            "awaitingReview": 0,
+            "awaitingApproval": 0,
+            "changesRequested": 0,
+            "readyToLodge": 0,
+            "recentlyApproved": 0,
+            "myAssignedReviews": 0,
+            "openChecklistItems": 0
+          },
+          "myTasks": [],
+          "myReviews": [],
+          "recentNotifications": [],
+          "recentActivity": [],
+          "upcomingDeadlines": [],
+          "overdueApprovals": [],
+          "pendingSignatures": []
+        },
+        "warnings": [
+          "invalid input value for enum agreement_status: \"awaiting_signature\""
+        ]
+      },
+      "hasBody": true,
+      "isJson": true
+    },
+    "documents_implicit": {
+      "note": "documents loaded via Supabase client in UI"
+    },
+    "wizard_draft": {
+      "status": 401,
+      "json": {
+        "error": "Unauthorized"
+      },
+      "hasBody": true,
+      "isJson": true
+    },
+    "signwell_validation_sim": {
+      "status": 502,
+      "json": {
+        "success": false,
+        "stage": "signwell_dispatch_failed",
+        "error": "SignWell API requests failed after 3 retries: SignWell API Error (422): {\"errors\":{\"copied_contacts\":{\"copied_contact_1\":{\"email\":[\"is already a recipient\"]}}}}",
+        "agreementId": "06559c40-9b13-43bc-b54d-168a9f00a780",
+        "result": {
+          "storagePath": "df44c95a-3eac-482c-83c6-22551febc791/agreements/06559c40-9b13-43bc-b54d-168a9f00a780/agreement-AGR-2026-0004.pdf",
+          "size": 65290,
+          "timeMs": 8299
+        }
+      },
+      "hasBody": true,
+      "isJson": true
+    }
+  }
+}

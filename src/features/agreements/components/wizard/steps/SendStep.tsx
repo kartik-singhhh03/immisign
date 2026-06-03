@@ -4,7 +4,16 @@ import Link from "next/link"
 import { CheckCircle2, Lock, PenLine } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { WorkflowProgress } from "@/components/ui/standards"
 import type { AgencyWizardContext, AgreementWizardFormData, RmaOption } from "../../../types/wizard"
+
+const DISPATCH_STEPS = [
+  { id: "record", label: "Creating agreement record", description: "Saving client, matter, and fee details." },
+  { id: "clauses", label: "Applying clauses", description: "Merging selected terms into the agreement." },
+  { id: "pdf", label: "Preparing PDF", description: "Generating the OMARA-compliant document." },
+  { id: "signwell", label: "Sending for signature", description: "Dispatching via SignWell to client signers." },
+  { id: "done", label: "Completed", description: "Agreement is on record and awaiting signature." },
+]
 
 type Props = {
   form: AgreementWizardFormData
@@ -12,6 +21,7 @@ type Props = {
   rmaOptions: RmaOption[]
   agreementRef: string
   saving: boolean
+  dispatchStep: number
   dispatched: boolean
   apiError: string | null
   apiResponse: any
@@ -27,6 +37,7 @@ export function SendStep({
   rmaOptions,
   agreementRef,
   saving,
+  dispatchStep,
   dispatched,
   apiError,
   apiResponse,
@@ -66,13 +77,13 @@ export function SendStep({
 
   if (saving) {
     return (
-      <div className="space-y-6 rounded-2xl border border-slate-200 bg-white p-8 text-center">
-        <h3 className="text-lg font-bold text-[#081B2E]">Sending Agreement...</h3>
-        <p className="text-sm text-slate-500">Creating record, generating PDF, and dispatching for signature.</p>
-        <div className="h-1.5 w-full max-w-md mx-auto bg-slate-100 rounded-full overflow-hidden">
-          <div className="h-full bg-[#0D9F8C] animate-pulse w-2/3" />
-        </div>
-      </div>
+      <WorkflowProgress
+        title="Generating and sending agreement"
+        subtitle="Please keep this tab open until dispatch completes."
+        steps={DISPATCH_STEPS}
+        activeIndex={Math.min(dispatchStep, DISPATCH_STEPS.length - 1)}
+        error={apiError}
+      />
     )
   }
 
@@ -97,7 +108,7 @@ export function SendStep({
       <div className="flex items-start gap-3 rounded-xl border border-[#0D9F8C]/20 bg-[#ecfdf5]/50 p-4 text-sm text-slate-700">
         <Lock className="h-5 w-5 shrink-0 text-[#0D9F8C] mt-0.5" />
         <p>
-          <strong>{selectedRma?.name || 'The responsible agent'}</strong> signature is applied automatically on the PDF.
+          <strong>{selectedRma?.name || "The responsible agent"}</strong> signature is applied automatically on the PDF.
           SignWell signing links go to <strong>external client signers only</strong> (not the agent).
         </p>
       </div>
@@ -130,7 +141,7 @@ export function SendStep({
       </div>
 
       {apiError && (
-        <div className="p-4 rounded-xl bg-rose-50 border border-rose-100 text-rose-600 text-sm font-semibold">
+        <div className="p-4 rounded-xl bg-rose-50 border border-rose-100 text-rose-600 text-sm font-semibold" role="alert">
           {apiError}
         </div>
       )}

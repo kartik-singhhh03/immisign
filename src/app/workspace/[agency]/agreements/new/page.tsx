@@ -103,6 +103,12 @@ export default async function NewAgreementPage({ params }: { params: { agency: s
     marn: defaultRma?.marn,
   };
 
+  const { data: clientRows } = await (adminClient as any)
+    .from('clients')
+    .select('id, name, email, phone')
+    .eq('agency_id', agency.id)
+    .order('name');
+
   return (
     <AgreementWizard
       agencyId={agency.id}
@@ -112,6 +118,12 @@ export default async function NewAgreementPage({ params }: { params: { agency: s
       user={userContext}
       rmaOptions={rmaOptions}
       agencySettings={agencySettings}
+      clients={(clientRows || []).map((c: { id: string; name: string; email: string; phone?: string }) => ({
+        id: c.id,
+        name: c.name,
+        email: c.email,
+        phone: c.phone,
+      }))}
     />
   );
 }

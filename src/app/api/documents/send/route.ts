@@ -135,17 +135,20 @@ export async function POST(req: NextRequest) {
       console.warn('Could not insert signers into DB:', signersErr.message);
     }
 
-    const dispatchExtras = buildSignwellDispatchExtras({
-      dispatchOptions: {
-        emailMessage,
-        emailSubject,
-        ccMe,
-        autoRemind7Days,
-        emailOnComplete,
+    const dispatchExtras = buildSignwellDispatchExtras(
+      {
+        dispatchOptions: {
+          emailMessage,
+          emailSubject,
+          ccMe,
+          autoRemind7Days,
+          emailOnComplete,
+        },
+        agreementTitle: document.file_name,
+        sender: { email: senderEmail, name: senderName },
       },
-      agreementTitle: document.file_name,
-      sender: { email: senderEmail, name: senderName },
-    });
+      externalSigners.map((s: { email: string }) => s.email),
+    );
 
     const signwellSigners = externalSigners.map((s: any, idx: number) => ({
       id: s.id || `signer_${idx}`,

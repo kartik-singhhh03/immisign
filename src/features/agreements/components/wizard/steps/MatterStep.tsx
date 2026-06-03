@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+import Link from "next/link"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import type { MatterTypeConfig } from "@/lib/settings/types"
@@ -26,6 +27,7 @@ type Props = {
   form: AgreementWizardFormData
   rmaOptions: RmaOption[]
   matterTypes: MatterTypeConfig[]
+  agencySlug: string
   onChange: (field: keyof AgreementWizardFormData, value: string | boolean | Record<string, string>) => void
   onBack: () => void
   onContinue: () => void
@@ -77,9 +79,9 @@ function MatterField({
   )
 }
 
-export function MatterStep({ form, rmaOptions, matterTypes, onChange, onBack, onContinue }: Props) {
+export function MatterStep({ form, rmaOptions, matterTypes, agencySlug, onChange, onBack, onContinue }: Props) {
   const matterConfig = resolveMatterType(matterTypes, form)
-  const canContinue = Boolean(form.matterType.trim())
+  const canContinue = Boolean(form.matterTypeId || form.matterType.trim())
 
   const handleMatterTypeChange = (value: string) => {
     const selected = matterTypes.find((m) => m.id === value || m.name === value)
@@ -128,6 +130,18 @@ export function MatterStep({ form, rmaOptions, matterTypes, onChange, onBack, on
               <option key={opt.id} value={opt.id}>{opt.name}</option>
             ))}
           </select>
+          {matterTypes.length === 0 && (
+            <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+              No matter types found for this agency.{' '}
+              <Link
+                href={`/workspace/${agencySlug}/settings?section=Matter%20Types`}
+                className="font-bold underline text-[#0D9F8C]"
+              >
+                Add matter types in Settings
+              </Link>
+              .
+            </p>
+          )}
         </label>
         <label className="grid gap-2">
           <FieldLabel>Visa Subclass</FieldLabel>

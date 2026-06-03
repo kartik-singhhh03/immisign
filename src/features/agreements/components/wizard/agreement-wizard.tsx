@@ -6,11 +6,13 @@ import React from "react"
 
 import { Card } from "@/components/ui/card"
 
-import type { AgencyWizardContext, AgreementWizardFormData, RmaOption, UserWizardContext } from "../../types/wizard"
+import type { AgencyWizardContext, AgreementWizardFormData, ClientPickerOption, RmaOption, UserWizardContext } from "../../types/wizard"
 
 import { createInitialWizardForm, generateProvisionalAgreementRef } from "../../types/wizard"
 
 import { WizardStepper } from "./WizardStepper"
+import { AutosaveIndicator, type AutosaveStatus } from "@/components/ui/standards"
+import { notifyError, notifySuccess } from "@/lib/ux/feedback"
 
 import { ClientStep } from "./steps/ClientStep"
 
@@ -38,6 +40,7 @@ type Props = {
   user: UserWizardContext
   rmaOptions: RmaOption[]
   agencySettings: AgencySettings
+  clients?: ClientPickerOption[]
 }
 
 function resolveMatterTypeConfig(settings: AgencySettings, form: AgreementWizardFormData) {
@@ -54,11 +57,15 @@ function resolveMatterTypeConfig(settings: AgencySettings, form: AgreementWizard
 
 
 
-export function AgreementWizard({ agencyId, agencySlug, userId, agency, user, rmaOptions, agencySettings }: Props) {
+export function AgreementWizard({ agencyId, agencySlug, userId, agency, user, rmaOptions, agencySettings, clients = [] }: Props) {
 
   const [currentStep, setCurrentStep] = React.useState(0)
 
   const [saving, setSaving] = React.useState(false)
+  const [dispatchStep, setDispatchStep] = React.useState(0)
+  const [autosaveStatus, setAutosaveStatus] = React.useState<AutosaveStatus>("idle")
+  const [lastSavedAt, setLastSavedAt] = React.useState<Date | null>(null)
+  const saveTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const [dispatched, setDispatched] = React.useState(false)
 
@@ -148,23 +155,30 @@ export function AgreementWizard({ agencyId, agencySlug, userId, agency, user, rm
 
 
   React.useEffect(() => {
-    const timer = setTimeout(() => {
-
+    if (dispatched) return
+    setAutosaveStatus("unsaved")
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
+    saveTimerRef.current = setTimeout(() => {
+      setAutosaveStatus("saving")
       fetch('/api/agreements/wizard-draft', {
-
         method: 'PUT',
-
         headers: { 'Content-Type': 'application/json' },
-
         body: JSON.stringify({ formData, currentStep, agreementRef }),
-
-      }).catch(() => {})
-
+      })
+        .then((res) => {
+          if (res.ok) {
+            setAutosaveStatus("saved")
+            setLastSavedAt(new Date())
+          } else {
+            setAutosaveStatus("error")
+          }
+        })
+        .catch(() => setAutosaveStatus("error"))
     }, 800)
-
-    return () => clearTimeout(timer)
-
-  }, [formData, currentStep, agreementRef, agencyId])
+    return () => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
+    }
+  }, [formData, currentStep, agreementRef, agencyId, dispatched])
 
 
 
@@ -209,11 +223,15 @@ export function AgreementWizard({ agencyId, agencySlug, userId, agency, user, rm
 
 
   const handleSend = async () => {
-
+    const stepTimers: ReturnType<typeof setTimeout>[] = []
     try {
-
       setSaving(true)
-
+      setDispatchStep(0)
+      stepTimers.push(
+        setTimeout(() => setDispatchStep(1), 500),
+        setTimeout(() => setDispatchStep(2), 1500),
+        setTimeout(() => setDispatchStep(3), 2800),
+      )
       setApiError(null)
 
 
@@ -300,20 +318,17 @@ export function AgreementWizard({ agencyId, agencySlug, userId, agency, user, rm
 
       fetch('/api/agreements/wizard-draft', { method: 'DELETE' }).catch(() => {})
 
+      setDispatchStep(4)
       setApiResponse(data)
-
       setDispatched(true)
-
+      notifySuccess("Agreement sent", "PDF generated and signature request dispatched.")
     } catch (e: unknown) {
-
       const err = e as Error
-
       setApiError(err.message || "Failed to send agreement.")
-
+      notifyError("Agreement dispatch failed", err.message)
     } finally {
-
+      stepTimers.forEach(clearTimeout)
       setSaving(false)
-
     }
 
   }
@@ -331,10 +346,12 @@ export function AgreementWizard({ agencyId, agencySlug, userId, agency, user, rm
         <h1 className="text-2xl font-black text-[#081B2E] mt-1">Agreement Setup Wizard</h1>
 
         <p className="text-sm text-slate-500 mt-1">Create a MARA-compliant service agreement in six steps.</p>
-
+        {!dispatched && (
+          <div className="mt-3">
+            <AutosaveIndicator status={autosaveStatus} lastSavedAt={lastSavedAt} />
+          </div>
+        )}
       </div>
-
-
 
       <WizardStepper currentStep={currentStep} hidden={dispatched} />
 
@@ -349,6 +366,8 @@ export function AgreementWizard({ agencyId, agencySlug, userId, agency, user, rm
             <ClientStep
 
               form={formData}
+
+              clients={clients}
 
               onChange={handleFieldChange}
 
@@ -367,6 +386,8 @@ export function AgreementWizard({ agencyId, agencySlug, userId, agency, user, rm
               rmaOptions={rmaOptions}
 
               matterTypes={agencySettings.matterTypes}
+
+              agencySlug={agencySlug}
 
               onChange={handleFieldChange}
 
@@ -453,6 +474,8 @@ export function AgreementWizard({ agencyId, agencySlug, userId, agency, user, rm
               agreementRef={agreementRef}
 
               saving={saving}
+
+              dispatchStep={dispatchStep}
 
               dispatched={dispatched}
 

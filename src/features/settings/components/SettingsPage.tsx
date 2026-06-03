@@ -5,6 +5,7 @@ import { useAuthStore } from "@/store/authStore"
 import { isSettingsRestrictedForUiRole } from "@/lib/auth/db-roles"
 import { useTeamMembers, useInvitations, useAgencyProfile, useClauses, useUserProfile, useMatterTypesSettings, usePaymentScheduleSettings, useRmaTeam } from "@/lib/hooks/useSupabaseData"
 import { AgencyProfilePanel, DefaultsPanel, RmaTeamPanel, SettingsListEditor } from "./WorkspaceSettingsPanels"
+import { SecurityCenterPanel } from "./SecurityCenterPanel"
 import { BrandingSettingsPanel } from "./BrandingSettingsPanel"
 import { MatterTypesSettingsPanel } from "./MatterTypesSettingsPanel"
 import { NotificationPreferencesPanel } from "./NotificationPreferencesPanel"
@@ -138,7 +139,7 @@ export function SettingsPage({ section = "" }: { section?: string }) {
   const { data: matterTypesList, loading: matterTypesLoading, addMatterType, deleteMatterType, loadMatterTypeFields, addMatterTypeField, deleteMatterTypeField } = useMatterTypesSettings()
   const { data: paymentSchedulesList, loading: paymentSchedulesLoading, addSchedule, deleteSchedule } = usePaymentScheduleSettings()
   const { data: rmaTeamList, loading: rmaLoading, refetch: refetchRmaTeam, setDefault: setDefaultRma, setStatus: setRmaStatus, removeRma, upsertRma } = useRmaTeam()
-  const { updateProfile: updateUserProfile, toggleMfa, loading: userLoading } = useUserProfile()
+  const { updateProfile: updateUserProfile, loading: userLoading } = useUserProfile()
 
   const currentRole = user?.role || "Owner"
   const isSettingsRestricted = isSettingsRestrictedForUiRole(currentRole)
@@ -158,7 +159,7 @@ export function SettingsPage({ section = "" }: { section?: string }) {
     "Payment Schedules": "PaymentSchedules",
     "Defaults": "Defaults",
     "Matter Defaults": "Defaults",
-    "Security": "MFA",
+    "Security": "Security",
     "My Profile": "Profile",
   }
 
@@ -174,7 +175,8 @@ export function SettingsPage({ section = "" }: { section?: string }) {
     PaymentSchedules: "Payment Schedules",
     Defaults: "Defaults & Special Terms",
     Profile: "My Profile",
-    MFA: "MFA Security",
+    Security: "Security",
+    MFA: "Security",
     Notifications: "Notifications",
   }
 
@@ -191,10 +193,16 @@ export function SettingsPage({ section = "" }: { section?: string }) {
 
   const currentTitle = sectionTitleMap[activeSectionKey] || "Agency Profile"
 
-  const personalItems = [
-    ["My Profile", "Profile"],
-    ["MFA Security", "MFA"],
-  ] as const
+  const personalItems = [["Security", "Security"]] as const
+
+  type SecurityTab = "profile" | "password" | "mfa" | "sessions" | "logs" | "account"
+  const [securityTab, setSecurityTab] = React.useState<SecurityTab>(
+    (searchParams?.get("tab") as SecurityTab) || "profile",
+  )
+  React.useEffect(() => {
+    const t = searchParams?.get("tab") as SecurityTab | null
+    if (t) setSecurityTab(t)
+  }, [searchParams])
 
   const [toastMessage, setToastMessage] = React.useState<string | null>(null)
   const triggerToast = (msg: string) => {
@@ -308,7 +316,6 @@ export function SettingsPage({ section = "" }: { section?: string }) {
   // My Profile State
   const [myFullName, setMyFullName] = React.useState(user?.user_metadata?.full_name || "")
   const [myPhone, setMyPhone] = React.useState(user?.phone || "")
-  const [mfaEnabled, setMfaEnabled] = React.useState(user?.mfa_enabled || false)
   const [signatures, setSignatures] = React.useState<any[]>([])
   const [typedSignatureName, setTypedSignatureName] = React.useState("")
   const [drawSignatureData, setDrawSignatureData] = React.useState("")
@@ -318,12 +325,6 @@ export function SettingsPage({ section = "" }: { section?: string }) {
   const handleSaveMyProfile = async () => {
     await updateUserProfile({ full_name: myFullName, phone: myPhone })
     triggerToast("Your profile has been updated.")
-  }
-
-  const handleMfaToggle = async () => {
-    await toggleMfa(!mfaEnabled)
-    setMfaEnabled(!mfaEnabled)
-    triggerToast(`MFA security enforcement has been ${!mfaEnabled ? "ENABLED" : "DISABLED"}.`)
   }
 
   const loadSignatures = React.useCallback(async () => {
@@ -815,36 +816,18 @@ export function SettingsPage({ section = "" }: { section?: string }) {
     </div>
   )
 
-  const renderSecurity = () => (
-    <div className="space-y-6">
-      <div className="space-y-4">
-        <div className="flex items-center justify-between p-4 rounded-xl border border-slate-200/50 bg-white">
-          <div>
-            <h4 className="text-xs font-bold text-[#081B2E]">Multi-Factor Authentication (MFA)</h4>
-            <p className="text-[11px] text-slate-400 font-semibold mt-1">Enforce Google Authenticator or SMS token prompt at next sign-in for safety.</p>
-          </div>
-          <button
-            disabled={userLoading}
-            onClick={handleMfaToggle}
-            className={`flex h-6 w-11 shrink-0 items-center rounded-full p-1 transition-colors duration-200 focus:outline-none ${mfaEnabled ? "bg-[#0D9F8C]" : "bg-slate-250"}`}
-          >
-            <div className={`h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 ${mfaEnabled ? "translate-x-5" : "translate-x-0"}`} />
-          </button>
-        </div>
-
-        <div className="flex items-center justify-between p-4 rounded-xl border border-slate-200/50 bg-white">
-          <div>
-            <h4 className="text-xs font-bold text-[#081B2E]">Practitioner Inactivity Timeout</h4>
-            <p className="text-[11px] text-slate-400 font-semibold mt-1">Automatically sign out after period of idle time.</p>
-          </div>
-          <select className="flex h-9 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]">
-            <option value="15">15 Minutes</option>
-            <option value="30">30 Minutes (Recommended)</option>
-            <option value="60">1 Hour</option>
-          </select>
-        </div>
-      </div>
-    </div>
+  const renderSecurityCenter = () => (
+    <SecurityCenterPanel
+      activeTab={securityTab}
+      onTabChange={(tab) => {
+        setSecurityTab(tab)
+        const url = new URL(window.location.href)
+        url.searchParams.set("section", "Security")
+        url.searchParams.set("tab", tab)
+        window.history.replaceState({}, "", url.toString())
+      }}
+      onToast={triggerToast}
+    />
   )
 
   const renderContent = () => {
@@ -865,8 +848,9 @@ export function SettingsPage({ section = "" }: { section?: string }) {
         return renderDefaultsSettings()
       case "Profile":
         return renderMyProfile()
+      case "Security":
       case "MFA":
-        return renderSecurity()
+        return renderSecurityCenter()
       case "Notifications":
         return <NotificationPreferencesPanel />
       default:
@@ -1048,7 +1032,7 @@ export function SettingsPage({ section = "" }: { section?: string }) {
                 {personalItems.map(([item, target]) => (
                   <Link
                     key={item}
-                    href={`/workspace/${currentSlug}/settings?section=${target}`}
+                    href={`/workspace/${currentSlug}/settings?section=${target}&tab=profile`}
                     className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-bold transition-all duration-200 ${target === activeSectionKey ? "bg-[#0D9F8C] text-white shadow-sm" : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"}`}
                   >
                     <span>{item}</span>

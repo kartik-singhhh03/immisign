@@ -213,10 +213,10 @@ export function DashboardHomePage() {
   const currentUserName = user?.name || "Practitioner"
 
   const realMetrics = [
-    { label: "Active Clients", value: (dashboardData?.metrics?.activeClients || 0).toString(), change: "+12%", trend: "up" as const, icon: Users },
-    { label: "Active Agreements", value: (dashboardData?.metrics?.activeAgreements || 0).toString(), change: "+5%", trend: "up" as const, icon: FileSignature },
-    { label: "Pending Approvals", value: (dashboardData?.metrics?.pendingApprovals || 0).toString(), change: "Reviewing", trend: "neutral" as const, icon: Clock3 },
-    { label: "Monthly Revenue", value: dashboardData?.metrics?.monthlyRevenue || "$0", change: "+18%", trend: "up" as const, icon: BarChart3 },
+    { label: "Active Clients", value: (dashboardData?.metrics?.activeClients || 0).toString(), change: "", trend: "neutral" as const, icon: Users },
+    { label: "Active Agreements", value: (dashboardData?.metrics?.activeAgreements || 0).toString(), change: "", trend: "neutral" as const, icon: FileSignature },
+    { label: "Pending Approvals", value: (dashboardData?.metrics?.pendingApprovals || 0).toString(), change: "", trend: "neutral" as const, icon: Clock3 },
+    { label: "Professional fees (sum)", value: dashboardData?.metrics?.monthlyRevenue || "$0", change: "", trend: "neutral" as const, icon: BarChart3 },
   ];
 
   const quickActions = [

@@ -53,7 +53,7 @@ export async function generateSenderAttestationPdf(
       External recipients sign via SignWell on the attached document file(s).
     </p>
   </div>
-  <p class="footer">ImmiSign · OMARA-compliant practice workflow</p>
+  <p class="footer">Agent certification · generated at document send</p>
 </body>
 </html>`;
 

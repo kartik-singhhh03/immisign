@@ -21,6 +21,13 @@ function resolveLocalChromePath(): string {
 }
 
 async function resolveChromiumExecutablePath(): Promise<string> {
+  // Vercel/Lambda: use package default — custom paths break when only chromium.br is bundled
+  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    const exe = await chromium.executablePath();
+    console.log('PDF_CHROMIUM_VERCEL', { resolved: Boolean(exe) });
+    return exe;
+  }
+
   const binCandidates = [
     path.join(process.cwd(), 'node_modules', '@sparticuz', 'chromium', 'bin'),
     path.join(process.cwd(), 'node_modules', '@sparticuz', 'chromium', 'build'),
@@ -33,10 +40,6 @@ async function resolveChromiumExecutablePath(): Promise<string> {
     }
   }
 
-  console.warn('PDF_CHROMIUM_BIN_NOT_FOUND', {
-    cwd: process.cwd(),
-    candidates: binCandidates,
-  });
   return chromium.executablePath();
 }
 

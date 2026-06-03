@@ -624,7 +624,7 @@ export function SendDocumentPage() {
                   <div className="flex h-7 w-7 items-center justify-center rounded bg-emerald-50 text-[#0D9F8C] border border-emerald-100">
                     <ShieldCheck className="h-4.5 w-4.5" />
                   </div>
-                  <span className="text-xs font-black text-[#081b36] tracking-tight">ImmiSign OMARA Compliant Portal</span>
+                  <span className="text-xs font-black text-[#081b36] tracking-tight">Secure signature request</span>
                 </div>
 
                 <p>Dear {signersList[0]?.name || "Client Signatory"},</p>
@@ -638,7 +638,7 @@ export function SendDocumentPage() {
                 </div>
 
                 <p className="text-xs text-slate-400 font-medium">
-                  This transaction is locked with SHA-256 cryptographic audit logs inside Sydney data zones. Access is secure under the Australian Privacy Act guidance rules.
+                  You will receive a secure link to review and sign this document electronically.
                 </p>
               </div>
             </div>

@@ -71,22 +71,6 @@ export function DocumentLibraryPage() {
     agreement_id?: string;
   }
 
-  const totalBytes = (documentsList || []).reduce(
-    (sum: number, d: DocumentItem) => {
-      const mb = parseFloat(String(d.size).replace(' MB', ''));
-      return sum + (Number.isFinite(mb) ? mb * 1024 * 1024 : 0);
-    },
-    0,
-  );
-  const vaultUsedMb = (totalBytes / 1024 / 1024).toFixed(1);
-  const vaultLimitGb = 1;
-  const vaultPct = Math.min(100, (totalBytes / (vaultLimitGb * 1024 * 1024 * 1024)) * 100);
-  const recentUploads = (documentsList || []).filter((d: DocumentItem) => {
-    if (!d.created_at) return false;
-    const age = Date.now() - new Date(d.created_at).getTime();
-    return age < 7 * 24 * 60 * 60 * 1000;
-  }).length;
-
   const [searchQuery, setSearchQuery] = React.useState("");
   const [activeCategory, setActiveCategory] = React.useState("All");
   const [isUploadOpen, setIsUploadOpen] = React.useState(false);
@@ -110,8 +94,22 @@ export function DocumentLibraryPage() {
   const { data: documentsList, addDocument, loading, count: documentCount } = useDocuments({
     limit: 200,
   });
-  
 
+  const totalBytes = (documentsList || []).reduce(
+    (sum: number, d: DocumentItem) => {
+      const mb = parseFloat(String(d.size).replace(' MB', ''));
+      return sum + (Number.isFinite(mb) ? mb * 1024 * 1024 : 0);
+    },
+    0,
+  );
+  const vaultUsedMb = (totalBytes / 1024 / 1024).toFixed(1);
+  const vaultLimitGb = 1;
+  const vaultPct = Math.min(100, (totalBytes / (vaultLimitGb * 1024 * 1024 * 1024)) * 100);
+  const recentUploads = (documentsList || []).filter((d: DocumentItem) => {
+    if (!d.created_at) return false;
+    const age = Date.now() - new Date(d.created_at).getTime();
+    return age < 7 * 24 * 60 * 60 * 1000;
+  }).length;
 
   // Filter lists
   const filteredDocs = (documentsList || []).filter((doc: any) => {

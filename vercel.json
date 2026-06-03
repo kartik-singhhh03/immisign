@@ -8,6 +8,18 @@
       "maxDuration": 60,
       "includeFiles": "node_modules/@sparticuz/chromium/**"
     },
+    "src/app/api/documents/send/route.ts": {
+      "maxDuration": 60,
+      "includeFiles": "node_modules/@sparticuz/chromium/**"
+    },
+    "src/app/api/documents/send-document-preview/route.ts": {
+      "maxDuration": 60,
+      "includeFiles": "node_modules/@sparticuz/chromium/**"
+    },
+    "src/app/api/dev/pdf-smoke/route.ts": {
+      "maxDuration": 60,
+      "includeFiles": "node_modules/@sparticuz/chromium/**"
+    },
     "src/app/api/team/invite/route.ts": {
       "maxDuration": 30
     }

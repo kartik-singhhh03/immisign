@@ -31,12 +31,12 @@ Report: `docs/verification-screenshots/phase16-6/invite-e2e.json`
 | Step | Result | Notes |
 |------|--------|-------|
 | Invite row created | **PASS** | Service role insert |
-| `POST /api/auth/accept-invite` | **FAIL** | Supabase `email rate limit exceeded` on `signUp` |
-| `users` row | **FAIL** | Blocked by rate limit |
-| `invitations.accepted_at` | **FAIL** | — |
-| `security_audit_logs` invite.accepted | **PARTIAL** | — |
-| Supabase Auth user | **FAIL** | — |
-| Login after accept | **FAIL** | — |
+| `POST /api/auth/accept-invite` | **PASS** (2026-06-04) | Fixed: `admin.createUser` + `email_confirm: true` (no signup email / rate limit) |
+| `users` row | **PASS** | Agent role linked to agency |
+| `invitations.accepted_at` | **PASS** | — |
+| `security_audit_logs` invite.accepted | **PASS** | — |
+| Supabase Auth user | **PASS** | — |
+| Login after accept | **PASS** | — |
 
 ---
 

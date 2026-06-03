@@ -37,5 +37,8 @@ export function friendlySignwellError(message: string): string {
   if (message.includes('Trials are limited')) {
     return 'SignWell trial limit reached for today. Try again tomorrow or contact SignWell support.';
   }
+  if (message.includes("isn't draft") || message.includes('is not draft')) {
+    return 'This document was already sent to SignWell. Check Document Library or resend with a new upload.';
+  }
   return message;
 }

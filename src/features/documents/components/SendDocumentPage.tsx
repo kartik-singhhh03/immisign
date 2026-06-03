@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import { WorkflowProgress } from "@/components/ui/standards"
 import { notifyError, notifySuccess } from "@/lib/ux/feedback"
+import { filterExternalDocumentSigners } from "@/lib/signatures/rma-signature"
 
 const DISPATCH_STEPS = [
   { id: "upload", label: "Uploading document", description: "Storing file in your secure document library." },
@@ -283,13 +284,22 @@ export function SendDocumentPage() {
       setSendLogs((curr) => [...curr, "Registering signers and dispatching to SignWell…"])
       setSendingProgress(70)
 
+      const senderEmail = (user?.email || "").trim().toLowerCase()
+      const externalSigners = filterExternalDocumentSigners(signersList, senderEmail)
+      if (externalSigners.length === 0) {
+        throw new Error(
+          "Add at least one external signer. Your agent signature is applied automatically — remove yourself from the signer list.",
+        )
+      }
+
       const res = await fetch('/api/documents/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           documentId: document.id,
           agencyId: resolvedAgencyId,
-          signers: signersList,
+          signers: externalSigners,
+          pageCount: uploadedFile?.pages || 1,
           emailSubject,
           emailMessage,
           ccMe,
@@ -599,7 +609,9 @@ export function SendDocumentPage() {
 
         {/* Live Inbox Mockup */}
         <div className="space-y-3">
-          <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Live Signer Inbox Preview</div>
+          <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+            Email preview (not the live SignWell link)
+          </div>
           <Card className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm">
             {/* Window bar */}
             <div className="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center justify-between text-[11px] text-slate-400 font-semibold">
@@ -632,13 +644,16 @@ export function SendDocumentPage() {
                 <p className="whitespace-pre-wrap">{emailMessage}</p>
 
                 <div className="py-2">
-                  <button type="button" className="w-full bg-[#0D9F8C] text-white font-bold rounded-xl py-3 text-center shadow-[0_6px_16px_rgba(13,159,140,0.12)]">
-                    Review & Sign Document
-                  </button>
+                  <div
+                    className="w-full rounded-xl border border-dashed border-slate-300 bg-slate-50 py-3 text-center text-xs font-bold text-slate-500"
+                    aria-hidden
+                  >
+                    Review &amp; Sign — sent by SignWell email after dispatch
+                  </div>
                 </div>
 
                 <p className="text-xs text-slate-400 font-medium">
-                  You will receive a secure link to review and sign this document electronically.
+                  Recipients receive a real signing link from SignWell after you send. Signature fields are placed on the last page of your PDF (or use SignWell text tags in the file).
                 </p>
               </div>
             </div>
@@ -678,7 +693,7 @@ export function SendDocumentPage() {
             )}
           </div>
           <div className="space-y-2">
-            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Agent signature (included in SignWell packet)</span>
+            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Agent certification (pre-signed — not a SignWell signer step)</span>
             {previewLoading ? (
               <div className="h-[320px] rounded-xl border border-slate-200 flex items-center justify-center text-xs text-slate-400">Generating preview…</div>
             ) : attestationPreviewUrl ? (

@@ -64,9 +64,21 @@ export class SignWellClient {
   }
 
   async sendDocument(documentId: string): Promise<SignWellDocumentResponse> {
-      return this.fetchWithRetry<SignWellDocumentResponse>(`/documents/${documentId}/send`, {
-          method: 'POST',
-      });
+      const existing = await this.getDocument(documentId);
+      if (existing.status && existing.status.toLowerCase() !== 'draft') {
+          return existing;
+      }
+      try {
+        return await this.fetchWithRetry<SignWellDocumentResponse>(`/documents/${documentId}/send`, {
+            method: 'POST',
+        });
+      } catch (error: unknown) {
+        const msg = error instanceof Error ? error.message : String(error);
+        if (msg.includes("isn't draft") || msg.includes('is not draft')) {
+          return this.getDocument(documentId);
+        }
+        throw error;
+      }
   }
 
   async cancelDocument(documentId: string): Promise<void> {

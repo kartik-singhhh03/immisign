@@ -6,6 +6,12 @@ import { applySenderSignatureOnDocumentSend } from '@/lib/signatures/document-se
 import { filterExternalDocumentSigners } from '@/lib/signatures/rma-signature';
 import { generateSenderAttestationPdf } from '@/lib/signatures/sender-attestation-pdf';
 import { buildSignwellDispatchExtras } from '@/lib/signwell/dispatch-extras';
+import { createAndSendSignwellDocument, resumeSignwellDocumentIfDraft } from '@/lib/signwell/document-dispatch';
+import { buildMultiFileSignatureFields } from '@/lib/signwell/signature-fields';
+import {
+  findDuplicateRecipientEmails,
+  friendlySignwellError,
+} from '@/lib/signwell/recipient-validation';
 import { NotificationService, buildWorkspaceActionUrl } from '@/lib/notifications/notification.service';
 
 export async function POST(req: NextRequest) {
@@ -61,8 +67,24 @@ export async function POST(req: NextRequest) {
 
     if (externalSigners.length === 0) {
       return NextResponse.json(
-        { success: false, error: 'At least one external recipient is required to sign.' },
+        {
+          success: false,
+          error:
+            'Add at least one external signer (client/sponsor). Your agent signature is applied automatically — do not add yourself as a signer.',
+        },
         { status: 400 },
+      );
+    }
+
+    const recipientEmails = externalSigners.map((s: { email: string }) => s.email);
+    const duplicate = findDuplicateRecipientEmails(recipientEmails);
+    if (duplicate) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Duplicate signer email: ${duplicate}. Each recipient must have a unique email.`,
+        },
+        { status: 422 },
       );
     }
 
@@ -151,28 +173,60 @@ export async function POST(req: NextRequest) {
     );
 
     const signwellSigners = externalSigners.map((s: any, idx: number) => ({
-      id: s.id || `signer_${idx}`,
+      id: String(s.id || `signer_${idx + 1}`),
       name: s.name,
-      email: s.email,
+      email: s.email.trim().toLowerCase(),
       routing_order: s.order || idx + 1,
       role: s.role || 'Signer',
     }));
 
-    const signwellData = await signwellClient.createDocument({
+    const pageCount = Math.max(1, Number(body.pageCount) || 1);
+    const signwellFiles = [
+      { name: document.file_name, file_url: urlData.signedUrl },
+      { name: 'Agent-Certification.pdf', file_url: attestationUrlData.signedUrl },
+    ];
+
+    const signwellPayload = {
       test_mode: process.env.NODE_ENV !== 'production',
       name: document.file_name,
-      files: [
-        { name: document.file_name, file_url: urlData.signedUrl },
-        { name: 'Agent-Certification.pdf', file_url: attestationUrlData.signedUrl },
-      ],
+      files: signwellFiles,
       recipients: signwellSigners,
       expires_in: 30,
-      with_signature_page: true,
-      draft: true,
+      with_signature_page: false,
+      text_tags: true,
+      apply_signing_order: signwellSigners.length > 1,
+      fields: buildMultiFileSignatureFields(
+        signwellSigners.map((s) => ({ id: s.id, name: s.name, email: s.email })),
+        signwellFiles.length,
+        { lastPage: pageCount },
+      ),
       ...dispatchExtras,
-    });
+    };
 
-    const sentDoc = await signwellClient.sendDocument(signwellData.id);
+    let sentDoc;
+    try {
+      if (document.signwell_document_id) {
+        sentDoc = await resumeSignwellDocumentIfDraft(document.signwell_document_id);
+      } else {
+        sentDoc = await createAndSendSignwellDocument(signwellPayload);
+      }
+    } catch (signwellErr: unknown) {
+      const raw = signwellErr instanceof Error ? signwellErr.message : String(signwellErr);
+      const friendly = friendlySignwellError(raw);
+      await supabase
+        .from('documents')
+        .update({
+          signwell_dispatch_error: friendly,
+          sender_attestation_path: attestationPath,
+        })
+        .eq('id', documentId)
+        .eq('agency_id', agencyId);
+      return NextResponse.json({ success: false, error: friendly }, { status: 422 });
+    }
+
+    const signingLinks = (sentDoc.signers || [])
+      .filter((s) => s.signing_url)
+      .map((s) => ({ email: s.email, name: s.name, signing_url: s.signing_url }));
 
     await supabase
       .from('documents')
@@ -180,6 +234,10 @@ export async function POST(req: NextRequest) {
         signwell_document_id: sentDoc.id,
         signwell_status: sentDoc.status || 'sent',
         signwell_sent_at: new Date().toISOString(),
+        signwell_dispatch_error: null,
+        sender_attestation_path: attestationPath,
+        signwell_external_signer_count: externalSigners.length,
+        signwell_signing_links: signingLinks,
       })
       .eq('id', documentId)
       .eq('agency_id', agencyId);
@@ -221,11 +279,16 @@ export async function POST(req: NextRequest) {
       signwellDocumentId: sentDoc.id,
       externalSignerCount: externalSigners.length,
       senderAutoSigned: true,
+      agentAttestationIncluded: true,
+      signingLinks,
+      message:
+        'Agent certification is stored separately. Only external signers receive SignWell requests on the uploaded document.',
     });
-  } catch (err: any) {
-    console.error('Document Dispatch Error Stack:', err.stack);
+  } catch (err: unknown) {
+    console.error('Document Dispatch Error Stack:', err);
+    const message = err instanceof Error ? err.message : 'Dispatch failed';
     return NextResponse.json(
-      { success: false, error: err.message, stack: err.stack },
+      { success: false, error: friendlySignwellError(message) },
       { status: 500 },
     );
   }

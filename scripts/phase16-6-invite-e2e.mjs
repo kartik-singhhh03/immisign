@@ -52,7 +52,13 @@ const { data: invite, error: invErr } = await admin
   })
   .select('id, token, email, role')
   .single();
-report.steps.invite_created = { ok: !invErr, invite, error: invErr?.message };
+report.steps.invite_created = {
+  ok: !invErr,
+  invite: invite
+    ? { id: invite.id, email: invite.email, role: invite.role, token: '[redacted]' }
+    : null,
+  error: invErr?.message,
+};
 
 const acceptRes = await fetch(`${baseUrl}/api/auth/accept-invite`, {
   method: 'POST',

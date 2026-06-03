@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createRmaFromInvite } from '@/lib/rma/create-from-invite';
 import { NotificationService, buildWorkspaceActionUrl } from '@/lib/notifications/notification.service';
@@ -8,11 +7,9 @@ import { logSecurityEvent, getRequestMeta } from '@/lib/security/audit-log';
 
 export async function POST(req: Request) {
   try {
-    const supabase = await createClient();
     const admin = createAdminClient();
     const { token, password, fullName, phone } = await req.json();
 
-    // 1. Fetch invitation (service role — invitee is not authenticated yet)
     const { data: invite, error: inviteError } = await admin
       .from('invitations')
       .select('*')
@@ -33,53 +30,73 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: policy.errors.join(' ') }, { status: 400 });
     }
 
-    // 2. Create Auth User in Supabase
-    // Using service role to bypass email confirmation if needed, but since we are doing standard auth signup:
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: invite.email,
-      password: password,
-      options: {
-        data: { full_name: fullName },
-      },
+    const displayName = (fullName || '').trim() || invite.email.split('@')[0];
+    const email = invite.email.trim().toLowerCase();
+
+    // Service-role createUser — no Supabase signup confirmation email (avoids rate limits).
+    let userId: string;
+    const { data: authData, error: authError } = await admin.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: { full_name: displayName },
     });
 
-    if (authError) {
-       // if user already exists, we might need a different flow, but for now we error
-       return NextResponse.json({ error: authError.message }, { status: 400 });
+    if (!authError && authData?.user) {
+      userId = authData.user.id;
+    } else if (authError && /already|exists|registered/i.test(authError.message)) {
+      const { data: listData } = await admin.auth.admin.listUsers({ page: 1, perPage: 200 });
+      const existing = listData?.users?.find((u) => u.email?.toLowerCase() === email);
+      if (!existing) {
+        return NextResponse.json({ error: authError.message }, { status: 400 });
+      }
+      userId = existing.id;
+      const { error: updateError } = await admin.auth.admin.updateUserById(userId, {
+        password,
+        email_confirm: true,
+        user_metadata: { full_name: displayName },
+      });
+      if (updateError) {
+        return NextResponse.json({ error: updateError.message }, { status: 400 });
+      }
+    } else {
+      return NextResponse.json(
+        { error: authError?.message || 'Failed to create user' },
+        { status: 400 },
+      );
     }
 
-    const userId = authData.user?.id;
-    if (!userId) {
-       return NextResponse.json({ error: 'Failed to create user' }, { status: 500 });
-    }
-
-    // 3. Create user record in 'users' table linking to agency
-    const { error: userRecordError } = await supabase
-      .from('users')
-      .insert({
+    const { error: userRecordError } = await (admin as any).from('users').upsert(
+      {
         id: userId,
         agency_id: invite.agency_id,
-        email: invite.email,
-        full_name: fullName,
+        email,
+        full_name: displayName,
         phone: phone || null,
         role: invite.role,
         email_verified: true,
-        is_active: true
-      });
+        is_active: true,
+      },
+      { onConflict: 'id' },
+    );
 
     if (userRecordError) {
       return NextResponse.json({ error: 'Failed to create workspace user record.' }, { status: 500 });
     }
 
-    await createRmaFromInvite(admin, userId, {
-      agency_id: invite.agency_id,
-      email: invite.email,
-      role: invite.role,
-      marn: invite.marn,
-      full_name: fullName,
-    }, phone);
+    await createRmaFromInvite(
+      admin,
+      userId,
+      {
+        agency_id: invite.agency_id,
+        email,
+        role: invite.role,
+        marn: invite.marn,
+        full_name: displayName,
+      },
+      phone,
+    );
 
-    // 4. Mark invitation as accepted
     await admin
       .from('invitations')
       .update({ accepted_at: new Date().toISOString() })
@@ -106,7 +123,7 @@ export async function POST(req: Request) {
         userId: adminUser.id,
         type: 'team',
         title: 'Team member joined',
-        message: `${fullName} accepted their invitation and joined the workspace.`,
+        message: `${displayName} accepted their invitation and joined the workspace.`,
         actionUrl: buildWorkspaceActionUrl(slug, '/settings?section=RmaTeam'),
         entityType: 'user',
         entityId: userId,
@@ -119,7 +136,7 @@ export async function POST(req: Request) {
       user_id: userId,
       type: 'team.joined',
       title: 'Team member joined',
-      description: `${fullName} joined the workspace`,
+      description: `${displayName} joined the workspace`,
       reference_id: userId,
       reference_type: 'user',
     });
@@ -130,13 +147,17 @@ export async function POST(req: Request) {
       userId,
       eventType: 'invite.accepted',
       ...meta,
-      metadata: { role: invite.role, email: invite.email },
+      metadata: { role: invite.role, email },
     });
 
-    return NextResponse.json({ success: true });
-
-  } catch (error: any) {
-    console.error("Accept invite error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({
+      success: true,
+      email,
+      agency_slug: agency?.slug,
+    });
+  } catch (error: unknown) {
+    console.error('Accept invite error:', error);
+    const message = error instanceof Error ? error.message : 'Accept invite failed';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

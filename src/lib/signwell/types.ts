@@ -8,7 +8,22 @@ export interface SignWellSignerRequest {
   name: string;
   email: string;
   routing_order?: number;
+  role?: string;
   message?: string;
+}
+
+export interface SignWellField {
+  api_id?: string;
+  type: 'signature' | 'date' | 'text' | 'checkbox' | 'initials';
+  recipient_id: string;
+  page: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  required?: boolean;
+  name?: string;
+  label?: string;
 }
 
 export interface SignWellFileRequest {
@@ -32,6 +47,9 @@ export interface SignWellDocumentRequest {
   decline_redirect_url?: string;
   redirect_url?: string;
   with_signature_page?: boolean;
+  text_tags?: boolean;
+  apply_signing_order?: boolean;
+  fields?: SignWellField[][];
   draft?: boolean;
 }
 

@@ -1,5 +1,4 @@
 import { SupabaseClient } from '@supabase/supabase-js';
-import { signwellClient } from '@/lib/signwell/client';
 import { AgreementRepository } from '../repositories/agreement.repository';
 import { AgreementStateMachine } from './state-machine';
 import { AgreementStatus } from '../types';
@@ -10,6 +9,8 @@ import { redactSensitiveValue } from '@/lib/security/sanitize';
 import { buildSignersFromWizard } from '../lib/wizard-signers';
 import { AgentSignatureService } from './agent-signature.service';
 import { buildSignwellDispatchExtras } from '@/lib/signwell/dispatch-extras';
+import { createAndSendSignwellDocument } from '@/lib/signwell/document-dispatch';
+import { buildDocumentSignatureFields } from '@/lib/signwell/signature-fields';
 
 const SIGNWELL_ROLE_LABELS: Record<string, string> = {
   primary_applicant: 'Primary Applicant',
@@ -150,12 +151,16 @@ export class SignWellService {
       files: [{ name: 'Agreement.pdf', file_url: urlData.signedUrl }],
       recipients: signwellSigners,
       expires_in: 30,
-      with_signature_page: true,
-      draft: true,
+      with_signature_page: false,
+      text_tags: true,
+      fields: buildDocumentSignatureFields(
+        signwellSigners.map((s) => ({ id: s.id, name: s.name, email: s.email })),
+        { lastPage: 1 },
+      ),
       ...dispatchExtras,
     };
-    
-    console.log("SIGNWELL_DISPATCH_START", redactSensitiveValue({
+
+    console.log('SIGNWELL_DISPATCH_START', redactSensitiveValue({
       name: payload.name,
       fileCount: payload.files.length,
       recipients: payload.recipients.map((recipient) => ({
@@ -163,16 +168,11 @@ export class SignWellService {
         routing_order: recipient.routing_order,
         role: recipient.role,
       })),
-      expires_in: payload.expires_in,
-      draft: payload.draft,
       test_mode: payload.test_mode,
     }));
 
-    const signwellData = await signwellClient.createDocument(payload as any);
-    console.log("SIGNWELL_DRAFT_CREATED", redactSensitiveValue({ id: signwellData.id, status: signwellData.status }));
-
-    const sentDoc = await signwellClient.sendDocument(signwellData.id);
-    console.log("SIGNWELL_SEND_SUCCESS", redactSensitiveValue({ id: sentDoc.id, status: sentDoc.status }));
+    const sentDoc = await createAndSendSignwellDocument(payload as any);
+    console.log('SIGNWELL_SEND_SUCCESS', redactSensitiveValue({ id: sentDoc.id, status: sentDoc.status }));
 
     await this.agreementRepo.update(agreementId, {
       status: AgreementStatus.SENT,

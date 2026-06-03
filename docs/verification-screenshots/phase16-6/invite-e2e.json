@@ -1,42 +1,53 @@
 {
-  "timestamp": "2026-06-03T20:45:55.746Z",
+  "timestamp": "2026-06-03T21:37:29.770Z",
   "baseUrl": "http://localhost:3001",
-  "testEmail": "invite166.1780519555746@example.com",
+  "testEmail": "invite166.1780522649770@example.com",
   "steps": {
     "invite_created": {
       "ok": true,
       "invite": {
-        "id": "d9228013-4d31-4f57-8caa-388d509fda3e",
-        "token": "6cd9cb4b-e76b-4e16-ace7-8249e1ebbf3b",
-        "email": "invite166.1780519555746@example.com",
-        "role": "agent"
+        "id": "a412b228-4c1b-4853-9179-f7edb397c80f",
+        "email": "invite166.1780522649770@example.com",
+        "role": "agent",
+        "token": "[redacted]"
       }
     },
     "accept_api": {
-      "http": 400,
+      "http": 200,
       "body": {
-        "error": "email rate limit exceeded"
+        "success": true,
+        "email": "invite166.1780522649770@example.com",
+        "agency_slug": "abc-lab"
       },
-      "result": "FAIL"
+      "result": "PASS"
     },
     "users_row": {
-      "user": null,
-      "result": "FAIL"
+      "user": {
+        "id": "f6944f46-ef4f-47f1-a596-fc040a14e6ce",
+        "role": "agent",
+        "agency_id": "df44c95a-3eac-482c-83c6-22551febc791",
+        "email": "invite166.1780522649770@example.com"
+      },
+      "result": "PASS"
     },
     "invitation_accepted": {
-      "accepted_at": null,
-      "result": "FAIL"
+      "accepted_at": "2026-06-03T21:37:31.358+00:00",
+      "result": "PASS"
     },
     "security_audit": {
-      "result": "PARTIAL"
+      "log": {
+        "event_type": "invite.accepted",
+        "created_at": "2026-06-03T21:37:33.328708+00:00"
+      },
+      "result": "PASS"
     },
     "supabase_auth_user": {
-      "found": false,
-      "result": "FAIL"
+      "found": true,
+      "result": "PASS"
     },
     "login": {
-      "ok": false,
-      "result": "FAIL"
+      "ok": true,
+      "result": "PASS"
     }
   }
 }

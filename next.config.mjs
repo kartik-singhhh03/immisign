@@ -1,19 +1,8 @@
-function validateProductionEnv() {
+function validateBuildEnv() {
   if (process.env.NODE_ENV !== 'production') return;
   const required = [
-    'NEXT_PUBLIC_APP_URL',
     'NEXT_PUBLIC_SUPABASE_URL',
     'NEXT_PUBLIC_SUPABASE_ANON_KEY',
-    'SUPABASE_SERVICE_ROLE_KEY',
-    'SIGNWELL_API_KEY',
-    'STRIPE_SECRET_KEY',
-    'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY',
-    'STRIPE_WEBHOOK_SECRET',
-    'STRIPE_STARTER_MONTHLY_PRICE_ID',
-    'STRIPE_PRO_MONTHLY_PRICE_ID',
-    'STRIPE_AGENCY_MONTHLY_PRICE_ID',
-    'RESEND_API_KEY',
-    'RESEND_FROM_EMAIL',
   ];
   const missing = required.filter((key) => !process.env[key]?.trim());
   if (missing.length > 0) {
@@ -23,7 +12,7 @@ function validateProductionEnv() {
   }
 }
 
-validateProductionEnv();
+validateBuildEnv();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -37,6 +26,7 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react'],
     serverComponentsExternalPackages: ['@sparticuz/chromium', 'puppeteer-core'],
+    instrumentationHook: true,
     outputFileTracingIncludes: {
       '/api/agreements/standard': [
         './node_modules/@sparticuz/chromium/**',
@@ -46,7 +36,6 @@ const nextConfig = {
       ],
     },
   },
-  // Premium Vercel Deployment & Security Header Configurations
   async headers() {
     return [
       {

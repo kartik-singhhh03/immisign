@@ -1,20 +1,33 @@
 import Stripe from 'stripe';
-import { getRequiredEnv, isProductionBuild } from '@/lib/env';
+import { getRequiredEnv } from '@/lib/env';
+import { resolveAppUrl } from '@/lib/env';
 
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+let stripeClient: Stripe | null = null;
 
-if (!stripeSecretKey && isProductionBuild()) {
-  throw new Error('STRIPE_SECRET_KEY is required in production');
+export function getStripe(): Stripe {
+  if (stripeClient) return stripeClient;
+
+  const stripeSecretKey = getRequiredEnv('STRIPE_SECRET_KEY');
+  stripeClient = new Stripe(stripeSecretKey, {
+    apiVersion: '2026-04-22.dahlia' as any,
+    appInfo: {
+      name: 'ImmiSign SaaS',
+      version: '1.0.0',
+      url: resolveAppUrl(false) || 'http://localhost:3000',
+    },
+    typescript: true,
+  });
+
+  return stripeClient;
 }
 
-export const stripe = new Stripe(stripeSecretKey || 'sk_test_not_configured', {
-  apiVersion: '2026-04-22.dahlia' as any,
-  appInfo: {
-    name: 'ImmiSign SaaS',
-    version: '1.0.0',
-    url: process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '') || 'http://localhost:3000',
+/** Lazy Stripe client — resolves credentials on first use. */
+export const stripe: Stripe = new Proxy({} as Stripe, {
+  get(_target, prop: string | symbol) {
+    const client = getStripe();
+    const value = client[prop as keyof Stripe];
+    return typeof value === 'function' ? value.bind(client) : value;
   },
-  typescript: true,
 });
 
 export function requireStripeSecretKey(): string {

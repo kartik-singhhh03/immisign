@@ -1,52 +1,47 @@
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { ApprovalRepository } from '@/features/approvals/repositories/approvals.repository';
-import { ApprovalDashboard } from '@/features/approvals/components/details/approval-dashboard';
-import { getAppUrl } from '@/lib/app-url';
+import { ApprovalService } from '@/features/approvals/services/approval.service';
+import { ApprovalDetailPage } from '@/features/approvals/components/details/approval-detail-page';
+import type { DbRole } from '@/lib/auth/db-roles';
 
-export default async function ApprovalDetailsPage({ params }: { params: { agency: string, id: string } }) {
+export default async function ApprovalDetailsPage({
+  params,
+}: {
+  params: { agency: string; id: string };
+}) {
   const supabase = await createClient();
 
   const { data: agency } = await supabase.from('agencies').select('id, slug').eq('slug', params.agency).single();
   if (!agency) return notFound();
 
-  const repo = new ApprovalRepository(supabase);
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return notFound();
 
-  let approval;
-  let auditLogs: any[] = [];
+  const { data: profile } = await supabase
+    .from('users')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+
+  if (!profile) return notFound();
+
+  const service = new ApprovalService(supabase);
 
   try {
-    approval = await repo.getById(params.id);
-    if (!approval || approval.agency_id !== agency.id) return notFound();
-
-    const { data: logs } = await supabase
-      .from('audit_events')
-      .select('*')
-      .eq('entity_id', params.id)
-      .eq('entity_type', 'approval')
-      .order('created_at', { ascending: false });
-
-    if (logs) auditLogs = logs;
+    const detail = await service.getDetail(
+      agency.id,
+      params.id,
+      profile.role as DbRole,
+      user.id,
+    );
+    return (
+      <ApprovalDetailPage
+        initial={detail}
+        agencySlug={params.agency}
+        agencyId={agency.id}
+      />
+    );
   } catch {
     return notFound();
   }
-
-  const portalUrl = `${getAppUrl()}/review/${approval.review_token ?? ''}`;
-  const documentUrl = approval.document_path || '';
-
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    return notFound();
-  }
-
-  return (
-    <ApprovalDashboard
-      approval={approval}
-      agencySlug={params.agency}
-      auditLogs={auditLogs}
-      portalUrl={portalUrl}
-      documentUrl={documentUrl}
-      userId={user.id}
-    />
-  );
 }

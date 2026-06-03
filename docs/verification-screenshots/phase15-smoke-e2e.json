@@ -1,0 +1,80 @@
+{
+  "timestamp": "2026-06-03T09:00:14.419Z",
+  "baseUrl": "http://localhost:3001",
+  "slug": "avc-migration-live",
+  "flows": {
+    "dashboard_summary": {
+      "status": 200,
+      "success": true,
+      "ok": "PASS"
+    },
+    "notifications_list": {
+      "status": 200,
+      "success": true,
+      "ok": "PASS"
+    },
+    "notifications_unread": {
+      "status": 200,
+      "success": true,
+      "ok": "PASS"
+    },
+    "activity_feed": {
+      "status": 200,
+      "success": true,
+      "ok": "PASS"
+    },
+    "search": {
+      "status": 200,
+      "success": true,
+      "ok": "PASS"
+    },
+    "approvals_list": {
+      "status": 200,
+      "success": true,
+      "ok": "PASS"
+    },
+    "approval_widgets": {
+      "status": 200,
+      "success": true,
+      "ok": "PASS"
+    },
+    "tasks_list": {
+      "status": 200,
+      "success": true,
+      "ok": "PASS"
+    },
+    "billing": {
+      "status": 500,
+      "ok": "FAIL"
+    },
+    "stripe_checkout": {
+      "status": 500,
+      "ok": "PASS"
+    },
+    "stripe_portal": {
+      "status": 500,
+      "ok": "PASS"
+    },
+    "notification_prefs": {
+      "status": 200,
+      "success": true,
+      "ok": "PASS"
+    },
+    "task_create": {
+      "status": 200,
+      "success": true,
+      "ok": "PASS"
+    },
+    "task_complete": {
+      "status": 200,
+      "success": true,
+      "ok": "PASS"
+    },
+    "approval_detail": {
+      "status": 200,
+      "success": true,
+      "ok": "PASS"
+    }
+  },
+  "pass": false
+}

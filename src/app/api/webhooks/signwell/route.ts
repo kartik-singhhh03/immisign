@@ -6,6 +6,7 @@ import { AgreementRepository } from '@/features/agreements/repositories/agreemen
 import { AuditRepository } from '@/features/agreements/repositories/audit.repository';
 import { AgreementStatus } from '@/features/agreements/types';
 import { AppError } from '@/lib/utils/errors';
+import { NotificationService, buildWorkspaceActionUrl } from '@/lib/notifications/notification.service';
 
 export async function POST(req: NextRequest) {
   try {
@@ -39,16 +40,88 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true, ignored: 'Duplicate webhook' });
     }
 
-    // 2. Locate Agreement
+    // 2. Locate Agreement or standalone document
     const { data: agreement } = await supabase
       .from('agreements')
       .select('*')
       .eq('signwell_document_id', documentId)
-      .single();
+      .maybeSingle();
 
     if (!agreement) {
-      console.error(`No agreement found for SignWell document ${documentId}`);
-      return NextResponse.json({ received: true, error: 'Agreement not found' }, { status: 404 });
+      const { data: standaloneDoc } = await supabase
+        .from('documents')
+        .select('*')
+        .eq('signwell_document_id', documentId)
+        .maybeSingle();
+
+      if (!standaloneDoc) {
+        console.error(`No agreement or document found for SignWell document ${documentId}`);
+        return NextResponse.json({ received: true, error: 'Entity not found' }, { status: 404 });
+      }
+
+      let signwellStatus = standaloneDoc.signwell_status;
+      if (eventType === 'document_signed' || eventType === 'document_completed') {
+        signwellStatus = 'completed';
+        try {
+          const pdfBytes = await signwellClient.downloadCompletedPdf(documentId);
+          const storagePath = `${standaloneDoc.agency_id}/documents/${standaloneDoc.id}/completed.pdf`;
+          const bucket = standaloneDoc.agreement_id ? 'secure_documents' : 'documents';
+          await supabase.storage
+            .from(bucket)
+            .upload(storagePath, pdfBytes, { contentType: 'application/pdf', upsert: true });
+        } catch (err) {
+          console.error('Failed to preserve completed standalone document PDF', err);
+        }
+      } else if (eventType === 'document_viewed') {
+        signwellStatus = 'viewed';
+      } else if (eventType === 'document_declined') {
+        signwellStatus = 'declined';
+      } else if (eventType === 'document_expired') {
+        signwellStatus = 'expired';
+      }
+
+      await supabase
+        .from('documents')
+        .update({
+          signwell_status: signwellStatus,
+          ...(signwellStatus === 'completed'
+            ? { signwell_completed_at: new Date().toISOString() }
+            : {}),
+        })
+        .eq('id', standaloneDoc.id);
+
+      await supabase.from('activity_logs').insert({
+        id: crypto.randomUUID(),
+        agency_id: standaloneDoc.agency_id,
+        user_id: standaloneDoc.uploaded_by,
+        type: 'document',
+        title: `SignWell: ${eventType}`,
+        description: `Document ${standaloneDoc.file_name} — ${eventType}`,
+        reference_id: standaloneDoc.id,
+        reference_type: 'document',
+      });
+
+      if (eventType === 'document_completed' && standaloneDoc.uploaded_by) {
+        const { data: agencyMeta } = await supabase.from('agencies').select('slug').eq('id', standaloneDoc.agency_id).single();
+        const notify = new NotificationService(supabase);
+        await notify.notify({
+          agencyId: standaloneDoc.agency_id,
+          userId: standaloneDoc.uploaded_by,
+          type: 'document',
+          title: 'Document signed',
+          message: `${standaloneDoc.file_name} was completed in SignWell.`,
+          actionUrl: buildWorkspaceActionUrl(agencyMeta?.slug || 'workspace', '/documents/library'),
+          entityType: 'document',
+          entityId: standaloneDoc.id,
+        });
+      }
+
+      await supabase.from('processed_webhooks').insert({
+        webhook_id: eventId,
+        event_type: eventType,
+      });
+
+      return NextResponse.json({ received: true, status: 'processed', entity: 'document' });
     }
 
     const agreementRepo = new AgreementRepository(supabase);

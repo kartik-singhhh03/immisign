@@ -7,6 +7,7 @@ import { allocateAgreementReference } from '@/features/agreements/lib/agreement-
 import { buildSignersFromWizard } from '@/features/agreements/lib/wizard-signers';
 import { isUuid } from '@/lib/validation/uuid';
 import { redactSensitiveValue, stripSensitiveUrlParams } from '@/lib/security/sanitize';
+import { NotificationService, buildWorkspaceActionUrl } from '@/lib/notifications/notification.service';
 
 export async function POST(req: NextRequest) {
   try {
@@ -336,6 +337,20 @@ export async function POST(req: NextRequest) {
       description: `Service Agreement for ${formData.clientName} sent for signature via SignWell.`,
       reference_id: agreementId,
       reference_type: 'agreement',
+    });
+
+    const { data: agencyMeta } = await supabase.from('agencies').select('slug').eq('id', agencyId).single();
+    const notify = new NotificationService(supabase as any);
+    await notify.notify({
+      agencyId,
+      userId: userId,
+      type: 'agreement',
+      title: 'Agreement sent for signature',
+      message: `Service agreement for ${formData.clientName} was sent via SignWell.`,
+      actionUrl: buildWorkspaceActionUrl(agencyMeta?.slug || 'workspace', `/agreements/${agreementId}`),
+      entityType: 'agreement',
+      entityId: agreementId,
+      actorId: userId,
     });
 
     return NextResponse.json({

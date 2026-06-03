@@ -114,7 +114,6 @@ export function ClientsPage() {
       c.email.toLowerCase().includes(searchQuery.toLowerCase())
   ) || []
 
-  const activeWorkspace = useAuthStore((state) => state.activeWorkspace)
   const { slug: currentSlug } = useRequireWorkspace()
 
   return (

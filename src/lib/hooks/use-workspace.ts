@@ -8,14 +8,16 @@ import { useAuthStore } from "@/store/authStore"
 export function useRequireWorkspace() {
   const router = useRouter()
   const activeWorkspace = useAuthStore((s) => s.activeWorkspace)
+  const user = useAuthStore((s) => s.user)
   const slug = activeWorkspace?.slug
   const agencyId = activeWorkspace?.id
 
   useEffect(() => {
-    if (!slug) {
+    // Only redirect when session is loaded but workspace is missing (new signup).
+    if (user && !slug) {
       router.replace("/onboarding")
     }
-  }, [slug, router])
+  }, [slug, user, router])
 
   return { slug: slug ?? null, agencyId: agencyId ?? null, activeWorkspace }
 }

@@ -2,10 +2,12 @@
 "use client"
 import * as React from "react"
 import { useAuthStore } from "@/store/authStore"
+import { isSettingsRestrictedForUiRole } from "@/lib/auth/db-roles"
 import { useTeamMembers, useInvitations, useAgencyProfile, useClauses, useUserProfile, useMatterTypesSettings, usePaymentScheduleSettings, useRmaTeam } from "@/lib/hooks/useSupabaseData"
 import { AgencyProfilePanel, DefaultsPanel, RmaTeamPanel, SettingsListEditor } from "./WorkspaceSettingsPanels"
 import { BrandingSettingsPanel } from "./BrandingSettingsPanel"
 import { MatterTypesSettingsPanel } from "./MatterTypesSettingsPanel"
+import { NotificationPreferencesPanel } from "./NotificationPreferencesPanel"
 import Link from "next/link"
 import { useSearchParams, useParams } from "next/navigation"
 import {
@@ -135,11 +137,11 @@ export function SettingsPage({ section = "" }: { section?: string }) {
   const { data: clausesList, loading: clausesLoading, addClause, deleteClause } = useClauses()
   const { data: matterTypesList, loading: matterTypesLoading, addMatterType, deleteMatterType, loadMatterTypeFields, addMatterTypeField, deleteMatterTypeField } = useMatterTypesSettings()
   const { data: paymentSchedulesList, loading: paymentSchedulesLoading, addSchedule, deleteSchedule } = usePaymentScheduleSettings()
-  const { data: rmaTeamList, loading: rmaLoading, setDefault: setDefaultRma, setStatus: setRmaStatus, removeRma, upsertRma } = useRmaTeam()
+  const { data: rmaTeamList, loading: rmaLoading, refetch: refetchRmaTeam, setDefault: setDefaultRma, setStatus: setRmaStatus, removeRma, upsertRma } = useRmaTeam()
   const { updateProfile: updateUserProfile, toggleMfa, loading: userLoading } = useUserProfile()
 
-  const currentRole = user?.role || "owner"
-  const isSettingsRestricted = currentRole === "support" || currentRole === "viewer"
+  const currentRole = user?.role || "Owner"
+  const isSettingsRestricted = isSettingsRestrictedForUiRole(currentRole)
   const currentWorkspace = activeWorkspace || { name: "", slug: "", color: "#0D9F8C", initials: "IS" }
   const currentSlug = currentWorkspace.slug
 
@@ -173,6 +175,7 @@ export function SettingsPage({ section = "" }: { section?: string }) {
     Defaults: "Defaults & Special Terms",
     Profile: "My Profile",
     MFA: "MFA Security",
+    Notifications: "Notifications",
   }
 
   const workspaceItems = [
@@ -183,6 +186,7 @@ export function SettingsPage({ section = "" }: { section?: string }) {
     ["Matter Types", "MatterTypes"],
     ["Payment Schedules", "PaymentSchedules"],
     ["Defaults", "Defaults"],
+    ["Notifications", "Notifications"],
   ] as const
 
   const currentTitle = sectionTitleMap[activeSectionKey] || "Agency Profile"
@@ -206,6 +210,29 @@ export function SettingsPage({ section = "" }: { section?: string }) {
   const [inviteRole, setInviteRole] = React.useState("agent")
   const [inviting, setInviting] = React.useState(false)
   const [inviteProgress, setInviteProgress] = React.useState(0)
+  const [inviteSeatWarning, setInviteSeatWarning] = React.useState<string | null>(null)
+
+  const loadInviteSeatPreview = React.useCallback(async (role: string) => {
+    try {
+      const res = await fetch(`/api/stripe/seats?role=${encodeURIComponent(role)}`)
+      const json = await res.json()
+      if (res.ok && json.warning) {
+        setInviteSeatWarning(json.warning)
+      } else {
+        setInviteSeatWarning(null)
+      }
+    } catch {
+      setInviteSeatWarning(null)
+    }
+  }, [])
+
+  React.useEffect(() => {
+    if (isInviteOpen) {
+      void loadInviteSeatPreview(inviteRole)
+    } else {
+      setInviteSeatWarning(null)
+    }
+  }, [isInviteOpen, inviteRole, loadInviteSeatPreview])
 
   const handleInviteSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -229,7 +256,11 @@ export function SettingsPage({ section = "" }: { section?: string }) {
         const detail = data.detail ? `: ${data.detail}` : ''
         throw new Error((data.error || 'Invitation failed') + detail)
       }
-      triggerToast(`Workspace invitation sent to ${inviteName}!`)
+      if (data.billing?.warning) {
+        triggerToast(`${data.billing.warning} Invite sent to ${inviteName}.`)
+      } else {
+        triggerToast(`Workspace invitation sent to ${inviteName}!`)
+      }
       setIsInviteOpen(false)
       setInviteName("")
       setInviteEmail("")
@@ -390,6 +421,17 @@ export function SettingsPage({ section = "" }: { section?: string }) {
       onSetStatus={async (id, status) => { await setRmaStatus(id, status); triggerToast("RMA status updated"); }}
       onRemove={async (id) => { await removeRma(id); triggerToast("RMA removed"); }}
       onUpsert={async (payload) => { await upsertRma(payload); triggerToast("RMA added"); }}
+      onSaveSignature={async (rmaId, payload) => {
+        const form = new FormData()
+        form.set('signature_mode', payload.signature_mode)
+        if (payload.signature_text) form.set('signature_text', payload.signature_text)
+        if (payload.file) form.set('file', payload.file)
+        const res = await fetch(`/api/settings/rmas/${rmaId}/signature`, { method: 'PATCH', body: form })
+        const data = await res.json()
+        if (!res.ok) throw new Error(data.error || 'Failed to save signature')
+        await refetchRmaTeam()
+        triggerToast('RMA signature saved')
+      }}
     />
   )
 
@@ -825,6 +867,8 @@ export function SettingsPage({ section = "" }: { section?: string }) {
         return renderMyProfile()
       case "MFA":
         return renderSecurity()
+      case "Notifications":
+        return <NotificationPreferencesPanel />
       default:
         return renderAgencyProfile()
     }
@@ -894,6 +938,12 @@ export function SettingsPage({ section = "" }: { section?: string }) {
                 />
               </label>
             </div>
+
+            {inviteSeatWarning && (
+              <div className="rounded-xl border border-amber-200/80 bg-amber-50 p-3 text-xs font-semibold text-amber-900">
+                {inviteSeatWarning}
+              </div>
+            )}
 
             {inviting && (
               <div className="space-y-1">

@@ -123,6 +123,95 @@ export function AgencyProfilePanel({
   )
 }
 
+function RmaSignatureEditor({
+  rma,
+  disabled,
+  onSave,
+}: {
+  rma: { id: string; signature_mode?: string | null; signature_text?: string | null }
+  disabled?: boolean
+  onSave: (rmaId: string, payload: { signature_mode: 'upload' | 'typed'; signature_text?: string; file?: File }) => Promise<void>
+}) {
+  const [mode, setMode] = React.useState<'upload' | 'typed'>(
+    rma.signature_mode === 'upload' ? 'upload' : 'typed',
+  )
+  const [typedText, setTypedText] = React.useState(rma.signature_text || '')
+  const [saving, setSaving] = React.useState(false)
+
+  React.useEffect(() => {
+    setMode(rma.signature_mode === 'upload' ? 'upload' : 'typed')
+    setTypedText(rma.signature_text || '')
+  }, [rma.id, rma.signature_mode, rma.signature_text])
+
+  const handleSave = async (file?: File) => {
+    setSaving(true)
+    try {
+      await onSave(rma.id, {
+        signature_mode: mode,
+        signature_text: mode === 'typed' ? typedText : undefined,
+        file,
+      })
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div className="mt-4 rounded-lg border border-slate-100 bg-slate-50/50 p-3 space-y-3">
+      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Signature (auto-applied on send)</div>
+      <div className="flex gap-2">
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={() => setMode('typed')}
+          className={`rounded-lg px-3 py-1.5 text-xs font-bold ${mode === 'typed' ? 'bg-[#0D9F8C] text-white' : 'bg-white border border-slate-200 text-slate-600'}`}
+        >
+          Typed Signature
+        </button>
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={() => setMode('upload')}
+          className={`rounded-lg px-3 py-1.5 text-xs font-bold ${mode === 'upload' ? 'bg-[#0D9F8C] text-white' : 'bg-white border border-slate-200 text-slate-600'}`}
+        >
+          Uploaded Signature
+        </button>
+      </div>
+      {mode === 'typed' ? (
+        <div className="space-y-2">
+          <Input
+            value={typedText}
+            onChange={(e) => setTypedText(e.target.value)}
+            placeholder="Signature as typed name"
+            disabled={disabled}
+            className="h-10 rounded-lg text-sm font-semibold"
+            style={{ fontFamily: "'Brush Script MT', cursive" }}
+          />
+          <Button type="button" size="sm" disabled={disabled || saving} onClick={() => void handleSave()} className="rounded-lg bg-[#0D9F8C] text-xs font-bold">
+            {saving ? 'Saving...' : 'Save typed signature'}
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <input
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            disabled={disabled}
+            className="text-xs"
+            onChange={(e) => {
+              const f = e.target.files?.[0]
+              if (f) void handleSave(f)
+            }}
+          />
+          {rma.signature_mode === 'upload' && (
+            <p className="text-[10px] text-emerald-700 font-semibold">Uploaded signature on file</p>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function RmaTeamPanel({
   rmas,
   teamMembers,
@@ -132,6 +221,7 @@ export function RmaTeamPanel({
   onSetStatus,
   onRemove,
   onUpsert,
+  onSaveSignature,
 }: {
   rmas: any[]
   teamMembers: any[]
@@ -141,6 +231,7 @@ export function RmaTeamPanel({
   onSetStatus: (id: string, status: string) => Promise<void>
   onRemove: (id: string) => Promise<void>
   onUpsert: (payload: { user_id: string; mara_number: string; phone?: string; rma_tier?: string }) => Promise<void>
+  onSaveSignature: (rmaId: string, payload: { signature_mode: 'upload' | 'typed'; signature_text?: string; file?: File }) => Promise<void>
 }) {
   const [selectedUserId, setSelectedUserId] = React.useState("")
   const [marn, setMarn] = React.useState("")
@@ -214,6 +305,7 @@ export function RmaTeamPanel({
                   </div>
                 )}
               </div>
+              <RmaSignatureEditor rma={rma} disabled={disabled} onSave={onSaveSignature} />
             </div>
           ))}
           {rmas.length === 0 && <p className="text-sm text-slate-500">No RMA records yet. Add practitioners from your team.</p>}

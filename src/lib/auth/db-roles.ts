@@ -75,3 +75,21 @@ export function canAccessOwnerOnlyPages(dbRole: DbRole): boolean {
 export function canAccessSettings(dbRole: DbRole): boolean {
   return dbRole !== 'support' && dbRole !== 'viewer' && dbRole !== 'reviewer';
 }
+
+/** UI role from auth store → whether settings edits should be disabled. */
+export function isSettingsRestrictedForUiRole(uiRole: string | undefined): boolean {
+  return !canAccessSettings(uiRoleToDb(uiRole || 'Owner'));
+}
+
+/** UI role from auth store → whether billing mutations should be disabled. */
+export function isBillingRestrictedForUiRole(uiRole: string | undefined): boolean {
+  return !canAccessBilling(uiRoleToDb(uiRole || 'Owner'));
+}
+
+export function canManageApprovalsDb(dbRole: DbRole): boolean {
+  return ['owner', 'admin', 'manager', 'agent'].includes(dbRole);
+}
+
+export function canDeleteApprovalsDb(dbRole: DbRole): boolean {
+  return dbRole === 'owner' || dbRole === 'admin';
+}

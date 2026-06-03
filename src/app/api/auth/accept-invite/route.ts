@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createRmaFromInvite } from '@/lib/rma/create-from-invite';
+import { NotificationService, buildWorkspaceActionUrl } from '@/lib/notifications/notification.service';
 
 export async function POST(req: Request) {
   try {
@@ -76,6 +77,45 @@ export async function POST(req: Request) {
       .from('invitations')
       .update({ accepted_at: new Date().toISOString() })
       .eq('id', invite.id);
+
+    const { data: agency } = await admin
+      .from('agencies')
+      .select('slug')
+      .eq('id', invite.agency_id)
+      .single();
+
+    const { data: admins } = await admin
+      .from('users')
+      .select('id')
+      .eq('agency_id', invite.agency_id)
+      .in('role', ['owner', 'admin'])
+      .neq('id', userId);
+
+    const notifications = new NotificationService(admin);
+    const slug = agency?.slug || 'workspace';
+    for (const adminUser of admins || []) {
+      await notifications.notify({
+        agencyId: invite.agency_id,
+        userId: adminUser.id,
+        type: 'team',
+        title: 'Team member joined',
+        message: `${fullName} accepted their invitation and joined the workspace.`,
+        actionUrl: buildWorkspaceActionUrl(slug, '/settings?section=RmaTeam'),
+        entityType: 'user',
+        entityId: userId,
+        actorId: userId,
+      });
+    }
+
+    await admin.from('activity_logs').insert({
+      agency_id: invite.agency_id,
+      user_id: userId,
+      type: 'team.joined',
+      title: 'Team member joined',
+      description: `${fullName} joined the workspace`,
+      reference_id: userId,
+      reference_type: 'user',
+    });
 
     return NextResponse.json({ success: true });
 

@@ -1,0 +1,30 @@
+{
+  "timestamp": "2026-06-03T08:15:08.007Z",
+  "baseUrl": "http://localhost:3001",
+  "slug": "avc-migration-live",
+  "steps": {
+    "create": "PASS",
+    "transition_submit": "PASS",
+    "transition_start_review": "PASS",
+    "transition_request_changes": "PASS",
+    "transition_resubmit": "PASS",
+    "transition_approve": "PASS",
+    "transition_ready_to_lodge": "PASS",
+    "transition_lodged": "PASS",
+    "transition_close": "PASS",
+    "checklist_toggle": "PASS",
+    "comment": "PASS",
+    "activity_logs": "PASS",
+    "notifications": "WARN",
+    "widgets": "PASS",
+    "ui_list": "PASS",
+    "ui_detail": "PASS",
+    "ui_dashboard": "PASS"
+  },
+  "screenshots": [
+    "phase12/01-approvals-list.png",
+    "phase12/02-approval-detail.png",
+    "phase12/03-dashboard-widgets.png"
+  ],
+  "pass": true
+}

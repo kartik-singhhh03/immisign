@@ -522,58 +522,30 @@ export function MigrationAgentsPage() {
 // 3. PRICING PAGE
 // ----------------------------------------------------
 export function PricingPage() {
-  const [billingCycle, setBillingCycle] = React.useState<"monthly" | "yearly">("yearly")
-
-  const pricingPlans = [
-    {
-      name: "Starter",
-      monthlyPrice: 49,
-      yearlyPrice: 39,
-      desc: "For solo RMAs getting started.",
-      features: [
-        "25 OMARA agreements/month",
-        "Core subclass templates",
-        "Sovereign Sydney file backup",
-        "Email support",
-        "Standard templates library",
-      ]
-    },
-    {
-      name: "Pro",
-      monthlyPrice: 129,
-      yearlyPrice: 99,
-      desc: "For growing migration practices.",
-      features: [
-        "Unlimited OMARA agreements",
-        "Multi-RMA workspaces collaboration",
-        "Biometric SMS signature logs",
-        "Custom legal clause locker",
-        "Advanced pipeline reports",
-      ],
-      popular: true
-    },
-    {
-      name: "Agency",
-      monthlyPrice: "Custom",
-      yearlyPrice: "Custom",
-      desc: "For larger legal teams & multi-offices.",
-      features: [
-        "Bespoke legal review alignments",
-        "Fully managed templates conversion",
-        "Dedicated onboarding manager",
-        "API integration endpoints",
-        "Strict tenant data isolations",
-      ]
-    }
-  ]
+  const immisignPlan = {
+    name: "ImmiSign Plan",
+    monthlyPrice: 49,
+    seatPrice: 10,
+    includedSeats: 3,
+    desc: "One subscription per agency. Everything you need to run agreements and approvals.",
+    features: [
+      "One agency workspace & business profile",
+      "Up to 3 agents/RMAs included",
+      "Unlimited agreements",
+      "Application approval module",
+      "Document signing & templates",
+      "Branding & audit trail",
+      "$10/month per additional active seat",
+    ],
+  }
 
   const comparisonRows = [
-    { feature: "OMARA Template Lockout", starter: "Included", pro: "Included", agency: "Included" },
-    { feature: "Sovereign Sydney Storage", starter: "Included", pro: "Included", agency: "Included" },
-    { feature: "Multi-RMA Workspaces", starter: "-", pro: "Included", agency: "Included" },
-    { feature: "Biometric SMS Verification", starter: "-", pro: "Included", agency: "Included" },
-    { feature: "API Database Integrations", starter: "-", pro: "-", agency: "Included" },
-    { feature: "Custom SLA Support", starter: "-", pro: "-", agency: "Included" },
+    { feature: "Agency workspace", value: "Included" },
+    { feature: "Included seats (owner excluded)", value: "3" },
+    { feature: "Unlimited agreements", value: "Included" },
+    { feature: "Application approvals", value: "Included" },
+    { feature: "Document signing", value: "Included" },
+    { feature: "Additional seat", value: "$10/mo each" },
   ]
 
   return (
@@ -581,102 +553,70 @@ export function PricingPage() {
       {/* Hero Header */}
       <section className="relative overflow-hidden border-b border-emerald-900/5 bg-[radial-gradient(circle_at_top_right,rgba(13,159,140,0.12),transparent_38%),linear-gradient(180deg,#f3fcf9_0%,#ffffff_92%)] pt-28 pb-14 text-center">
         <div className="container mx-auto max-w-[1200px] px-6">
-          <div className="inline-flex rounded-full border border-emerald-100 bg-white p-1 shadow-sm mb-8">
-            <button
-              onClick={() => setBillingCycle("monthly")}
-              className={`rounded-full px-5 py-2 text-xs font-bold transition-all duration-300 ${billingCycle === "monthly" ? "bg-[#0D9F8C] text-white shadow-sm" : "text-slate-500 hover:text-slate-800"}`}
-            >
-              Monthly
-            </button>
-            <button
-              onClick={() => setBillingCycle("yearly")}
-              className={`rounded-full px-5 py-2 text-xs font-bold transition-all duration-300 ${billingCycle === "yearly" ? "bg-[#0D9F8C] text-white shadow-sm" : "text-slate-500 hover:text-slate-800"}`}
-            >
-              Yearly (Save 20%)
-            </button>
-          </div>
-
           <h1 className="font-sans text-5xl font-extrabold leading-[1.05] tracking-[-0.04em] text-[#081b36] md:text-6xl lg:text-7xl">
-            Pricing that scales with <br />
-            <span className="font-serif font-normal text-[#0D9F8C] italic">your practice.</span>
+            Simple pricing for <br />
+            <span className="font-serif font-normal text-[#0D9F8C] italic">every agency.</span>
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-base md:text-lg leading-relaxed text-slate-600 font-medium">
-            Start small, then unlock robust RMAs collaboration, custom clause lockers, and advanced security as your agency expands.
+          <p className="mx-auto mt-6 max-w-2xl text-base font-medium leading-relaxed text-slate-600 md:text-lg">
+            One ImmiSign Plan per agency — ${immisignPlan.monthlyPrice}/month with {immisignPlan.includedSeats} seats included.
+            Add team members beyond that for ${immisignPlan.seatPrice}/month per active seat.
           </p>
         </div>
       </section>
 
-      {/* Plan Cards Grid */}
       <section className="py-24">
-        <div className="container mx-auto grid max-w-[1200px] gap-8 px-6 lg:grid-cols-3">
-          {pricingPlans.map((plan) => {
-            const isCustom = plan.monthlyPrice === "Custom"
-            const priceVal = billingCycle === "yearly" ? plan.yearlyPrice : plan.monthlyPrice
-            
-            return (
-              <Card
-                key={plan.name}
-                className={`rounded-2xl border bg-white p-8 flex flex-col justify-between transition-all duration-300 ${plan.popular ? "border-[#0D9F8C] shadow-elevated" : "border-slate-200/80 shadow-sm"}`}
-              >
-                <div>
-                  {plan.popular && <span className="mb-5 inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-[#0D9F8C] uppercase tracking-wider">Most popular</span>}
-                  <h3 className="text-2xl font-extrabold text-[#081b36]">{plan.name}</h3>
-                  <p className="text-xs text-slate-400 font-semibold mt-1">{plan.desc}</p>
-                  
-                  <div className="mt-6 flex items-end gap-1">
-                    <span className="text-5xl font-black text-[#081b36]">
-                      {isCustom ? "Custom" : `$${priceVal}`}
-                    </span>
-                    {!isCustom && <span className="pb-1.5 text-sm text-slate-400 font-bold">/mo</span>}
-                  </div>
-                  {billingCycle === "yearly" && !isCustom && (
-                    <span className="text-xs font-bold text-[#0D9F8C] block mt-1">Billed annually</span>
-                  )}
+        <div className="container mx-auto max-w-lg px-6">
+          <Card className="flex flex-col justify-between rounded-2xl border border-[#0D9F8C] bg-white p-8 shadow-elevated">
+            <div>
+              <span className="mb-5 inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-black uppercase tracking-wider text-[#0D9F8C]">
+                ImmiSign Plan
+              </span>
+              <h3 className="text-2xl font-extrabold text-[#081b36]">{immisignPlan.name}</h3>
+              <p className="mt-1 text-xs font-semibold text-slate-400">{immisignPlan.desc}</p>
 
-                  <div className="mt-8 space-y-4 pt-6 border-t border-slate-100">
-                    {plan.features.map((feature) => (
-                      <div key={feature} className="flex items-center gap-3 text-xs font-bold text-slate-600">
-                        <Check className="h-4 w-4 shrink-0 text-[#0D9F8C]" />
-                        {feature}
-                      </div>
-                    ))}
-                  </div>
-                </div>
+              <div className="mt-6 flex items-end gap-1">
+                <span className="text-5xl font-black text-[#081b36]">${immisignPlan.monthlyPrice}</span>
+                <span className="pb-1.5 text-sm font-bold text-slate-400">/mo</span>
+              </div>
+              <p className="mt-1 text-xs font-bold text-[#0D9F8C]">
+                + ${immisignPlan.seatPrice}/mo per seat above {immisignPlan.includedSeats}
+              </p>
 
-                <div className="mt-8">
-                  <Button
-                    asChild
-                    className={`h-11 w-full rounded-xl font-bold transition-all duration-300 ${plan.popular ? "bg-[#0D9F8C] hover:bg-[#0A5B52] shadow-sm" : "bg-[#081B2E] hover:bg-slate-800 text-white"}`}
-                  >
-                    <Link href={isCustom ? "/contact" : "/signup"}>
-                      {isCustom ? "Contact Sales" : "Start Free Trial"}
-                    </Link>
-                  </Button>
-                </div>
-              </Card>
-            )
-          })}
+              <div className="mt-8 space-y-4 border-t border-slate-100 pt-6">
+                {immisignPlan.features.map((feature) => (
+                  <div key={feature} className="flex items-center gap-3 text-xs font-bold text-slate-600">
+                    <Check className="h-4 w-4 shrink-0 text-[#0D9F8C]" />
+                    {feature}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-8">
+              <Button asChild className="h-11 w-full rounded-xl bg-[#0D9F8C] font-bold shadow-sm hover:bg-[#0A5B52]">
+                <Link href="/signup">Get started</Link>
+              </Button>
+            </div>
+          </Card>
         </div>
       </section>
 
-      {/* Feature Comparison Table */}
-      <section className="bg-[#f9fbf9] py-24 border-y border-slate-100">
-        <div className="container mx-auto max-w-[1000px] px-6">
-          <SectionHeader title="Compare core capabilities" />
+      <section className="border-y border-slate-100 bg-[#f9fbf9] py-24">
+        <div className="container mx-auto max-w-[700px] px-6">
+          <SectionHeader title="What's included" />
 
           <div className="mt-12 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div className="grid grid-cols-4 bg-[#fbfdfc] border-b border-slate-200/80 p-5 text-xs font-extrabold text-[#081b36] uppercase tracking-wider">
+            <div className="grid grid-cols-2 border-b border-slate-200/80 bg-[#fbfdfc] p-5 text-xs font-extrabold uppercase tracking-wider text-[#081b36]">
               <div>Capability</div>
-              <div className="text-center">Starter</div>
-              <div className="text-center">Pro</div>
-              <div className="text-center">Agency</div>
+              <div className="text-center">ImmiSign Plan</div>
             </div>
             {comparisonRows.map((row) => (
-              <div key={row.feature} className="grid grid-cols-4 border-b border-slate-100 p-5 text-sm last:border-b-0">
+              <div
+                key={row.feature}
+                className="grid grid-cols-2 border-b border-slate-100 p-5 text-sm last:border-b-0"
+              >
                 <div className="font-extrabold text-[#081b36]">{row.feature}</div>
-                <div className="text-center font-semibold text-slate-500">{row.starter}</div>
-                <div className={`text-center font-bold ${row.pro === "Included" ? "text-[#0D9F8C]" : "text-slate-400"}`}>{row.pro}</div>
-                <div className="text-center font-bold text-[#0D9F8C]">{row.agency}</div>
+                <div className="text-center font-bold text-[#0D9F8C]">{row.value}</div>
               </div>
             ))}
           </div>

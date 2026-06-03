@@ -1,3 +1,8 @@
+export interface SignWellCopiedContact {
+  email: string;
+  name?: string;
+}
+
 export interface SignWellSignerRequest {
   id?: string;
   name: string;
@@ -21,6 +26,8 @@ export interface SignWellDocumentRequest {
   recipients: SignWellSignerRequest[];
   expires_in?: number;
   reminders?: boolean;
+  copied_contacts?: SignWellCopiedContact[];
+  custom_requester_email?: string;
   apply_signing_order?: boolean;
   decline_redirect_url?: string;
   redirect_url?: string;

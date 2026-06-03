@@ -1,0 +1,79 @@
+{
+  "timestamp": "2026-06-03T08:59:15.900Z",
+  "baseUrl": "http://localhost:3001",
+  "slug": "avc-migration-live",
+  "routes": {
+    "dashboard": {
+      "http": 200,
+      "url": "http://localhost:3001/workspace/avc-migration-live/dashboard",
+      "ui": "PASS",
+      "console": [],
+      "screenshot": "phase15/01-dashboard.png"
+    },
+    "clients": {
+      "http": 200,
+      "url": "http://localhost:3001/workspace/avc-migration-live/clients",
+      "ui": "PASS",
+      "console": [],
+      "screenshot": "phase15/02-clients.png"
+    },
+    "agreements": {
+      "http": 200,
+      "url": "http://localhost:3001/workspace/avc-migration-live/agreements",
+      "ui": "PASS",
+      "console": [],
+      "screenshot": "phase15/03-agreements.png"
+    },
+    "approvals": {
+      "http": 200,
+      "url": "http://localhost:3001/workspace/avc-migration-live/approvals",
+      "ui": "PASS",
+      "console": [],
+      "screenshot": "phase15/04-approvals.png"
+    },
+    "send-document": {
+      "http": 200,
+      "url": "http://localhost:3001/workspace/avc-migration-live/documents/send",
+      "ui": "PASS",
+      "console": [],
+      "screenshot": "phase15/05-send-document.png"
+    },
+    "templates": {
+      "http": 200,
+      "url": "http://localhost:3001/workspace/avc-migration-live/templates",
+      "ui": "PASS",
+      "console": [],
+      "screenshot": "phase15/06-templates.png"
+    },
+    "reports": {
+      "http": 200,
+      "url": "http://localhost:3001/workspace/avc-migration-live/reports",
+      "ui": "PASS",
+      "console": [],
+      "screenshot": "phase15/07-reports.png"
+    },
+    "settings": {
+      "http": 200,
+      "url": "http://localhost:3001/workspace/avc-migration-live/settings",
+      "ui": "PASS",
+      "console": [],
+      "screenshot": "phase15/08-settings.png"
+    },
+    "billing": {
+      "http": 200,
+      "url": "http://localhost:3001/workspace/avc-migration-live/billing",
+      "ui": "PASS",
+      "console": [],
+      "screenshot": "phase15/09-billing.png"
+    },
+    "activity": {
+      "http": 200,
+      "url": "http://localhost:3001/workspace/avc-migration-live/activity",
+      "ui": "PASS",
+      "console": [],
+      "screenshot": "phase15/10-activity.png"
+    }
+  },
+  "pass": true,
+  "refresh_dashboard": "FAIL"
+}

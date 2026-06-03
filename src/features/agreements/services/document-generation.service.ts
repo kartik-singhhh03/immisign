@@ -8,7 +8,11 @@ import { StorageHelpers } from '@/lib/supabase/storage';
 import { AuditService } from './audit.service';
 import { AgreementStateMachine } from './state-machine';
 import { AgreementStatus } from '../types';
-import { buildAgreementPreviewHtml } from '@/features/agreements/lib/agreement-preview-html';
+import {
+  buildAgreementPreviewHtml,
+  formatDisplayDateForSignature,
+  type AgentSignaturePreview,
+} from '@/features/agreements/lib/agreement-preview-html';
 import { createAdminClient } from '@/lib/supabase/admin';
 
 export class DocumentGenerationService {
@@ -53,80 +57,24 @@ export class DocumentGenerationService {
 
     const wizardForm = (agreement.metadata as any)?.wizard_form;
     if (wizardForm) {
-      const agencySnapshot = (agreement.metadata as any)?.agency_snapshot;
-      const { data: principalUser } = await this.supabase
-        .from('users')
-        .select('full_name')
-        .eq('agency_id', agencyId)
-        .eq('role', 'owner')
-        .limit(1)
-        .maybeSingle();
-
-      const selectedClausesMeta = (agreement.metadata as any)?.selected_clauses || [];
-      const matterTypeConfigMeta = (agreement.metadata as any)?.matter_type_config || null;
-      const compiledHtml = buildAgreementPreviewHtml({
-        form: wizardForm,
-        agency: {
-          id: agencyId,
-          name: agencySnapshot?.name || agency?.name || '',
-          slug: agencySnapshot?.slug || agency?.slug || '',
-          legalName: agencySnapshot?.legalName || agency?.legal_name || agency?.name,
-          principalName: agencySnapshot?.principalName || principalUser?.full_name || user?.full_name,
-          address: agencySnapshot?.address || agency?.address || undefined,
-          abn: agencySnapshot?.abn || agency?.abn || undefined,
-          phone: agencySnapshot?.phone || agency?.phone || undefined,
-          email: agencySnapshot?.email || agency?.email || undefined,
-          marn: agencySnapshot?.marn || rma?.mara_number || undefined,
-          branding: agencySnapshot?.branding || undefined,
-        },
-        rma: user
-          ? {
-              id: responsibleRmaId,
-              name: user.full_name,
-              email: user.email,
-              marn: rma?.mara_number,
-            }
-          : null,
-        agreementRef: (agreement.metadata as any)?.agreement_ref || agreement.agreement_number,
-        statusLabel: 'AWAITING SIGNATURE',
-        matterTypeConfig: matterTypeConfigMeta,
-        selectedClauses: selectedClausesMeta,
-      });
-
-      const pdfBuffer = await PDFService.generatePdf(compiledHtml);
-      const fileName = `agreement-${agreement.agreement_number}.pdf`;
-      const storagePath = StorageHelpers.getAgreementPath(agencyId, agreement.id, fileName);
-
-      const { error: uploadError } = await this.supabase.storage
-        .from('secure_documents')
-        .upload(storagePath, pdfBuffer, {
-          contentType: 'application/pdf',
-          upsert: true,
-        });
-
-      if (uploadError) throw new Error(`Failed to upload PDF: ${uploadError.message}`);
-
-      await this.agreementRepo.update(agreement.id, {
-        status: AgreementStatus.GENERATED,
-      });
-
-      const { error: docErr } = await this.supabase.from('documents').insert({
-        agency_id: agencyId,
-        agreement_id: agreement.id,
-        uploaded_by: userId,
-        file_name: fileName,
-        original_name: fileName,
-        file_url: storagePath,
-        file_size: pdfBuffer.length,
-        mime_type: 'application/pdf',
-      });
-      if (docErr) throw new Error(`Failed to insert document: ${docErr.message}`);
-
+      const result = await this.renderWizardAgreementPdf(
+        agencyId,
+        userId,
+        agreement,
+        agency,
+        user,
+        rma,
+        responsibleRmaId,
+        wizardForm,
+        false,
+      );
       const timeMs = Date.now() - startTime;
-      await this.auditService.logEvent(agencyId, userId, agreement.id, 'Agreement Generated', { storagePath, generationTimeMs: timeMs });
+      await this.auditService.logEvent(agencyId, userId, agreement.id, 'Agreement Generated', {
+        storagePath: result.storagePath,
+        generationTimeMs: timeMs,
+      });
       await this.agreementRepo.update(agreement.id, { status: 'pending' as AgreementStatus });
-
-      return { storagePath, size: pdfBuffer.length, timeMs };
+      return { storagePath: result.storagePath, size: result.size, timeMs };
     }
 
     const { data: matterType } = agreement.matter_type_id ? await this.supabase.from('matter_types').select('*').eq('id', agreement.matter_type_id).single() : { data: null };
@@ -419,5 +367,182 @@ export class DocumentGenerationService {
     await this.agreementRepo.update(agreement.id, { status: 'pending' as AgreementStatus });
 
     return { storagePath, size: pdfBuffer.length, timeMs };
+  }
+
+  /** Rebuild agreement PDF after agent signature is applied (wizard agreements). */
+  async regenerateAgreementPdf(
+    agencyId: string,
+    userId: string,
+    agreementId: string,
+  ): Promise<{ storagePath: string; size: number }> {
+    const agreement = await this.agreementRepo.getById(agreementId);
+    if (!agreement || agreement.agency_id !== agencyId) throw new Error('Agreement not found');
+
+    const wizardForm = (agreement.metadata as { wizard_form?: unknown })?.wizard_form;
+    if (!wizardForm) {
+      throw new Error('PDF regeneration is only supported for wizard-generated agreements');
+    }
+
+    const { data: agency } = await this.supabase.from('agencies').select('*').eq('id', agencyId).single();
+    const responsibleRmaId =
+      (agreement.metadata as { responsible_rma_id?: string })?.responsible_rma_id ||
+      agreement.created_by;
+    const { data: user } = await this.supabase.from('users').select('*').eq('id', responsibleRmaId).single();
+    const { data: rma } = await this.supabase
+      .from('rmas')
+      .select('*')
+      .eq('user_id', responsibleRmaId)
+      .maybeSingle();
+
+    return this.renderWizardAgreementPdf(
+      agencyId,
+      userId,
+      agreement,
+      agency,
+      user,
+      rma,
+      responsibleRmaId,
+      wizardForm,
+      true,
+    );
+  }
+
+  private resolveAgentSignaturePreview(agreement: {
+    agent_signed_at?: string | null;
+    agent_signature_url?: string | null;
+    agent_signature_text?: string | null;
+    metadata?: unknown;
+  }, user: { full_name: string } | null, rma: { mara_number?: string } | null): AgentSignaturePreview | null {
+    const metaDisplay = (agreement.metadata as { agent_signature_display?: AgentSignaturePreview })
+      ?.agent_signature_display;
+
+    if (agreement.agent_signed_at && metaDisplay?.imageHtml) {
+      return {
+        name: metaDisplay.name || user?.full_name || '',
+        marn: metaDisplay.marn ?? rma?.mara_number,
+        signedAt: metaDisplay.signedAt || formatDisplayDateForSignature(agreement.agent_signed_at),
+        imageHtml: metaDisplay.imageHtml,
+        completed: true,
+      };
+    }
+
+    return null;
+  }
+
+  private async renderWizardAgreementPdf(
+    agencyId: string,
+    userId: string,
+    agreement: { id: string; agreement_number: string; metadata?: unknown; agent_signed_at?: string | null; agent_signature_url?: string | null; agent_signature_text?: string | null },
+    agency: Record<string, unknown> | null,
+    user: { full_name: string; email: string } | null,
+    rma: { mara_number?: string } | null,
+    responsibleRmaId: string,
+    wizardForm: unknown,
+    upsertOnly: boolean,
+  ): Promise<{ storagePath: string; size: number }> {
+    const agencySnapshot = (agreement.metadata as { agency_snapshot?: Record<string, unknown> })?.agency_snapshot;
+    const { data: principalUser } = await this.supabase
+      .from('users')
+      .select('full_name')
+      .eq('agency_id', agencyId)
+      .eq('role', 'owner')
+      .limit(1)
+      .maybeSingle();
+
+    const selectedClausesMeta =
+      (agreement.metadata as { selected_clauses?: unknown[] })?.selected_clauses || [];
+    const matterTypeConfigMeta =
+      (agreement.metadata as { matter_type_config?: unknown })?.matter_type_config || null;
+
+    const agentSignature = this.resolveAgentSignaturePreview(agreement, user, rma);
+
+    const compiledHtml = buildAgreementPreviewHtml({
+      form: wizardForm as Parameters<typeof buildAgreementPreviewHtml>[0]['form'],
+      agency: {
+        id: agencyId,
+        name: (agencySnapshot?.name as string) || (agency?.name as string) || '',
+        slug: (agencySnapshot?.slug as string) || (agency?.slug as string) || '',
+        legalName:
+          (agencySnapshot?.legalName as string) ||
+          (agency?.legal_name as string) ||
+          (agency?.name as string),
+        principalName:
+          (agencySnapshot?.principalName as string) ||
+          principalUser?.full_name ||
+          user?.full_name,
+        address: (agencySnapshot?.address as string) || (agency?.address as string) || undefined,
+        abn: (agencySnapshot?.abn as string) || (agency?.abn as string) || undefined,
+        phone: (agencySnapshot?.phone as string) || (agency?.phone as string) || undefined,
+        email: (agencySnapshot?.email as string) || (agency?.email as string) || undefined,
+        marn: (agencySnapshot?.marn as string) || rma?.mara_number || undefined,
+        branding: agencySnapshot?.branding as Parameters<typeof buildAgreementPreviewHtml>[0]['agency']['branding'],
+      },
+      rma: user
+        ? {
+            id: responsibleRmaId,
+            name: user.full_name,
+            email: user.email,
+            marn: rma?.mara_number,
+          }
+        : null,
+      agreementRef:
+        (agreement.metadata as { agreement_ref?: string })?.agreement_ref || agreement.agreement_number,
+      statusLabel: agentSignature ? 'AGENT SIGNED — AWAITING CLIENT' : 'AWAITING SIGNATURE',
+      matterTypeConfig: matterTypeConfigMeta as Parameters<typeof buildAgreementPreviewHtml>[0]['matterTypeConfig'],
+      selectedClauses: selectedClausesMeta as Parameters<typeof buildAgreementPreviewHtml>[0]['selectedClauses'],
+      agentSignature,
+    });
+
+    const pdfBuffer = await PDFService.generatePdf(compiledHtml);
+    const fileName = `agreement-${agreement.agreement_number}.pdf`;
+    const storagePath = StorageHelpers.getAgreementPath(agencyId, agreement.id, fileName);
+
+    const { error: uploadError } = await this.supabase.storage
+      .from('secure_documents')
+      .upload(storagePath, pdfBuffer, {
+        contentType: 'application/pdf',
+        upsert: true,
+      });
+
+    if (uploadError) throw new Error(`Failed to upload PDF: ${uploadError.message}`);
+
+    if (upsertOnly) {
+      const { data: existingDoc } = await this.supabase
+        .from('documents')
+        .select('id')
+        .eq('agreement_id', agreement.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (existingDoc?.id) {
+        await this.supabase
+          .from('documents')
+          .update({
+            file_url: storagePath,
+            file_size: pdfBuffer.length,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', existingDoc.id);
+      }
+    } else {
+      await this.agreementRepo.update(agreement.id, {
+        status: AgreementStatus.GENERATED,
+      });
+
+      const { error: docErr } = await this.supabase.from('documents').insert({
+        agency_id: agencyId,
+        agreement_id: agreement.id,
+        uploaded_by: userId,
+        file_name: fileName,
+        original_name: fileName,
+        file_url: storagePath,
+        file_size: pdfBuffer.length,
+        mime_type: 'application/pdf',
+      });
+      if (docErr) throw new Error(`Failed to insert document: ${docErr.message}`);
+    }
+
+    return { storagePath, size: pdfBuffer.length };
   }
 }

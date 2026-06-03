@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { PageTransition } from "./page-transition"
 import { CommandPalette } from "./command-palette"
+import { NotificationCenter } from "@/components/notifications/notification-center"
 import { useAuthStore, User } from "@/store/authStore"
 import { useRequireWorkspace } from "@/lib/hooks/use-workspace"
 import { createClient } from "@/lib/supabase/client"
@@ -63,7 +64,7 @@ const rawSidebarNavItems = [
   },
   {
     title: "App Approvals",
-    href: "/application-approvals",
+    href: "/approvals",
     icon: FileCheck2,
   },
   {
@@ -122,8 +123,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const { 
     user, 
     activeWorkspace, 
-    workspaces, 
-    switchWorkspace,
     logout 
   } = useAuthStore()
   const isDevEnvironment = process.env.NODE_ENV === 'development'
@@ -145,19 +144,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   // Role Permissions Checks
   const hasBillingAccess = currentRole === "Owner" || currentRole === "Admin"
   const hasSettingsAccess = currentRole !== "Assistant" && currentRole !== "Read-only staff"
-
-  const handleWorkspaceChange = (slug: string) => {
-    switchWorkspace(slug)
-    // Extract remaining route path if possible
-    let remainingPath = "/dashboard"
-    if (pathname) {
-      const parts = pathname.split("/")
-      if (parts.length > 3) {
-        remainingPath = "/" + parts.slice(3).join("/")
-      }
-    }
-    router.push(`/workspace/${slug}${remainingPath}`)
-  }
 
   const handleLogoutClick = async () => {
     await supabase.auth.signOut()
@@ -239,69 +225,36 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           isCollapsed ? "w-[72px]" : "w-[260px]"
         )}
       >
-        {/* Dynamic Workspace Switcher Dropdown */}
+        {/* Single agency workspace (one subscription = one agency) */}
         <div className="flex h-16 shrink-0 items-center justify-between px-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button 
-                className={cn(
-                  "flex items-center gap-2.5 rounded-md p-1.5 text-left transition-colors hover:bg-slate-200/50 focus:outline-none w-full",
-                  isCollapsed && "mx-auto justify-center"
-                )}
-              >
-                <div 
-                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[4px] font-bold text-white text-xs overflow-hidden"
-                  style={{ backgroundColor: currentWorkspace?.logoUrl ? 'transparent' : (currentWorkspace?.color || "#0D9F8C") }}
-                >
-                  {currentWorkspace?.logoUrl ? (
-                    <img src={currentWorkspace.logoUrl} alt="" className="h-6 w-6 object-contain" />
-                  ) : (
-                    currentWorkspace?.initials || "AM"
-                  )}
+          <div
+            className={cn(
+              "flex w-full items-center gap-2.5 rounded-md p-1.5",
+              isCollapsed && "mx-auto justify-center",
+            )}
+          >
+            <div
+              className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-[4px] text-xs font-bold text-white"
+              style={{
+                backgroundColor: currentWorkspace?.logoUrl
+                  ? "transparent"
+                  : currentWorkspace?.color || "#0D9F8C",
+              }}
+            >
+              {currentWorkspace?.logoUrl ? (
+                <img src={currentWorkspace.logoUrl} alt="" className="h-6 w-6 object-contain" />
+              ) : (
+                currentWorkspace?.initials || "AM"
+              )}
+            </div>
+            {!isCollapsed && (
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-sm font-semibold text-slate-800">
+                  {currentWorkspace?.name || "Agency workspace"}
                 </div>
-                {!isCollapsed && (
-                  <div className="flex flex-1 items-center justify-between min-w-0">
-                    <div className="min-w-0">
-                      <div className="text-sm font-semibold text-slate-800 truncate">
-                        {currentWorkspace?.name || "Singh & Associates"}
-                      </div>
-                    </div>
-                    <ChevronDown className="h-4 w-4 text-slate-400 shrink-0 ml-1" />
-                  </div>
-                )}
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 rounded-xl border-slate-200 bg-white p-1.5 shadow-md" align="start">
-              <DropdownMenuLabel className="px-2 py-1.5 text-xs font-semibold text-slate-500">
-                Workspaces
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-slate-100" />
-              {workspaces.map((w) => {
-                const isSelected = w.slug === currentSlug
-                return (
-                  <DropdownMenuItem
-                    key={w.slug}
-                    onClick={() => handleWorkspaceChange(w.slug)}
-                    className={cn(
-                      "rounded-lg p-2 cursor-pointer text-sm flex items-center gap-3 transition-colors text-slate-700 focus:bg-slate-100",
-                      isSelected && "text-slate-900 font-medium bg-slate-50"
-                    )}
-                  >
-                    <div 
-                      className="flex h-5 w-5 shrink-0 items-center justify-center rounded-[4px] font-bold text-white text-xs"
-                      style={{ backgroundColor: w.color }}
-                    >
-                      {w.initials}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="truncate">{w.name}</div>
-                    </div>
-                    {isSelected && <Check className="h-4 w-4 text-slate-600" />}
-                  </DropdownMenuItem>
-                )
-              })}
-            </DropdownMenuContent>
-          </DropdownMenu>
+              </div>
+            )}
+          </div>
         </div>
         
         {/* Navigation Sidebar Area */}
@@ -377,24 +330,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           
           <div className="flex items-center gap-3">
             <CommandPalette />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors">
-                  <Bell className="h-4 w-4" />
-                  <span className="absolute right-2 top-2 flex h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-80 rounded-xl border-slate-200 bg-white p-2 shadow-lg" align="end">
-                <DropdownMenuLabel className="p-2">
-                  <div className="text-sm font-semibold text-slate-900">Notifications</div>
-                  <div className="mt-0.5 text-xs font-medium text-slate-500">Practice activity alerts</div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-slate-100" />
-                <DropdownMenuItem className="rounded-lg p-2.5 cursor-default text-slate-500">
-                  <span className="text-sm font-medium">No new notifications</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <NotificationCenter />
             
             <span className="mx-1 hidden h-6 w-px bg-slate-200/80 sm:block"></span>
             

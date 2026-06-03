@@ -36,6 +36,8 @@ import {
   usePendingSignatures, 
   useTeamActivity 
 } from "@/lib/hooks/useSupabaseData"
+import { ApprovalDashboardWidgets } from "@/features/approvals/components/dashboard/approval-widgets"
+import { DashboardCommunications } from "@/features/dashboard/components/DashboardCommunications"
 
 export function PageHeader({
   eyebrow,
@@ -219,6 +221,7 @@ export function DashboardHomePage() {
 
   const quickActions = [
     { label: "New Client", icon: Plus, href: `/workspace/${currentSlug}/clients` },
+    { label: "New Application", icon: FileCheck2, href: `/workspace/${currentSlug}/approvals/new` },
     { label: "New Agreement", icon: FileSignature, href: `/workspace/${currentSlug}/agreements/new` },
     { label: "Invite Team Member", icon: UserPlus, href: `/workspace/${currentSlug}/settings?section=Team` },
     { label: "Upload Document", icon: UploadCloud, href: `/workspace/${currentSlug}/documents` },
@@ -243,6 +246,12 @@ export function DashboardHomePage() {
           <MetricCard key={metric.label} {...metric} />
         ))}
       </div>
+
+      <div className="mb-8">
+        <ApprovalDashboardWidgets agencySlug={currentSlug} />
+      </div>
+
+      <DashboardCommunications />
 
       <div className="grid gap-6 xl:grid-cols-[1fr_0.4fr]">
         

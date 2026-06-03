@@ -46,7 +46,7 @@ export function SendStep({
         </div>
         <h2 className="text-2xl font-black text-[#081b36] text-center">Agreement Sent for Signature</h2>
         <p className="mt-3 text-slate-600 text-sm text-center max-w-md mx-auto">
-          The agreement has been generated, stored securely, and dispatched via SignWell.
+          The agreement has been generated with the responsible agent signature applied automatically. Only client signers were sent via SignWell.
         </p>
         <div className="mt-6 text-xs font-semibold text-slate-600 space-y-2 border-y border-emerald-100 py-4">
           <div className="flex justify-between"><span className="text-slate-400">Agreement Ref</span><span className="font-mono">{agreementRef}</span></div>
@@ -96,7 +96,10 @@ export function SendStep({
 
       <div className="flex items-start gap-3 rounded-xl border border-[#0D9F8C]/20 bg-[#ecfdf5]/50 p-4 text-sm text-slate-700">
         <Lock className="h-5 w-5 shrink-0 text-[#0D9F8C] mt-0.5" />
-        <p>Secure signing links will be sent to <strong>1 signer</strong>.</p>
+        <p>
+          <strong>{selectedRma?.name || 'The responsible agent'}</strong> signature is applied automatically on the PDF.
+          SignWell signing links go to <strong>external client signers only</strong> (not the agent).
+        </p>
       </div>
 
       <label className="grid gap-2">

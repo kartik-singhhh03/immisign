@@ -1,0 +1,143 @@
+{
+  "timestamp": "2026-06-03T07:35:09.752Z",
+  "baseUrl": "http://localhost:3001",
+  "sections": {
+    "database": {
+      "migrationVerify": "PASS",
+      "exitCode": 0
+    },
+    "stripeConfig": {
+      "verify": "WARNING",
+      "stdout": "{\n  \"checks\": [\n    {\n      \"item\": \"secret_key_mode\",\n      \"status\": \"live\"\n    },\n    {\n      \"item\": \"base_price\",\n      \"status\": \"PASS\",\n      \"amount\": 4900,\n      \"currency\": \"aud\",\n      \"interval\": \"month\",\n      \"product\": \"ImmiSign Plan\"\n    },\n    {\n      \"item\": \"seat_price\",\n      \"status\": \"PASS\",\n      \"amount\": 1000,\n      \"currency\": \"aud\",\n      \"interval\": \"month\",\n      \"product\": \"ImmiSign Additional Seat\"\n    }\n  ],\n  \"blockers\": [\n    \"MISMATCH: live secret key with test"
+    },
+    "devServer": {
+      "reachable": false,
+      "url": "http://localhost:3001"
+    },
+    "permissions": {
+      "owner": {
+        "email": "testowner_1780228890060@demoagency.com",
+        "uiRole": "Owner",
+        "billingGet": 500,
+        "checkout": 500,
+        "portal": 500,
+        "wizardDraft": 401,
+        "sendDocDraft": 401,
+        "expectedCheckout": "not 403",
+        "checkoutOk": true,
+        "expectedSettingsDraft": "ok"
+      },
+      "admin": {
+        "email": "admin@demoagency.com",
+        "uiRole": "Admin",
+        "billingGet": 500,
+        "checkout": 500,
+        "portal": 500,
+        "wizardDraft": 401,
+        "sendDocDraft": 401,
+        "expectedCheckout": "not 403",
+        "checkoutOk": true,
+        "expectedSettingsDraft": "ok"
+      },
+      "agent": {
+        "email": "practitioner.1780342052074@gmail.com",
+        "uiRole": "Migration Agent",
+        "billingGet": 500,
+        "checkout": 500,
+        "portal": 500,
+        "wizardDraft": 401,
+        "sendDocDraft": 401,
+        "expectedCheckout": 403,
+        "checkoutOk": false,
+        "expectedSettingsDraft": "ok"
+      },
+      "manager": {
+        "email": "manager@demoagency.com",
+        "uiRole": "Case Manager",
+        "billingGet": 500,
+        "checkout": 500,
+        "portal": 500,
+        "wizardDraft": 401,
+        "sendDocDraft": 401,
+        "expectedCheckout": 403,
+        "checkoutOk": false,
+        "expectedSettingsDraft": "ok"
+      },
+      "support": {
+        "email": "assistant@demoagency.com",
+        "uiRole": "Assistant",
+        "billingGet": 500,
+        "checkout": 500,
+        "portal": 500,
+        "wizardDraft": 401,
+        "sendDocDraft": 401,
+        "expectedCheckout": 403,
+        "checkoutOk": false,
+        "expectedSettingsDraft": "restricted in UI"
+      },
+      "viewer": {
+        "email": "readonly@demoagency.com",
+        "uiRole": "Read-only staff",
+        "billingGet": 500,
+        "checkout": 500,
+        "portal": 500,
+        "wizardDraft": 401,
+        "sendDocDraft": 401,
+        "expectedCheckout": 403,
+        "checkoutOk": false,
+        "expectedSettingsDraft": "restricted in UI"
+      }
+    },
+    "settingsDb": {
+      "branding_settings": {
+        "ok": true,
+        "count": 1
+      },
+      "rmas": {
+        "ok": true,
+        "count": 0
+      },
+      "matter_types": {
+        "ok": true,
+        "count": 10
+      },
+      "matter_type_fields": {
+        "ok": false,
+        "error": ""
+      },
+      "agreement_clauses": {
+        "ok": true,
+        "count": 13
+      },
+      "payment_schedules": {
+        "ok": true,
+        "count": 3
+      },
+      "matter_defaults": {
+        "ok": true,
+        "count": 1
+      }
+    },
+    "signwellDb": {
+      "agreementsWithSignwell": 2,
+      "agreementsWithAgentSig": 0,
+      "documentsWithSignwell": 0,
+      "sampleAgreement": {
+        "id": "a9a5d1d7-767a-4aaa-ae3a-3a4f4a19d19c",
+        "status": "sent",
+        "signwell_document_id": "e06702ff-99c1-4b70-946d-6e31b5263c93",
+        "agent_signed_at": null,
+        "agent_signature_url": null
+      },
+      "sampleDocument": null
+    }
+  },
+  "blockers": [
+    "Dev server not reachable at http://localhost:3001"
+  ],
+  "warnings": [
+    "Stripe key mode mismatch (live secret + test publishable)"
+  ],
+  "score": 41,
+  "launchReadinessScore": 41
+}

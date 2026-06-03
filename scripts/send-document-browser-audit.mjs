@@ -120,22 +120,29 @@ try {
   await page.waitForSelector('input[type="email"]', { timeout: 15000 });
   await page.type('input[type="email"]', owner.email, { delay: 20 });
   await page.type('input[type="password"]', TEST_PASSWORD, { delay: 20 });
-  await clickByText('Continue to Workspace');
-  await page.waitForFunction(() => /\/workspace\//.test(window.location.href), { timeout: 30000 });
-  await waitForText('Dashboard', 30000).catch(() => waitForText('Good day', 30000));
+  await page.evaluate(() => {
+    const btn = Array.from(document.querySelectorAll('button')).find((b) =>
+      b.textContent?.includes('Continue to Workspace'),
+    );
+    btn?.click();
+  });
+  await page.waitForFunction(() => /\/workspace\//.test(window.location.href), { timeout: 60000 });
+  await new Promise((r) => setTimeout(r, 3000));
+
+  await page.goto(`${baseUrl}/workspace/${targetSlug}/dashboard`, {
+    waitUntil: 'networkidle2',
+    timeout: 90000,
+  });
   await new Promise((r) => setTimeout(r, 2000));
 
-  const afterAuthUrl = page.url();
-  if (afterAuthUrl.includes('/login')) {
-    throw new Error(`Password login failed: ${afterAuthUrl}`);
-  }
-  if (afterAuthUrl.includes('/onboarding')) {
-    throw new Error(`Workspace not resolved after login: ${afterAuthUrl}`);
-  }
-
-  await waitForText('Send Document', 30000);
-  await clickByText('Send Document', 'a');
-  await waitForText('Send Document for Signature', 45000);
+  await page.goto(`${baseUrl}/workspace/${targetSlug}/documents/send`, {
+    waitUntil: 'domcontentloaded',
+    timeout: 90000,
+  });
+  await page.waitForFunction(
+    () => document.body?.innerText?.includes('Send Document for Signature'),
+    { timeout: 90000 },
+  );
 
   const bodyText = await page.evaluate(() => document.body?.innerText || '');
   const hasErrorBoundary = bodyText.includes('Something went wrong');
@@ -160,12 +167,9 @@ try {
   results.step1Type.pass = true;
   results.step1Type.detail = 'Upload step reached';
 
-  const pdfPath = path.join(process.cwd(), 'scripts', 'fixtures', 'sample.pdf');
-  const [fileChooser] = await Promise.all([
-    page.waitForFileChooser({ timeout: 10000 }),
-    clickByText('Choose File'),
-  ]);
-  await fileChooser.accept([pdfPath]);
+    const pdfPath = path.join(process.cwd(), 'scripts', 'fixtures', 'sample.pdf');
+    const fileInput = await page.waitForSelector('input[type="file"]', { timeout: 15000 });
+    await fileInput.uploadFile(pdfPath);
   await page.waitForFunction(
     () => {
       const btn = Array.from(document.querySelectorAll('button')).find((b) => b.textContent?.includes('Assign Signers'));

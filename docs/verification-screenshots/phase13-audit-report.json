@@ -1,0 +1,24 @@
+{
+  "timestamp": "2026-06-03T08:28:45.055Z",
+  "baseUrl": "http://localhost:3001",
+  "slug": "avc-migration-live",
+  "steps": {
+    "preferences": "PASS",
+    "unread_count": "PASS",
+    "notification_list": "PASS",
+    "activity_feed": "PASS",
+    "search": "PASS",
+    "task_create": "PASS",
+    "task_complete": "PASS",
+    "dashboard_summary": "PASS",
+    "mentions": "PASS",
+    "deadline_cron": "PASS",
+    "ui": "PASS"
+  },
+  "screenshots": [
+    "phase13/01-dashboard-comms.png",
+    "phase13/02-notification-settings.png",
+    "phase13/03-activity-feed.png"
+  ],
+  "pass": true
+}

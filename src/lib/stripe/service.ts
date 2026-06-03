@@ -1,81 +1,202 @@
+import Stripe from 'stripe';
 import { stripe } from './client';
-import { SAAS_PLANS, getPlanByPriceId } from './plans';
+import { getImmisignPlan } from './plan';
+import {
+  additionalSeatsFromBillableCount,
+  countActiveBillableUsers,
+} from './seats';
 import { createAdminClient } from '../supabase/admin';
 import { getAppUrl } from '@/lib/app-url';
 
 export class StripeService {
+  async getOrCreateCustomer(
+    agencyId: string,
+    email: string,
+    name: string,
+  ): Promise<string> {
+    const admin = createAdminClient();
+    const { data: agency, error } = (await admin
+      .from('agencies')
+      .select('stripe_customer_id')
+      .eq('id', agencyId)
+      .single()) as { data: { stripe_customer_id?: string } | null; error: unknown };
 
-    async getOrCreateCustomer(agencyId: string, email: string, name: string): Promise<string> {
-        const admin = createAdminClient();
-        const { data: agency, error } = await admin.from('agencies').select('stripe_customer_id' as any).eq('id', agencyId).single() as any;
+    if (error) throw new Error('Agency retrieval failed in billing');
 
-        if (error) throw new Error('Agency retrieval failed in billing');
-
-        if (agency && (agency as any).stripe_customer_id) {
-            return (agency as any).stripe_customer_id;
-        }
-
-        const customer = await stripe.customers.create({
-            email,
-            name,
-            metadata: {
-                agency_id: agencyId,
-            }
-        });
-
-        await (admin.from('agencies') as any).update({ stripe_customer_id: customer.id }).eq('id', agencyId);
-        
-        return customer.id;
+    if (agency?.stripe_customer_id) {
+      return agency.stripe_customer_id;
     }
 
-    async createCheckoutSession(
-        agencyId: string, 
-        userId: string, 
-        customerEmail: string, 
-        customerName: string, 
-        priceId: string,
-        agencySlug: string,
-     ) {
-        const customerId = await this.getOrCreateCustomer(agencyId, customerEmail, customerName);
-        const plan = getPlanByPriceId(priceId);
-        
-        if (!plan) throw new Error('Invalid Stripe Price ID mapped to ImmiSign system.');
+    const customer = await stripe.customers.create({
+      email,
+      name,
+      metadata: { agency_id: agencyId },
+    });
 
-        const billingBase = `${getAppUrl()}/workspace/${agencySlug}/billing`;
+    await admin
+      .from('agencies')
+      .update({ stripe_customer_id: customer.id })
+      .eq('id', agencyId);
 
-        const session = await stripe.checkout.sessions.create({
-            customer: customerId,
-            mode: 'subscription',
-            payment_method_types: ['card'],
-            billing_address_collection: 'auto',
-            line_items: [
-                { price: priceId, quantity: 1 }
-            ],
-            success_url: `${billingBase}?success=true&session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: billingBase,
-            metadata: {
-                agency_id: agencyId,
-                user_id: userId,
-                plan_id: plan.id
-            },
-            subscription_data: {
-                metadata: {
-                   agency_id: agencyId, 
-                }
-            }
-        });
+    return customer.id;
+  }
 
-        return { url: session.url };
+  async createCheckoutSession(
+    agencyId: string,
+    userId: string,
+    customerEmail: string,
+    customerName: string,
+    agencySlug: string,
+  ) {
+    const plan = getImmisignPlan();
+    const admin = createAdminClient();
+    const billableCount = await countActiveBillableUsers(admin, agencyId);
+    const additionalSeats = additionalSeatsFromBillableCount(billableCount);
+
+    const customerId = await this.getOrCreateCustomer(
+      agencyId,
+      customerEmail,
+      customerName,
+    );
+
+    const billingBase = `${getAppUrl()}/workspace/${agencySlug}/billing`;
+
+    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
+      { price: plan.baseMonthlyPriceId, quantity: 1 },
+    ];
+
+    if (additionalSeats > 0) {
+      lineItems.push({
+        price: plan.seatMonthlyPriceId,
+        quantity: additionalSeats,
+      });
     }
 
-    async createBillingPortalSession(customerId: string, returnUrl: string) {
-        const session = await stripe.billingPortal.sessions.create({
-            customer: customerId,
-            return_url: returnUrl,
-        });
+    const session = await stripe.checkout.sessions.create({
+      customer: customerId,
+      mode: 'subscription',
+      payment_method_types: ['card'],
+      billing_address_collection: 'auto',
+      line_items: lineItems,
+      success_url: `${billingBase}?success=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: billingBase,
+      metadata: {
+        agency_id: agencyId,
+        user_id: userId,
+        plan_id: plan.id,
+      },
+      subscription_data: {
+        metadata: { agency_id: agencyId },
+      },
+    });
 
-        return { url: session.url };
+    return { url: session.url };
+  }
+
+  async createBillingPortalSession(customerId: string, returnUrl: string) {
+    const session = await stripe.billingPortal.sessions.create({
+      customer: customerId,
+      return_url: returnUrl,
+    });
+
+    return { url: session.url };
+  }
+
+  /**
+   * Aligns the Stripe seat line-item quantity with active billable users.
+   */
+  async syncSubscriptionSeats(agencyId: string): Promise<{
+    billableSeats: number;
+    additionalSeats: number;
+    synced: boolean;
+  }> {
+    const plan = getImmisignPlan();
+    const admin = createAdminClient();
+    const billableSeats = await countActiveBillableUsers(admin, agencyId);
+    const additionalSeats = additionalSeatsFromBillableCount(billableSeats);
+
+    const { data: sub } = (await admin
+      .from('subscriptions')
+      .select('stripe_subscription_id, stripe_seat_item_id')
+      .eq('agency_id', agencyId)
+      .maybeSingle()) as {
+      data: {
+        stripe_subscription_id?: string | null;
+        stripe_seat_item_id?: string | null;
+      } | null;
+    };
+
+    if (!sub?.stripe_subscription_id) {
+      await admin
+        .from('subscriptions')
+        .upsert(
+          {
+            agency_id: agencyId,
+            plan_name: plan.id,
+            billable_seats: billableSeats,
+            additional_seats: additionalSeats,
+            included_seats: plan.includedSeats,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'agency_id' },
+        );
+      return { billableSeats, additionalSeats, synced: false };
     }
+
+    const stripeSub = await stripe.subscriptions.retrieve(sub.stripe_subscription_id, {
+      expand: ['items.data.price'],
+    });
+
+    let seatItem = stripeSub.items.data.find(
+      (item) => item.price.id === plan.seatMonthlyPriceId,
+    );
+
+    if (seatItem) {
+      await stripe.subscriptionItems.update(seatItem.id, {
+        quantity: additionalSeats,
+        proration_behavior: 'create_prorations',
+      });
+    } else if (additionalSeats > 0) {
+      seatItem = await stripe.subscriptionItems.create({
+        subscription: sub.stripe_subscription_id,
+        price: plan.seatMonthlyPriceId,
+        quantity: additionalSeats,
+        proration_behavior: 'create_prorations',
+      });
+    }
+
+    const seatItemId = seatItem?.id ?? null;
+
+    await admin
+      .from('subscriptions')
+      .update({
+        billable_seats: billableSeats,
+        additional_seats: additionalSeats,
+        included_seats: plan.includedSeats,
+        stripe_seat_item_id: seatItemId,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('agency_id', agencyId);
+
+    await admin
+      .from('agencies')
+      .update({
+        plan_type: plan.id,
+        max_users: plan.includedSeats + additionalSeats,
+      })
+      .eq('id', agencyId);
+
+    return { billableSeats, additionalSeats, synced: true };
+  }
+
+  async getUpcomingInvoiceAmountCents(customerId: string): Promise<number | null> {
+    try {
+      const upcoming = await stripe.invoices.retrieveUpcoming({ customer: customerId });
+      return upcoming.amount_due ?? null;
+    } catch {
+      return null;
+    }
+  }
 }
 
 export const stripeService = new StripeService();

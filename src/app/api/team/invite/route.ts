@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getResendFromEmail, sendEmailWithForensicLogging } from '@/lib/email/resend';
+import { getAgencySeatSnapshot } from '@/lib/stripe/seats';
+import { stripeService } from '@/lib/stripe/service';
 
 const INVITE_ROLE_MAP: Record<string, string> = {
   Owner: 'owner',
@@ -76,6 +78,10 @@ export async function POST(req: Request) {
 
     console.log('STEP_3_AGENCY_LOOKUP_SUCCESS', { agencyId: agency.id, agencyName: agency.name });
 
+    const seatPreview = await getAgencySeatSnapshot(supabase, userData.agency_id, {
+      includePendingInviteRole: normalizedRole,
+    });
+
     const token = crypto.randomUUID();
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
@@ -146,6 +152,12 @@ export async function POST(req: Request) {
       });
       console.log('RESEND_RAW_RESPONSE', JSON.stringify(emailResult, null, 2));
       console.log('STEP_6_EMAIL_SEND_SUCCESS');
+
+      try {
+        await stripeService.syncSubscriptionSeats(userData.agency_id);
+      } catch (syncErr) {
+        console.error('SEAT_SYNC_AFTER_INVITE', syncErr);
+      }
     } catch (emailError: unknown) {
       console.error('INVITE_FAILURE', emailError);
       await supabase.from('invitations').delete().eq('id', invite.id);
@@ -163,7 +175,17 @@ export async function POST(req: Request) {
       );
     }
 
-    return NextResponse.json({ success: true, invite });
+    return NextResponse.json({
+      success: true,
+      invite,
+      billing: {
+        wouldIncreaseSubscription: seatPreview.wouldIncreaseSubscription,
+        warning: seatPreview.wouldIncreaseSubscription
+          ? `Adding this user will increase your subscription by $${seatPreview.nextSeatIncreaseUsd}/month.`
+          : null,
+        monthlyTotalUsd: seatPreview.monthlyTotalUsd,
+      },
+    });
   } catch (error: unknown) {
     console.error('INVITE_FAILURE', error);
     const err = error as Error;

@@ -1,0 +1,30 @@
+{
+  "timestamp": "2026-06-03T08:49:15.256Z",
+  "baseUrl": "http://localhost:3001",
+  "slug": "avc-migration-live",
+  "steps": {
+    "dashboard": "FAIL url=http://localhost:3001/onboarding errors=",
+    "clients": "FAIL url=http://localhost:3001/onboarding errors=",
+    "approvals": "FAIL url=http://localhost:3001/onboarding errors=",
+    "agreements": "FAIL url=http://localhost:3001/onboarding errors=",
+    "send-document": "FAIL url=http://localhost:3001/onboarding errors=",
+    "templates": "FAIL url=http://localhost:3001/onboarding errors=",
+    "reports": "FAIL url=http://localhost:3001/onboarding errors=",
+    "api_dashboard_summary": {
+      "status": 200,
+      "hasBody": true,
+      "success": true,
+      "hasErrorField": false
+    }
+  },
+  "screenshots": [
+    "phase14/01-dashboard.png",
+    "phase14/02-clients.png",
+    "phase14/03-approvals.png",
+    "phase14/04-agreements.png",
+    "phase14/05-send-document.png",
+    "phase14/06-templates.png",
+    "phase14/07-reports.png"
+  ],
+  "pass": false
+}

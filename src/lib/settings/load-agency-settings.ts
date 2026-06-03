@@ -145,6 +145,9 @@ export async function loadAgencySettings(
       isDefault: Boolean(r.is_default),
       status: r.rma_status || 'active',
       tier: r.rma_tier || 'associate',
+      signatureMode: r.signature_mode || null,
+      signatureUrl: r.signature_url || null,
+      signatureText: r.signature_text || null,
     })),
   }
 }

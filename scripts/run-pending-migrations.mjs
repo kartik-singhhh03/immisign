@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import pg from 'pg';
+import { resolveDatabaseUrlCandidates } from './lib/resolve-database-url.mjs';
 
 function loadEnv() {
   const env = {};
@@ -16,14 +17,8 @@ function loadEnv() {
 }
 
 function resolveDatabaseUrl(env) {
-  if (env.DATABASE_URL) return env.DATABASE_URL;
-  const password = env.SUPABASE_DB_PASSWORD || env.POSTGRES_PASSWORD;
-  const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL || '';
-  const match = supabaseUrl.match(/https:\/\/([^.]+)\.supabase\.co/);
-  if (!password || !match) return null;
-  const ref = match[1];
-  const region = env.SUPABASE_DB_REGION || 'ap-southeast-2';
-  return `postgresql://postgres.${ref}:${encodeURIComponent(password)}@aws-0-${region}.pooler.supabase.com:6543/postgres`;
+  const candidates = resolveDatabaseUrlCandidates(env);
+  return candidates[0] || null;
 }
 
 async function main() {

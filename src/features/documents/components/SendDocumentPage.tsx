@@ -60,8 +60,7 @@ export function SendDocumentPage() {
     order: number
   }
   const [signersList, setSignersList] = React.useState<SignerItem[]>([
-    { id: "S-1", name: user?.name || "Migration Agent", email: user?.email || "agent@migrationpractice.com", role: "Migration Agent", order: 1 },
-    { id: "S-2", name: "", email: "", role: "Client", order: 2 },
+    { id: "S-1", name: "", email: "", role: "Client", order: 1 },
   ])
 
   // Step 3: Email state
@@ -73,6 +72,13 @@ export function SendDocumentPage() {
   const [emailSubject, setEmailSubject] = React.useState(mockEmailTemplates[0].subject)
   const [emailMessage, setEmailMessage] = React.useState(mockEmailTemplates[0].message)
   const [selectedTemplateId, setSelectedTemplateId] = React.useState("t1")
+  const [ccMe, setCcMe] = React.useState(true)
+  const [autoRemind7Days, setAutoRemind7Days] = React.useState(true)
+  const [emailOnComplete, setEmailOnComplete] = React.useState(true)
+  const [filePreviewUrl, setFilePreviewUrl] = React.useState<string | null>(null)
+  const [attestationPreviewUrl, setAttestationPreviewUrl] = React.useState<string | null>(null)
+  const [previewLoading, setPreviewLoading] = React.useState(false)
+  const [draftRestored, setDraftRestored] = React.useState(false)
 
   // Step 5: Send state
   const [sendingProgress, setSendingProgress] = React.useState(0)
@@ -81,16 +87,112 @@ export function SendDocumentPage() {
   const [hasError, setHasError] = React.useState(false)
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null)
 
-  // Simulated live autosave of wizard values
+  React.useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const res = await fetch("/api/documents/wizard-draft")
+        if (!res.ok || cancelled) return
+        const { draft } = await res.json()
+        if (!draft?.draft_data || cancelled) return
+        const d = draft.draft_data as Record<string, unknown>
+        if (typeof d.currentStep === "number") setCurrentStep(d.currentStep)
+        if (Array.isArray(d.signersList)) setSignersList(d.signersList as SignerItem[])
+        if (typeof d.emailSubject === "string") setEmailSubject(d.emailSubject)
+        if (typeof d.emailMessage === "string") setEmailMessage(d.emailMessage)
+        if (typeof d.ccMe === "boolean") setCcMe(d.ccMe)
+        if (typeof d.autoRemind7Days === "boolean") setAutoRemind7Days(d.autoRemind7Days)
+        if (typeof d.emailOnComplete === "boolean") setEmailOnComplete(d.emailOnComplete)
+        if (d.uploadedFileMeta && typeof d.uploadedFileMeta === "object") {
+          const meta = d.uploadedFileMeta as { name: string; size: string; type: string; pages: number }
+          setUploadedFile({ ...meta, file: undefined })
+        }
+        setDraftRestored(true)
+      } catch {
+        /* ignore */
+      }
+    })()
+    return () => { cancelled = true }
+  }, [])
+
+  React.useEffect(() => {
+    if (!uploadedFile?.file) {
+      setFilePreviewUrl(null)
+      return
+    }
+    if (uploadedFile.type !== "PDF") {
+      setFilePreviewUrl(null)
+      return
+    }
+    const url = URL.createObjectURL(uploadedFile.file)
+    setFilePreviewUrl(url)
+    return () => URL.revokeObjectURL(url)
+  }, [uploadedFile?.file, uploadedFile?.name])
+
   React.useEffect(() => {
     setSaving(true)
-    const timer = setTimeout(() => {
+    const timer = setTimeout(async () => {
+      try {
+        await fetch("/api/documents/wizard-draft", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            currentStep,
+            draftData: {
+              currentStep,
+              signersList,
+              emailSubject,
+              emailMessage,
+              ccMe,
+              autoRemind7Days,
+              emailOnComplete,
+              uploadedFileMeta: uploadedFile
+                ? {
+                    name: uploadedFile.name,
+                    size: uploadedFile.size,
+                    type: uploadedFile.type,
+                    pages: uploadedFile.pages,
+                  }
+                : null,
+            },
+          }),
+        })
+      } catch {
+        /* ignore */
+      }
       setSaving(false)
       const now = new Date()
-      setLastSaved(`Saved at ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`)
-    }, 600)
+      setLastSaved(`Saved at ${now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}`)
+    }, 800)
     return () => clearTimeout(timer)
-  }, [uploadedFile, signersList, emailSubject, emailMessage])
+  }, [uploadedFile, signersList, emailSubject, emailMessage, ccMe, autoRemind7Days, emailOnComplete, currentStep])
+
+  React.useEffect(() => {
+    if (currentStep !== 4 || !agencyId) return
+    let cancelled = false
+    setPreviewLoading(true)
+    ;(async () => {
+      try {
+        const res = await fetch("/api/documents/send-document-preview", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            agencyId: agencyId || activeWorkspace?.id,
+            documentName: uploadedFile?.name || "Document",
+          }),
+        })
+        const data = await res.json()
+        if (!cancelled && res.ok && data.previewUrl) {
+          setAttestationPreviewUrl(data.previewUrl)
+        }
+      } catch {
+        if (!cancelled) setAttestationPreviewUrl(null)
+      } finally {
+        if (!cancelled) setPreviewLoading(false)
+      }
+    })()
+    return () => { cancelled = true }
+  }, [currentStep, agencyId, activeWorkspace?.id, uploadedFile?.name])
 
   const handleTemplateChange = (templateId: string) => {
     setSelectedTemplateId(templateId)
@@ -166,7 +268,10 @@ export function SendDocumentPage() {
           agencyId: resolvedAgencyId,
           signers: signersList,
           emailSubject,
-          emailMessage
+          emailMessage,
+          ccMe,
+          autoRemind7Days,
+          emailOnComplete,
         })
       });
 
@@ -320,9 +425,12 @@ export function SendDocumentPage() {
 
   const renderSignersStep = () => (
     <div className="space-y-6">
+      <div className="rounded-xl border border-emerald-100 bg-emerald-50/80 p-4 text-xs font-semibold text-emerald-900">
+        Your signature ({user?.name || 'sender'}) is applied automatically when you send. Only external recipients below receive SignWell signing requests.
+      </div>
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Signing Execution Chain</div>
+          <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">External recipients only</div>
           <Button 
             variant="outline" 
             size="sm"
@@ -373,7 +481,6 @@ export function SendDocumentPage() {
                   onChange={(e) => handleSignerChange(signer.id, "role", e.target.value)}
                   className="flex h-10 w-full rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]"
                 >
-                  <option value="RMA Agent (Principal)">RMA Agent (Principal)</option>
                   <option value="Primary Client (Signer)">Primary Client (Signer)</option>
                   <option value="Sponsor (Signer)">Sponsor (Signer)</option>
                   <option value="Witness (Declarant)">Witness (Declarant)</option>
@@ -448,6 +555,24 @@ export function SendDocumentPage() {
               className="flex min-h-[140px] w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]"
             />
           </div>
+
+          <div className="space-y-3">
+            {[
+              { key: "ccMe" as const, label: "CC me on all emails", value: ccMe, set: setCcMe },
+              { key: "autoRemind7Days" as const, label: "Auto-remind unsigned after 7 days", value: autoRemind7Days, set: setAutoRemind7Days },
+              { key: "emailOnComplete" as const, label: "Email me when all signers complete", value: emailOnComplete, set: setEmailOnComplete },
+            ].map(({ key, label, value, set }) => (
+              <label key={key} className="flex items-center gap-3 cursor-pointer text-sm font-semibold text-slate-700">
+                <input
+                  type="checkbox"
+                  checked={value}
+                  onChange={(e) => set(e.target.checked)}
+                  className="h-4 w-4 rounded border-slate-300 text-[#0D9F8C] focus:ring-[#0D9F8C]"
+                />
+                {label}
+              </label>
+            ))}
+          </div>
         </div>
 
         {/* Live Inbox Mockup */}
@@ -467,7 +592,7 @@ export function SendDocumentPage() {
             <div className="p-5 space-y-4 text-[11px] text-[#081B2E]">
               <div className="space-y-1.5 border-b border-slate-100 pb-3">
                 <div><span className="text-slate-400 font-bold">From:</span> ImmiSign Custody <strong className="text-slate-700">deliveries@immisign.com.au</strong></div>
-                <div><span className="text-slate-400 font-bold">To:</span> {signersList[1]?.name || "Client"} <strong className="text-slate-700">&lt;{signersList[1]?.email || "client@email.com"}&gt;</strong></div>
+                <div><span className="text-slate-400 font-bold">To:</span> {signersList[0]?.name || "Client"} <strong className="text-slate-700">&lt;{signersList[0]?.email || "client@email.com"}&gt;</strong></div>
                 <div><span className="text-slate-400 font-bold">Subject:</span> <strong className="text-slate-700">{emailSubject}</strong></div>
               </div>
 
@@ -480,7 +605,7 @@ export function SendDocumentPage() {
                   <span className="text-xs font-black text-[#081b36] tracking-tight">ImmiSign OMARA Compliant Portal</span>
                 </div>
 
-                <p>Dear {signersList[1]?.name || "Client Signatory"},</p>
+                <p>Dear {signersList[0]?.name || "Client Signatory"},</p>
                 
                 <p className="whitespace-pre-wrap">{emailMessage}</p>
 
@@ -512,6 +637,39 @@ export function SendDocumentPage() {
 
   const renderReviewStep = () => (
     <div className="space-y-6">
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 space-y-4">
+        <div className="font-bold text-sm text-[#081b36]">Document preview</div>
+        {!uploadedFile?.file && draftRestored && (
+          <p className="text-xs text-amber-700 font-semibold bg-amber-50 border border-amber-100 rounded-lg p-3">
+            Draft restored — re-upload your file on the Upload step before sending.
+          </p>
+        )}
+        <div className="grid gap-4 lg:grid-cols-2">
+          <div className="space-y-2">
+            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Uploaded file</span>
+            {filePreviewUrl ? (
+              <iframe title="Document preview" src={filePreviewUrl} className="w-full h-[320px] rounded-xl border border-slate-200 bg-slate-50" />
+            ) : (
+              <div className="h-[120px] rounded-xl border border-dashed border-slate-200 flex items-center justify-center text-xs text-slate-400 font-semibold">
+                {uploadedFile?.type === "PDF" ? "Re-upload PDF to preview" : "Preview available for PDF files"}
+              </div>
+            )}
+          </div>
+          <div className="space-y-2">
+            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Agent signature (included in SignWell packet)</span>
+            {previewLoading ? (
+              <div className="h-[320px] rounded-xl border border-slate-200 flex items-center justify-center text-xs text-slate-400">Generating preview…</div>
+            ) : attestationPreviewUrl ? (
+              <iframe title="Agent attestation preview" src={attestationPreviewUrl} className="w-full h-[320px] rounded-xl border border-slate-200 bg-slate-50" />
+            ) : (
+              <div className="h-[120px] rounded-xl border border-dashed border-slate-200 flex items-center justify-center text-xs text-slate-400 font-semibold">
+                Configure your signature in RMA Team settings to preview
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
         {/* Verification Summary */}
         <div className="space-y-5 text-xs text-[#081B2E]">
@@ -581,7 +739,11 @@ export function SendDocumentPage() {
         <Button variant="outline" onClick={() => setCurrentStep(3)} className="rounded-xl border-slate-200 bg-white font-bold px-6">
           Back
         </Button>
-        <Button disabled={sendingProgress > 0 && !sendSuccess && !hasError} onClick={triggerDispatch} className="rounded-xl bg-[#081B2E] text-white font-bold px-6 shadow-md hover:bg-slate-800 disabled:opacity-50">
+        <Button
+          disabled={!uploadedFile?.file || (sendingProgress > 0 && !sendSuccess && !hasError)}
+          onClick={triggerDispatch}
+          className="rounded-xl bg-[#081B2E] text-white font-bold px-6 shadow-md hover:bg-slate-800 disabled:opacity-50"
+        >
           Sign & Dispatch to Recipients <ArrowRight className="h-4 w-4 ml-1.5" />
         </Button>
       </div>

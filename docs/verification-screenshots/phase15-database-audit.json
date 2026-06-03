@@ -1,0 +1,52 @@
+{
+  "timestamp": "2026-06-03T08:58:36.601Z",
+  "checks": {
+    "migrations": {
+      "local": 24,
+      "applied": 24,
+      "missing": [],
+      "ok": true
+    },
+    "tables": {
+      "agencies": true,
+      "users": true,
+      "clients": true,
+      "agreements": true,
+      "documents": true,
+      "application_approvals": true,
+      "notifications": true,
+      "agency_tasks": true,
+      "user_notification_preferences": true,
+      "activity_logs": true,
+      "subscriptions": true
+    },
+    "rls_disabled_on_core": [],
+    "orphans": [
+      {
+        "issue": "users_without_agency",
+        "n": 0
+      },
+      {
+        "issue": "clients_orphan_agency",
+        "n": 0
+      },
+      {
+        "issue": "agreements_orphan_agency",
+        "n": 0
+      }
+    ],
+    "index_count_by_table": {
+      "activity_logs": 1,
+      "agencies": 4,
+      "agency_tasks": 3,
+      "agreements": 5,
+      "application_approvals": 5,
+      "clients": 1,
+      "documents": 4,
+      "notifications": 3,
+      "subscriptions": 6,
+      "user_notification_preferences": 1,
+      "users": 5
+    }
+  }
+}

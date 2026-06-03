@@ -8,6 +8,8 @@ import { AuditService } from './audit.service';
 import { assertUuid } from '@/lib/validation/uuid';
 import { redactSensitiveValue } from '@/lib/security/sanitize';
 import { buildSignersFromWizard } from '../lib/wizard-signers';
+import { AgentSignatureService } from './agent-signature.service';
+import { buildSignwellDispatchExtras } from '@/lib/signwell/dispatch-extras';
 
 const SIGNWELL_ROLE_LABELS: Record<string, string> = {
   primary_applicant: 'Primary Applicant',
@@ -46,6 +48,9 @@ export class SignWellService {
     
     AgreementStateMachine.validateTransition(agreement.status, AgreementStatus.SENT);
 
+    const agentSigService = new AgentSignatureService(this.supabase);
+    await agentSigService.applyAgentSignatureOnSend(agencyId, userId, agreementId);
+
     const { data: docs } = await this.supabase
       .from('documents')
       .select('*')
@@ -65,16 +70,31 @@ export class SignWellService {
     const { data: client } = await this.supabase.from('clients').select('name, email').eq('id', agreement.client_id).single();
     if (!client) throw new Error("Client not found for agreement");
 
-    const { data: rmaUser } = await this.supabase.from('users').select('full_name, email').eq('id', agreement.created_by).single();
-    if (!rmaUser) throw new Error("RMA (Creator) not found");
-
     const { data: externalSigners } = await this.supabase
       .from('signers')
       .select('role, full_name, email')
       .eq('agreement_id', agreementId);
 
-    const wizardForm = (agreement.metadata as any)?.wizard_form;
-    const wizardSigners = wizardForm ? buildSignersFromWizard(wizardForm) : [];
+    const metadata = (agreement.metadata as Record<string, unknown>) || {};
+    const wizardForm = metadata.wizard_form as Record<string, unknown> | undefined;
+    const dispatchOptions = metadata.dispatch_options as Record<string, unknown> | undefined;
+    const wizardSigners = wizardForm ? buildSignersFromWizard(wizardForm as any) : [];
+
+    const { data: senderUser } = await this.supabase
+      .from('users')
+      .select('email, full_name')
+      .eq('id', userId)
+      .single();
+
+    const dispatchExtras = buildSignwellDispatchExtras({
+      wizardForm,
+      dispatchOptions,
+      agreementTitle: agreement.title,
+      sender: {
+        email: senderUser?.email || '',
+        name: senderUser?.full_name || '',
+      },
+    });
 
     const signwellSigners: Array<{ id: string; name: string; email: string; routing_order: number; role: string }> = [];
     const seenEmails = new Set<string>();
@@ -119,7 +139,7 @@ export class SignWellService {
         });
     }
 
-    addSigner('migration_agent', rmaUser.full_name, rmaUser.email, 'Migration Agent', 2);
+    // Agent/RMA signature is embedded in the PDF — only external recipients sign via SignWell.
 
     const payload = {
       test_mode: process.env.NODE_ENV !== 'production',
@@ -129,6 +149,7 @@ export class SignWellService {
       expires_in: 30,
       with_signature_page: true,
       draft: true,
+      ...dispatchExtras,
     };
     
     console.log("SIGNWELL_DISPATCH_START", redactSensitiveValue({
@@ -150,19 +171,16 @@ export class SignWellService {
     const sentDoc = await signwellClient.sendDocument(signwellData.id);
     console.log("SIGNWELL_SEND_SUCCESS", redactSensitiveValue({ id: sentDoc.id, status: sentDoc.status }));
 
-    await this.agreementRepo.update(agreementId, { 
+    await this.agreementRepo.update(agreementId, {
       status: AgreementStatus.SENT,
       signwell_document_id: sentDoc.id,
-      sent_at: new Date().toISOString()
+      sent_at: new Date().toISOString(),
     });
 
-    await this.auditService.logEvent(
-      agencyId,
-      userId,
-      agreementId,
-      'Agreement Sent for Signature',
-      { signwell_document_id: sentDoc.id },
-    );
+    await this.auditService.logEvent(agencyId, userId, agreementId, 'Agreement Sent for Signature', {
+      signwell_document_id: sentDoc.id,
+      external_signers_only: true,
+    });
 
     return sentDoc;
   }

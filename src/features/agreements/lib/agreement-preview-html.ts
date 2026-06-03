@@ -2,6 +2,14 @@ import type { AgencyWizardContext, AgreementWizardFormData, RmaOption } from '..
 import { generateProvisionalAgreementRef } from '../types/wizard'
 import type { MatterTypeConfig } from '@/lib/settings/types'
 
+export type AgentSignaturePreview = {
+  name: string
+  marn?: string | null
+  signedAt: string
+  imageHtml: string
+  completed?: boolean
+}
+
 export type AgreementPreviewContext = {
   form: AgreementWizardFormData
   agency: AgencyWizardContext
@@ -10,6 +18,14 @@ export type AgreementPreviewContext = {
   statusLabel?: string
   matterTypeConfig?: MatterTypeConfig | null
   selectedClauses?: Array<{ title: string; content: string; orderIndex?: number }>
+  agentSignature?: AgentSignaturePreview | null
+}
+
+/** ISO or Date → display for signature block */
+export function formatDisplayDateForSignature(raw: string | Date): string {
+  const d = raw instanceof Date ? raw : new Date(raw)
+  if (Number.isNaN(d.getTime())) return '—'
+  return d.toLocaleDateString('en-AU', { day: '2-digit', month: 'long', year: 'numeric' })
 }
 
 function formatCurrencyAud(val: string): string {
@@ -311,6 +327,9 @@ function buildDocumentStyles(agency: AgencyWizardContext): string {
   .doc-footer strong { color: ${primary}; font-weight: 800; }
   .muted { color: #94a3b8; }
   .sig-card h3 { color: ${primary}; }
+  .sig-completed { border-color: ${primary}; background: #f8fffc; }
+  .sig-applied { min-height: 56px; margin-bottom: 8px; }
+  .sig-label { font-size: 8pt; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin: 0 0 4px; }
 `
 }
 
@@ -327,8 +346,9 @@ export function buildAgreementPreviewHtml(ctx: AgreementPreviewContext): string 
   const footerText = agency.branding?.agreementFooterText ||
     'This document was prepared by a Registered Migration Agent bound by the MARA Code of Conduct.'
 
-  const agentName = (rma?.name || agency.principalName || '').replace(/\s*\([^)]*\)\s*$/, '')
-  const agentMarn = rma?.marn || agency.marn || ''
+  const agentName = (ctx.agentSignature?.name || rma?.name || agency.principalName || '').replace(/\s*\([^)]*\)\s*$/, '')
+  const agentMarn = ctx.agentSignature?.marn || rma?.marn || agency.marn || ''
+  const agentSig = ctx.agentSignature
   const principalName = agency.principalName || agentName
   const agencyDisplayName = agency.legalName || agency.name
 
@@ -473,12 +493,15 @@ export function buildAgreementPreviewHtml(ctx: AgreementPreviewContext): string 
       <h2 class="signature-title">Signatures</h2>
       <p class="signature-sub">I HAVE READ AND UNDERSTOOD THE TERMS OF THIS AGREEMENT</p>
       <div class="sig-grid">
-        <div class="sig-card">
+        <div class="sig-card ${agentSig?.completed ? 'sig-completed' : ''}">
           <h3>Agent Signature</h3>
+          <p class="sig-label">Signature</p>
+          ${agentSig?.completed
+            ? `<div class="sig-applied">${agentSig.imageHtml}</div>`
+            : '<div class="sig-box">Sign here</div>'}
           <p class="sig-name">${escapeHtml(agentName || '—')}</p>
           ${agentMarn ? `<p class="sig-meta">MARN: ${escapeHtml(agentMarn)}</p>` : '<p class="sig-meta">&nbsp;</p>'}
-          <div class="sig-box">Sign here</div>
-          <div class="sig-date">Date: _______________________________</div>
+          <div class="sig-date">Date Signed: ${agentSig?.completed ? escapeHtml(agentSig.signedAt) : '_______________________________'}</div>
         </div>
         <div class="sig-card">
           <h3>Client Signature</h3>

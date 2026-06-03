@@ -1,0 +1,350 @@
+{
+  "timestamp": "2026-06-03T09:01:37.689Z",
+  "routes": [
+    {
+      "path": "/api/activity",
+      "handlers": [
+        "GET"
+      ],
+      "status": "OK",
+      "gaps": []
+    },
+    {
+      "path": "/api/agreements/[id]/cancel",
+      "handlers": [
+        "POST"
+      ],
+      "status": "WARN",
+      "gaps": [
+        "no failure logging"
+      ]
+    },
+    {
+      "path": "/api/agreements/[id]/status",
+      "handlers": [
+        "GET"
+      ],
+      "status": "WARN",
+      "gaps": [
+        "no failure logging"
+      ]
+    },
+    {
+      "path": "/api/agreements/send",
+      "handlers": [
+        "POST"
+      ],
+      "status": "WARN",
+      "gaps": [
+        "no failure logging"
+      ]
+    },
+    {
+      "path": "/api/agreements/standard",
+      "handlers": [
+        "POST"
+      ],
+      "status": "OK",
+      "gaps": []
+    },
+    {
+      "path": "/api/agreements/wizard-draft",
+      "handlers": [
+        "GET",
+        "PUT",
+        "DELETE"
+      ],
+      "status": "GAP",
+      "gaps": [
+        "no try/catch or withApiRoute",
+        "no failure logging"
+      ]
+    },
+    {
+      "path": "/api/approvals/[id]/attachments",
+      "handlers": [
+        "POST"
+      ],
+      "status": "WARN",
+      "gaps": [
+        "no failure logging"
+      ]
+    },
+    {
+      "path": "/api/approvals/[id]/checklist",
+      "handlers": [
+        "PATCH"
+      ],
+      "status": "WARN",
+      "gaps": [
+        "no failure logging"
+      ]
+    },
+    {
+      "path": "/api/approvals/[id]/comments",
+      "handlers": [
+        "POST"
+      ],
+      "status": "WARN",
+      "gaps": [
+        "no failure logging"
+      ]
+    },
+    {
+      "path": "/api/approvals/[id]",
+      "handlers": [
+        "GET",
+        "PATCH"
+      ],
+      "status": "WARN",
+      "gaps": [
+        "no failure logging"
+      ]
+    },
+    {
+      "path": "/api/approvals/[id]/transition",
+      "handlers": [
+        "POST"
+      ],
+      "status": "WARN",
+      "gaps": [
+        "no failure logging"
+      ]
+    },
+    {
+      "path": "/api/approvals",
+      "handlers": [
+        "GET",
+        "POST"
+      ],
+      "status": "OK",
+      "gaps": []
+    },
+    {
+      "path": "/api/approvals/widgets",
+      "handlers": [
+        "GET"
+      ],
+      "status": "OK",
+      "gaps": []
+    },
+    {
+      "path": "/api/dashboard/summary",
+      "handlers": [
+        "GET"
+      ],
+      "status": "OK",
+      "gaps": []
+    },
+    {
+      "path": "/api/documents/send-document-preview",
+      "handlers": [
+        "POST"
+      ],
+      "status": "WARN",
+      "gaps": [
+        "no failure logging"
+      ]
+    },
+    {
+      "path": "/api/documents/send",
+      "handlers": [
+        "POST"
+      ],
+      "status": "OK",
+      "gaps": []
+    },
+    {
+      "path": "/api/documents/wizard-draft",
+      "handlers": [
+        "GET",
+        "PUT",
+        "DELETE"
+      ],
+      "status": "GAP",
+      "gaps": [
+        "no try/catch or withApiRoute",
+        "no failure logging"
+      ]
+    },
+    {
+      "path": "/api/notifications/[id]",
+      "handlers": [
+        "PATCH"
+      ],
+      "status": "OK",
+      "gaps": []
+    },
+    {
+      "path": "/api/notifications/read-all",
+      "handlers": [
+        "POST"
+      ],
+      "status": "OK",
+      "gaps": []
+    },
+    {
+      "path": "/api/notifications",
+      "handlers": [
+        "GET"
+      ],
+      "status": "OK",
+      "gaps": []
+    },
+    {
+      "path": "/api/notifications/unread",
+      "handlers": [
+        "GET"
+      ],
+      "status": "OK",
+      "gaps": []
+    },
+    {
+      "path": "/api/search",
+      "handlers": [
+        "GET"
+      ],
+      "status": "OK",
+      "gaps": []
+    },
+    {
+      "path": "/api/settings/branding/logo",
+      "handlers": [
+        "POST",
+        "DELETE"
+      ],
+      "status": "GAP",
+      "gaps": [
+        "no try/catch or withApiRoute",
+        "no failure logging"
+      ]
+    },
+    {
+      "path": "/api/settings/notification-preferences",
+      "handlers": [
+        "GET",
+        "PATCH"
+      ],
+      "status": "OK",
+      "gaps": []
+    },
+    {
+      "path": "/api/settings/rmas/[id]/signature",
+      "handlers": [
+        "PATCH"
+      ],
+      "status": "WARN",
+      "gaps": [
+        "no failure logging"
+      ]
+    },
+    {
+      "path": "/api/stripe/billing",
+      "handlers": [
+        "GET"
+      ],
+      "status": "WARN",
+      "gaps": [
+        "no failure logging"
+      ]
+    },
+    {
+      "path": "/api/stripe/checkout",
+      "handlers": [
+        "POST"
+      ],
+      "status": "WARN",
+      "gaps": [
+        "no failure logging"
+      ]
+    },
+    {
+      "path": "/api/stripe/portal",
+      "handlers": [
+        "POST"
+      ],
+      "status": "WARN",
+      "gaps": [
+        "no failure logging"
+      ]
+    },
+    {
+      "path": "/api/stripe/seats",
+      "handlers": [
+        "GET",
+        "POST"
+      ],
+      "status": "WARN",
+      "gaps": [
+        "no failure logging"
+      ]
+    },
+    {
+      "path": "/api/stripe/usage",
+      "handlers": [
+        "GET"
+      ],
+      "status": "WARN",
+      "gaps": [
+        "no failure logging"
+      ]
+    },
+    {
+      "path": "/api/stripe/webhooks",
+      "handlers": [
+        "POST"
+      ],
+      "status": "OK",
+      "gaps": []
+    },
+    {
+      "path": "/api/tasks/[id]",
+      "handlers": [
+        "PATCH"
+      ],
+      "status": "OK",
+      "gaps": []
+    },
+    {
+      "path": "/api/tasks",
+      "handlers": [
+        "GET",
+        "POST"
+      ],
+      "status": "OK",
+      "gaps": []
+    },
+    {
+      "path": "/api/team/accept",
+      "handlers": [
+        "POST"
+      ],
+      "status": "OK",
+      "gaps": []
+    },
+    {
+      "path": "/api/team/invite/[token]",
+      "handlers": [
+        "GET"
+      ],
+      "status": "GAP",
+      "gaps": [
+        "no try/catch or withApiRoute",
+        "no failure logging"
+      ]
+    },
+    {
+      "path": "/api/team/invite",
+      "handlers": [
+        "POST"
+      ],
+      "status": "OK",
+      "gaps": []
+    }
+  ],
+  "summary": {
+    "OK": 17,
+    "WARN": 15,
+    "GAP": 4
+  }
+}

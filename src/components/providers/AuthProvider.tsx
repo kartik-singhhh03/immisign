@@ -84,6 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setAuthState({
           user: mappedUser,
           activeWorkspace: mappedWorkspace,
+          workspaces: [mappedWorkspace],
         })
       } catch (error) {
         console.error("[AuthProvider] Error fetching profile/workspace:", error)

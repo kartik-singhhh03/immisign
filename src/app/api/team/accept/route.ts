@@ -3,6 +3,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { adminRest } from '@/lib/supabase/admin-rest';
 import { dbRoleToUi } from '@/lib/auth/db-roles';
 import { createRmaFromInvite } from '@/lib/rma/create-from-invite';
+import { stripeService } from '@/lib/stripe/service';
 
 export async function POST(req: NextRequest) {
   const { token, password, full_name } = (await req.json()) as {
@@ -116,6 +117,12 @@ export async function POST(req: NextRequest) {
     headers: { 'Content-Type': 'application/json', Prefer: 'return=minimal' },
     body: JSON.stringify({ accepted_at: new Date().toISOString() }),
   });
+
+  try {
+    await stripeService.syncSubscriptionSeats(invite.agency_id);
+  } catch (syncErr) {
+    console.error('SEAT_SYNC_AFTER_ACCEPT', syncErr);
+  }
 
   return NextResponse.json({
     success: true,

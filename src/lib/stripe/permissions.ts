@@ -1,71 +1,47 @@
 import { requireAgency } from '../supabase/auth';
-import { SAAS_PLANS, PlanName } from './plans';
+import { getImmisignPlan } from './plan';
 import { AppError } from '../utils/errors';
 import { createClient } from '../supabase/server';
 
 /**
- * Validates if the current agency has physical capacity mapping remaining to add a user. 
+ * Ensures the agency has an active or trialing subscription before gated actions.
  */
-export async function requireUserSeatCapacity() {
-    const { agency } = await requireAgency();
-    const supabase = await createClient();
+export async function requireActiveSubscription() {
+  const { agency } = await requireAgency();
+  const status = agency.subscription_status;
 
-    const { count } = await supabase
-       .from('users')
-       .select('*', { count: 'exact', head: true })
-       .eq('agency_id', agency.id)
-       .eq('is_active', true);
+  if (!status || !['active', 'trialing'].includes(status)) {
+    throw new AppError(
+      'An active ImmiSign subscription is required. Subscribe from Billing settings.',
+      'FORBIDDEN',
+    );
+  }
 
-    const currentActiveUsers = count || 0;
-
-    if (currentActiveUsers >= agency.max_users) {
-        throw new AppError(
-             `Your current plan limits you to ${agency.max_users} users. Please upgrade to add more team members.`,
-             'FORBIDDEN'
-        );
-    }
-
-    return true;
+  return true;
 }
 
 /**
- * Validates if the current tenant has document limits left.
+ * @deprecated Document limits removed on single plan (unlimited agreements).
  */
 export async function requireDocumentCapacity() {
-    const { agency } = await requireAgency();
-    const supabase = await createClient();
-
-    const { count } = await supabase
-       .from('agreements')
-       .select('*', { count: 'exact', head: true })
-       .eq('agency_id', agency.id);
-
-    const usedDocs = count || 0;
-
-    if (usedDocs >= agency.max_documents) {
-        throw new AppError(
-             `Your current plan limits you to ${agency.max_documents} documents. Please upgrade to send more.`,
-             'FORBIDDEN'
-        );
-    }
-    
-    return true;
+  return true;
 }
 
 /**
- * Validates premium feature flags natively.
+ * Premium features are included in the ImmiSign plan.
  */
-export async function requireFeature(featureKey: keyof typeof SAAS_PLANS['AGENCY']['features']) {
-    const { agency } = await requireAgency();
-    
-    // Safely mapping the db string backup over configuration sets
-    const planConfig = SAAS_PLANS[agency.plan_type as PlanName] || SAAS_PLANS['STARTER'];
+export async function requireFeature(
+  _featureKey: keyof ReturnType<typeof getImmisignPlan>['features'],
+) {
+  await requireActiveSubscription();
+  const plan = getImmisignPlan();
+  if (!plan.features[_featureKey]) {
+    throw new AppError('This feature is not available on your plan.', 'FORBIDDEN');
+  }
+  return true;
+}
 
-    if (!planConfig.features[featureKey]) {
-        throw new AppError(
-            `This feature requires a premium plan. Please upgrade your subscription.`,
-            'FORBIDDEN'
-        );
-    }
-    return true;
+/** @deprecated Seat capacity is managed via Stripe; use seat preview API before invites. */
+export async function requireUserSeatCapacity() {
+  return true;
 }

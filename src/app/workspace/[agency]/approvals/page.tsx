@@ -1,6 +1,5 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { ApprovalRepository } from '@/features/approvals/repositories/approvals.repository';
 import { ApprovalsList } from '@/features/approvals/components/list/approvals-list';
 
 export default async function ApprovalsPage({ params }: { params: { agency: string } }) {
@@ -9,22 +8,20 @@ export default async function ApprovalsPage({ params }: { params: { agency: stri
   const { data: agency } = await supabase.from('agencies').select('id, slug').eq('slug', params.agency).single();
   if (!agency) return notFound();
 
-  const repo = new ApprovalRepository(supabase);
-  const rawApprovals = await repo.listForAgency(agency.id);
+  const { data: team } = await supabase
+    .from('users')
+    .select('id, full_name, email')
+    .eq('agency_id', agency.id);
 
-  const approvals = rawApprovals.map((a) => ({
-    id: a.id,
-    clientName: a.title.split(' - ')[0] || a.title,
-    visaSubclass: a.visa_subclass || 'Visa',
-    agentName: 'Assigned Agent',
-    status: a.status,
-    lodgementDeadline: a.lodgement_deadline || null,
-  }));
+  const userMap = Object.fromEntries(
+    (team || []).map((u) => [u.id, u.full_name || u.email || 'User']),
+  );
 
   return (
     <ApprovalsList
-      initialApprovals={approvals}
       agencySlug={params.agency}
+      agencyId={agency.id}
+      userMap={userMap}
     />
   );
 }

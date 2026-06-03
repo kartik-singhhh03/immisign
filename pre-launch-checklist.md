@@ -171,7 +171,7 @@ graph TD
 ### Step 4: Configure Third-Party Integrations
 - **Stripe**:
   - Switch to Live Mode in Stripe.
-  - Create the subscription products (Starter, Pro, Agency) and record the live `price_xxxx` price IDs.
+  - Create ImmiSign Plan ($49/mo base) and Additional Seat ($10/mo) products; record `STRIPE_IMMISIGN_BASE_PRICE_ID` and `STRIPE_IMMISIGN_SEAT_PRICE_ID` (see `docs/STRIPE_MIGRATION_PHASE10.md`).
   - Register a Stripe webhook endpoint pointing to `https://app.immisign.com/api/webhooks/stripe`. Subscribe to `customer.subscription.updated`, `customer.subscription.deleted`, and `checkout.session.completed`.
 - **SignWell**:
   - Retrieve your live API Key.
@@ -193,9 +193,8 @@ graph TD
   - `STRIPE_SECRET_KEY`
   - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
   - `STRIPE_WEBHOOK_SECRET`
-  - `STRIPE_STARTER_MONTHLY_PRICE_ID`
-  - `STRIPE_PRO_MONTHLY_PRICE_ID`
-  - `STRIPE_AGENCY_MONTHLY_PRICE_ID`
+  - `STRIPE_IMMISIGN_BASE_PRICE_ID`
+  - `STRIPE_IMMISIGN_SEAT_PRICE_ID`
   - `RESEND_API_KEY`
   - `RESEND_FROM_EMAIL`
   - `RESEND_WEBHOOK_SECRET`

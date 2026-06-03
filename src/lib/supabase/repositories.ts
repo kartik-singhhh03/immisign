@@ -8,7 +8,7 @@ export class DashboardRepository {
     const [{ count: clientsCount }, { count: agreementsCount, data: agreementsData }, { count: approvalsCount }] = await Promise.all([
       this.supabase.from('clients').select('*', { count: 'exact', head: true }).eq('agency_id', agencyId),
       this.supabase.from('agreements').select('professional_fee', { count: 'exact' }).eq('agency_id', agencyId),
-      this.supabase.from('application_approvals').select('*', { count: 'exact', head: true }).eq('agency_id', agencyId)
+      this.supabase.from('application_approvals').select('*', { count: 'exact', head: true }).eq('agency_id', agencyId).is('deleted_at', null).in('status', ['submitted', 'under_review', 'changes_requested'])
     ]);
 
     const totalRevenue = (agreementsData || []).reduce((sum, a) => sum + (Number(a.professional_fee) || 0), 0);
@@ -288,7 +288,8 @@ export class ApprovalsRepository {
         title: a.title,
         client: a.clients?.name || 'Unknown Client',
         type: a.visa_subclass || 'Visa',
-        status: a.status === 'pending' ? 'Pending Review' : a.status === 'approved' ? 'Approved' : 'Changes Requested',
+        status: a.status,
+        approval_number: a.approval_number,
         date: new Date(a.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
       })),
       count: count || 0

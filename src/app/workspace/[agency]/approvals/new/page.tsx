@@ -8,16 +8,17 @@ export default async function NewApprovalPage({ params }: { params: { agency: st
   const { data: agency } = await supabase.from('agencies').select('id, slug').eq('slug', params.agency).single();
   if (!agency) return notFound();
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    return notFound();
-  }
+  const [{ data: clients }, { data: matterTypes }] = await Promise.all([
+    supabase.from('clients').select('id, name').eq('agency_id', agency.id).order('name'),
+    supabase.from('matter_types').select('id, name').eq('agency_id', agency.id).order('name'),
+  ]);
 
   return (
     <ApprovalWizard
       agencyId={agency.id}
-      agencySlug={agency.slug}
-      userId={user.id}
+      agencySlug={params.agency}
+      clients={clients || []}
+      matterTypes={matterTypes || []}
     />
   );
 }

@@ -1,0 +1,10 @@
+{
+  "screenshots": [
+    "01-login-dashboard.png",
+    "99-error-state.png"
+  ],
+  "steps": {
+    "login": "PASS"
+  },
+  "error": "Waiting failed: 60000ms exceeded"
+}

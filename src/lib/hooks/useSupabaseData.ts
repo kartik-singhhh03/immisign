@@ -15,8 +15,8 @@ import {
 } from '@/lib/supabase/repositories';
 
 
-export async function getRealAgencyId(supabase: SupabaseClient, fallback?: string | null) {
-  if (!fallback || !fallback.startsWith('w-')) return fallback;
+export async function getRealAgencyId(supabase: SupabaseClient, agencyId?: string | null) {
+  if (agencyId && /^[0-9a-f-]{36}$/i.test(agencyId)) return agencyId;
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
   const { data } = await supabase.from('users').select('agency_id').eq('id', user.id).single();
@@ -369,7 +369,7 @@ export function useTeamMembers() {
   return { data, loading, error, refetch: fetch, updateRole, updateStatus, removeMember };
 }
 
-import { InvitationsRepository, AgencyRepository, BrandingRepository, MatterDefaultsRepository, ClausesRepository } from '../supabase/repositories';
+import { InvitationsRepository, AgencyRepository, BrandingRepository, MatterDefaultsRepository, ClausesRepository, MatterTypesRepository, AgencyPaymentSchedulesRepository, RmaTeamRepository } from '../supabase/repositories';
 
 export function useInvitations() {
   const [data, setData] = useState<any[]>([]);
@@ -487,6 +487,139 @@ export function useClauses() {
 
   useEffect(() => { fetch() }, [fetch]);
   return { data, loading, refetch: fetch, addClause, deleteClause };
+}
+
+export function useMatterTypesSettings() {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const activeWorkspace = useAuthStore((state) => state.activeWorkspace);
+  const supabase = useMemo(() => createClient(), []);
+  const repo = useMemo(() => new MatterTypesRepository(supabase), [supabase]);
+
+  const fetch = useCallback(async () => {
+    if (!activeWorkspace?.id) return setLoading(false);
+    try {
+      const actId = await getRealAgencyId(supabase, activeWorkspace.id);
+      if (actId) setData(await repo.list(actId));
+    } finally {
+      setLoading(false);
+    }
+  }, [activeWorkspace?.id, repo, supabase]);
+
+  const addMatterType = async (name: string) => {
+    const actId = await getRealAgencyId(supabase, activeWorkspace?.id);
+    if (!actId) return;
+    await repo.create(actId, name);
+    await fetch();
+  };
+
+  const deleteMatterType = async (id: string) => {
+    await repo.delete(id);
+    await fetch();
+  };
+
+  const loadMatterTypeFields = async (matterTypeId: string) => repo.listFields(matterTypeId);
+
+  const addMatterTypeField = async (
+    matterTypeId: string,
+    field: { field_key: string; label: string; field_type?: string; required?: boolean }
+  ) => {
+    await repo.createField(matterTypeId, field);
+  };
+
+  const deleteMatterTypeField = async (fieldId: string) => {
+    await repo.deleteField(fieldId);
+  };
+
+  useEffect(() => { fetch() }, [fetch]);
+  return {
+    data,
+    loading,
+    refetch: fetch,
+    addMatterType,
+    deleteMatterType,
+    loadMatterTypeFields,
+    addMatterTypeField,
+    deleteMatterTypeField,
+  };
+}
+
+export function usePaymentScheduleSettings() {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const activeWorkspace = useAuthStore((state) => state.activeWorkspace);
+  const supabase = useMemo(() => createClient(), []);
+  const repo = useMemo(() => new AgencyPaymentSchedulesRepository(supabase), [supabase]);
+
+  const fetch = useCallback(async () => {
+    if (!activeWorkspace?.id) return setLoading(false);
+    try {
+      const actId = await getRealAgencyId(supabase, activeWorkspace.id);
+      if (actId) setData(await repo.list(actId));
+    } finally {
+      setLoading(false);
+    }
+  }, [activeWorkspace?.id, repo, supabase]);
+
+  const addSchedule = async (label: string) => {
+    const actId = await getRealAgencyId(supabase, activeWorkspace?.id);
+    if (!actId) return;
+    await repo.create(actId, label);
+    await fetch();
+  };
+
+  const deleteSchedule = async (id: string) => {
+    await repo.delete(id);
+    await fetch();
+  };
+
+  useEffect(() => { fetch() }, [fetch]);
+  return { data, loading, refetch: fetch, addSchedule, deleteSchedule };
+}
+
+export function useRmaTeam() {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const activeWorkspace = useAuthStore((state) => state.activeWorkspace);
+  const supabase = useMemo(() => createClient(), []);
+  const repo = useMemo(() => new RmaTeamRepository(supabase), [supabase]);
+
+  const fetch = useCallback(async () => {
+    if (!activeWorkspace?.id) return setLoading(false);
+    try {
+      const actId = await getRealAgencyId(supabase, activeWorkspace.id);
+      if (actId) setData(await repo.list(actId));
+    } finally {
+      setLoading(false);
+    }
+  }, [activeWorkspace?.id, repo, supabase]);
+
+  const setDefault = async (rmaId: string) => {
+    const actId = await getRealAgencyId(supabase, activeWorkspace?.id);
+    if (!actId) return;
+    await repo.setDefault(actId, rmaId);
+    await fetch();
+  };
+
+  const setStatus = async (rmaId: string, status: string) => {
+    await repo.setStatus(rmaId, status);
+    await fetch();
+  };
+
+  const removeRma = async (rmaId: string) => {
+    await repo.remove(rmaId);
+    await fetch();
+  };
+
+  const upsertRma = async (payload: Parameters<RmaTeamRepository['upsertForUser']>[1]) => {
+    const actId = await getRealAgencyId(supabase, activeWorkspace?.id);
+    if (!actId) return;
+    await repo.upsertForUser(actId, payload);
+    await fetch();
+  };
+
+  useEffect(() => { fetch() }, [fetch]);
+  return { data, loading, refetch: fetch, setDefault, setStatus, removeRma, upsertRma };
 }
 
 export function useUserProfile() {

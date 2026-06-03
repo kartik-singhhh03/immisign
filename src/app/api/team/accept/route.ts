@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { adminRest } from '@/lib/supabase/admin-rest';
 import { dbRoleToUi } from '@/lib/auth/db-roles';
+import { createRmaFromInvite } from '@/lib/rma/create-from-invite';
 
 export async function POST(req: NextRequest) {
   const { token, password, full_name } = (await req.json()) as {
@@ -25,6 +26,8 @@ export async function POST(req: NextRequest) {
       agency_id: string;
       expires_at: string;
       accepted_at: string | null;
+      marn?: string | null;
+      full_name?: string | null;
     }>
   >(`invitations?token=eq.${encodeURIComponent(token)}&select=*&limit=1`);
 
@@ -94,6 +97,19 @@ export async function POST(req: NextRequest) {
   if (profileError) {
     return NextResponse.json({ error: profileError.message }, { status: 500 });
   }
+
+  await createRmaFromInvite(
+    admin,
+    userId,
+    {
+      agency_id: invite.agency_id,
+      email: invite.email,
+      role: invite.role,
+      marn: invite.marn,
+      full_name: displayName,
+    },
+    (invite as { phone?: string }).phone,
+  );
 
   await adminRest(`invitations?id=eq.${invite.id}`, {
     method: 'PATCH',

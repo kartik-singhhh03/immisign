@@ -133,7 +133,7 @@ export function FeaturesPage() {
                 </div>
                 <div className="flex justify-between items-center text-xs font-bold text-slate-500">
                   <span>Practitioner Auth</span>
-                  <span className="text-[#081b36] font-semibold">Rajwant Singh (MARN 1794016)</span>
+                  <span className="text-[#081b36] font-semibold">Registered Migration Agent (MARN)</span>
                 </div>
                 <div className="flex justify-between items-center text-xs font-bold text-slate-500">
                   <span>SMS Token IP</span>
@@ -1095,7 +1095,7 @@ export function ContactPage() {
                     <label className="text-xs font-black uppercase tracking-wider text-slate-500">Full Name</label>
                     <Input
                       required
-                      placeholder="e.g. Rajwant Singh"
+                      placeholder="e.g. Jane Smith"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       className="h-11 rounded-xl border-slate-200/80"

@@ -42,6 +42,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           throw agencyError;
         }
 
+        const { data: branding } = await (supabase as any)
+          .from('branding_settings')
+          .select('primary_color, logo_url')
+          .eq('agency_id', profile.agency_id)
+          .maybeSingle()
+
         // Map to our frontend formats
         const mappedRole: User["role"] =
           profile.role === 'owner' ? 'Owner' :
@@ -65,11 +71,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           name: agency.name,
           slug: agency.slug,
           initials: agency.name.substring(0, 2).toUpperCase(),
-          color: "#0D9F8C", // Static for now, can come from branding table later
+          color: branding?.primary_color || "#0D9F8C",
+          logoUrl: branding?.logo_url || undefined,
           address: agency.address || "Head Office",
           marn: agency.marn || "1234567",
           abn: agency.abn || "12 345 678 910",
-          team: [] // We could fetch users, but keep empty array for mock compatibility
+          team: []
         }
 
         console.log("[AuthProvider] Successfully mapped workspace slug:", mappedWorkspace.slug);

@@ -1,6 +1,6 @@
 "use client"
 import * as React from "react"
-import { useAuthStore } from "@/store/authStore"
+import { useRequireWorkspace } from "@/lib/hooks/use-workspace"
 import { useDocuments } from "@/lib/hooks/useSupabaseData"
 import Link from "next/link"
 import {
@@ -22,8 +22,7 @@ import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 
 export function SendDocumentPage() {
-  const activeWorkspace = useAuthStore(s => s.activeWorkspace)
-  const currentSlug = activeWorkspace?.slug || "avc-migration"
+  const { slug: currentSlug } = useRequireWorkspace()
   const user = useAuthStore(s => s.user)
   const steps = ["Type", "Upload", "Signers", "Email", "Review", "Send"]
   const [currentStep, setCurrentStep] = React.useState(0)

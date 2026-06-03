@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
+import { createRmaFromInvite } from '@/lib/rma/create-from-invite';
 
 export async function POST(req: Request) {
   try {
     const supabase = await createClient();
-    const { token, password, fullName } = await req.json();
+    const { token, password, fullName, phone } = await req.json();
 
     // 1. Fetch invitation
     const { data: invite, error: inviteError } = await supabase
@@ -50,6 +52,7 @@ export async function POST(req: Request) {
         agency_id: invite.agency_id,
         email: invite.email,
         full_name: fullName,
+        phone: phone || null,
         role: invite.role,
         email_verified: true,
         is_active: true
@@ -58,6 +61,15 @@ export async function POST(req: Request) {
     if (userRecordError) {
       return NextResponse.json({ error: 'Failed to create workspace user record.' }, { status: 500 });
     }
+
+    const admin = createAdminClient();
+    await createRmaFromInvite(admin, userId, {
+      agency_id: invite.agency_id,
+      email: invite.email,
+      role: invite.role,
+      marn: invite.marn,
+      full_name: fullName,
+    }, phone);
 
     // 4. Mark invitation as accepted
     await supabase

@@ -8,6 +8,7 @@ import { StorageHelpers } from '@/lib/supabase/storage';
 import { AuditService } from './audit.service';
 import { AgreementStateMachine } from './state-machine';
 import { AgreementStatus } from '../types';
+import { buildAgreementPreviewHtml } from '@/features/agreements/lib/agreement-preview-html';
 import { createAdminClient } from '@/lib/supabase/admin';
 
 export class DocumentGenerationService {
@@ -46,8 +47,88 @@ export class DocumentGenerationService {
 
     // 5. Fetch Additional Data
     const { data: agency } = await this.supabase.from('agencies').select('*').eq('id', agencyId).single();
-    const { data: user } = await this.supabase.from('users').select('*').eq('id', userId).single();
-    const { data: rma } = await this.supabase.from('rmas').select('*').eq('user_id', userId).single();
+    const responsibleRmaId = (agreement.metadata as any)?.responsible_rma_id || agreement.created_by;
+    const { data: user } = await this.supabase.from('users').select('*').eq('id', responsibleRmaId).single();
+    const { data: rma } = await this.supabase.from('rmas').select('*').eq('user_id', responsibleRmaId).maybeSingle();
+
+    const wizardForm = (agreement.metadata as any)?.wizard_form;
+    if (wizardForm) {
+      const agencySnapshot = (agreement.metadata as any)?.agency_snapshot;
+      const { data: principalUser } = await this.supabase
+        .from('users')
+        .select('full_name')
+        .eq('agency_id', agencyId)
+        .eq('role', 'owner')
+        .limit(1)
+        .maybeSingle();
+
+      const selectedClausesMeta = (agreement.metadata as any)?.selected_clauses || [];
+      const matterTypeConfigMeta = (agreement.metadata as any)?.matter_type_config || null;
+      const compiledHtml = buildAgreementPreviewHtml({
+        form: wizardForm,
+        agency: {
+          id: agencyId,
+          name: agencySnapshot?.name || agency?.name || '',
+          slug: agencySnapshot?.slug || agency?.slug || '',
+          legalName: agencySnapshot?.legalName || agency?.legal_name || agency?.name,
+          principalName: agencySnapshot?.principalName || principalUser?.full_name || user?.full_name,
+          address: agencySnapshot?.address || agency?.address || undefined,
+          abn: agencySnapshot?.abn || agency?.abn || undefined,
+          phone: agencySnapshot?.phone || agency?.phone || undefined,
+          email: agencySnapshot?.email || agency?.email || undefined,
+          marn: agencySnapshot?.marn || rma?.mara_number || undefined,
+          branding: agencySnapshot?.branding || undefined,
+        },
+        rma: user
+          ? {
+              id: responsibleRmaId,
+              name: user.full_name,
+              email: user.email,
+              marn: rma?.mara_number,
+            }
+          : null,
+        agreementRef: (agreement.metadata as any)?.agreement_ref || agreement.agreement_number,
+        statusLabel: 'AWAITING SIGNATURE',
+        matterTypeConfig: matterTypeConfigMeta,
+        selectedClauses: selectedClausesMeta,
+      });
+
+      const pdfBuffer = await PDFService.generatePdf(compiledHtml);
+      const fileName = `agreement-${agreement.agreement_number}.pdf`;
+      const storagePath = StorageHelpers.getAgreementPath(agencyId, agreement.id, fileName);
+
+      const { error: uploadError } = await this.supabase.storage
+        .from('secure_documents')
+        .upload(storagePath, pdfBuffer, {
+          contentType: 'application/pdf',
+          upsert: true,
+        });
+
+      if (uploadError) throw new Error(`Failed to upload PDF: ${uploadError.message}`);
+
+      await this.agreementRepo.update(agreement.id, {
+        status: AgreementStatus.GENERATED,
+      });
+
+      const { error: docErr } = await this.supabase.from('documents').insert({
+        agency_id: agencyId,
+        agreement_id: agreement.id,
+        uploaded_by: userId,
+        file_name: fileName,
+        original_name: fileName,
+        file_url: storagePath,
+        file_size: pdfBuffer.length,
+        mime_type: 'application/pdf',
+      });
+      if (docErr) throw new Error(`Failed to insert document: ${docErr.message}`);
+
+      const timeMs = Date.now() - startTime;
+      await this.auditService.logEvent(agencyId, userId, agreement.id, 'Agreement Generated', { storagePath, generationTimeMs: timeMs });
+      await this.agreementRepo.update(agreement.id, { status: 'pending' as AgreementStatus });
+
+      return { storagePath, size: pdfBuffer.length, timeMs };
+    }
+
     const { data: matterType } = agreement.matter_type_id ? await this.supabase.from('matter_types').select('*').eq('id', agreement.matter_type_id).single() : { data: null };
     const { data: paymentSchedule } = await this.supabase.from('payment_schedules').select('*').eq('agreement_id', agreementId).single();
     const { data: signers } = await this.supabase.from('agreement_participants').select('role, users(full_name)').eq('agreement_id', agreementId);

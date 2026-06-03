@@ -1,21 +1,31 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 function normalizeType(value: string) {
   if (value === 'upload' || value === 'draw' || value === 'type') return value;
   return null;
 }
 
-export async function GET() {
+async function resolveProfile() {
   const supabase = await createClient();
   const { data: auth } = await supabase.auth.getUser();
   const user = auth.user;
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!user) return { error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
 
   const { data: profile } = await supabase.from('users').select('agency_id,id').eq('id', user.id).single();
-  if (!profile?.agency_id) return NextResponse.json({ error: 'No agency context' }, { status: 400 });
+  if (!profile?.agency_id) return { error: NextResponse.json({ error: 'No agency context' }, { status: 400 }) };
 
-  const { data, error } = await supabase
+  return { user, profile };
+}
+
+export async function GET() {
+  const resolved = await resolveProfile();
+  if ('error' in resolved && resolved.error) return resolved.error;
+  const { user, profile } = resolved as { user: { id: string }; profile: { agency_id: string; id: string } };
+
+  const admin = createAdminClient();
+  const { data, error } = await admin
     .from('user_signatures')
     .select('*')
     .eq('agency_id', profile.agency_id)
@@ -27,14 +37,12 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  const resolved = await resolveProfile();
+  if ('error' in resolved && resolved.error) return resolved.error;
+  const { user, profile } = resolved as { user: { id: string }; profile: { agency_id: string; id: string } };
+
   const supabase = await createClient();
-  const { data: auth } = await supabase.auth.getUser();
-  const user = auth.user;
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-  const { data: profile } = await supabase.from('users').select('agency_id,id').eq('id', user.id).single();
-  if (!profile?.agency_id) return NextResponse.json({ error: 'No agency context' }, { status: 400 });
-
+  const admin = createAdminClient();
   const form = await req.formData();
   const signatureTypeRaw = String(form.get('signature_type') || '').toLowerCase();
   const signatureType = normalizeType(signatureTypeRaw);
@@ -69,14 +77,14 @@ export async function POST(req: Request) {
 
   const isDefault = String(form.get('is_default') || 'false') === 'true';
   if (isDefault) {
-    await supabase
+    await admin
       .from('user_signatures')
       .update({ is_default: false, updated_at: new Date().toISOString() })
       .eq('agency_id', profile.agency_id)
       .eq('user_id', user.id);
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await admin
     .from('user_signatures')
     .insert({
       agency_id: profile.agency_id,

@@ -8,7 +8,10 @@
     "clean": "node clean.js && next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "seed:phase85": "node scripts/seed-phase85.mjs",
+    "audit:phase85": "node scripts/phase85-browser-audit.mjs",
+    "verify:phase85": "node scripts/seed-phase85.mjs && node scripts/phase85-browser-audit.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",

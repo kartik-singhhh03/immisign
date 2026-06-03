@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { DocumentGenerationService } from '@/features/agreements/services/document-generation.service';
 import { stripSensitiveUrlParams } from '@/lib/security/sanitize';
 
@@ -10,17 +9,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const cookieStore = await cookies();
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://mock.supabase.co';
-    // Use service role if available to bypass RLS for POC
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'mock-key';
-
-    const supabase = createServerClient(supabaseUrl, supabaseKey, {
-      cookies: {
-        getAll() { return cookieStore.getAll(); },
-        setAll() { /* read only */ },
-      },
-    });
+    const supabase = createAdminClient();
 
     const docService = new DocumentGenerationService(supabase);
     

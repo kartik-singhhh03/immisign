@@ -1,12 +1,11 @@
 "use client"
 
 import Link from "next/link"
-import { useAuthStore } from "@/store/authStore"
+import { useRequireWorkspace } from "@/lib/hooks/use-workspace"
 import { AlertCircle, ArrowLeft, Home } from "lucide-react"
 
 export default function WorkspaceNotFound() {
-  const { activeWorkspace } = useAuthStore()
-  const slug = activeWorkspace?.slug || "avc-migration"
+  const { slug } = useRequireWorkspace()
 
   return (
     <div className="flex min-h-[70vh] flex-col items-center justify-center text-center px-4">
@@ -15,7 +14,7 @@ export default function WorkspaceNotFound() {
       </div>
       <h2 className="text-3xl font-black tracking-tight text-[#081B2E]">Page not found</h2>
       <p className="mt-3 max-w-md text-sm text-slate-500 font-medium">
-        We couldn't find the page you're looking for. It might have been moved or deleted.
+        We couldn&apos;t find the page you&apos;re looking for. It might have been moved or deleted.
       </p>
       <div className="mt-8 flex gap-4">
         <button
@@ -25,13 +24,15 @@ export default function WorkspaceNotFound() {
           <ArrowLeft className="h-4 w-4 text-slate-400 gap-2" />
           Go Back
         </button>
-        <Link
-          href={`/workspace/${slug}/dashboard`}
-          className="flex items-center gap-2 rounded-xl bg-[#0D9F8C] px-5 py-2.5 text-sm font-bold text-white transition-all hover:bg-[#0A8777] shadow-[0_4px_12px_rgba(13,159,140,0.2)] hover:shadow-[0_4px_16px_rgba(13,159,140,0.3)]"
-        >
-          <Home className="h-4 w-4" />
-          Dashboard
-        </Link>
+        {slug && (
+          <Link
+            href={`/workspace/${slug}/dashboard`}
+            className="flex items-center gap-2 rounded-xl bg-[#0D9F8C] px-5 py-2.5 text-sm font-bold text-white transition-all hover:bg-[#0A8777] shadow-[0_4px_12px_rgba(13,159,140,0.2)] hover:shadow-[0_4px_16px_rgba(13,159,140,0.3)]"
+          >
+            <Home className="h-4 w-4" />
+            Dashboard
+          </Link>
+        )}
       </div>
     </div>
   )

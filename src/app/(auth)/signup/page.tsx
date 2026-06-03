@@ -145,7 +145,7 @@ export default function SignupPage() {
             <Input
               id="agency"
               required
-              placeholder="AVC Migration Partners"
+              placeholder="Your Migration Agency"
               value={agencyName}
               onChange={(e) => setAgencyName(e.target.value)}
               className="h-11 rounded-xl border-slate-200 bg-white"

@@ -7,6 +7,25 @@ import { Role } from '@/features/auth/types/roles';
 import { AuditService } from './audit.service';
 import { assertUuid } from '@/lib/validation/uuid';
 import { redactSensitiveValue } from '@/lib/security/sanitize';
+import { buildSignersFromWizard } from '../lib/wizard-signers';
+
+const SIGNWELL_ROLE_LABELS: Record<string, string> = {
+  primary_applicant: 'Primary Applicant',
+  secondary_applicant: 'Secondary Applicant',
+  sponsor: 'Sponsor',
+  dependant_1: 'Dependant 1',
+  dependant_2: 'Dependant 2',
+  dependant_3: 'Dependant 3',
+};
+
+function signwellRoleLabel(role: string): string {
+  if (SIGNWELL_ROLE_LABELS[role]) return SIGNWELL_ROLE_LABELS[role];
+  if (role.startsWith('dependant_')) {
+    const n = role.replace('dependant_', '');
+    return `Dependant ${n}`;
+  }
+  return role.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+}
 
 export class SignWellService {
   private agreementRepo: AgreementRepository;
@@ -22,13 +41,11 @@ export class SignWellService {
     assertUuid(userId, 'user_id');
     assertUuid(agreementId, 'agreement_id');
 
-    // 1. Validate state
     const agreement = await this.agreementRepo.getById(agreementId);
     if (!agreement || agreement.agency_id !== agencyId) throw new Error("Agreement not found");
     
     AgreementStateMachine.validateTransition(agreement.status, AgreementStatus.SENT);
 
-    // 2. Fetch Generated PDF from documents
     const { data: docs } = await this.supabase
       .from('documents')
       .select('*')
@@ -39,80 +56,71 @@ export class SignWellService {
     if (!docs || docs.length === 0) throw new Error("Generated document not found");
     const document = docs[0];
 
-    // Get a signed URL so SignWell can download it
     const { data: urlData } = await this.supabase.storage
       .from('secure_documents')
       .createSignedUrl(document.file_url, 3600);
       
     if (!urlData?.signedUrl) throw new Error("Could not generate signed URL for document");
 
-    // 3. Create Payload for SignWell
-    // Fetch Client (Main Applicant)
     const { data: client } = await this.supabase.from('clients').select('name, email').eq('id', agreement.client_id).single();
     if (!client) throw new Error("Client not found for agreement");
 
-    // Fetch RMA (Agent)
     const { data: rmaUser } = await this.supabase.from('users').select('full_name, email').eq('id', agreement.created_by).single();
     if (!rmaUser) throw new Error("RMA (Creator) not found");
 
-    // Fetch Optional Signers
-    const { data: participants } = await this.supabase.from('agreement_participants').select('role, users(full_name, email)').eq('agreement_id', agreementId);
-    
-    // Also check `signers` table if external guests are stored there
-    const { data: externalSigners } = await this.supabase.from('signers').select('role, full_name, email').eq('agreement_id', agreementId);
+    const { data: externalSigners } = await this.supabase
+      .from('signers')
+      .select('role, full_name, email')
+      .eq('agreement_id', agreementId);
 
-    const signwellSigners: any[] = [];
-    
-    // 1. Main Applicant (Routing Order 1)
-    signwellSigners.push({
-      id: 'main_applicant',
-      name: client.name,
-      email: client.email,
-      routing_order: 1,
-      role: 'Client'
-    });
+    const wizardForm = (agreement.metadata as any)?.wizard_form;
+    const wizardSigners = wizardForm ? buildSignersFromWizard(wizardForm) : [];
 
-    // 2. Optional Signers (Routing Order 1)
-    if (externalSigners) {
+    const signwellSigners: Array<{ id: string; name: string; email: string; routing_order: number; role: string }> = [];
+    const seenEmails = new Set<string>();
+
+    const addSigner = (id: string, name: string, email: string, swRole: string, routingOrder: number) => {
+      const normalized = email?.trim().toLowerCase();
+      if (!name?.trim() || !normalized || seenEmails.has(normalized)) return;
+      seenEmails.add(normalized);
+      signwellSigners.push({
+        id,
+        name: name.trim(),
+        email: normalized,
+        routing_order: routingOrder,
+        role: swRole,
+      });
+    };
+
+    const primary = wizardSigners.find((s) => s.role === 'primary_applicant');
+    addSigner(
+      'primary_applicant',
+      primary?.name || client.name,
+      primary?.email || client.email,
+      'Primary Applicant',
+      1
+    );
+
+    if (externalSigners?.length) {
       externalSigners.forEach((s: any, idx: number) => {
-        if (s.role === 'secondary_applicant' || s.role === 'sponsor') {
-          signwellSigners.push({
-            id: `optional_${idx}`,
-            name: s.full_name,
-            email: s.email,
-            routing_order: 1,
-            role: s.role === 'secondary_applicant' ? 'Secondary Applicant' : 'Sponsor'
-          });
-        }
+        addSigner(
+          `signer_${idx}`,
+          s.full_name,
+          s.email,
+          signwellRoleLabel(s.role || 'signer'),
+          1
+        );
       });
+    } else {
+      wizardSigners
+        .filter((s) => s.role !== 'primary_applicant')
+        .forEach((s, idx) => {
+          addSigner(`wizard_${idx}`, s.name, s.email, s.signwellRole, 1);
+        });
     }
 
-    if (participants) {
-      participants.forEach((p: any, idx: number) => {
-        if (p.role === 'secondary_applicant' || p.role === 'sponsor') {
-          if (p.users) {
-            signwellSigners.push({
-              id: `optional_p_${idx}`,
-              name: p.users.full_name,
-              email: p.users.email,
-              routing_order: 1,
-              role: p.role === 'secondary_applicant' ? 'Secondary Applicant' : 'Sponsor'
-            });
-          }
-        }
-      });
-    }
+    addSigner('migration_agent', rmaUser.full_name, rmaUser.email, 'Migration Agent', 2);
 
-    // 3. RMA (Routing Order 2)
-    signwellSigners.push({
-      id: 'migration_agent',
-      name: rmaUser.full_name,
-      email: rmaUser.email,
-      routing_order: 2,
-      role: 'Migration Agent'
-    });
-
-    // 4. Create Document via SignWell Service (REAL API)
     const payload = {
       test_mode: process.env.NODE_ENV !== 'production',
       name: agreement.title,
@@ -139,11 +147,9 @@ export class SignWellService {
     const signwellData = await signwellClient.createDocument(payload as any);
     console.log("SIGNWELL_DRAFT_CREATED", redactSensitiveValue({ id: signwellData.id, status: signwellData.status }));
 
-    // 5. Send Document (must be draft-only)
     const sentDoc = await signwellClient.sendDocument(signwellData.id);
     console.log("SIGNWELL_SEND_SUCCESS", redactSensitiveValue({ id: sentDoc.id, status: sentDoc.status }));
 
-    // 6. Update Agreement and Log Audit
     await this.agreementRepo.update(agreementId, { 
       status: AgreementStatus.SENT,
       signwell_document_id: sentDoc.id,

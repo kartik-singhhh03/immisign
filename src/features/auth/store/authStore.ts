@@ -22,6 +22,7 @@ export interface Workspace {
   slug: string;
   initials: string;
   color: string;
+  logoUrl?: string;
   address: string;
   marn: string;
   abn: string;
@@ -61,7 +62,7 @@ export interface AuthState {
   login: (email: string, targetSlug?: string) => boolean;
   logout: () => void;
   switchWorkspace: (slug: string) => void;
-  updateWorkspaceBranding: (color: string, initials: string) => void;
+  updateWorkspaceBranding: (color: string, initials: string, logoUrl?: string) => void;
   updateOnboardingStep: (step: number) => void;
   updateOnboardingData: (data: Partial<OnboardingData>) => void;
   invitePractitioner: (
@@ -110,26 +111,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   switchWorkspace: (slug: string) => {
-    let matchedWorkspace = get().workspaces.find((w) => w.slug === slug);
+    const matchedWorkspace = get().workspaces.find((w) => w.slug === slug);
     if (!matchedWorkspace) {
-      // Dynamic fallback for generated test tenants
-      matchedWorkspace = {
-        id: `w-${Date.now()}`,
-        name: "Valid Cloud Agency",
-        slug: slug,
-        initials: "VA",
-        color: "#0D9F8C",
-        address: "E2E Test Environment",
-        marn: "1234567",
-        abn: "00 000 000 000",
-        team: [],
-      };
-      set({ workspaces: [...get().workspaces, matchedWorkspace] });
+      return;
     }
     set({ activeWorkspace: matchedWorkspace });
   },
 
-  updateWorkspaceBranding: (color: string, initials: string) => {
+  updateWorkspaceBranding: (color: string, initials: string, logoUrl?: string) => {
     const { activeWorkspace, workspaces } = get();
     if (!activeWorkspace) return;
 
@@ -137,6 +126,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       ...activeWorkspace,
       color,
       initials,
+      ...(logoUrl !== undefined ? { logoUrl: logoUrl || undefined } : {}),
     };
 
     const updatedList = workspaces.map((w) =>

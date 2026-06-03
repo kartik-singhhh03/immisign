@@ -2,11 +2,10 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
-import { useAuthStore } from "@/store/authStore"
+import { useRequireWorkspace } from "@/lib/hooks/use-workspace"
 import {
   FileSignature,
   FileText,
-  Search,
   Users,
   Settings,
   CreditCard,
@@ -28,13 +27,13 @@ import {
 export function CommandPalette() {
   const [open, setOpen] = React.useState(false)
   const router = useRouter()
-  const { activeWorkspace } = useAuthStore()
+  const { slug } = useRequireWorkspace()
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault()
-        setOpen((open) => !open)
+        setOpen((current) => !current)
       }
     }
 
@@ -47,7 +46,8 @@ export function CommandPalette() {
     command()
   }, [])
 
-  const slug = activeWorkspace?.slug || "avc-migration"
+  if (!slug) return null
+
   const prefix = `/workspace/${slug}`
 
   return (
@@ -55,7 +55,7 @@ export function CommandPalette() {
       <CommandInput placeholder="Type a command or search..." />
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
-        
+
         <CommandGroup heading="Quick Actions">
           <CommandItem onSelect={() => runCommand(() => router.push(`${prefix}/agreements/new`))}>
             <Send className="mr-2 h-4 w-4" />
@@ -66,7 +66,7 @@ export function CommandPalette() {
             <span>Upload Document</span>
           </CommandItem>
         </CommandGroup>
-        
+
         <CommandSeparator />
 
         <CommandGroup heading="Navigation">

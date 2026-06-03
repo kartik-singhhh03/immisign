@@ -2,7 +2,6 @@
 "use client"
 import * as React from "react"
 import { useAuthStore } from "@/store/authStore"
-import { useApprovalStore } from "@/store/approvalStore"
 import Link from "next/link"
 import {
   ArrowRight,
@@ -226,68 +225,11 @@ function MiniChart() {
 export function AnalyticsPage() {
   return (
     <div className="animate-enter">
-      <PageHeader eyebrow="Analytics" title="Practice analytics" description="Agreement, signature, revenue, team and document insights in a calm executive view."  action={<div className="flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-700 shadow-sm"><ShieldAlert className="h-4 w-4" /> Demo Data Mode</div>} />
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-        <MetricCard label="Agreement conversion" value="78%" change="+9%" icon={FileCheck2} />
-        <MetricCard label="Avg signature time" value="1.8d" change="-22%" icon={Clock3} />
-        <MetricCard label="Revenue tracked" value="$128k" change="+18%" icon={BarChart3} />
-        <MetricCard label="Docs managed" value="1,284" change="+31%" icon={FileArchive} />
-      </div>
-      <div className="mt-6 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-        <MiniChart />
-        <Card className="rounded-2xl border border-slate-200/50 bg-[radial-gradient(circle_at_18%_0%,rgba(51,196,141,0.12),transparent_35%),linear-gradient(135deg,#021815,#011210)] p-6 text-white shadow-[0_20px_50px_rgba(2,18,16,0.30)]">
-          <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-[#33C48D]/5 blur-3xl" />
-          <h2 className="text-lg font-bold tracking-tight">Team performance</h2>
-          <p className="mt-1 text-xs text-emerald-100/40 font-semibold leading-relaxed">Weighted by agreements moved, signature cycle time and document completion.</p>
-          <div className="mt-6 space-y-5">
-            {["Rajwant Singh", "Priya Mehta", "Aman Gill"].map((name, index) => (
-              <div key={name}>
-                <div className="mb-2 flex justify-between text-sm font-bold">
-                  <span>{name}</span>
-                  <span className="text-[#33C48D]">{[92, 84, 76][index]}%</span>
-                </div>
-                <div className="h-[6px] rounded-full bg-white/10 overflow-hidden">
-                  <div className="chart-bar h-full rounded-full bg-gradient-to-r from-[#33C48D] to-emerald-250" style={{ width: `${[92, 84, 76][index]}%` }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card>
-      </div>
-      <div className="mt-6 grid gap-6 xl:grid-cols-[0.85fr_1.15fr]">
-        <Card className="rounded-2xl border border-slate-200/50 bg-white/60 shadow-[0_1px_2px_rgba(8,27,46,0.01),0_8px_24px_rgba(8,27,46,0.02)]">
-          <CardContent className="p-6">
-            <h2 className="text-lg font-bold tracking-tight text-[#081B2E]">Signature heatmap</h2>
-            <p className="text-xs text-slate-400 font-semibold mb-5">Signature volume across practice cases.</p>
-            <div className="grid grid-cols-7 gap-2">
-              {Array.from({ length: 35 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="aspect-square rounded-lg border border-slate-100 bg-[#0D9F8C]"
-                  style={{ opacity: 0.12 + ((index * 13) % 75) / 100 }}
-                />
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="rounded-2xl border border-slate-200/50 bg-white/60 shadow-[0_1px_2px_rgba(8,27,46,0.01),0_8px_24px_rgba(8,27,46,0.02)]">
-          <CardContent className="p-6">
-            <h2 className="text-lg font-bold tracking-tight text-[#081B2E] mb-5">Executive comparison</h2>
-            <div className="grid gap-4 md:grid-cols-3">
-              {[
-                ["Cycle time", "1.8 days", "22% faster"],
-                ["Completion", "86%", "9% above target"],
-                ["Revenue", "$128k", "18% growth"],
-              ].map(([label, value, detail]) => (
-                <div key={label} className="rounded-2xl border border-slate-100 bg-slate-50/50 p-5">
-                  <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{label}</div>
-                  <div className="mt-3 text-2xl font-bold tracking-tight text-[#081B2E]">{value}</div>
-                  <div className="mt-1.5 text-xs font-bold text-[#0D9F8C]">{detail}</div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+      <PageHeader eyebrow="Analytics" title="Practice analytics" description="Agreement, signature, revenue, team and document insights." />
+      <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-12 text-center">
+        <p className="text-sm font-medium text-slate-600">
+          Analytics will populate once your agency has agreement and document activity in the database.
+        </p>
       </div>
     </div>
   )

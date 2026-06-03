@@ -500,10 +500,14 @@ export class AgencyRepository {
       .from('agencies')
       .update({
         name: updates.name,
+        principal_name: updates.principal_name,
         timezone: updates.timezone,
         address: updates.address,
         marn: updates.marn,
         abn: updates.abn,
+        email: updates.email,
+        phone: updates.phone,
+        website: updates.website,
         updated_at: new Date().toISOString()
       })
       .eq('id', agencyId)
@@ -517,16 +521,27 @@ export class AgencyRepository {
 export class BrandingRepository {
   constructor(private supabase: SupabaseClient) {}
 
-  async updateBranding(agencyId: string, updates: any) {
+  async updateBranding(agencyId: string, updates: Record<string, unknown>) {
+    const payload: Record<string, unknown> = {
+      agency_id: agencyId,
+      updated_at: new Date().toISOString(),
+    };
+    for (const key of [
+      'primary_color',
+      'secondary_color',
+      'logo_url',
+      'email_footer',
+      'font_family',
+      'agreement_ref_prefix',
+      'agreement_ref_start',
+      'agreement_header_title',
+      'agreement_footer_text',
+    ] as const) {
+      if (key in updates) payload[key] = updates[key];
+    }
     const { data, error } = await this.supabase
       .from('branding_settings')
-      .upsert({
-        agency_id: agencyId,
-        primary_color: updates.primary_color,
-        logo_url: updates.logo_url,
-        email_footer: updates.email_footer,
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'agency_id' })
+      .upsert(payload, { onConflict: 'agency_id' })
       .select()
       .single();
     if (error) throw error;
@@ -548,20 +563,22 @@ export class MatterDefaultsRepository {
   constructor(private supabase: SupabaseClient) {}
 
   async updateDefaults(agencyId: string, updates: any) {
-    // Falls back gracefully if table doesn't exist during dev
     const { data, error } = await this.supabase
       .from('matter_defaults')
       .upsert({
         agency_id: agencyId,
         default_professional_fee: updates.default_professional_fee,
         default_payment_terms: updates.default_payment_terms,
+        default_scope_of_services: updates.default_scope_of_services,
+        default_special_terms: updates.default_special_terms,
+        default_payment_schedule: updates.default_payment_schedule,
         updated_at: new Date().toISOString()
       }, { onConflict: 'agency_id' })
       .select()
       .single();
     
     if (error) {
-       console.warn("Matter defaults upsert failed, possibly missing table:", error.message);
+       console.warn("Matter defaults upsert failed:", error.message);
        return null;
     }
     return data;
@@ -614,6 +631,239 @@ export class ClausesRepository {
       .from('agreement_clauses')
       .delete()
       .eq('id', clauseId);
+    if (error) throw error;
+    return true;
+  }
+}
+
+export class MatterTypesRepository {
+  constructor(private supabase: SupabaseClient) {}
+
+  async list(agencyId: string) {
+    const { data, error } = await this.supabase
+      .from('matter_types')
+      .select('*')
+      .eq('agency_id', agencyId)
+      .order('sort_order', { ascending: true });
+    if (error) throw error;
+    return data || [];
+  }
+
+  async create(agencyId: string, name: string) {
+    const { data: existing } = await this.supabase
+      .from('matter_types')
+      .select('sort_order')
+      .eq('agency_id', agencyId)
+      .order('sort_order', { ascending: false })
+      .limit(1);
+    const nextOrder = (existing?.[0]?.sort_order ?? 0) + 1;
+    const { data, error } = await this.supabase
+      .from('matter_types')
+      .insert({ agency_id: agencyId, name: name.trim(), sort_order: nextOrder })
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  }
+
+  async updateName(id: string, name: string) {
+    const { data, error } = await this.supabase
+      .from('matter_types')
+      .update({ name: name.trim(), updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  }
+
+  async delete(id: string) {
+    const { error } = await this.supabase.from('matter_types').delete().eq('id', id);
+    if (error) throw error;
+    return true;
+  }
+
+  async listFields(matterTypeId: string) {
+    const { data, error } = await this.supabase
+      .from('matter_type_fields')
+      .select('*')
+      .eq('matter_type_id', matterTypeId)
+      .order('sort_order', { ascending: true });
+    if (error) throw error;
+    return data || [];
+  }
+
+  async createField(matterTypeId: string, field: {
+    field_key: string;
+    label: string;
+    field_type?: string;
+    required?: boolean;
+    placeholder?: string;
+    col_span?: number;
+  }) {
+    const { data: existing } = await this.supabase
+      .from('matter_type_fields')
+      .select('sort_order')
+      .eq('matter_type_id', matterTypeId)
+      .order('sort_order', { ascending: false })
+      .limit(1);
+    const nextOrder = (existing?.[0]?.sort_order ?? 0) + 1;
+    const { data, error } = await this.supabase
+      .from('matter_type_fields')
+      .insert({
+        matter_type_id: matterTypeId,
+        field_key: field.field_key,
+        label: field.label,
+        field_type: field.field_type || 'text',
+        required: Boolean(field.required),
+        placeholder: field.placeholder || null,
+        col_span: field.col_span === 2 ? 2 : 1,
+        sort_order: nextOrder,
+      })
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  }
+
+  async deleteField(fieldId: string) {
+    const { error } = await this.supabase.from('matter_type_fields').delete().eq('id', fieldId);
+    if (error) throw error;
+    return true;
+  }
+
+  async updateMatterTypeFlags(id: string, flags: {
+    subclass_placeholder?: string;
+    show_secondary_applicant?: boolean;
+    show_sponsor?: boolean;
+    show_dependants?: boolean;
+  }) {
+    const { data, error } = await this.supabase
+      .from('matter_types')
+      .update({ ...flags, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  }
+}
+
+export class AgencyPaymentSchedulesRepository {
+  constructor(private supabase: SupabaseClient) {}
+
+  async list(agencyId: string) {
+    const { data, error } = await this.supabase
+      .from('agency_payment_schedules')
+      .select('*')
+      .eq('agency_id', agencyId)
+      .order('sort_order', { ascending: true });
+    if (error) throw error;
+    return data || [];
+  }
+
+  async create(agencyId: string, label: string) {
+    const { data: existing } = await this.supabase
+      .from('agency_payment_schedules')
+      .select('sort_order')
+      .eq('agency_id', agencyId)
+      .order('sort_order', { ascending: false })
+      .limit(1);
+    const nextOrder = (existing?.[0]?.sort_order ?? 0) + 1;
+    const { data, error } = await this.supabase
+      .from('agency_payment_schedules')
+      .insert({ agency_id: agencyId, label: label.trim(), sort_order: nextOrder })
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  }
+
+  async delete(id: string) {
+    const { error } = await this.supabase.from('agency_payment_schedules').delete().eq('id', id);
+    if (error) throw error;
+    return true;
+  }
+}
+
+export class RmaTeamRepository {
+  constructor(private supabase: SupabaseClient) {}
+
+  async list(agencyId: string) {
+    const { data, error } = await this.supabase
+      .from('rmas')
+      .select('*, users(full_name, email, phone, is_active)')
+      .eq('agency_id', agencyId)
+      .order('is_default', { ascending: false });
+    if (error) throw error;
+    return data || [];
+  }
+
+  async upsertForUser(agencyId: string, payload: {
+    user_id: string;
+    mara_number: string;
+    phone?: string;
+    is_default?: boolean;
+    rma_status?: string;
+    rma_tier?: string;
+  }) {
+    const { data: existing } = await this.supabase
+      .from('rmas')
+      .select('id')
+      .eq('agency_id', agencyId)
+      .eq('user_id', payload.user_id)
+      .maybeSingle();
+
+    if (existing?.id) {
+      const { data, error } = await this.supabase
+        .from('rmas')
+        .update({
+          mara_number: payload.mara_number,
+          phone: payload.phone || null,
+          is_default: payload.is_default ?? false,
+          rma_status: payload.rma_status || 'active',
+          rma_tier: payload.rma_tier || 'associate',
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', existing.id)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    }
+
+    const { data, error } = await this.supabase
+      .from('rmas')
+      .insert({
+        agency_id: agencyId,
+        user_id: payload.user_id,
+        mara_number: payload.mara_number,
+        phone: payload.phone || null,
+        is_default: payload.is_default ?? false,
+        rma_status: payload.rma_status || 'active',
+        rma_tier: payload.rma_tier || 'associate',
+      })
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  }
+
+  async setDefault(agencyId: string, rmaId: string) {
+    await this.supabase.from('rmas').update({ is_default: false }).eq('agency_id', agencyId);
+    const { error } = await this.supabase.from('rmas').update({ is_default: true }).eq('id', rmaId);
+    if (error) throw error;
+    return true;
+  }
+
+  async setStatus(rmaId: string, status: string) {
+    const { error } = await this.supabase.from('rmas').update({ rma_status: status }).eq('id', rmaId);
+    if (error) throw error;
+    return true;
+  }
+
+  async remove(rmaId: string) {
+    const { error } = await this.supabase.from('rmas').delete().eq('id', rmaId);
     if (error) throw error;
     return true;
   }

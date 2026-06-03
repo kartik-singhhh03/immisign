@@ -1,38 +1,7 @@
 import { createClient } from './server';
 import { redirect } from 'next/navigation';
-import { isSafeDevMode } from '../config';
-
-const mockUser = {
-  id: "u-owner",
-  email: "owner@demoagency.com",
-  user_metadata: { name: "Rajwant Singh" }
-};
-
-const mockAgency = {
-  id: "w-avc",
-  name: "AVC Migration",
-  slug: "avc-migration",
-  initials: "AM",
-  color: "#0D9F8C",
-  address: "Level 14, 175 Pitt Street, Sydney NSW 2000",
-  marn: "1794016",
-  abn: "45 128 349 820"
-};
-
-const mockProfile = {
-  id: "u-owner",
-  name: "Rajwant Singh",
-  email: "owner@demoagency.com",
-  role: "owner",
-  agency_id: "w-avc",
-  agency: mockAgency
-};
 
 export async function getCurrentUser() {
-  if (isSafeDevMode) {
-    return mockUser as any;
-  }
-
   const supabase = await createClient();
   const { data: { user }, error } = await supabase.auth.getUser();
 
@@ -43,10 +12,6 @@ export async function getCurrentUser() {
 }
 
 export async function getCurrentProfile() {
-  if (isSafeDevMode) {
-    return mockProfile as any;
-  }
-
   const supabase = await createClient();
   const user = await getCurrentUser();
 
@@ -63,17 +28,12 @@ export async function getCurrentProfile() {
 }
 
 export async function getCurrentAgency() {
-  if (isSafeDevMode) {
-    return mockAgency as any;
-  }
-
   const profile = await getCurrentProfile();
   
   if (!profile || !profile.agency_id) {
     return null;
   }
 
-  // Due to RLS, this could also just be fetched, but since profile joined it, we return from join or fetch again.
   return typeof profile.agency === 'object' && profile.agency !== null 
     ? (Array.isArray(profile.agency) ? profile.agency[0] : profile.agency) 
     : null;
@@ -92,7 +52,7 @@ export async function requireAgency() {
   const profile = await getCurrentProfile();
   
   if (!profile || !profile.agency_id) {
-    redirect('/onboarding'); // Redirect to create or join an agency
+    redirect('/onboarding');
   }
   
   const agency = typeof profile.agency === 'object' && profile.agency !== null 
@@ -110,7 +70,7 @@ export async function requireRole(allowedRoles: string[]) {
   const { profile, agency } = await requireAgency();
   
   if (!profile.role || !allowedRoles.includes(profile.role)) {
-    redirect('/dashboard'); // or standard unauthorized error page
+    redirect('/dashboard');
   }
   
   return { profile, agency };

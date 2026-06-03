@@ -1,3 +1,5 @@
+import { getRequiredEnv, isProductionBuild } from '@/lib/env';
+
 export type PlanName = 'STARTER' | 'PRO' | 'AGENCY';
 
 export interface PlanConfig {
@@ -19,13 +21,22 @@ export interface PlanConfig {
   };
 }
 
+function resolvePriceId(envKey: string): string {
+  const value = process.env[envKey]?.trim();
+  if (value) return value;
+  if (isProductionBuild()) {
+    return getRequiredEnv(envKey);
+  }
+  throw new Error(`${envKey} is not configured. Set it in .env.local for billing features.`);
+}
+
 export const SAAS_PLANS: Record<PlanName, PlanConfig> = {
   STARTER: {
     id: 'STARTER',
     name: 'Starter',
     description: 'Perfect for independent migration consultants just getting started.',
-    monthlyPriceId: process.env.STRIPE_STARTER_MONTHLY_PRICE_ID || 'price_starter_dummy',
-    yearlyPriceId: process.env.STRIPE_STARTER_YEARLY_PRICE_ID || 'price_starter_yr_dummy',
+    monthlyPriceId: resolvePriceId('STRIPE_STARTER_MONTHLY_PRICE_ID'),
+    yearlyPriceId: process.env.STRIPE_STARTER_YEARLY_PRICE_ID?.trim() || resolvePriceId('STRIPE_STARTER_MONTHLY_PRICE_ID'),
     limits: {
       maxUsers: 2,
       maxDocuments: 50,
@@ -42,8 +53,8 @@ export const SAAS_PLANS: Record<PlanName, PlanConfig> = {
     id: 'PRO',
     name: 'Pro',
     description: 'For growing migration agencies managing multiple workflows.',
-    monthlyPriceId: process.env.STRIPE_PRO_MONTHLY_PRICE_ID || 'price_pro_dummy',
-    yearlyPriceId: process.env.STRIPE_PRO_YEARLY_PRICE_ID || 'price_pro_yr_dummy',
+    monthlyPriceId: resolvePriceId('STRIPE_PRO_MONTHLY_PRICE_ID'),
+    yearlyPriceId: process.env.STRIPE_PRO_YEARLY_PRICE_ID?.trim() || resolvePriceId('STRIPE_PRO_MONTHLY_PRICE_ID'),
     limits: {
       maxUsers: 10,
       maxDocuments: 500,
@@ -60,11 +71,11 @@ export const SAAS_PLANS: Record<PlanName, PlanConfig> = {
     id: 'AGENCY',
     name: 'Agency Enterprise',
     description: 'Unlimited boundaries and dedicated infrastructure scaling.',
-    monthlyPriceId: process.env.STRIPE_AGENCY_MONTHLY_PRICE_ID || 'price_agency_dummy',
-    yearlyPriceId: process.env.STRIPE_AGENCY_YEARLY_PRICE_ID || 'price_agency_yr_dummy',
+    monthlyPriceId: resolvePriceId('STRIPE_AGENCY_MONTHLY_PRICE_ID'),
+    yearlyPriceId: process.env.STRIPE_AGENCY_YEARLY_PRICE_ID?.trim() || resolvePriceId('STRIPE_AGENCY_MONTHLY_PRICE_ID'),
     limits: {
       maxUsers: 9999,
-      maxDocuments: 99999, // Scalable/Metered theoretically
+      maxDocuments: 99999,
       maxStorageGb: 1000,
     },
     features: {

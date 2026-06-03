@@ -2,7 +2,6 @@
 "use client"
 import * as React from "react"
 import { useAuthStore } from "@/store/authStore"
-import { useApprovalStore } from "@/store/approvalStore"
 import Link from "next/link"
 import {
   ArrowRight,

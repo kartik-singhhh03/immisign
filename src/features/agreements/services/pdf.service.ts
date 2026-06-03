@@ -72,7 +72,8 @@ export class PDFService {
       const pdfUint8Array = await page.pdf({
         format: 'A4',
         printBackground: true,
-        margin: { top: '20mm', right: '20mm', bottom: '20mm', left: '20mm' },
+        preferCSSPageSize: true,
+        margin: { top: '12mm', right: '14mm', bottom: '16mm', left: '14mm' },
       });
 
       return Buffer.from(pdfUint8Array);

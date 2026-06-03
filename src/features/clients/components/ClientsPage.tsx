@@ -1,8 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useAuthStore } from "@/store/authStore"
-import { useApprovalStore } from "@/store/approvalStore"
+import { useRequireWorkspace } from "@/lib/hooks/use-workspace"
 import { useClients } from "@/lib/hooks/useSupabaseData"
 import Link from "next/link"
 import {
@@ -116,7 +115,7 @@ export function ClientsPage() {
   ) || []
 
   const activeWorkspace = useAuthStore((state) => state.activeWorkspace)
-  const currentSlug = activeWorkspace?.slug || "avc-migration"
+  const { slug: currentSlug } = useRequireWorkspace()
 
   return (
     <div>

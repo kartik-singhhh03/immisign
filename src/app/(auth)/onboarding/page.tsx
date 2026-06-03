@@ -331,7 +331,7 @@ export default function OnboardingPage() {
               <label className="grid gap-1">
                 <span className="text-xs font-bold text-slate-500">Full Name</span>
                 <Input
-                  placeholder="Priya Mehta"
+                  placeholder="Team member name"
                   value={teamName}
                   onChange={(e) => setTeamName(e.target.value)}
                   className="h-9 rounded-lg border-slate-200 text-xs"
@@ -601,7 +601,7 @@ export default function OnboardingPage() {
               disabled={provisionProgress < 100}
               className="h-12 w-full rounded-xl bg-[#0D9F8C] text-base font-black hover:bg-[#0A5B52] shadow-sm flex items-center justify-center gap-2 group disabled:opacity-40"
             >
-              <span>Launch {agencyName || "AVC Migration"} Workspace</span>
+              <span>Launch {agencyName || "Your Agency"} Workspace</span>
               <Rocket className="h-5 w-5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </Button>
           </div>

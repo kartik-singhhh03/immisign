@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { createClient as createRawClient } from '@supabase/supabase-js';
 import { DocumentGenerationService } from '@/features/agreements/services/document-generation.service';
 import { SignWellService } from '@/features/agreements/services/signwell.service';
+import { allocateAgreementReference } from '@/features/agreements/lib/agreement-reference';
+import { buildSignersFromWizard } from '@/features/agreements/lib/wizard-signers';
 import { isUuid } from '@/lib/validation/uuid';
 import { redactSensitiveValue, stripSensitiveUrlParams } from '@/lib/security/sanitize';
 
@@ -32,11 +34,7 @@ export async function POST(req: NextRequest) {
 
     console.log("Agreement API auth state:", { hasUser: !!user });
 
-    const body = await req.json();
-    const { formData } = body;
-
     // ALWAYS resolve agency_id from the authenticated session — never trust the client-sent value.
-    // This prevents slug/fake-id values from reaching Postgres.
     if (!user) {
       return NextResponse.json({
         success: false,
@@ -64,6 +62,26 @@ export async function POST(req: NextRequest) {
 
     const agencyId: string = sessionUser.agency_id;
     const userId: string = user.id;
+
+    const body = await req.json();
+    const { formData, agreementRef: clientAgreementRef, dispatchOptions, agencySnapshot, selectedClauses, selectedClauseIds, matterTypeConfig } = body;
+
+    if (!formData?.clientName?.trim() || !formData?.clientEmail?.trim()) {
+      return NextResponse.json({ success: false, error: 'Client name and email are required.' }, { status: 400 });
+    }
+
+    const responsibleRmaId = dispatchOptions?.responsibleRmaId || formData.responsibleRma || userId;
+
+    let agreementRef = clientAgreementRef;
+    try {
+      agreementRef = await allocateAgreementReference(agencyId);
+    } catch (refErr: any) {
+      console.warn('AGREEMENT_REF_ALLOCATION_FALLBACK', refErr?.message);
+      if (!agreementRef) {
+        agreementRef = `AGR-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`;
+      }
+    }
+
     console.log('AGREEMENT_USER_RESOLUTION_SUCCESS', JSON.stringify({
       auth_user_id: user.id,
       database_user_id: sessionUser.id,
@@ -122,46 +140,100 @@ export async function POST(req: NextRequest) {
            if (clientErr) throw new Error(`Client insert failed: ${clientErr.message}`);
            clientId = newClient?.id;
        }
+       if (clientId && formData.clientPhone) {
+         await (supabase as any).from('clients').update({ phone: formData.clientPhone }).eq('id', clientId);
+       }
     }
 
-    // 3. Create Agreement
-    const agreementId = crypto.randomUUID();
     const agreementMetadata = {
-      visa_category: formData.visaSubclass,
+      wizard_form: formData,
+      agreement_ref: agreementRef,
+      responsible_rma_id: responsibleRmaId,
+      agency_snapshot: agencySnapshot || null,
+      selected_clauses: selectedClauses || [],
+      selected_clause_ids: selectedClauseIds || [],
+      matter_type_config: matterTypeConfig || null,
+      matter_type: formData.matterType,
+      visa_subclass: formData.visaSubclass,
       sponsor_name: formData.sponsorName,
-      priority: formData.matterPriority,
-      deadline: formData.lodgementDeadline,
+      file_lodgement_ref: formData.fileLodgementRef,
+      agreement_date: formData.agreementDate,
+      client_address: formData.clientAddress,
+      scope_of_services: formData.scopeOfServices,
+      special_terms: formData.specialTerms,
+      estimated_disbursements: formData.estimatedDisbursements,
+      payment_schedule_label: formData.paymentSchedule,
+      dispatch_options: dispatchOptions || {},
     };
+
+    const agreementNumber = agreementRef;
+
+    // 3. Create Agreement (only on final send)
+    const agreementId = crypto.randomUUID();
     const { error: agErr } = await (supabase as any).from('agreements').insert({
       id: agreementId,
       agency_id: agencyId,
-      created_by: userId,
+      created_by: responsibleRmaId,
       client_id: clientId,
       template_id: templateId,
-      agreement_number: `AGR-${Math.floor(Math.random() * 1000000)}`,
+      agreement_number: agreementNumber,
       title: `Service Agreement - ${formData.clientName}`,
       client_name: formData.clientName,
       client_email: formData.clientEmail,
       client_phone: formData.clientPhone || '',
       status: 'draft',
-      description: formData.scopeOfWork,
+      description: formData.scopeOfServices,
       metadata: agreementMetadata
     });
     if (agErr) throw new Error(`Agreement insert failed: ${agErr.message}`);
 
+    // Signers from wizard (Primary Applicant, Secondary, Sponsor, Dependants)
+    const wizardSigners = buildSignersFromWizard(formData);
+    for (const signer of wizardSigners) {
+      if (signer.role === 'primary_applicant') continue;
+      await (supabase as any).from('signers').insert({
+        id: crypto.randomUUID(),
+        agency_id: agencyId,
+        agreement_id: agreementId,
+        full_name: signer.name,
+        email: signer.email,
+        role: signer.role,
+        signing_order: 1,
+      });
+    }
+
     // 4. Create Payment Schedule
     const scheduleId = crypto.randomUUID();
+    const professionalFee = parseFloat(formData.professionalFee || '0');
+    const disbursements = parseFloat(formData.estimatedDisbursements || '0');
+    let milestones: Array<{ name: string; amount: number; due_date: null; status: string }> = [];
+
+    if (formData.paymentSchedule?.includes('100% upfront')) {
+      milestones = [{ name: 'Full payment on engagement', amount: professionalFee, due_date: null, status: 'pending' }];
+    } else if (formData.paymentSchedule?.includes('33%')) {
+      milestones = [
+        { name: 'Engagement (33%)', amount: Math.round(professionalFee * 0.33 * 100) / 100, due_date: null, status: 'pending' },
+        { name: 'Lodgement (33%)', amount: Math.round(professionalFee * 0.33 * 100) / 100, due_date: null, status: 'pending' },
+        { name: 'Decision (34%)', amount: Math.round(professionalFee * 0.34 * 100) / 100, due_date: null, status: 'pending' },
+      ];
+    } else if (formData.paymentSchedule?.includes('Hourly')) {
+      milestones = [{ name: 'Hourly invoicing', amount: professionalFee, due_date: null, status: 'pending' }];
+    } else if (formData.paymentSchedule?.includes('Fixed fee')) {
+      milestones = [{ name: 'Fixed fee per agreement', amount: professionalFee, due_date: null, status: 'pending' }];
+    } else {
+      milestones = [
+        { name: 'Engagement (50%)', amount: professionalFee / 2, due_date: null, status: 'pending' },
+        { name: 'Prior to lodgement (50%)', amount: professionalFee / 2, due_date: null, status: 'pending' },
+      ];
+    }
+
     const { error: pErr } = await (supabase as any).from('payment_schedules').insert({
       id: scheduleId,
       agency_id: agencyId,
       agreement_id: agreementId,
       currency: 'AUD',
-      total_amount: parseFloat(formData.professionalFee || "0"),
-      milestones: [
-        { name: 'Retainer Deposit', amount: parseFloat(formData.depositRequired || "0"), due_date: null, status: 'pending' },
-        { name: 'Block 1', amount: parseFloat(formData.professionalFee || "0") / 2, due_date: null, status: 'pending' },
-        { name: 'Block 2', amount: parseFloat(formData.professionalFee || "0") / 2, due_date: null, status: 'pending' }
-      ]
+      total_amount: professionalFee,
+      milestones,
     });
     if (pErr) throw new Error(`Payment schedule insert failed: ${pErr.message}`);
 

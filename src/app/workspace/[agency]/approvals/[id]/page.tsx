@@ -1,65 +1,47 @@
 import { notFound } from 'next/navigation';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { createClient } from '@/lib/supabase/server';
 import { ApprovalRepository } from '@/features/approvals/repositories/approvals.repository';
-import { AuditRepository } from '@/features/agreements/repositories/audit.repository';
 import { ApprovalDashboard } from '@/features/approvals/components/details/approval-dashboard';
 import { getAppUrl } from '@/lib/app-url';
 
 export default async function ApprovalDetailsPage({ params }: { params: { agency: string, id: string } }) {
-  const cookieStore = await cookies();
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://mock.supabase.co';
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'mock-key';
-
-  const supabase = createServerClient(supabaseUrl, supabaseKey, {
-    cookies: {
-      getAll() { return cookieStore.getAll(); },
-      setAll() {}
-    }
-  });
+  const supabase = await createClient();
 
   const { data: agency } = await supabase.from('agencies').select('id, slug').eq('slug', params.agency).single();
   if (!agency) return notFound();
 
   const repo = new ApprovalRepository(supabase);
-  const auditRepo = new AuditRepository(supabase);
-  
+
   let approval;
   let auditLogs: any[] = [];
-  
+
   try {
     approval = await repo.getById(params.id);
     if (!approval || approval.agency_id !== agency.id) return notFound();
-    
-    // In our audit table, we track entity_id = approval.id and entity_type = 'approval'
+
     const { data: logs } = await supabase
       .from('audit_events')
       .select('*')
       .eq('entity_id', params.id)
       .eq('entity_type', 'approval')
       .order('created_at', { ascending: false });
-      
-    if (logs) auditLogs = logs;
 
-  } catch (e) {
+    if (logs) auditLogs = logs;
+  } catch {
     return notFound();
   }
 
-  // Assuming the host URL is passed via env or we construct it manually
   const portalUrl = `${getAppUrl()}/review/${approval.review_token ?? ''}`;
+  const documentUrl = approval.document_path || '';
 
-  // We mock a document URL for the MVP viewer
-  const documentUrl = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
-
-  // Get actual user
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
     return notFound();
   }
 
   return (
-    <ApprovalDashboard 
-      approval={approval} 
+    <ApprovalDashboard
+      approval={approval}
       agencySlug={params.agency}
       auditLogs={auditLogs}
       portalUrl={portalUrl}

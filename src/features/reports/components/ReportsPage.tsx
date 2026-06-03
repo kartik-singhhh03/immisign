@@ -2,7 +2,6 @@
 "use client"
 import * as React from "react"
 import { useAuthStore } from "@/store/authStore"
-import { useApprovalStore } from "@/store/approvalStore"
 import Link from "next/link"
 import {
   ArrowRight,
@@ -226,7 +225,7 @@ function MiniChart() {
 export function ReportsPage() {
   return (
     <div>
-      <PageHeader eyebrow="Reports" title="Downloadable reports" description="Export agreement, billing and document usage reports for internal reviews."  action={<div className="flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-700 shadow-sm"><ShieldAlert className="h-4 w-4" /> Demo Data Mode</div>} />
+      <PageHeader eyebrow="Reports" title="Downloadable reports" description="Export agreement, billing and document usage reports for internal reviews." />
       <div className="grid gap-5 md:grid-cols-3">
         {["Agreement performance", "Billing summary", "Document usage", "Signature audit", "Team productivity", "Matter type revenue"].map((report) => (
           <Card key={report} className="rounded-2xl border border-slate-200/50 bg-white/60 shadow-[0_1px_2px_rgba(8,27,46,0.01),0_8px_24px_rgba(8,27,46,0.02)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_48px_rgba(8,27,46,0.04)] hover:border-slate-350/50">

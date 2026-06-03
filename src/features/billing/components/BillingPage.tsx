@@ -1,7 +1,7 @@
 "use client"
 import * as React from "react"
 import { useAuthStore } from "@/store/authStore"
-import { useApprovalStore } from "@/store/approvalStore"
+import { useRequireWorkspace } from "@/lib/hooks/use-workspace"
 import Link from "next/link"
 import {
   ArrowRight,
@@ -220,11 +220,13 @@ function MiniChart() {
 
 export function BillingPage() {
   const { activeWorkspace, user } = useAuthStore()
-  const currentWorkspace = activeWorkspace || {
-    name: "AVC Migration Partners",
-    slug: "avc-migration",
-    team: [{ name: "Rajwant Singh" }]
+  const { slug: workspaceSlug } = useRequireWorkspace()
+
+  if (!activeWorkspace || !workspaceSlug) {
+    return <div className="p-12 text-center text-slate-500 font-medium">Loading billing workspace...</div>
   }
+
+  const currentWorkspace = activeWorkspace
   const currentRole = user?.role || "Owner"
   const isBillingRestricted = currentRole === "Assistant" || currentRole === "Read-only staff" || currentRole === "Migration Agent"
 
@@ -329,7 +331,7 @@ export function BillingPage() {
         </DialogContent>
       </Dialog>
 
-      <PageHeader eyebrow="Billing" title="Plan, usage and invoices" description="Stripe-inspired billing controls for current plan, payment methods, invoices and upgrade flows."  action={<div className="flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-700 shadow-sm"><ShieldAlert className="h-4 w-4" /> Demo Data Mode</div>} />
+      <PageHeader eyebrow="Billing" title="Plan, usage and invoices" description="Stripe-inspired billing controls for current plan, payment methods, invoices and upgrade flows." />
       
       {/* Role Restriction Banner */}
       {isBillingRestricted && (

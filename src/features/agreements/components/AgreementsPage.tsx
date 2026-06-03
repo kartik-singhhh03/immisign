@@ -1,15 +1,15 @@
 "use client"
 
 import React from "react"
-import { useAuthStore } from "@/store/authStore"
+import { useRequireWorkspace } from "@/lib/hooks/use-workspace"
 import { useAgreements } from "@/lib/hooks/useSupabaseData"
 import { AgreementsList } from "./list/agreements-list"
 
 export function AgreementsPage() {
   const { data: rawAgreements = [], loading } = useAgreements()
-  const currentSlug = useAuthStore(s => s.activeWorkspace?.slug || "avc-migration")
+  const { slug: currentSlug } = useRequireWorkspace()
 
-  if (loading) {
+  if (!currentSlug || loading) {
     return <div className="p-12 text-center text-slate-500 font-medium">Loading agreements workspace...</div>
   }
 

@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { adminRest } from '@/lib/supabase/admin-rest';
 import { dbRoleToUi } from '@/lib/auth/db-roles';
+import { createRmaFromInvite } from '@/lib/rma/create-from-invite';
 
 export async function POST(req: Request) {
   const { token } = (await req.json()) as { token?: string };
@@ -43,6 +44,14 @@ export async function POST(req: Request) {
     { onConflict: 'id' },
   );
   if (profileErr) return NextResponse.json({ error: profileErr.message }, { status: 500 });
+
+  await createRmaFromInvite(admin, user.id, {
+    agency_id: invite.agency_id,
+    email: invite.email,
+    role: invite.role,
+    marn: (invite as { marn?: string }).marn,
+    full_name: displayName,
+  });
 
   await adminRest(`invitations?id=eq.${invite.id}`, {
     method: 'PATCH',

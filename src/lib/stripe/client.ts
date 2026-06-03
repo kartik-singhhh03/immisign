@@ -1,13 +1,13 @@
 import Stripe from 'stripe';
-import { isSafeDevMode } from '@/lib/config';
+import { getRequiredEnv, isProductionBuild } from '@/lib/env';
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 
-if (!stripeSecretKey && !isSafeDevMode) {
-  console.warn('STRIPE_SECRET_KEY missing. Billing features will fail.');
+if (!stripeSecretKey && isProductionBuild()) {
+  throw new Error('STRIPE_SECRET_KEY is required in production');
 }
 
-export const stripe = new Stripe(stripeSecretKey || 'sk_test_placeholder_for_local_build', {
+export const stripe = new Stripe(stripeSecretKey || 'sk_test_not_configured', {
   apiVersion: '2026-04-22.dahlia' as any,
   appInfo: {
     name: 'ImmiSign SaaS',
@@ -16,3 +16,7 @@ export const stripe = new Stripe(stripeSecretKey || 'sk_test_placeholder_for_loc
   },
   typescript: true,
 });
+
+export function requireStripeSecretKey(): string {
+  return getRequiredEnv('STRIPE_SECRET_KEY');
+}

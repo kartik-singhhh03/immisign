@@ -1,23 +1,12 @@
 "use server"
 
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { createClient } from '@/lib/supabase/server';
 import { ApprovalService } from '../services/approval.service';
 import { ApplicationApproval } from '../types';
 import { Role } from '@/features/auth/types/roles';
 
 async function getApprovalService() {
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://mock.supabase.co',
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'mock-key',
-    {
-      cookies: {
-        getAll() { return cookieStore.getAll() },
-        setAll() {}
-      }
-    }
-  );
+  const supabase = await createClient();
   return new ApprovalService(supabase);
 }
 

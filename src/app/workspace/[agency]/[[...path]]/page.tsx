@@ -116,7 +116,7 @@ export default function WorkspaceCatchAllPage() {
         if (path[1]) {
           const sectionMap: Record<string, string> = {
             agency: "Agency Profile",
-            team: "Team",
+            team: "RMA Team",
             branding: "Branding",
             clauses: "Clauses",
             "matter-types": "Matter Types",

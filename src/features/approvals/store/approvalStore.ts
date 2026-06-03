@@ -1,75 +1,43 @@
 import { create } from "zustand"
-import { ApplicationApproval, ApprovalStatus, ApprovalDocument, ApprovalChecklist, ApprovalAuditEvent } from "@/types/approval-domain"
-import { MockApprovalRepository } from "@/repositories/mock/MockApprovalRepository"
-import { ApprovalService } from "@/services/approvals/ApprovalService"
-import { UploadService } from "@/services/uploads/UploadService"
-import { AuditService } from "@/services/audit/AuditService"
+import { createClient } from "@/lib/supabase/client"
+import { ApprovalRepository } from "@/features/approvals/repositories/approvals.repository"
+import { ApprovalStatus } from "@/features/approvals/types"
+import { useAuthStore } from "@/store/authStore"
 
-// Initialize services
-const repository = new MockApprovalRepository()
-const approvalService = new ApprovalService(repository)
-const auditService = new AuditService(repository)
-const uploadService = new UploadService(repository)
-
-interface ApprovalState {
-  approvals: ApplicationApproval[]
-  activeApproval: ApplicationApproval | null
-  isLoading: boolean
-  
-  // Actions
-  fetchApprovals: (agencyId: string) => Promise<void>
-  fetchApprovalById: (id: string, agencyId: string) => Promise<void>
-  createApproval: (agencyId: string, data: any) => Promise<ApplicationApproval>
-  updateApprovalStatus: (id: string, agencyId: string, status: ApprovalStatus, actorId: string) => Promise<void>
-  addDocument: (approvalId: string, agencyId: string, document: any) => Promise<void>
-  completeVerification: (approvalId: string, checklistId: string, agencyId: string) => Promise<void>
+function getRepository() {
+  return new ApprovalRepository(createClient())
 }
 
-export const useApprovalStore = create<ApprovalState>((set, get) => ({
-  approvals: [],
-  activeApproval: null,
-  isLoading: false,
-  
-  fetchApprovals: async (agencyId: string) => {
-    set({ isLoading: true })
-    const approvals = await approvalService.getApprovalsByAgency(agencyId)
-    set({ approvals, isLoading: false })
-  },
-  
-  fetchApprovalById: async (id: string, agencyId: string) => {
-    set({ isLoading: true })
-    const approval = await approvalService.getApprovalById(id, agencyId)
-    set({ activeApproval: approval, isLoading: false })
-  },
-  
-  createApproval: async (agencyId: string, data: any) => {
-    const newApproval = await approvalService.createApproval({
-      ...data,
+interface ApprovalState {
+  createApproval: (agencyId: string, data: Record<string, unknown>) => Promise<void>
+  addDocument: (approvalId: string, agencyId: string, documentData: { document_path: string }) => Promise<void>
+}
+
+export const useApprovalStore = create<ApprovalState>(() => ({
+  createApproval: async (agencyId, data) => {
+    const { user } = useAuthStore.getState()
+    if (!user?.id) throw new Error("Authentication required")
+
+    const repo = getRepository()
+    await repo.create({
       agency_id: agencyId,
-      agent_id: "system", // Would come from auth context
+      created_by: user.id,
+      title: String(data.title || "New Application Approval"),
+      visa_subclass: String(data.visaSubclass || data.visa_subclass || ""),
+      status: ApprovalStatus.DRAFT,
+      review_token: crypto.randomUUID(),
     })
-    set(state => ({ approvals: [newApproval, ...state.approvals] }))
-    return newApproval
-  },
-  
-  updateApprovalStatus: async (id: string, agencyId: string, status: ApprovalStatus, actorId: string) => {
-    const updated = await approvalService.updateStatus(id, agencyId, status, actorId)
-    set(state => ({
-      approvals: state.approvals.map(a => a.id === id ? updated : a),
-      activeApproval: state.activeApproval?.id === id ? updated : state.activeApproval
-    }))
   },
 
-  addDocument: async (approvalId: string, agencyId: string, documentData: any) => {
-    const doc = await uploadService.addDocument(approvalId, agencyId, documentData)
-    // Refetch or update local
-    await get().fetchApprovalById(approvalId, agencyId)
-    await get().fetchApprovals(agencyId)
+  addDocument: async (approvalId, agencyId, documentData) => {
+    const repo = getRepository()
+    const approval = await repo.getById(approvalId)
+    if (!approval || approval.agency_id !== agencyId) {
+      throw new Error("Approval not found")
+    }
+    await repo.update(approvalId, {
+      document_path: documentData.document_path,
+      version_number: (approval.version_number || 1) + 1,
+    })
   },
-
-  completeVerification: async (approvalId: string, checklistId: string, agencyId: string) => {
-    await approvalService.completeVerification(approvalId, checklistId, agencyId)
-    await get().fetchApprovalById(approvalId, agencyId)
-    await get().fetchApprovals(agencyId)
-  }
 }))

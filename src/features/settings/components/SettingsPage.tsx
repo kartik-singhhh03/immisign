@@ -2,8 +2,10 @@
 "use client"
 import * as React from "react"
 import { useAuthStore } from "@/store/authStore"
-import { useApprovalStore } from "@/store/approvalStore"
-import { useTeamMembers, useInvitations, useAgencyProfile, useClauses, useUserProfile } from "@/lib/hooks/useSupabaseData"
+import { useTeamMembers, useInvitations, useAgencyProfile, useClauses, useUserProfile, useMatterTypesSettings, usePaymentScheduleSettings, useRmaTeam } from "@/lib/hooks/useSupabaseData"
+import { AgencyProfilePanel, DefaultsPanel, RmaTeamPanel, SettingsListEditor } from "./WorkspaceSettingsPanels"
+import { BrandingSettingsPanel } from "./BrandingSettingsPanel"
+import { MatterTypesSettingsPanel } from "./MatterTypesSettingsPanel"
 import Link from "next/link"
 import { useSearchParams, useParams } from "next/navigation"
 import {
@@ -37,6 +39,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import {
   Dialog,
@@ -130,6 +133,9 @@ export function SettingsPage({ section = "" }: { section?: string }) {
   const { data: invitations, loading: invitesLoading, cancelInvite } = useInvitations()
   const { data: agencyProfile, loading: agencyLoading, updateProfile, updateBranding, updateDefaults } = useAgencyProfile()
   const { data: clausesList, loading: clausesLoading, addClause, deleteClause } = useClauses()
+  const { data: matterTypesList, loading: matterTypesLoading, addMatterType, deleteMatterType, loadMatterTypeFields, addMatterTypeField, deleteMatterTypeField } = useMatterTypesSettings()
+  const { data: paymentSchedulesList, loading: paymentSchedulesLoading, addSchedule, deleteSchedule } = usePaymentScheduleSettings()
+  const { data: rmaTeamList, loading: rmaLoading, setDefault: setDefaultRma, setStatus: setRmaStatus, removeRma, upsertRma } = useRmaTeam()
   const { updateProfile: updateUserProfile, toggleMfa, loading: userLoading } = useUserProfile()
 
   const currentRole = user?.role || "owner"
@@ -142,11 +148,14 @@ export function SettingsPage({ section = "" }: { section?: string }) {
   // Map old props to query parameter keys for backward compatibility
   const propToKeyMap: Record<string, string> = {
     "Agency Profile": "Agency",
-    "Team": "Team",
+    "RMA Team": "RmaTeam",
+    "Team": "RmaTeam",
     "Branding": "Branding",
     "Clauses": "Clauses",
-    "Matter Types": "MatterDefaults",
-    "Defaults": "MatterDefaults",
+    "Matter Types": "MatterTypes",
+    "Payment Schedules": "PaymentSchedules",
+    "Defaults": "Defaults",
+    "Matter Defaults": "Defaults",
     "Security": "MFA",
     "My Profile": "Profile",
   }
@@ -156,23 +165,27 @@ export function SettingsPage({ section = "" }: { section?: string }) {
 
   const sectionTitleMap: Record<string, string> = {
     Agency: "Agency Profile",
+    RmaTeam: "RMA Team",
     Branding: "Branding",
-    Team: "Team Setup",
-    Clauses: "Clauses Library",
-    MatterDefaults: "Matter Defaults",
+    Clauses: "Clauses",
+    MatterTypes: "Matter Types",
+    PaymentSchedules: "Payment Schedules",
+    Defaults: "Defaults & Special Terms",
     Profile: "My Profile",
     MFA: "MFA Security",
   }
 
-  const currentTitle = sectionTitleMap[activeSectionKey] || "Agency Profile"
-
   const workspaceItems = [
     ["Agency Profile", "Agency"],
+    ["RMA Team", "RmaTeam"],
     ["Branding", "Branding"],
-    ["Team Setup", "Team"],
-    ["Clauses Library", "Clauses"],
-    ["Matter Defaults", "MatterDefaults"],
+    ["Clauses", "Clauses"],
+    ["Matter Types", "MatterTypes"],
+    ["Payment Schedules", "PaymentSchedules"],
+    ["Defaults", "Defaults"],
   ] as const
+
+  const currentTitle = sectionTitleMap[activeSectionKey] || "Agency Profile"
 
   const personalItems = [
     ["My Profile", "Profile"],
@@ -239,9 +252,9 @@ export function SettingsPage({ section = "" }: { section?: string }) {
     }
   }, [agencyProfile])
 
-  const handleSaveBranding = () => {
-    updateBranding({ primary_color: brandColor, logo_url: "" })
-    updateWorkspaceBranding(brandColor, brandInitials)
+  const handleSaveBranding = async (updates: Record<string, unknown>) => {
+    await updateBranding(updates)
+    updateWorkspaceBranding(String(updates.primary_color || brandColor), brandInitials, updates.logo_url as string | undefined)
     triggerToast("Workspace branding settings updated successfully!")
   }
 
@@ -354,56 +367,72 @@ export function SettingsPage({ section = "" }: { section?: string }) {
     }
   }
 
-  const handleSaveAgencyProfile = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const updates = {
-      name: formData.get('name'),
-      abn: formData.get('abn'),
-      marn: formData.get('marn'),
-      address: formData.get('address'),
-      timezone: formData.get('timezone'),
-    };
+  const handleSaveAgencyProfile = async (updates: Record<string, unknown>) => {
     await updateProfile(updates);
-    triggerToast("Agency profile details updated successfully!");
+    triggerToast("Agency profile saved successfully!");
   };
 
   const renderAgencyProfile = () => (
-    <form onSubmit={handleSaveAgencyProfile} className="space-y-6">
-      <div className="grid gap-5 md:grid-cols-2">
-        <label className="grid gap-2 text-xs font-bold text-slate-500">
-          Business Name
-          <Input name="name" className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" defaultValue={agencyProfile?.name || currentWorkspace.name} disabled={isSettingsRestricted} />
-        </label>
-        <label className="grid gap-2 text-xs font-bold text-slate-500">
-          ABN (Australian Business Number)
-          <Input name="abn" className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" defaultValue={agencyProfile?.abn || currentWorkspace.abn} disabled={isSettingsRestricted} />
-        </label>
-        <label className="grid gap-2 text-xs font-bold text-slate-500">
-          Principal MARN Registration
-          <Input name="marn" className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" defaultValue={agencyProfile?.marn || currentWorkspace.marn} disabled={isSettingsRestricted} />
-        </label>
-        <label className="grid gap-2 text-xs font-bold text-slate-500">
-          Office Address
-          <Input name="address" className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" defaultValue={agencyProfile?.address || currentWorkspace.address} disabled={isSettingsRestricted} />
-        </label>
-        <label className="grid gap-2 text-xs font-bold text-slate-500">
-          Practice Timezone
-          <select name="timezone" disabled={isSettingsRestricted} defaultValue={agencyProfile?.timezone || "AEST"} className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]">
-            <option value="AEST">Australian Eastern Standard Time (AEST) - Sydney</option>
-            <option value="AWST">Australian Western Standard Time (AWST) - Perth</option>
-            <option value="ACST">Australian Central Standard Time (ACST) - Adelaide</option>
-          </select>
-        </label>
-        <label className="grid gap-2 text-xs font-bold text-slate-500">
-          Regulatory Authority Jurisdiction
-          <Input className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" defaultValue="OMARA Australia" disabled />
-        </label>
-      </div>
+    <AgencyProfilePanel
+      agencyProfile={agencyProfile}
+      disabled={isSettingsRestricted}
+      onSave={handleSaveAgencyProfile}
+    />
+  )
+
+  const renderRmaTeam = () => (
+    <RmaTeamPanel
+      rmas={rmaTeamList || []}
+      teamMembers={teamMembers || []}
+      loading={rmaLoading}
+      disabled={isSettingsRestricted}
+      onSetDefault={async (id) => { await setDefaultRma(id); triggerToast("Default RMA updated"); }}
+      onSetStatus={async (id, status) => { await setRmaStatus(id, status); triggerToast("RMA status updated"); }}
+      onRemove={async (id) => { await removeRma(id); triggerToast("RMA removed"); }}
+      onUpsert={async (payload) => { await upsertRma(payload); triggerToast("RMA added"); }}
+    />
+  )
+
+  const renderMatterTypesSettings = () => (
+    <MatterTypesSettingsPanel
+      matterTypes={matterTypesList || []}
+      loading={matterTypesLoading}
+      disabled={isSettingsRestricted}
+      onAddMatterType={addMatterType}
+      onDeleteMatterType={deleteMatterType}
+      onLoadFields={loadMatterTypeFields}
+      onAddField={addMatterTypeField}
+      onDeleteField={deleteMatterTypeField}
+      onToast={triggerToast}
+    />
+  )
+
+  const renderPaymentSchedulesSettings = () => (
+    <div className="space-y-4">
+      <p className="text-xs text-slate-500 font-semibold">Payment schedules available in the Agreement Wizard fees step.</p>
+      <SettingsListEditor
+        items={(paymentSchedulesList || []).map((p: any) => ({ id: p.id, label: p.label }))}
+        loading={paymentSchedulesLoading}
+        placeholder="Add custom payment schedule..."
+        disabled={isSettingsRestricted}
+        onAdd={async (label) => { await addSchedule(label); triggerToast("Payment schedule added"); }}
+        onDelete={async (id) => { await deleteSchedule(id); triggerToast("Payment schedule removed"); }}
+      />
       {!isSettingsRestricted && (
-        <Button type="submit" className="rounded-xl bg-[#0D9F8C] font-bold shadow-sm hover:bg-[#0A5B52]">Save Profile</Button>
+        <Button type="button" onClick={() => triggerToast("Payment schedules saved")} className="rounded-xl bg-[#0D9F8C] font-bold">Save Settings</Button>
       )}
-    </form>
+    </div>
+  )
+
+  const renderDefaultsSettings = () => (
+    <DefaultsPanel
+      defaults={agencyProfile?.defaults}
+      disabled={isSettingsRestricted}
+      onSave={async (updates) => {
+        await updateDefaults(updates);
+        triggerToast("Defaults saved successfully!");
+      }}
+    />
   )
 
   const renderBranding = () => (
@@ -413,65 +442,22 @@ export function SettingsPage({ section = "" }: { section?: string }) {
           <Palette className="h-3.5 w-3.5" />
         </div>
         <div>
-          <h4 className="text-xs font-bold text-slate-700">Dynamic Workspace Theme Injection</h4>
+          <h4 className="text-xs font-bold text-slate-700">Branding & Agreement Identity</h4>
           <p className="text-[11px] text-slate-400 font-semibold mt-0.5 leading-relaxed">
-            Changing these branding details will immediately refresh the sidebar, primary button backgrounds, and avatar states across the active tenant session.
+            Upload your agency logo, configure agreement numbering, and set colours used across the dashboard, preview, PDF, and emails.
           </p>
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <div className="space-y-4">
-          <label className="grid gap-2 text-xs font-bold text-slate-500">
-            Active Corporate Accent Color
-            <div className="flex items-center gap-3 mt-1">
-              <span className="h-9 w-9 rounded-xl border border-slate-200 shadow-sm shrink-0 transition-colors duration-300" style={{ backgroundColor: brandColor }}></span>
-              <select
-                disabled={isSettingsRestricted}
-                value={brandColor}
-                onChange={(e) => setBrandColor(e.target.value)}
-                className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]"
-              >
-                <option value="#0D9F8C">Emerald Green (Compliance Default)</option>
-                <option value="#2563EB">Sapphire Blue (Corporate Trust)</option>
-                <option value="#D97706">Amber Gold (Advisory Premium)</option>
-                <option value="#475569">Slate Gray (Minimalist Calm)</option>
-              </select>
-            </div>
-          </label>
-
-          <label className="grid gap-2 text-xs font-bold text-slate-500">
-            Workspace Initials (Sidebar Avatar)
-            <Input
-              disabled={isSettingsRestricted}
-              maxLength={3}
-              value={brandInitials}
-              onChange={(e) => setBrandInitials(e.target.value)}
-              className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-1 focus-visible:ring-[#0D9F8C] uppercase font-bold"
-            />
-          </label>
-        </div>
-
-        <div className="space-y-4">
-          <label className="grid gap-2 text-xs font-bold text-slate-500">
-            Brand Preview (Live Simulation)
-            <div className="rounded-2xl border border-slate-200/50 bg-slate-50/50 p-6 flex flex-col items-center justify-center text-center">
-              <div
-                className="flex h-14 w-14 items-center justify-center rounded-full text-white text-lg font-black shadow-md transition-all duration-300 mb-3"
-                style={{ backgroundColor: brandColor }}
-              >
-                {brandInitials || "IS"}
-              </div>
-              <div className="text-xs font-bold text-[#081B2E]">{currentWorkspace.name}</div>
-              <p className="text-xs text-slate-400 font-semibold mt-1">Tenant Subdomain: https://immisign.com/{currentSlug}</p>
-            </div>
-          </label>
-        </div>
-      </div>
-
-      {!isSettingsRestricted && (
-        <Button onClick={handleSaveBranding} className="rounded-xl bg-[#0D9F8C] font-bold shadow-sm hover:bg-[#0A5B52]">Save Branding</Button>
-      )}
+      <BrandingSettingsPanel
+        branding={agencyProfile?.branding}
+        disabled={isSettingsRestricted}
+        brandColor={brandColor}
+        onBrandColorChange={setBrandColor}
+        onSave={handleSaveBranding}
+        onToast={triggerToast}
+        onLogoUploaded={(url) => updateWorkspaceBranding(brandColor, brandInitials, url || undefined)}
+      />
     </div>
   )
 
@@ -689,46 +675,6 @@ export function SettingsPage({ section = "" }: { section?: string }) {
     </div>
   )
 
-  const handleSaveDefaults = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const updates = {
-      default_professional_fee: parseFloat(formData.get('fee') as string) || 0,
-      default_payment_terms: formData.get('terms'),
-    };
-    await updateDefaults(updates);
-    triggerToast("Global matter defaults updated successfully!");
-  };
-
-  const renderMatterTypes = () => (
-    <form onSubmit={handleSaveDefaults} className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h3 className="text-sm font-bold text-[#081B2E]">Global Matter Defaults</h3>
-          <p className="text-xs text-slate-400 mt-1 font-semibold">Set standard fees and default terms for all new matters across the workspace.</p>
-        </div>
-      </div>
-
-      <div className="grid gap-5 md:grid-cols-2">
-        <label className="grid gap-2 text-xs font-bold text-slate-500">
-          Default Professional Fee ($)
-          <Input name="fee" type="number" step="0.01" className="h-11 rounded-xl border-slate-200 bg-white" defaultValue={agencyProfile?.defaults?.default_professional_fee || 0} disabled={isSettingsRestricted} />
-        </label>
-        <label className="grid gap-2 text-xs font-bold text-slate-500">
-          Default Payment Terms
-          <select name="terms" disabled={isSettingsRestricted} defaultValue={agencyProfile?.defaults?.default_payment_terms || "50_upfront_50_lodgement"} className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]">
-            <option value="100_upfront">100% Upfront Retainer</option>
-            <option value="50_upfront_50_lodgement">50% Upfront, 50% on Lodgement (Standard)</option>
-            <option value="custom">Custom Milestone Schedule</option>
-          </select>
-        </label>
-      </div>
-      {!isSettingsRestricted && (
-        <Button type="submit" className="rounded-xl bg-[#0D9F8C] font-bold shadow-sm hover:bg-[#0A5B52]">Save Defaults</Button>
-      )}
-    </form>
-  )
-
   const renderMyProfile = () => (
     <div className="space-y-6">
       <div className="flex items-center gap-4 border-b border-slate-100 pb-5">
@@ -789,7 +735,7 @@ export function SettingsPage({ section = "" }: { section?: string }) {
           </div>
           <div className="space-y-2">
             <Label className="text-xs font-bold text-slate-500">Type Signature</Label>
-            <Input value={typedSignatureName} onChange={(e) => setTypedSignatureName(e.target.value)} placeholder="e.g. Rajwant Singh" className="h-10 rounded-xl border-slate-200" />
+            <Input value={typedSignatureName} onChange={(e) => setTypedSignatureName(e.target.value)} placeholder="e.g. Jane Smith" className="h-10 rounded-xl border-slate-200" />
             <Button type="button" variant="outline" disabled={signatureLoading || !typedSignatureName} onClick={() => uploadSignature('type')} className="h-9 text-xs rounded-xl">
               Save Typed
             </Button>
@@ -863,14 +809,18 @@ export function SettingsPage({ section = "" }: { section?: string }) {
     switch (activeSectionKey) {
       case "Agency":
         return renderAgencyProfile()
+      case "RmaTeam":
+        return renderRmaTeam()
       case "Branding":
         return renderBranding()
-      case "Team":
-        return renderTeamSetup()
       case "Clauses":
         return renderClauses()
-      case "MatterDefaults":
-        return renderMatterTypes()
+      case "MatterTypes":
+        return renderMatterTypesSettings()
+      case "PaymentSchedules":
+        return renderPaymentSchedulesSettings()
+      case "Defaults":
+        return renderDefaultsSettings()
       case "Profile":
         return renderMyProfile()
       case "MFA":
@@ -904,7 +854,7 @@ export function SettingsPage({ section = "" }: { section?: string }) {
                 value={inviteName}
                 onChange={(e) => setInviteName(e.target.value)}
                 className="h-11 rounded-xl border-slate-200 bg-white"
-                placeholder="e.g. Priya Mehta"
+                placeholder="e.g. Jane Smith"
               />
             </label>
             <label className="grid gap-2 text-xs font-bold text-slate-500">

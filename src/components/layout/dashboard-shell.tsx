@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { PageTransition } from "./page-transition"
 import { CommandPalette } from "./command-palette"
 import { useAuthStore, User } from "@/store/authStore"
+import { useRequireWorkspace } from "@/lib/hooks/use-workspace"
 import { createClient } from "@/lib/supabase/client"
 import {
   DropdownMenu,
@@ -127,10 +128,16 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   } = useAuthStore()
   const isDevEnvironment = process.env.NODE_ENV === 'development'
 
-  // Use dynamic fallback if not logged in (to prevent workspace crashes during hot reload)
-  const currentWorkspace = activeWorkspace || workspaces[0]
+  const { slug: currentSlug, activeWorkspace: currentWorkspace } = useRequireWorkspace()
   const currentRole = user?.role || "Owner"
-  const currentSlug = currentWorkspace?.slug || "avc-migration"
+
+  if (!currentSlug) {
+    return (
+      <div className="flex min-h-screen items-center justify-center text-sm text-slate-500">
+        Loading workspace...
+      </div>
+    )
+  }
 
   const toggleSidebar = () => setIsCollapsed(!isCollapsed)
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen)
@@ -243,10 +250,14 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 )}
               >
                 <div 
-                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[4px] font-bold text-white text-xs"
-                  style={{ backgroundColor: currentWorkspace?.color || "#0D9F8C" }}
+                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[4px] font-bold text-white text-xs overflow-hidden"
+                  style={{ backgroundColor: currentWorkspace?.logoUrl ? 'transparent' : (currentWorkspace?.color || "#0D9F8C") }}
                 >
-                  {currentWorkspace?.initials || "AM"}
+                  {currentWorkspace?.logoUrl ? (
+                    <img src={currentWorkspace.logoUrl} alt="" className="h-6 w-6 object-contain" />
+                  ) : (
+                    currentWorkspace?.initials || "AM"
+                  )}
                 </div>
                 {!isCollapsed && (
                   <div className="flex flex-1 items-center justify-between min-w-0">
@@ -379,16 +390,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                   <div className="mt-0.5 text-xs font-medium text-slate-500">Practice activity alerts</div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-slate-100" />
-                {[
-                  "Harpreet Kaur signed an agreement",
-                  "Payment received for INV-1048",
-                  "Partner Visa template updated",
-                ].map((item) => (
-                  <DropdownMenuItem key={item} className="rounded-lg p-2.5 cursor-pointer hover:bg-slate-50">
-                    <span className="mr-3 h-1.5 w-1.5 rounded-full bg-[#0D9F8C]" />
-                    <span className="text-sm font-medium text-slate-700">{item}</span>
-                  </DropdownMenuItem>
-                ))}
+                <DropdownMenuItem className="rounded-lg p-2.5 cursor-default text-slate-500">
+                  <span className="text-sm font-medium">No new notifications</span>
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
             

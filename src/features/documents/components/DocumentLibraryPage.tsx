@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useRequireWorkspace } from "@/lib/hooks/use-workspace"
 import { useAuthStore } from "@/store/authStore";
 import { useDocuments } from "@/lib/hooks/useSupabaseData";
 import Link from "next/link";
@@ -53,9 +54,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { StatusPill } from "@/components/saas/dashboard-pages";
 
 export function DocumentLibraryPage() {
-  const currentSlug = useAuthStore(
-    (s) => s.activeWorkspace?.slug || "avc-migration",
-  );
+  const { slug: currentSlug } = useRequireWorkspace()
   interface DocumentItem {
     id: string;
     name: string;
@@ -440,43 +439,7 @@ export function DocumentLibraryPage() {
             </div>
 
             <div className="space-y-3.5">
-              {[
-                {
-                  rma: "Rajwant Singh (Principal)",
-                  action: "uploaded statutory declarations",
-                  time: "2h ago",
-                  id: "DOC-3940",
-                },
-                {
-                  rma: "Rajwant Singh (Principal)",
-                  action: "scanned checklist Form 80",
-                  time: "1d ago",
-                  id: "DOC-3939",
-                },
-                {
-                  rma: "Priya Mehta (Admin)",
-                  action: "downloaded Skilled Nomination brief",
-                  time: "2d ago",
-                  id: "DOC-3938",
-                },
-              ].map((log, idx) => (
-                <div key={idx} className="flex gap-3 text-xs font-semibold">
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slate-100 font-black text-slate-500 text-[9px]">
-                    {log.rma.split(" ")[0][0]}
-                  </div>
-                  <div>
-                    <div className="text-slate-700 font-bold">
-                      {log.rma.split(" ")[0]}{" "}
-                      <span className="text-slate-400 font-semibold">
-                        {log.action}
-                      </span>
-                    </div>
-                    <div className="text-[9px] text-slate-400 font-medium mt-0.5">
-                      {log.id} ΓÇó {log.time}
-                    </div>
-                  </div>
-                </div>
-              ))}
+              <p className="text-xs text-slate-500 font-medium">Activity will appear here as documents are uploaded and processed.</p>
             </div>
           </Card>
         </div>
@@ -562,7 +525,7 @@ export function DocumentLibraryPage() {
                 {/* Audit timelines */}
                 <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl text-[9px] leading-relaxed text-slate-500 font-medium">
                   <strong>Audited IP Access Log:</strong> Checked and approved
-                  by Rajwant Singh under Australian Migration Agent Regulation
+                  by registered migration agent under Australian Migration Agent Regulation
                   guidelines.
                 </div>
 

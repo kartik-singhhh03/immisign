@@ -1,7 +1,7 @@
 "use client"
 import * as React from "react"
 import { useParams, useRouter } from "next/navigation"
-import { useAuthStore } from "@/store/authStore"
+import { useRequireWorkspace } from "@/lib/hooks/use-workspace"
 import { getRealAgencyId, useClients, useClientTimeline } from "@/lib/hooks/useSupabaseData"
 import { createClient } from "@/lib/supabase/client"
 import { ClientsRepository } from "@/lib/supabase/repositories"
@@ -36,7 +36,7 @@ export function ClientDetailPage() {
 
   const activeWorkspace = useAuthStore((s) => s.activeWorkspace)
   const user = useAuthStore((s) => s.user)
-  const currentSlug = activeWorkspace?.slug || "avc-migration"
+  const { slug: currentSlug } = useRequireWorkspace()
   const role = (user?.role || 'Read-only staff') as Role
   const isEditor = canEdit(role, 'clients')
   const isDeleter = canDelete(role, 'clients')

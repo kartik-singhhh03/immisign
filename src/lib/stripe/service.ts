@@ -1,19 +1,11 @@
 import { stripe } from './client';
-import { SAAS_PLANS, getPlanByPriceId, PlanConfig } from './plans';
+import { SAAS_PLANS, getPlanByPriceId } from './plans';
 import { createAdminClient } from '../supabase/admin';
-import { isSafeDevMode } from '../config';
 import { getAppUrl } from '@/lib/app-url';
 
 export class StripeService {
 
-    /**
-     * Checks if tenant has customer id, creates if missing
-     */
     async getOrCreateCustomer(agencyId: string, email: string, name: string): Promise<string> {
-        if (isSafeDevMode) {
-            return 'cus_mock_12345';
-        }
-
         const admin = createAdminClient();
         const { data: agency, error } = await admin.from('agencies').select('stripe_customer_id' as any).eq('id', agencyId).single() as any;
 
@@ -36,24 +28,20 @@ export class StripeService {
         return customer.id;
     }
 
-    /**
-     * Instantiates Stripe Checkout 
-     */
     async createCheckoutSession(
         agencyId: string, 
         userId: string, 
         customerEmail: string, 
         customerName: string, 
-        priceId: string
+        priceId: string,
+        agencySlug: string,
      ) {
-        if (isSafeDevMode) {
-            return { url: `${getAppUrl()}/workspace/avc-migration/billing?success=true` };
-        }
-        
         const customerId = await this.getOrCreateCustomer(agencyId, customerEmail, customerName);
         const plan = getPlanByPriceId(priceId);
         
         if (!plan) throw new Error('Invalid Stripe Price ID mapped to ImmiSign system.');
+
+        const billingBase = `${getAppUrl()}/workspace/${agencySlug}/billing`;
 
         const session = await stripe.checkout.sessions.create({
             customer: customerId,
@@ -63,8 +51,8 @@ export class StripeService {
             line_items: [
                 { price: priceId, quantity: 1 }
             ],
-            success_url: `${getAppUrl()}/dashboard/billing/success?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${getAppUrl()}/dashboard/billing`,
+            success_url: `${billingBase}?success=true&session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: billingBase,
             metadata: {
                 agency_id: agencyId,
                 user_id: userId,
@@ -80,17 +68,10 @@ export class StripeService {
         return { url: session.url };
     }
 
-    /**
-     * Instantiates Stripe Customer Billing Portal
-     */
-    async createBillingPortalSession(customerId: string, returnUrl?: string) {
-        if (isSafeDevMode) {
-            return { url: returnUrl || `${getAppUrl()}/workspace/avc-migration/billing` };
-        }
-
+    async createBillingPortalSession(customerId: string, returnUrl: string) {
         const session = await stripe.billingPortal.sessions.create({
             customer: customerId,
-            return_url: returnUrl || `${getAppUrl()}/dashboard/billing`,
+            return_url: returnUrl,
         });
 
         return { url: session.url };

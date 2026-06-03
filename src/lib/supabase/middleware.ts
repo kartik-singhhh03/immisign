@@ -7,8 +7,12 @@ export async function updateSession(request: NextRequest) {
     request,
   });
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://mock.supabase.co';
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'mock-key';
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error('Missing Supabase environment variables');
+  }
 
   const supabase = createServerClient<Database>(
     supabaseUrl,
@@ -42,18 +46,6 @@ export async function updateSession(request: NextRequest) {
   // Create public auth routes to redirect authenticated users away from
   const authRoutes = ['/login', '/signup', '/forgot-password', '/reset-password'];
   const isAuthRoute = authRoutes.some(route => request.nextUrl.pathname.startsWith(route));
-
-  const isSafeDevMode =
-    process.env.NODE_ENV === 'development' &&
-    (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-  if (isSafeDevMode) {
-    if (isAuthRoute) {
-      const url = request.nextUrl.clone();
-      url.pathname = '/dashboard';
-      return NextResponse.redirect(url);
-    }
-    return supabaseResponse;
-  }
 
   const {
     data: { user },

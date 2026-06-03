@@ -23,7 +23,14 @@ export async function POST(req: Request) {
        return NextResponse.json({ error: 'No active billing identity established.' }, { status: 400 });
     }
 
-    const session = await stripeService.createBillingPortalSession((dbAgency as any).stripe_customer_id, returnUrl);
+    const billingReturnUrl =
+      returnUrl ||
+      `${process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '')}/workspace/${agency.slug}/billing`;
+
+    const session = await stripeService.createBillingPortalSession(
+      (dbAgency as any).stripe_customer_id,
+      billingReturnUrl,
+    );
 
     return NextResponse.json({ url: session.url });
   } catch (err: any) {

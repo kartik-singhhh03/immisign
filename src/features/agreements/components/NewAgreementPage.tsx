@@ -1,7 +1,7 @@
 "use client"
 import * as React from "react"
+import { useRequireWorkspace } from "@/lib/hooks/use-workspace"
 import { useAuthStore } from "@/store/authStore"
-import { useApprovalStore } from "@/store/approvalStore"
 import Link from "next/link"
 import {
   ArrowRight,
@@ -81,7 +81,7 @@ function PageHeader({
 
 
 export function NewAgreementPage() {
-  const currentSlug = useAuthStore(s => s.activeWorkspace?.slug || "avc-migration")
+  const { slug: currentSlug } = useRequireWorkspace()
   const steps = ["Client", "Matter", "Fees", "Terms", "Preview", "Send"]
   const [currentStep, setCurrentStep] = React.useState(0)
   const [saving, setSaving] = React.useState(false)
@@ -231,9 +231,7 @@ export function NewAgreementPage() {
             value={formData.responsibleRma}
             onChange={(e) => handleFieldChange("responsibleRma", e.target.value)}
           >
-            <option value="Rajwant Singh (MARN 1794016)">Rajwant Singh (MARN 1794016)</option>
-            <option value="Priya Mehta (MARN 2189402)">Priya Mehta (MARN 2189402)</option>
-            <option value="Unassigned">Leave Unassigned</option>
+            <option value="">Select responsible agent...</option>
           </select>
         </label>
       </div>

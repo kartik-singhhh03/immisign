@@ -1,25 +1,29 @@
 import { z } from 'zod';
+import { getRequiredEnv, isProductionBuild } from '@/lib/env';
 
 const configSchema = z.object({
-  apiKey: z.string().min(1, 'SIGNWELL_API_KEY is required for production'),
-  webhookSecret: z.string().optional(), // Used to verify incoming payloads
+  apiKey: z.string().min(1, 'SIGNWELL_API_KEY is required'),
+  webhookSecret: z.string().optional(),
   baseUrl: z.string().url().default('https://www.signwell.com/api/v1'),
 });
 
-// Avoid failing builds at compile time entirely if env is partial
+function resolveApiKey(): string {
+  const value = process.env.SIGNWELL_API_KEY?.trim();
+  if (value) return value;
+  if (isProductionBuild()) {
+    return getRequiredEnv('SIGNWELL_API_KEY');
+  }
+  throw new Error('SIGNWELL_API_KEY is not configured. Set it in .env.local for e-sign features.');
+}
+
 export const signwellConfig = configSchema.parse({
-  apiKey: process.env.SIGNWELL_API_KEY || 'dummy_for_build', 
+  apiKey: resolveApiKey(),
   webhookSecret: process.env.SIGNWELL_WEBHOOK_SECRET,
   baseUrl: process.env.SIGNWELL_BASE_URL || 'https://www.signwell.com/api/v1',
 });
 
-// Helper for strict runtime checks
 export function validateSignwellConfig() {
-  if (signwellConfig.apiKey === 'dummy_for_build') {
-     const message = 'SIGNWELL_API_KEY is not set.';
-     if (process.env.NODE_ENV === 'production' || process.env.VERCEL === '1') {
-       throw new Error(message);
-     }
-     console.warn(message);
+  if (isProductionBuild() && !process.env.SIGNWELL_API_KEY?.trim()) {
+    throw new Error('SIGNWELL_API_KEY is required in production');
   }
 }

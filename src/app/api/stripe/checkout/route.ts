@@ -21,7 +21,8 @@ export async function POST(req: Request) {
         profile.id, 
         profile.email, 
         agency.name,
-        priceId
+        priceId,
+        agency.slug,
     );
 
     if (!session.url) throw new Error('Stripe failed to provision URL');

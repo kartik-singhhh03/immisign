@@ -3,6 +3,7 @@
 import React, { useState } from "react"
 import Link from "next/link"
 import { useAuthStore } from "@/store/authStore"
+import { useRequireWorkspace } from "@/lib/hooks/use-workspace"
 import { useApprovalStore } from "@/store/approvalStore"
 import { useApprovals } from "@/lib/hooks/useSupabaseData"
 import { PageHeader } from "@/components/layout/PageHeader"
@@ -18,11 +19,13 @@ import { AuditTimeline } from "./AuditTimeline"
 import { ApprovalPermissions } from "@/lib/permissions/approvals"
 
 export function ApplicationApprovalsHomePage() {
-  const activeWorkspace = useAuthStore((state) => state.activeWorkspace)
-  const currentSlug = activeWorkspace?.slug || "avc-migration"
-  const currentId = activeWorkspace?.id || "w-avc"
+  const { slug: currentSlug, agencyId: currentId } = useRequireWorkspace()
   
   const { data: approvals, loading: isLoading } = useApprovals()
+
+  if (!currentSlug) {
+    return <div className="p-8 text-center text-slate-500">Loading workspace...</div>
+  }
 
   return (
     <div className="animate-enter">
@@ -114,7 +117,7 @@ export function ApplicationApprovalsHomePage() {
 }
 
 export function NewApplicationApprovalPage() {
-  const { currentSlug } = useAuthStore((state) => ({ currentSlug: state.activeWorkspace?.slug || "avc-migration" }))
+  const { slug: currentSlug, agencyId: currentId } = useRequireWorkspace()
   const createApproval = useApprovalStore((state) => state.createApproval)
   const [step, setStep] = useState(1)
   
@@ -123,10 +126,14 @@ export function NewApplicationApprovalPage() {
     visaSubclass: "",
     clientName: "",
     clientEmail: "",
-    agentName: "Rajwant Singh", // Mocking default
+    agentName: "",
     lodgementDeadline: "",
     notes: ""
   })
+
+  if (!currentSlug || !currentId) {
+    return <div className="p-8 text-center text-slate-500">Loading workspace...</div>
+  }
 
   // Simulated handle create
   const handleNext = () => {
@@ -134,7 +141,7 @@ export function NewApplicationApprovalPage() {
   }
 
   const handleFinish = async () => {
-    const currentId = useAuthStore.getState().activeWorkspace?.id || "w-avc"
+    if (!currentId) return
     await createApproval(currentId, formData)
     window.location.href = `/workspace/${currentSlug}/application-approvals`
   }
@@ -258,13 +265,13 @@ export function NewApplicationApprovalPage() {
 }
 
 export function ApplicationApprovalDetailPage({ id }: { id: string }) {
-  const activeWorkspace = useAuthStore((state) => state.activeWorkspace)
   const user = useAuthStore((state) => state.user)
-  const currentSlug = activeWorkspace?.slug || "avc-migration"
+  const { slug: currentSlug } = useRequireWorkspace()
   
   const { data: approvals, loading: isLoading } = useApprovals()
   const approval = approvals?.find((a: any) => a.id === id) || null;
 
+  if (!currentSlug) return <div className="p-8 text-center text-slate-500">Loading workspace...</div>
   if (isLoading) return <div className="p-8 text-center text-slate-500">Loading details...</div>
   if (!approval) return <div className="p-8 text-center text-slate-500 font-bold">Approval not found.</div>
 

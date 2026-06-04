@@ -36,7 +36,10 @@ export default async function AgreementsPage({ params }: { params: { agency: str
     const totalAmount = schedule?.total_amount ? parseFloat(schedule.total_amount) : 0;
 
     return {
-      id: a.agreement_number || `AGR-${a.id.split('-')[0].toUpperCase()}`,
+      /** Always the database UUID — use for routes and archive. */
+      agreementUuid: a.id,
+      id: a.id,
+      ref: a.agreement_number || `AGR-${String(a.id).slice(0, 8).toUpperCase()}`,
       client: a.client_name || "Unnamed Client",
       email: a.client_email || "",
       matter: a.metadata?.visa_category || "General Service Agreement",

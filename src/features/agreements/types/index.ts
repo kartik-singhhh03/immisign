@@ -95,8 +95,11 @@ export const AgreementSchema = z.object({
   created_by: z.string(),
   title: z.string(),
   description: z.string().optional().nullable(),
-  agreement_number: z.string(),
-  status: AgreementStatusEnum,
+  agreement_number: z.string().optional().nullable(),
+  status: z.union([AgreementStatusEnum, z.string()]).transform((s) => {
+    const values = Object.values(AgreementStatus) as string[];
+    return values.includes(s) ? (s as AgreementStatus) : AgreementStatus.DRAFT;
+  }),
   template_id: z.string().uuid().optional().nullable(),
   client_id: z.string().uuid().optional().nullable(),
   matter_type_id: z.string().uuid().optional().nullable(),

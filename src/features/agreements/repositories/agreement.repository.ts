@@ -1,5 +1,5 @@
 import { SupabaseClient } from '@supabase/supabase-js';
-import { Agreement, AgreementSchema } from '../types';
+import { Agreement, AgreementSchema, AgreementStatus } from '../types';
 import { assertUuid } from '@/lib/validation/uuid';
 
 export class AgreementRepository {
@@ -28,7 +28,44 @@ export class AgreementRepository {
 
     if (error && error.code !== 'PGRST116') throw new Error(`Error fetching agreement: ${error.message}`);
     if (!data) return null;
-    return AgreementSchema.parse(data);
+    return this.parseAgreementRow(data);
+  }
+
+  /** Resolve by UUID or human-readable agreement_number (legacy links). */
+  async getByIdOrNumber(agencyId: string, idOrRef: string): Promise<Agreement | null> {
+    const uuidRe =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (uuidRe.test(idOrRef)) {
+      const row = await this.getById(idOrRef);
+      return row && row.agency_id === agencyId ? row : null;
+    }
+    const { data, error } = await this.supabase
+      .from('agreements')
+      .select('*')
+      .eq('agency_id', agencyId)
+      .eq('agreement_number', idOrRef)
+      .is('deleted_at', null)
+      .maybeSingle();
+    if (error) throw new Error(`Error fetching agreement: ${error.message}`);
+    if (!data) return null;
+    return this.parseAgreementRow(data);
+  }
+
+  private parseAgreementRow(data: Record<string, unknown>): Agreement {
+    const parsed = AgreementSchema.safeParse(data);
+    if (parsed.success) return parsed.data;
+    const statusRaw = String(data.status || 'draft');
+    const status = (Object.values(AgreementStatus) as string[]).includes(statusRaw)
+      ? statusRaw
+      : AgreementStatus.DRAFT;
+    return {
+      ...(data as Agreement),
+      status: status as Agreement['status'],
+      agreement_number:
+        (data.agreement_number as string) ||
+        (data.title as string) ||
+        'AGR-UNKNOWN',
+    };
   }
 
   async update(id: string, updates: Partial<Agreement>): Promise<Agreement> {

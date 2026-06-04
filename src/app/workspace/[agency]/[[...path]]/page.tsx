@@ -74,7 +74,12 @@ export default function WorkspaceCatchAllPage() {
           return <NewAgreementPage />
         }
         if (path[1]) {
-          return <AgreementDetailPage />
+          router.replace(`/workspace/${agencySlug}/agreements/${path[1]}`)
+          return (
+            <div className="p-8 text-center text-slate-500 text-sm font-medium">
+              Opening agreement workspace…
+            </div>
+          )
         }
         return <AgreementsPage />
 

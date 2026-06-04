@@ -23,9 +23,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { useRouter } from "next/navigation"
+import { useAuthStore } from "@/store/authStore"
+import { getRealAgencyId } from "@/lib/hooks/useSupabaseData"
+import { createClient } from "@/lib/supabase/client"
+import { archiveAgreementAction } from "@/features/agreements/actions/agreements"
+import { Role } from "@/features/auth/types/roles"
+import { notifyError, notifySuccess } from "@/lib/ux/feedback"
 
 interface Agreement {
+  /** Database UUID for navigation and mutations. */
+  agreementUuid: string
   id: string
+  ref?: string
   client: string
   email: string
   matter: string
@@ -37,16 +47,52 @@ interface Agreement {
 }
 
 export function AgreementsList({ initialAgreements, agencySlug }: { initialAgreements: Agreement[], agencySlug: string }) {
+  const router = useRouter()
+  const user = useAuthStore((s) => s.user)
+  const activeWorkspace = useAuthStore((s) => s.activeWorkspace)
   const [searchQuery, setSearchQuery] = React.useState("")
   const [activeFilter, setActiveFilter] = React.useState("All")
   const [currentPage, setCurrentPage] = React.useState(1)
   const [previewAgreement, setPreviewAgreement] = React.useState<Agreement | null>(null)
+  const [archivingId, setArchivingId] = React.useState<string | null>(null)
+
+  const workspaceHref = (agreement: Agreement) =>
+    `/workspace/${agencySlug}/agreements/${agreement.agreementUuid || agreement.id}`
+
+  const openWorkspace = (agreement: Agreement) => {
+    router.push(workspaceHref(agreement))
+  }
+
+  const handleArchive = async (agreement: Agreement) => {
+    if (!user?.id || !activeWorkspace?.id) return
+    if (!window.confirm("Archive this agreement? It will be removed from active lists.")) return
+    const targetId = agreement.agreementUuid || agreement.id
+    try {
+      setArchivingId(targetId)
+      const supabase = createClient()
+      const agencyId = await getRealAgencyId(supabase, activeWorkspace.id)
+      if (!agencyId) throw new Error("Workspace agency could not be resolved.")
+      await archiveAgreementAction(
+        agencyId,
+        user.id,
+        (user.role || "Read-only staff") as Role,
+        targetId,
+      )
+      notifySuccess("Agreement archived", "The agreement was archived.")
+      router.refresh()
+    } catch (e: unknown) {
+      notifyError("Archive failed", e instanceof Error ? e.message : "Could not archive")
+    } finally {
+      setArchivingId(null)
+    }
+  }
   
   const itemsPerPage = 5
 
   const filteredAgreements = initialAgreements.filter((agreement) => {
     const matchesSearch = 
       agreement.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (agreement.ref || agreement.id).toLowerCase().includes(searchQuery.toLowerCase()) ||
       agreement.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
       agreement.matter.toLowerCase().includes(searchQuery.toLowerCase())
     
@@ -195,7 +241,7 @@ export function AgreementsList({ initialAgreements, agencySlug }: { initialAgree
               >
                 <div onClick={() => setPreviewAgreement(agreement)} className="cursor-pointer">
                   <div className="font-bold text-[#081B2E] group-hover:text-[#0D9F8C] transition-colors">{agreement.client}</div>
-                  <div className="text-[11px] font-bold text-slate-400 mt-1">{agreement.id} • {agreement.email}</div>
+                  <div className="text-[11px] font-bold text-slate-400 mt-1">{agreement.ref || agreement.id} • {agreement.email}</div>
                 </div>
                 <div onClick={() => setPreviewAgreement(agreement)} className="text-xs font-bold text-slate-600 cursor-pointer">{agreement.matter}</div>
                 <div className="text-sm font-bold text-[#081B2E]">{agreement.fee}</div>
@@ -214,14 +260,19 @@ export function AgreementsList({ initialAgreements, agencySlug }: { initialAgree
                       <DropdownMenuItem onClick={() => setPreviewAgreement(agreement)} className="rounded-lg font-semibold text-xs cursor-pointer p-2 focus:bg-slate-50">
                         View Agreement Preview
                       </DropdownMenuItem>
-                      <DropdownMenuItem asChild className="rounded-lg font-semibold text-xs cursor-pointer p-2 focus:bg-slate-50">
-                        <Link href={`/workspace/${agencySlug}/agreements/${agreement.id}`}>
-                          Open Workspace
-                        </Link>
+                      <DropdownMenuItem
+                        className="rounded-lg font-semibold text-xs cursor-pointer p-2 focus:bg-slate-50"
+                        onClick={() => openWorkspace(agreement)}
+                      >
+                        Open Workspace
                       </DropdownMenuItem>
                       <DropdownMenuSeparator className="bg-slate-100" />
-                      <DropdownMenuItem className="rounded-lg font-semibold text-xs cursor-pointer p-2 text-red-600 focus:bg-red-50 focus:text-red-700">
-                        Archive Agreement
+                      <DropdownMenuItem
+                        disabled={archivingId === (agreement.agreementUuid || agreement.id)}
+                        onClick={() => handleArchive(agreement)}
+                        className="rounded-lg font-semibold text-xs cursor-pointer p-2 text-red-600 focus:bg-red-50 focus:text-red-700"
+                      >
+                        {archivingId === (agreement.agreementUuid || agreement.id) ? "Archiving…" : "Archive Agreement"}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -276,7 +327,7 @@ export function AgreementsList({ initialAgreements, agencySlug }: { initialAgree
             <>
               <DialogHeader className="border-b border-slate-100 pb-4 mb-4">
                 <DialogTitle className="text-lg font-black text-[#081B2E]">Agreement Digital Record</DialogTitle>
-                <div className="text-xs text-slate-400 font-bold mt-1">ID: {previewAgreement.id} • Registered Custody File</div>
+                <div className="text-xs text-slate-400 font-bold mt-1">Ref: {previewAgreement.ref || previewAgreement.id}</div>
               </DialogHeader>
 
               <div className="space-y-6 text-xs text-[#081B2E]">

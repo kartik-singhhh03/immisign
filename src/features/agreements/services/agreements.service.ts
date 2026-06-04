@@ -50,11 +50,16 @@ export class AgreementService {
     return updated;
   }
 
-  async archiveAgreement(agencyId: string, userId: string, role: Role, agreementId: string) {
+  async archiveAgreement(agencyId: string, userId: string, role: Role, agreementIdOrRef: string) {
     if (!canDelete(role, 'agreements')) throw new Error("RBAC: Unauthorized to archive agreements");
-    
-    const archived = await this.agreementRepo.update(agreementId, { deleted_at: new Date().toISOString() });
-    await this.auditService.logEvent(agencyId, userId, agreementId, 'Agreement Archived');
+
+    const existing = await this.agreementRepo.getByIdOrNumber(agencyId, agreementIdOrRef);
+    if (!existing) throw new Error("Agreement not found");
+
+    const archived = await this.agreementRepo.update(existing.id, {
+      deleted_at: new Date().toISOString(),
+    });
+    await this.auditService.logEvent(agencyId, userId, existing.id, 'Agreement Archived');
     return archived;
   }
 
@@ -64,8 +69,8 @@ export class AgreementService {
   }
 
   async getAgreement(agencyId: string, role: Role, agreementId: string) {
-    const agreement = await this.agreementRepo.getById(agreementId);
-    if (!agreement || agreement.agency_id !== agencyId) throw new Error("Agreement not found");
+    const agreement = await this.agreementRepo.getByIdOrNumber(agencyId, agreementId);
+    if (!agreement) throw new Error('Agreement not found');
     return agreement;
   }
 }

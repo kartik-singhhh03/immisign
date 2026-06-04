@@ -20,14 +20,16 @@ export default async function AgreementDetailsPage({ params }: { params: { agenc
 
   try {
     agreement = await service.getAgreement(agency.id, role, params.id);
-    auditLogs = await auditRepo.listForAgreement(params.id);
+    const agreementUuid = agreement.id;
+    auditLogs = await auditRepo.listForAgreement(agreementUuid);
 
-    const { data: docs } = await supabase.from('documents').select('*').eq('agreement_id', params.id).order('created_at', { ascending: false }).limit(1);
+    const { data: docs } = await supabase.from('documents').select('*').eq('agreement_id', agreementUuid).order('created_at', { ascending: false }).limit(1);
     if (docs && docs.length > 0) {
       const { data: urlData } = await supabase.storage.from('secure_documents').createSignedUrl(docs[0].file_url, 3600);
       documentUrl = urlData?.signedUrl;
     }
-  } catch {
+  } catch (err) {
+    console.error('[agreement-detail]', params.id, err);
     return notFound();
   }
 

@@ -1,7 +1,19 @@
 import { signwellConfig, validateSignwellConfig } from './config';
 import { SignWellDocumentRequest, SignWellDocumentResponse } from './types';
-import { needsSignwellSendCall, signwellDispatchConfirmed } from './status';
+import {
+  needsSignwellSendCall,
+  normalizeSignwellDocument,
+  signwellDispatchConfirmed,
+} from './status';
 import { AppError } from '../utils/errors';
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function normalizeResponse(raw: SignWellDocumentResponse): SignWellDocumentResponse {
+  return normalizeSignwellDocument(raw) as SignWellDocumentResponse;
+}
 
 export class SignWellClient {
   constructor() {
@@ -53,21 +65,23 @@ export class SignWellClient {
   }
 
   async createDocument(data: SignWellDocumentRequest): Promise<SignWellDocumentResponse> {
-    return this.fetchWithRetry<SignWellDocumentResponse>('/documents', {
+    const raw = await this.fetchWithRetry<SignWellDocumentResponse>('/documents', {
       method: 'POST',
       body: JSON.stringify(data),
     });
+    return normalizeResponse(raw);
   }
 
   async getDocument(documentId: string): Promise<SignWellDocumentResponse> {
-    return this.fetchWithRetry<SignWellDocumentResponse>(`/documents/${documentId}`, {
+    const raw = await this.fetchWithRetry<SignWellDocumentResponse>(`/documents/${documentId}`, {
       method: 'GET',
     });
+    return normalizeResponse(raw);
   }
 
   /**
    * POST /documents/{id}/send when status is Draft, Created, or Sending.
-   * Previously skipped send for "Created" (non-Draft), leaving documents unsent.
+   * Polls briefly — SignWell may return Draft in the POST body while status becomes Sent async.
    */
   async sendDocument(
     documentId: string,
@@ -89,10 +103,11 @@ export class SignWellClient {
     });
 
     try {
-      doc = await this.fetchWithRetry<SignWellDocumentResponse>(`/documents/${documentId}/send`, {
-        method: 'POST',
-        body,
-      });
+      const sentRaw = await this.fetchWithRetry<SignWellDocumentResponse>(
+        `/documents/${documentId}/send`,
+        { method: 'POST', body },
+      );
+      doc = normalizeResponse(sentRaw);
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : String(error);
       if (msg.includes("isn't draft") || msg.includes('is not draft')) {
@@ -102,7 +117,8 @@ export class SignWellClient {
       }
     }
 
-    if (!signwellDispatchConfirmed(doc)) {
+    for (let attempt = 0; attempt < 6 && !signwellDispatchConfirmed(doc); attempt++) {
+      await sleep(attempt === 0 ? 500 : 1500);
       doc = await this.getDocument(documentId);
     }
 

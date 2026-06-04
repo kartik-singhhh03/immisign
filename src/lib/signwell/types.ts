@@ -10,6 +10,8 @@ export interface SignWellSignerRequest {
   routing_order?: number;
   role?: string;
   message?: string;
+  send_email?: boolean;
+  send_email_delay?: number;
 }
 
 export interface SignWellField {
@@ -58,12 +60,20 @@ export interface SignWellDocumentResponse {
   archived: boolean;
   status: string; // 'Draft', 'Action Required', 'Completed', 'Declined', 'Canceled'
   name: string;
-  signers: Array<{
+  signers?: Array<{
     id: string;
     name: string;
     email: string;
     status: string;
     signing_url?: string;
+  }>;
+  recipients?: Array<{
+    id: string;
+    name: string;
+    email: string;
+    status: string;
+    signing_url?: string;
+    send_email?: boolean;
   }>;
   files: Array<{
     name: string;

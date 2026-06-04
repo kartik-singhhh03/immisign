@@ -9,6 +9,7 @@ import { redactSensitiveValue } from '@/lib/security/sanitize';
 import { buildSignersFromWizard } from '../lib/wizard-signers';
 import { AgentSignatureService } from './agent-signature.service';
 import { buildSignwellDispatchExtras } from '@/lib/signwell/dispatch-extras';
+import { signwellTestMode } from '@/lib/signwell/test-mode';
 import { createAndSendSignwellDocument } from '@/lib/signwell/document-dispatch';
 import { buildDocumentSignatureFields } from '@/lib/signwell/signature-fields';
 
@@ -87,7 +88,15 @@ export class SignWellService {
       .eq('id', userId)
       .single();
 
-    const signwellSigners: Array<{ id: string; name: string; email: string; routing_order: number; role: string }> = [];
+    const signwellSigners: Array<{
+      id: string;
+      name: string;
+      email: string;
+      routing_order: number;
+      role: string;
+      send_email: boolean;
+      send_email_delay: number;
+    }> = [];
     const seenEmails = new Set<string>();
 
     const addSigner = (id: string, name: string, email: string, swRole: string, routingOrder: number) => {
@@ -100,6 +109,8 @@ export class SignWellService {
         email: normalized,
         routing_order: routingOrder,
         role: swRole,
+        send_email: true,
+        send_email_delay: 0,
       });
     };
 
@@ -146,7 +157,7 @@ export class SignWellService {
     );
 
     const payload = {
-      test_mode: process.env.NODE_ENV !== 'production',
+      test_mode: signwellTestMode(),
       name: agreement.title,
       files: [{ name: 'Agreement.pdf', file_url: urlData.signedUrl }],
       recipients: signwellSigners,

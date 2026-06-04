@@ -207,6 +207,8 @@ export async function POST(req: NextRequest) {
       email: s.email.trim().toLowerCase(),
       routing_order: s.order || idx + 1,
       role: s.role || 'Signer',
+      send_email: true,
+      send_email_delay: 0,
     }));
 
     const pageCount = Math.max(1, Number(body.pageCount) || 1);

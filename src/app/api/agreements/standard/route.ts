@@ -13,8 +13,21 @@ import {
   friendlySignwellError,
   normalizeEmail,
 } from '@/lib/signwell/recipient-validation';
+import {
+  AGREEMENT_SEND_STAGES,
+  DispatchStageTracker,
+} from '@/lib/dispatch/stage-tracker';
+import { formatZodError } from '@/lib/validations/fields';
+import { agreementWizardContactSchema } from '@/lib/validations/schemas';
+
+function agreementSupportRef() {
+  return `AGR-${Date.now().toString(36).toUpperCase()}`;
+}
 
 export async function POST(req: NextRequest) {
+  const tracker = new DispatchStageTracker([...AGREEMENT_SEND_STAGES]);
+  const supportRef = agreementSupportRef();
+
   try {
     // Primary: cookie-based session (browser/UI flows)
     let supabase = await createClient();
@@ -72,9 +85,21 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { formData, agreementRef: clientAgreementRef, dispatchOptions, agencySnapshot, selectedClauses, selectedClauseIds, matterTypeConfig } = body;
 
-    if (!formData?.clientName?.trim() || !formData?.clientEmail?.trim()) {
-      return NextResponse.json({ success: false, error: 'Client name and email are required.' }, { status: 400 });
+    const contactParsed = agreementWizardContactSchema.safeParse({
+      clientName: formData?.clientName,
+      clientEmail: formData?.clientEmail,
+      clientPhone: formData?.clientPhone,
+    });
+    if (!contactParsed.success) {
+      return NextResponse.json(
+        { success: false, error: formatZodError(contactParsed.error) },
+        { status: 400 },
+      );
     }
+    const validatedContact = contactParsed.data;
+    formData.clientName = validatedContact.clientName;
+    formData.clientEmail = validatedContact.clientEmail;
+    formData.clientPhone = validatedContact.clientPhone ?? '';
 
     const responsibleRmaId = dispatchOptions?.responsibleRmaId || formData.responsibleRma || userId;
 
@@ -174,6 +199,7 @@ export async function POST(req: NextRequest) {
 
     const agreementNumber = agreementRef;
 
+    tracker.start('agreement');
     // 3. Create Agreement (only on final send)
     const agreementId = crypto.randomUUID();
     const { error: agErr } = await (supabase as any).from('agreements').insert({
@@ -192,6 +218,7 @@ export async function POST(req: NextRequest) {
       metadata: agreementMetadata
     });
     if (agErr) throw new Error(`Agreement insert failed: ${agErr.message}`);
+    tracker.complete('agreement');
 
     // Signers from wizard (Primary Applicant, Secondary, Sponsor, Dependants)
     const wizardSigners = buildSignersFromWizard(formData);
@@ -243,6 +270,7 @@ export async function POST(req: NextRequest) {
     });
     if (pErr) throw new Error(`Payment schedule insert failed: ${pErr.message}`);
 
+    tracker.start('pdf');
     // 5. Generate PDF Document — agreement record already exists; do not roll it back on PDF failure
     console.log("Step 5: Generating PDF");
     const docService = new DocumentGenerationService(supabase);
@@ -278,14 +306,20 @@ export async function POST(req: NextRequest) {
         reference_type: 'agreement',
       });
 
+      tracker.fail('pdf', pdfMessage);
       return NextResponse.json({
         success: false,
         stage: 'pdf_generation_failed',
         error: pdfMessage,
         agreementId,
+        stages: tracker.snapshot(),
+        supportRef,
         stack: process.env.NODE_ENV === 'development' ? pdfError?.stack : undefined,
       }, { status: 502 });
     }
+    tracker.complete('pdf');
+    tracker.start('storage');
+    tracker.complete('storage');
 
     // 6. Validate signer emails before SignWell (avoid 422 duplicate recipient / CC).
     const wizardSignersForValidation = buildSignersFromWizard(formData);
@@ -310,6 +344,7 @@ export async function POST(req: NextRequest) {
       }, { status: 422 });
     }
 
+    tracker.start('signwell_draft');
     // 7. Push to SignWell. If the external provider rejects the request,
     // keep the generated PDF and DB rows, but do not pretend dispatch worked.
     console.log("Step 6: Pushing to SignWell");
@@ -317,6 +352,7 @@ export async function POST(req: NextRequest) {
     let swResult: any = null;
     try {
       swResult = await swService.sendForSignature(agencyId, userId, 'owner' as any, agreementId);
+      tracker.complete('signwell_draft');
       console.log("SignWell Result:", redactSensitiveValue({
         id: swResult?.id,
         status: swResult?.status,
@@ -351,14 +387,49 @@ export async function POST(req: NextRequest) {
         reference_type: 'agreement',
       });
 
+      tracker.fail('signwell_draft', message);
       return NextResponse.json({
         success: false,
         stage: isValidation ? 'signwell_validation' : 'signwell_dispatch_failed',
         error: message,
         agreementId,
         result,
+        stages: tracker.snapshot(),
+        supportRef,
       }, { status: isValidation ? 422 : 502 });
     }
+
+    tracker.start('signwell_send');
+    if (!swResult?.id) {
+      tracker.fail('signwell_send', 'SignWell did not return a document id');
+      return NextResponse.json({
+        success: false,
+        error: 'SignWell did not return a document id',
+        agreementId,
+        stages: tracker.snapshot(),
+        supportRef,
+      }, { status: 502 });
+    }
+    tracker.complete('signwell_send');
+
+    tracker.start('confirm');
+    const { data: verifiedAgreement } = await (supabase as any)
+      .from('agreements')
+      .select('signwell_document_id')
+      .eq('id', agreementId)
+      .eq('agency_id', agencyId)
+      .single();
+    if (!verifiedAgreement?.signwell_document_id) {
+      tracker.fail('confirm', 'signwell_document_id was not persisted on agreement');
+      return NextResponse.json({
+        success: false,
+        error: 'Agreement dispatch could not be confirmed in the database',
+        agreementId,
+        stages: tracker.snapshot(),
+        supportRef,
+      }, { status: 500 });
+    }
+    tracker.complete('confirm');
 
     // 8. Insert Activity Log
     await (supabase as any).from('activity_logs').insert({
@@ -390,11 +461,24 @@ export async function POST(req: NextRequest) {
       success: true,
       agreementId,
       result,
-      signwellResult: swResult
+      signwellResult: swResult,
+      stages: tracker.snapshot(),
+      supportRef,
     });
 
   } catch (err: any) {
     console.error("Standard Agreement Generation Error Stack:", err.stack);
-    return NextResponse.json({ success: false, error: err.message, stack: err.stack }, { status: 500 });
+    const failed = tracker.failedStage();
+    if (!failed) {
+      const running = tracker.snapshot().find((s) => s.status === 'running');
+      if (running) tracker.fail(running.id, err.message);
+    }
+    return NextResponse.json({
+      success: false,
+      error: err.message,
+      stages: tracker.snapshot(),
+      supportRef,
+      stack: err.stack,
+    }, { status: 500 });
   }
 }

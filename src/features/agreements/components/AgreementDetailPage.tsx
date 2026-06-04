@@ -17,8 +17,10 @@ export function AgreementDetailPage() {
 
   const { data: agreements, loading } = useAgreements()
   
-  const agreement = agreements?.find((a: any) => 
-    a.id === agreementId || a.real_id === agreementId
+  const agreement = agreements?.find((a: any) =>
+    a.id === agreementId ||
+    a.real_id === agreementId ||
+    a.ref === agreementId,
   )
 
   if (loading) {

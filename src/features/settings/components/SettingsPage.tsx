@@ -42,6 +42,8 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { PhoneInput } from "@/components/ui/phone-input"
+import { DigitsInput } from "@/components/ui/digits-input"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import {
@@ -292,9 +294,13 @@ export function SettingsPage({ section = "" }: { section?: string }) {
   }, [agencyProfile])
 
   const handleSaveBranding = async (updates: Record<string, unknown>) => {
-    await updateBranding(updates)
-    updateWorkspaceBranding(String(updates.primary_color || brandColor), brandInitials, updates.logo_url as string | undefined)
-    triggerToast("Workspace branding settings updated successfully!")
+    try {
+      await updateBranding(updates)
+      updateWorkspaceBranding(String(updates.primary_color || brandColor), brandInitials, updates.logo_url as string | undefined)
+      triggerToast("Workspace branding settings updated successfully!")
+    } catch (e: unknown) {
+      triggerToast(e instanceof Error ? e.message : "Failed to save branding settings")
+    }
   }
 
   // Clauses State
@@ -323,7 +329,12 @@ export function SettingsPage({ section = "" }: { section?: string }) {
   const [signatureLoading, setSignatureLoading] = React.useState(false)
 
   const handleSaveMyProfile = async () => {
-    await updateUserProfile({ full_name: myFullName, phone: myPhone })
+    try {
+      await updateUserProfile({ full_name: myFullName, phone: myPhone || null })
+    } catch (e: unknown) {
+      triggerToast(e instanceof Error ? e.message : 'Invalid profile details')
+      return
+    }
     triggerToast("Your profile has been updated.")
   }
 
@@ -400,7 +411,15 @@ export function SettingsPage({ section = "" }: { section?: string }) {
   }
 
   const handleSaveAgencyProfile = async (updates: Record<string, unknown>) => {
-    await updateProfile(updates);
+    try {
+      const { parseOrThrow } = await import('@/lib/validations/fields')
+      const { agencyProfileSaveSchema } = await import('@/lib/validations/schemas')
+      parseOrThrow(agencyProfileSaveSchema, updates)
+      await updateProfile(updates)
+    } catch (e: unknown) {
+      triggerToast(e instanceof Error ? e.message : 'Invalid agency profile')
+      return
+    }
     triggerToast("Agency profile saved successfully!");
   };
 
@@ -749,7 +768,7 @@ export function SettingsPage({ section = "" }: { section?: string }) {
         </label>
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           Practitioner Phone
-          <Input value={myPhone} onChange={(e) => setMyPhone(e.target.value)} className="h-11 rounded-xl border-slate-200 bg-white" />
+          <PhoneInput value={myPhone} onChange={setMyPhone} className="h-11 rounded-xl border-slate-200 bg-white" />
         </label>
       </div>
 
@@ -914,9 +933,10 @@ export function SettingsPage({ section = "" }: { section?: string }) {
               </label>
               <label className="grid gap-2 text-xs font-bold text-slate-500">
                 MARN Code (7-digits)
-                <Input
+                <DigitsInput
                   value={inviteMarn}
-                  onChange={(e) => setInviteMarn(e.target.value)}
+                  onChange={setInviteMarn}
+                  maxDigits={7}
                   className="h-11 rounded-xl border-slate-200 bg-white"
                   placeholder="e.g. 2189402"
                 />

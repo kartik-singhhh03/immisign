@@ -106,7 +106,7 @@ export function BillingPage() {
     try {
       const res = await fetch("/api/stripe/billing")
       const json = await res.json()
-      if (!res.ok) throw new Error(json.error || "Failed to load billing")
+      if (!res.ok) throw new Error(json.error || json.message || "Failed to load billing")
       setData(json)
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load billing")

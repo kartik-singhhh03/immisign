@@ -1,19 +1,23 @@
-import { requireAgency } from '../supabase/auth';
+import { getCurrentAgency } from '../supabase/auth';
 import { getImmisignPlan } from './plan';
-import { AppError } from '../utils/errors';
-import { createClient } from '../supabase/server';
+import { AppError, UnauthorizedError } from '../utils/errors';
 
 /**
  * Ensures the agency has an active or trialing subscription before gated actions.
  */
 export async function requireActiveSubscription() {
-  const { agency } = await requireAgency();
+  const agency = await getCurrentAgency();
+  if (!agency) {
+    throw new UnauthorizedError('Authentication required');
+  }
+
   const status = agency.subscription_status;
 
   if (!status || !['active', 'trialing'].includes(status)) {
     throw new AppError(
       'An active ImmiSign subscription is required. Subscribe from Billing settings.',
       'FORBIDDEN',
+      403,
     );
   }
 

@@ -1,54 +1,67 @@
 import { NextResponse } from 'next/server';
-import { requireAgency } from '@/lib/supabase/auth';
-import { createClient } from '@/lib/supabase/server';
+import { getWorkspaceApiContext } from '@/lib/auth/workspace-api';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { getImmisignPlan } from '@/lib/stripe/plan';
 import { getAgencySeatSnapshot } from '@/lib/stripe/seats';
 import { stripeService } from '@/lib/stripe/service';
-import { handleServerError } from '@/lib/utils/errors';
+import { apiError, withApiRoute } from '@/lib/api/json-response';
 
 export async function GET() {
-  try {
-    const { agency, profile } = await requireAgency();
-    const supabase = await createClient();
-    const plan = getImmisignPlan();
+  return withApiRoute('GET /api/stripe/billing', async () => {
+    const ctx = await getWorkspaceApiContext();
+    if ('error' in ctx) {
+      return apiError(ctx.error, ctx.status);
+    }
 
-    const seats = await getAgencySeatSnapshot(supabase, agency.id);
+    let plan;
+    try {
+      plan = getImmisignPlan();
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Billing is not configured';
+      return apiError(message, 503);
+    }
 
-    const { data: sub } = await supabase
+    const seats = await getAgencySeatSnapshot(ctx.supabase, ctx.agencyId);
+
+    const { data: sub } = await ctx.supabase
       .from('subscriptions')
       .select(
         'status, plan_name, current_period_end, cancel_at_period_end, stripe_customer_id, stripe_subscription_id, additional_seats, billable_seats',
       )
-      .eq('agency_id', agency.id)
+      .eq('agency_id', ctx.agencyId)
       .maybeSingle();
 
     const admin = createAdminClient();
     const { data: agencyRow } = (await admin
       .from('agencies')
       .select('stripe_customer_id, subscription_status')
-      .eq('id', agency.id)
-      .single()) as {
+      .eq('id', ctx.agencyId)
+      .maybeSingle()) as {
       data: { stripe_customer_id?: string; subscription_status?: string } | null;
     };
 
     const customerId =
       sub?.stripe_customer_id || agencyRow?.stripe_customer_id || null;
 
+    const role = String(ctx.dbRole || '').toLowerCase();
     let nextInvoiceAmountCents: number | null = null;
-    if (customerId && ['owner', 'admin'].includes(profile.role!)) {
+    if (customerId && ['owner', 'admin'].includes(role)) {
       nextInvoiceAmountCents =
         await stripeService.getUpcomingInvoiceAmountCents(customerId);
     }
 
-    const { data: invoices } = await supabase
+    const { data: invoices, error: invoicesError } = await ctx.supabase
       .from('invoices')
       .select(
         'stripe_invoice_id, amount_paid, currency, status, hosted_invoice_url, invoice_pdf, paid_at, created_at',
       )
-      .eq('agency_id', agency.id)
+      .eq('agency_id', ctx.agencyId)
       .order('created_at', { ascending: false })
       .limit(12);
+
+    if (invoicesError) {
+      console.warn('[billing] invoices fetch:', invoicesError.message);
+    }
 
     return NextResponse.json({
       plan: {
@@ -90,8 +103,5 @@ export async function GET() {
         createdAt: inv.created_at,
       })),
     });
-  } catch (err: unknown) {
-    const safeError = handleServerError(err);
-    return NextResponse.json(safeError, { status: 500 });
-  }
+  });
 }

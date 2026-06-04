@@ -1,4 +1,5 @@
 import { SupabaseClient } from '@supabase/supabase-js';
+import { filterProductionClients } from '@/lib/data/production-filters';
 import { StorageService, StorageHelpers } from './storage';
 
 export class DashboardRepository {
@@ -110,9 +111,11 @@ export class ClientsRepository {
 
     const { data, error, count } = await query;
     if (error) throw error;
-    
+
+    const filtered = filterProductionClients(data || []);
+
     return {
-      data: data.map(c => ({
+      data: filtered.map(c => ({
         id: c.id,
         name: c.name,
         email: c.email,
@@ -162,9 +165,18 @@ export class ClientsRepository {
   }
 
   async create(client: any) {
+    const { parseOrThrow } = await import('@/lib/validations/fields');
+    const { clientCreateSchema } = await import('@/lib/validations/schemas');
+    const parsed = parseOrThrow(clientCreateSchema, client);
+    if (!client.agency_id) throw new Error('agency_id is required');
     const { data, error } = await this.supabase
       .from('clients')
-      .insert(client)
+      .insert({
+        agency_id: client.agency_id,
+        name: parsed.name,
+        email: parsed.email,
+        phone: parsed.phone,
+      })
       .select()
       .single();
     if (error) throw error;
@@ -172,9 +184,12 @@ export class ClientsRepository {
   }
 
   async update(id: string, updates: { name?: string; email?: string; phone?: string }, agencyId?: string) {
+    const { parseOrThrow } = await import('@/lib/validations/fields');
+    const { clientUpdateSchema } = await import('@/lib/validations/schemas');
+    const parsed = parseOrThrow(clientUpdateSchema, updates);
     let query = this.supabase
       .from('clients')
-      .update({ ...updates, updated_at: new Date().toISOString() })
+      .update({ ...parsed, updated_at: new Date().toISOString() })
       .eq('id', id);
 
     if (agencyId) {
@@ -225,7 +240,8 @@ export class AgreementsRepository {
     
     return {
       data: data.map(a => ({
-        id: a.agreement_number || a.id,
+        id: a.id,
+        ref: a.agreement_number || a.id,
         real_id: a.id,
         client: a.clients?.name || a.client_name,
         email: a.clients?.email || a.client_email,
@@ -505,19 +521,14 @@ export class AgencyRepository {
   constructor(private supabase: SupabaseClient) {}
 
   async updateProfile(agencyId: string, updates: any) {
+    const { parseOrThrow } = await import('@/lib/validations/fields');
+    const { agencyProfileUpdateSchema } = await import('@/lib/validations/schemas');
+    const parsed = parseOrThrow(agencyProfileUpdateSchema, updates);
     const { data, error } = await this.supabase
       .from('agencies')
       .update({
-        name: updates.name,
-        principal_name: updates.principal_name,
-        timezone: updates.timezone,
-        address: updates.address,
-        marn: updates.marn,
-        abn: updates.abn,
-        email: updates.email,
-        phone: updates.phone,
-        website: updates.website,
-        updated_at: new Date().toISOString()
+        ...parsed,
+        updated_at: new Date().toISOString(),
       })
       .eq('id', agencyId)
       .select()
@@ -562,8 +573,8 @@ export class BrandingRepository {
       .from('branding_settings')
       .select('*')
       .eq('agency_id', agencyId)
-      .single();
-    if (error && error.code !== 'PGRST116') throw error;
+      .maybeSingle();
+    if (error) throw error;
     return data;
   }
 }
@@ -598,10 +609,10 @@ export class MatterDefaultsRepository {
       .from('matter_defaults')
       .select('*')
       .eq('agency_id', agencyId)
-      .single();
-    if (error && error.code !== 'PGRST116') {
-        console.warn("Matter defaults fetch failed:", error.message);
-        return null;
+      .maybeSingle();
+    if (error) {
+      console.warn('Matter defaults fetch failed:', error.message);
+      return null;
     }
     return data;
   }
@@ -816,6 +827,14 @@ export class RmaTeamRepository {
     rma_status?: string;
     rma_tier?: string;
   }) {
+    const { parseOrThrow } = await import('@/lib/validations/fields');
+    const { rmaUpsertSchema } = await import('@/lib/validations/schemas');
+    const parsed = parseOrThrow(rmaUpsertSchema, {
+      user_id: payload.user_id,
+      mara_number: payload.mara_number,
+      phone: payload.phone,
+      rma_tier: payload.rma_tier,
+    });
     const { data: existing } = await this.supabase
       .from('rmas')
       .select('id')
@@ -827,8 +846,8 @@ export class RmaTeamRepository {
       const { data, error } = await this.supabase
         .from('rmas')
         .update({
-          mara_number: payload.mara_number,
-          phone: payload.phone || null,
+          mara_number: parsed.mara_number,
+          phone: parsed.phone ?? null,
           is_default: payload.is_default ?? false,
           rma_status: payload.rma_status || 'active',
           rma_tier: payload.rma_tier || 'associate',
@@ -845,9 +864,9 @@ export class RmaTeamRepository {
       .from('rmas')
       .insert({
         agency_id: agencyId,
-        user_id: payload.user_id,
-        mara_number: payload.mara_number,
-        phone: payload.phone || null,
+        user_id: parsed.user_id,
+        mara_number: parsed.mara_number,
+        phone: parsed.phone ?? null,
         is_default: payload.is_default ?? false,
         rma_status: payload.rma_status || 'active',
         rma_tier: payload.rma_tier || 'associate',

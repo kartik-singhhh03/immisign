@@ -29,6 +29,12 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { StatusPill } from "@/components/saas/dashboard-pages"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 import { 
   useDashboardMetrics, 
@@ -99,7 +105,7 @@ function MetricCard({
   )
 }
 
-function AgreementTable() {
+function AgreementTable({ workspaceSlug }: { workspaceSlug: string }) {
   const { data: agreements, loading } = useAgreements()
   
   if (loading) return <div className="p-8 text-center text-slate-400 font-semibold animate-pulse">Loading agreements...</div>
@@ -130,7 +136,20 @@ function AgreementTable() {
             <div><StatusPill status={agreement.status} /></div>
             <div className="text-slate-400 font-medium">{agreement.date}</div>
             <div className="flex justify-end">
-              <MoreHorizontal className="h-5 w-5 text-slate-400 opacity-40 group-hover:opacity-100 transition-opacity cursor-pointer" />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400">
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-44 rounded-xl">
+                  <DropdownMenuItem asChild>
+                    <Link href={`/workspace/${workspaceSlug}/agreements/${agreement.real_id || agreement.id}`}>
+                      Open workspace
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         ))}
@@ -274,7 +293,7 @@ export function DashboardHomePage() {
 
           <div>
              <h2 className="mb-3 mt-4 text-xl font-black text-[#081B2E]">Recent Agreements</h2>
-             <AgreementTable />
+             <AgreementTable workspaceSlug={currentSlug} />
           </div>
         </div>
 

@@ -1,20 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAgency } from '@/lib/supabase/auth';
-import { createClient } from '@/lib/supabase/server';
+import { getWorkspaceApiContext } from '@/lib/auth/workspace-api';
 import { seatPreviewQuerySchema } from '@/lib/stripe/validators';
 import { getAgencySeatSnapshot } from '@/lib/stripe/seats';
 import { stripeService } from '@/lib/stripe/service';
-import { handleServerError } from '@/lib/utils/errors';
+import { apiError, withApiRoute } from '@/lib/api/json-response';
 
 /** Preview seat impact before inviting (GET) or sync Stripe quantities (POST). */
 export async function GET(req: NextRequest) {
-  try {
-    const { agency } = await requireAgency();
-    const supabase = await createClient();
+  return withApiRoute('GET /api/stripe/seats', async () => {
+    const ctx = await getWorkspaceApiContext();
+    if ('error' in ctx) {
+      return apiError(ctx.error, ctx.status);
+    }
+
     const params = Object.fromEntries(req.nextUrl.searchParams);
     const { role } = seatPreviewQuerySchema.parse(params);
 
-    const snapshot = await getAgencySeatSnapshot(supabase, agency.id, {
+    const snapshot = await getAgencySeatSnapshot(ctx.supabase, ctx.agencyId, {
       includePendingInviteRole: role,
     });
 
@@ -29,24 +31,22 @@ export async function GET(req: NextRequest) {
         ? `Adding this user will increase your subscription by $${snapshot.nextSeatIncreaseUsd}/month.`
         : null,
     });
-  } catch (err: unknown) {
-    const safeError = handleServerError(err);
-    return NextResponse.json(safeError, { status: 500 });
-  }
+  });
 }
 
 export async function POST() {
-  try {
-    const { profile, agency } = await requireAgency();
-
-    if (!['owner', 'admin'].includes(profile.role!)) {
-      return NextResponse.json({ error: 'Permission denied' }, { status: 403 });
+  return withApiRoute('POST /api/stripe/seats', async () => {
+    const ctx = await getWorkspaceApiContext();
+    if ('error' in ctx) {
+      return apiError(ctx.error, ctx.status);
     }
 
-    const result = await stripeService.syncSubscriptionSeats(agency.id);
+    const role = String(ctx.dbRole || '').toLowerCase();
+    if (!['owner', 'admin'].includes(role)) {
+      return apiError('Permission denied', 403);
+    }
+
+    const result = await stripeService.syncSubscriptionSeats(ctx.agencyId);
     return NextResponse.json(result);
-  } catch (err: unknown) {
-    const safeError = handleServerError(err);
-    return NextResponse.json(safeError, { status: 500 });
-  }
+  });
 }

@@ -33,6 +33,9 @@ import {
   Check,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { PhoneInput } from "@/components/ui/phone-input"
+import { parseOrThrow } from "@/lib/validations/fields"
+import { clientCreateSchema } from "@/lib/validations/schemas"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
@@ -52,6 +55,7 @@ import {
 import { StatusPill } from "@/components/saas/dashboard-pages"
 import { PageEmptyState } from "@/components/ui/standards"
 import { notifyError, notifySuccess } from "@/lib/ux/feedback"
+import { filterProductionClients } from "@/lib/data/production-filters"
 import { Skeleton } from "@/components/ui/skeleton"
 
 function PageHeader({
@@ -94,11 +98,12 @@ export function ClientsPage() {
 
     try {
       setIsSubmitting(true)
-      await addClient({
+      const payload = parseOrThrow(clientCreateSchema, {
         name: clientName,
         email: clientEmail,
         phone: clientPhone || null,
       })
+      await addClient(payload)
       
       setIsOpen(false)
       setClientName("")
@@ -112,11 +117,11 @@ export function ClientsPage() {
     }
   }
 
-  const filteredClients = clientsList?.filter(
+  const filteredClients = filterProductionClients(clientsList || []).filter(
     (c: any) =>
       c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.email.toLowerCase().includes(searchQuery.toLowerCase())
-  ) || []
+      c.email.toLowerCase().includes(searchQuery.toLowerCase()),
+  )
 
   const { slug: currentSlug } = useRequireWorkspace()
 
@@ -221,10 +226,9 @@ export function ClientsPage() {
             </label>
             <label className="grid gap-2 text-xs font-bold text-slate-500">
               Phone Number
-              <Input
-                type="tel"
+              <PhoneInput
                 value={clientPhone}
-                onChange={(e) => setClientPhone(e.target.value)}
+                onChange={setClientPhone}
                 className="h-11 rounded-xl border-slate-200 bg-white font-semibold"
                 placeholder="e.g. +61 400 000 000"
               />

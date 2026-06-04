@@ -39,6 +39,10 @@ export async function getCurrentAgency() {
     : null;
 }
 
+/**
+ * Page / Server Component auth only.
+ * Route Handlers must use `getWorkspaceApiContext()` — `redirect()` becomes a 500 in APIs.
+ */
 export async function requireAuth() {
   const user = await getCurrentUser();
   if (!user) {
@@ -47,6 +51,7 @@ export async function requireAuth() {
   return user;
 }
 
+/** @see requireAuth — not for Route Handlers */
 export async function requireAgency() {
   await requireAuth();
   const profile = await getCurrentProfile();

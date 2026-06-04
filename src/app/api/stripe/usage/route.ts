@@ -1,34 +1,48 @@
 import { NextResponse } from 'next/server';
-import { requireAgency } from '@/lib/supabase/auth';
-import { createClient } from '@/lib/supabase/server';
+import { getWorkspaceApiContext } from '@/lib/auth/workspace-api';
 import { getImmisignPlan } from '@/lib/stripe/plan';
 import { getAgencySeatSnapshot } from '@/lib/stripe/seats';
-import { handleServerError } from '@/lib/utils/errors';
+import { apiError, withApiRoute } from '@/lib/api/json-response';
 
 export async function GET() {
-  try {
-    const { agency } = await requireAgency();
-    const supabase = await createClient();
-    const plan = getImmisignPlan();
+  return withApiRoute('GET /api/stripe/usage', async () => {
+    const ctx = await getWorkspaceApiContext();
+    if ('error' in ctx) {
+      return apiError(ctx.error, ctx.status);
+    }
 
-    const { data: sub } = await supabase
+    let plan;
+    try {
+      plan = getImmisignPlan();
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Billing is not configured';
+      return apiError(message, 503);
+    }
+
+    const { data: sub } = await ctx.supabase
       .from('subscriptions')
       .select(
         'plan_name, status, current_period_end, cancel_at_period_end, additional_seats',
       )
-      .eq('agency_id', agency.id)
+      .eq('agency_id', ctx.agencyId)
       .maybeSingle();
 
-    const seats = await getAgencySeatSnapshot(supabase, agency.id);
+    const { data: agencyRow } = await ctx.supabase
+      .from('agencies')
+      .select('subscription_status')
+      .eq('id', ctx.agencyId)
+      .maybeSingle();
 
-    const { count: docsCount } = await supabase
+    const seats = await getAgencySeatSnapshot(ctx.supabase, ctx.agencyId);
+
+    const { count: docsCount } = await ctx.supabase
       .from('agreements')
       .select('*', { count: 'exact', head: true })
-      .eq('agency_id', agency.id);
+      .eq('agency_id', ctx.agencyId);
 
     return NextResponse.json({
       plan: sub?.plan_name || plan.id,
-      status: sub?.status || agency.subscription_status || 'trialing',
+      status: sub?.status || agencyRow?.subscription_status || 'trialing',
       current_period_end: sub?.current_period_end,
       cancel_at: sub?.cancel_at_period_end,
       seats: {
@@ -42,8 +56,5 @@ export async function GET() {
         documents_used: docsCount || 0,
       },
     });
-  } catch (err: unknown) {
-    const safeError = handleServerError(err);
-    return NextResponse.json(safeError, { status: 500 });
-  }
+  });
 }

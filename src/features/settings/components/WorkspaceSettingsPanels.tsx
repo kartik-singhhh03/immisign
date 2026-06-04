@@ -4,6 +4,10 @@ import * as React from "react"
 import { Plus, Trash2, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { PhoneInput } from "@/components/ui/phone-input"
+import { DigitsInput } from "@/components/ui/digits-input"
+import { parseOrThrow } from "@/lib/validations/fields"
+import { agencyProfileSaveSchema } from "@/lib/validations/schemas"
 import { Textarea } from "@/components/ui/textarea"
 
 type ListEditorProps = {
@@ -70,18 +74,27 @@ export function AgencyProfilePanel({
   disabled?: boolean
   onSave: (updates: Record<string, unknown>) => Promise<void>
 }) {
+  const [phone, setPhone] = React.useState(agencyProfile?.phone || "")
+  const [marn, setMarn] = React.useState(agencyProfile?.marn || "")
+
+  React.useEffect(() => {
+    setPhone(agencyProfile?.phone || "")
+    setMarn(agencyProfile?.marn || "")
+  }, [agencyProfile?.phone, agencyProfile?.marn])
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const fd = new FormData(e.currentTarget)
-    await onSave({
-      name: fd.get("name"),
-      principal_name: fd.get("principal_name"),
-      marn: fd.get("marn"),
-      email: fd.get("email"),
-      phone: fd.get("phone"),
-      website: fd.get("website"),
-      address: fd.get("address"),
+    const payload = parseOrThrow(agencyProfileSaveSchema, {
+      name: String(fd.get("name") || ""),
+      principal_name: String(fd.get("principal_name") || ""),
+      marn,
+      email: String(fd.get("email") || "") || null,
+      phone: phone || null,
+      website: String(fd.get("website") || "") || null,
+      address: String(fd.get("address") || "") || null,
     })
+    await onSave(payload)
   }
 
   return (
@@ -97,7 +110,7 @@ export function AgencyProfilePanel({
         </label>
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           MARN *
-          <Input name="marn" required defaultValue={agencyProfile?.marn || ""} disabled={disabled} className="h-11 rounded-xl" />
+          <DigitsInput value={marn} onChange={setMarn} maxDigits={7} required disabled={disabled} className="h-11 rounded-xl" placeholder="1234567" />
         </label>
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           Email
@@ -105,7 +118,7 @@ export function AgencyProfilePanel({
         </label>
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           Phone
-          <Input name="phone" defaultValue={agencyProfile?.phone || ""} disabled={disabled} className="h-11 rounded-xl" />
+          <PhoneInput value={phone} onChange={setPhone} disabled={disabled} className="h-11 rounded-xl" placeholder="+61 400 000 000" />
         </label>
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           Website
@@ -259,8 +272,8 @@ export function RmaTeamPanel({
                 <option key={m.id} value={m.id}>{m.full_name}</option>
               ))}
             </select>
-            <Input value={marn} onChange={(e) => setMarn(e.target.value)} placeholder="MARN" className="h-11 rounded-xl" />
-            <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Phone" className="h-11 rounded-xl" />
+            <DigitsInput value={marn} onChange={setMarn} maxDigits={7} placeholder="MARN (7 digits)" className="h-11 rounded-xl" />
+            <PhoneInput value={phone} onChange={setPhone} placeholder="Phone" className="h-11 rounded-xl" />
             <Button type="button" onClick={handleAdd} className="rounded-xl bg-[#0D9F8C] font-bold"><Plus className="h-4 w-4 mr-1" /> Add RMA</Button>
           </div>
         </div>

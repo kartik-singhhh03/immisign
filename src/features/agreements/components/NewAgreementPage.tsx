@@ -34,6 +34,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { PhoneInput } from "@/components/ui/phone-input"
 import { cn } from "@/lib/utils"
 import {
   Dialog,
@@ -208,11 +209,11 @@ export function NewAgreementPage() {
         </label>
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           Phone Number
-          <Input 
-            className="h-12 rounded-xl border-slate-200 bg-white text-sm font-semibold focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" 
-            value={formData.clientPhone} 
-            onChange={(e) => handleFieldChange("clientPhone", e.target.value)}
-            placeholder="e.g. +61 402 984 102" 
+          <PhoneInput
+            className="h-12 rounded-xl border-slate-200 bg-white text-sm font-semibold focus-visible:ring-1 focus-visible:ring-[#0D9F8C]"
+            value={formData.clientPhone}
+            onChange={(v) => handleFieldChange("clientPhone", v)}
+            placeholder="e.g. +61 402 984 102"
           />
         </label>
         <label className="grid gap-2 text-xs font-bold text-slate-500">

@@ -30,7 +30,7 @@ if (!row?.signwell_document_id) {
   process.exit(1);
 }
 
-const eventType = 'document_viewed';
+const eventType = process.argv[3] || 'document_viewed';
 const time = Math.floor(Date.now() / 1000);
 const hash = crypto.createHmac('sha256', hookId).update(`${eventType}@${time}`, 'utf8').digest('hex');
 const payload = {

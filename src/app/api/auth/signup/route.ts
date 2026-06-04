@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { provisionAgencyWorkspace } from '@/lib/agency/provision-workspace';
+import { formatZodError } from '@/lib/validations/fields';
+import { signupSchema } from '@/lib/validations/schemas';
 import { validatePassword } from '@/lib/auth/password-policy';
 import {
   buildSlugSuggestions,
@@ -19,27 +22,27 @@ async function isSlugAvailable(admin: ReturnType<typeof createAdminClient>, slug
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
+  const parsedSignup = signupSchema.safeParse({
+    email: body.email,
+    password: body.password,
+    firstName: body.firstName,
+    lastName: body.lastName,
+    agencyName: body.agencyName,
+    marn: body.marn,
+  });
+  if (!parsedSignup.success) {
+    return NextResponse.json({ error: formatZodError(parsedSignup.error) }, { status: 400 });
+  }
+
   const {
     email,
     password,
     firstName,
     lastName,
     agencyName,
-    slug,
     marn,
-  } = body as {
-    email?: string;
-    password?: string;
-    firstName?: string;
-    lastName?: string;
-    agencyName?: string;
-    slug?: string;
-    marn?: string;
-  };
-
-  if (!email || !password || !agencyName) {
-    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-  }
+  } = parsedSignup.data;
+  const slug = body.slug as string | undefined;
 
   const policy = validatePassword(password);
   if (!policy.valid) {
@@ -113,7 +116,7 @@ export async function POST(req: NextRequest) {
     .select('id, slug, name')
     .single();
 
-  if (agencyError) {
+  if (agencyError || !agency) {
     await admin.auth.admin.deleteUser(userId);
     if (agencyError.code === '23505') {
       return NextResponse.json(
@@ -125,7 +128,20 @@ export async function POST(req: NextRequest) {
         { status: 409 },
       );
     }
-    return NextResponse.json({ error: agencyError.message }, { status: 500 });
+    return NextResponse.json(
+      { error: agencyError?.message || 'Agency creation failed' },
+      { status: 500 },
+    );
+  }
+
+  const provision = await provisionAgencyWorkspace(admin, agency.id);
+  if (!provision.ok) {
+    await admin.auth.admin.deleteUser(userId);
+    await (admin as any).from('agencies').delete().eq('id', agency.id);
+    return NextResponse.json(
+      { error: provision.error || 'Failed to initialize workspace' },
+      { status: 500 },
+    );
   }
 
   const { error: userError } = await (admin as any).from('users').insert({

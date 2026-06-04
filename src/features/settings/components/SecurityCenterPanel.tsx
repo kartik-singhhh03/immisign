@@ -4,6 +4,7 @@ import * as React from "react"
 import { useAuthStore } from "@/store/authStore"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { PhoneInput } from "@/components/ui/phone-input"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import { validatePassword, passwordPolicyMessage } from "@/lib/auth/password-policy"
@@ -237,9 +238,9 @@ export function SecurityCenterPanel({
           </div>
           <div className="space-y-2">
             <Label className="text-xs font-bold text-slate-500">Phone</Label>
-            <Input
+            <PhoneInput
               value={myPhone}
-              onChange={(e) => setMyPhone(e.target.value)}
+              onChange={setMyPhone}
               className="h-11 rounded-xl"
             />
           </div>

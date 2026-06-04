@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getWorkspaceApiContext } from '@/lib/auth/workspace-api';
 import { apiError, withApiRoute } from '@/lib/api/json-response';
+import { filterProductionClients } from '@/lib/data/production-filters';
 
 export async function GET(req: NextRequest) {
   return withApiRoute('GET /api/search', async () => {
@@ -17,7 +18,7 @@ export async function GET(req: NextRequest) {
   const pattern = `%${q}%`;
   const prefix = `/workspace/${ctx.agencySlug}`;
 
-  const [clients, agreements, approvals, documents, users, tasks] = await Promise.all([
+  const [clients, agreements, approvals, documents, templates, users, tasks] = await Promise.all([
     ctx.supabase
       .from('clients')
       .select('id, name, email')
@@ -26,9 +27,9 @@ export async function GET(req: NextRequest) {
       .limit(5),
     ctx.supabase
       .from('agreements')
-      .select('id, title, status')
+      .select('id, title, status, agreement_number, client_name')
       .eq('agency_id', ctx.agencyId)
-      .ilike('title', pattern)
+      .or(`title.ilike.${pattern},client_name.ilike.${pattern},agreement_number.ilike.${pattern}`)
       .limit(5),
     ctx.supabase
       .from('application_approvals')
@@ -39,9 +40,15 @@ export async function GET(req: NextRequest) {
       .limit(5),
     ctx.supabase
       .from('documents')
-      .select('id, file_name, status')
+      .select('id, file_name, status, signwell_status')
       .eq('agency_id', ctx.agencyId)
       .ilike('file_name', pattern)
+      .limit(5),
+    ctx.supabase
+      .from('templates')
+      .select('id, name')
+      .eq('agency_id', ctx.agencyId)
+      .ilike('name', pattern)
       .limit(5),
     ctx.supabase
       .from('users')
@@ -65,13 +72,13 @@ export async function GET(req: NextRequest) {
     href: string;
   }[] = [];
 
-  (clients.data || []).forEach((c) =>
+  filterProductionClients(clients.data || []).forEach((c) =>
     results.push({
       type: 'client',
       id: c.id,
       label: c.name,
       sublabel: c.email,
-      href: `${prefix}/clients`,
+      href: `${prefix}/clients/${c.id}`,
     }),
   );
   (agreements.data || []).forEach((a) =>
@@ -97,8 +104,16 @@ export async function GET(req: NextRequest) {
       type: 'document',
       id: d.id,
       label: d.file_name,
-      sublabel: d.status,
+      sublabel: d.signwell_status || d.status,
       href: `${prefix}/documents/library`,
+    }),
+  );
+  (templates.data || []).forEach((t) =>
+    results.push({
+      type: 'template',
+      id: t.id,
+      label: t.name,
+      href: `${prefix}/settings?section=Templates`,
     }),
   );
   (users.data || []).forEach((u) =>

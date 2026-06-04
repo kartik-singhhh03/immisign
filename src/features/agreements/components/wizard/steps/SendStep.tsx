@@ -4,16 +4,10 @@ import Link from "next/link"
 import { CheckCircle2, Lock, PenLine } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { WorkflowProgress } from "@/components/ui/standards"
+import { DispatchTimeline } from "@/components/ui/standards"
+import type { DispatchStageRecord } from "@/lib/dispatch/stage-tracker"
+import { ProfessionalErrorPanel } from "@/components/errors/professional-error"
 import type { AgencyWizardContext, AgreementWizardFormData, RmaOption } from "../../../types/wizard"
-
-const DISPATCH_STEPS = [
-  { id: "record", label: "Creating agreement record", description: "Saving client, matter, and fee details." },
-  { id: "clauses", label: "Applying clauses", description: "Merging selected terms into the agreement." },
-  { id: "pdf", label: "Preparing PDF", description: "Generating the OMARA-compliant document." },
-  { id: "signwell", label: "Sending for signature", description: "Dispatching via SignWell to client signers." },
-  { id: "done", label: "Completed", description: "Agreement is on record and awaiting signature." },
-]
 
 type Props = {
   form: AgreementWizardFormData
@@ -21,7 +15,8 @@ type Props = {
   rmaOptions: RmaOption[]
   agreementRef: string
   saving: boolean
-  dispatchStep: number
+  dispatchStages: DispatchStageRecord[]
+  dispatchSupportRef?: string | null
   dispatched: boolean
   apiError: string | null
   apiResponse: any
@@ -37,7 +32,8 @@ export function SendStep({
   rmaOptions,
   agreementRef,
   saving,
-  dispatchStep,
+  dispatchStages,
+  dispatchSupportRef,
   dispatched,
   apiError,
   apiResponse,
@@ -48,7 +44,7 @@ export function SendStep({
 }: Props) {
   const selectedRma = rmaOptions.find((r) => r.id === form.responsibleRma) || rmaOptions.find((r) => r.isDefault) || rmaOptions[0]
 
-  if (dispatched && apiResponse) {
+  if (dispatched && apiResponse?.signwellResult?.id) {
     const { agreementId, signwellResult } = apiResponse
     return (
       <Card className="rounded-2xl border border-emerald-100 bg-[#f8fffd]/80 p-8 shadow-sm">
@@ -75,15 +71,28 @@ export function SendStep({
     )
   }
 
-  if (saving) {
+  if (saving || apiError) {
     return (
-      <WorkflowProgress
-        title="Generating and sending agreement"
-        subtitle="Please keep this tab open until dispatch completes."
-        steps={DISPATCH_STEPS}
-        activeIndex={Math.min(dispatchStep, DISPATCH_STEPS.length - 1)}
-        error={apiError}
-      />
+      <div className="space-y-6">
+        {dispatchStages.length > 0 && (
+          <DispatchTimeline
+            title={apiError ? "Agreement dispatch failed" : "Generating and sending agreement"}
+            subtitle="Real backend progress only — please keep this tab open."
+            stages={dispatchStages}
+            supportRef={dispatchSupportRef || undefined}
+          />
+        )}
+        {apiError && (
+          <ProfessionalErrorPanel
+            kind="signwell_failure"
+            detail={apiError}
+            supportRef={dispatchSupportRef || undefined}
+            onRetry={onSend}
+            backHref={`/workspace/${agencySlug}/agreements`}
+            backLabel="View agreements"
+          />
+        )}
+      </div>
     )
   }
 

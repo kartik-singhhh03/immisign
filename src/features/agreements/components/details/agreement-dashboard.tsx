@@ -32,8 +32,8 @@ export function AgreementDashboard({
   const handleSend = async () => {
     try {
       setSending(true);
-      const role = 'agency_admin' as any; // mock
-      await sendAgreementForSignatureAction(agreement.agency_id, agreement.created_by, role, agreement.id);
+      const dispatchRole = (user?.role || 'agency_admin') as Role;
+      await sendAgreementForSignatureAction(agreement.agency_id, agreement.created_by, dispatchRole, agreement.id);
       alert('Agreement sent successfully!');
       window.location.reload();
     } catch (e) {
@@ -52,8 +52,8 @@ export function AgreementDashboard({
         description={`Manage document lifecycle, view execution status, and audit trail for ${agreement.agreement_number}.`}
         action={
           <div className="flex gap-3">
-            {isDeleter && (
-              <Button variant="outline" className="rounded-xl border-slate-200 bg-white font-bold shadow-sm">
+            {isDeleter && agreement.status !== 'signed' && (
+              <Button variant="outline" disabled className="rounded-xl border-slate-200 bg-white font-bold shadow-sm opacity-60" title="Use Agreements list ⋯ menu to archive">
                 <Archive className="h-4 w-4 mr-1.5" /> Archive
               </Button>
             )}
@@ -100,6 +100,20 @@ export function AgreementDashboard({
               <CardTitle className="text-sm font-black text-[#081B2E]">Entities</CardTitle>
             </CardHeader>
             <CardContent className="p-5 space-y-5">
+              <div>
+                <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Client</div>
+                <div className="text-sm font-semibold text-[#081B2E] mt-1">{(agreement as any).client_name || "—"}</div>
+                <div className="text-xs text-slate-400 mt-0.5">{(agreement as any).client_email || ""}</div>
+              </div>
+              <div>
+                <div className="text-xs font-bold uppercase tracking-wider text-slate-400">SignWell</div>
+                <div className="text-xs font-mono font-semibold text-[#081B2E] mt-1 break-all">
+                  {(agreement as any).signwell_document_id || "Not dispatched"}
+                </div>
+                {(agreement as any).signwell_status && (
+                  <div className="text-xs text-slate-500 mt-0.5">{(agreement as any).signwell_status}</div>
+                )}
+              </div>
               <div>
                 <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Client UUID</div>
                 <div className="text-xs font-semibold text-[#081B2E] mt-1 break-all">{agreement.client_id || "Unlinked"}</div>

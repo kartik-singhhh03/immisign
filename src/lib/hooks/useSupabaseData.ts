@@ -437,9 +437,15 @@ export function useAgencyProfile() {
 
   const updateBranding = async (updates: any) => {
     if (!activeWorkspace?.id) return;
-    const actId = await getRealAgencyId(supabase, activeWorkspace.id);
-    if (!actId) return;
-    await brandingRepo.updateBranding(actId, updates);
+    const res = await fetch('/api/settings/branding', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updates),
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(json.error || 'Failed to save branding settings');
+    }
     await fetch();
   };
 
@@ -629,9 +635,13 @@ export function useUserProfile() {
 
   const updateProfile = async (updates: { full_name?: string; phone?: string }) => {
     if (!user) return;
+    const { parseOrThrow } = await import('@/lib/validations/fields');
+    const { userProfileUpdateSchema } = await import('@/lib/validations/schemas');
+    const parsed = parseOrThrow(userProfileUpdateSchema, updates);
     setLoading(true);
-    await supabase.from('users').update(updates).eq('id', user.id);
+    const { error } = await supabase.from('users').update(parsed).eq('id', user.id);
     setLoading(false);
+    if (error) throw error;
   };
 
   const toggleMfa = async (enabled: boolean) => {

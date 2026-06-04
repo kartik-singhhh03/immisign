@@ -1,6 +1,7 @@
 "use client"
 
 import { Input } from "@/components/ui/input"
+import { PhoneInput } from "@/components/ui/phone-input"
 import {
   Select,
   SelectContent,
@@ -96,11 +97,11 @@ export function ClientStep({ form, clients, onChange, onContinue }: Props) {
         </label>
         <label className="grid gap-2">
           <FieldLabel>Phone</FieldLabel>
-          <Input
+          <PhoneInput
             className="h-11 rounded-xl border-slate-200 bg-white text-sm font-medium focus-visible:ring-1 focus-visible:ring-[#0D9F8C]"
             placeholder="+61 4xx xxx xxx"
             value={form.clientPhone}
-            onChange={(e) => onChange("clientPhone", e.target.value)}
+            onChange={(v) => onChange("clientPhone", v)}
             readOnly={fromLibrary}
           />
         </label>

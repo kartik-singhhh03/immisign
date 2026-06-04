@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { getResendFromEmail, sendEmailWithForensicLogging } from '@/lib/email/resend';
 import { getAgencySeatSnapshot } from '@/lib/stripe/seats';
 import { stripeService } from '@/lib/stripe/service';
+import { formatZodError } from '@/lib/validations/fields';
+import { teamInviteSchema } from '@/lib/validations/schemas';
 
 const INVITE_ROLE_MAP: Record<string, string> = {
   Owner: 'owner',
@@ -39,7 +41,12 @@ export async function POST(req: Request) {
 
     console.log('STEP_1_AUTH_SUCCESS');
 
-    const { name, email, role, marn } = await req.json();
+    const raw = await req.json();
+    const parsedInvite = teamInviteSchema.safeParse(raw);
+    if (!parsedInvite.success) {
+      return NextResponse.json({ error: formatZodError(parsedInvite.error) }, { status: 400 });
+    }
+    const { name, email, role, marn } = parsedInvite.data;
     const normalizedRole = normalizeInviteRole(role);
 
     const { data: userData, error: userError } = await supabase

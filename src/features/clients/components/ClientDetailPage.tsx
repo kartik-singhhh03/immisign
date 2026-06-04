@@ -21,6 +21,9 @@ import {
 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { PhoneInput } from "@/components/ui/phone-input"
+import { parseOrThrow } from "@/lib/validations/fields"
+import { clientUpdateSchema } from "@/lib/validations/schemas"
 import { Input } from "@/components/ui/input"
 import {
   Dialog,
@@ -105,7 +108,12 @@ export function ClientDetailPage() {
     try {
       setEditSaving(true)
       setEditError(null)
-      await updateClient(clientId, { name: editName, email: editEmail, phone: editPhone })
+      const payload = parseOrThrow(clientUpdateSchema, {
+        name: editName,
+        email: editEmail,
+        phone: editPhone || null,
+      })
+      await updateClient(clientId, payload)
       await loadClient()
       setIsEditOpen(false)
     } catch (err: any) {
@@ -318,10 +326,9 @@ export function ClientDetailPage() {
             </label>
             <label className="grid gap-2 text-xs font-bold text-slate-500">
               Phone Number
-              <Input
-                type="tel"
+              <PhoneInput
                 value={editPhone}
-                onChange={(e) => setEditPhone(e.target.value)}
+                onChange={setEditPhone}
                 className="h-11 rounded-xl border-slate-200 bg-white font-semibold"
                 placeholder="+61 400 000 000"
                 disabled={editSaving}

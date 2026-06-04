@@ -4,11 +4,23 @@ import { createRmaFromInvite } from '@/lib/rma/create-from-invite';
 import { NotificationService, buildWorkspaceActionUrl } from '@/lib/notifications/notification.service';
 import { validatePassword } from '@/lib/auth/password-policy';
 import { logSecurityEvent, getRequestMeta } from '@/lib/security/audit-log';
+import { formatZodError } from '@/lib/validations/fields';
+import { acceptInviteSchema } from '@/lib/validations/schemas';
 
 export async function POST(req: Request) {
   try {
     const admin = createAdminClient();
-    const { token, password, fullName, phone } = await req.json();
+    const raw = await req.json();
+    const parsedBody = acceptInviteSchema.safeParse({
+      token: raw.token,
+      password: raw.password,
+      fullName: raw.fullName,
+      phone: raw.phone,
+    });
+    if (!parsedBody.success) {
+      return NextResponse.json({ error: formatZodError(parsedBody.error) }, { status: 400 });
+    }
+    const { token, password, fullName, phone } = parsedBody.data;
 
     const { data: invite, error: inviteError } = await admin
       .from('invitations')

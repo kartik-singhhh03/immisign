@@ -1,32 +1,31 @@
-import { NextResponse } from 'next/server';
-import { requireAgency } from '@/lib/supabase/auth';
+import { getWorkspaceApiContext } from '@/lib/auth/workspace-api';
 import { stripeService } from '@/lib/stripe/service';
-import { handleServerError } from '@/lib/utils/errors';
+import { apiError, withApiRoute } from '@/lib/api/json-response';
 
 export async function POST() {
-  try {
-    const { profile, agency } = await requireAgency();
+  return withApiRoute('POST /api/stripe/checkout', async () => {
+    const ctx = await getWorkspaceApiContext();
+    if ('error' in ctx) {
+      return apiError(ctx.error, ctx.status);
+    }
 
-    if (!['owner', 'admin'].includes(profile.role!)) {
-      return NextResponse.json(
-        { error: 'Only owners or admins can modify billing' },
-        { status: 403 },
-      );
+    const role = String(ctx.dbRole || '').toLowerCase();
+    if (!['owner', 'admin'].includes(role)) {
+      return apiError('Only owners or admins can modify billing', 403);
     }
 
     const session = await stripeService.createCheckoutSession(
-      agency.id,
-      profile.id,
-      profile.email,
-      agency.name,
-      agency.slug,
+      ctx.agencyId,
+      ctx.userId,
+      ctx.profile.email as string,
+      ctx.agencyName || 'Agency',
+      ctx.agencySlug || '',
     );
 
-    if (!session.url) throw new Error('Stripe failed to provision URL');
+    if (!session.url) {
+      return apiError('Stripe failed to provision checkout URL', 500);
+    }
 
-    return NextResponse.json({ url: session.url });
-  } catch (err: unknown) {
-    const safeError = handleServerError(err);
-    return NextResponse.json(safeError, { status: 500 });
-  }
+    return Response.json({ url: session.url });
+  });
 }

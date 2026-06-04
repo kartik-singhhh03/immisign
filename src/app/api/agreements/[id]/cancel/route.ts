@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { NextResponse } from 'next/server';
-import { requireAuth, requireAgency } from '@/lib/supabase/auth';
-import { createClient } from '@/lib/supabase/server';
+import { getWorkspaceApiContext } from '@/lib/auth/workspace-api';
+import { apiError } from '@/lib/api/json-response';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { signwellClient } from '@/lib/signwell/client';
 import { handleServerError } from '@/lib/utils/errors';
@@ -9,20 +9,20 @@ import { logAuditAction } from '@/lib/services/audit.service';
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    await requireAuth();
-    const { agency } = await requireAgency();
-    
-    // Process async params mapping 
-    const { id: agreementId } = await params;
+    const ctx = await getWorkspaceApiContext();
+    if ('error' in ctx) {
+      return apiError(ctx.error, ctx.status);
+    }
 
-    const supabase = await createClient();
+    const { id: agreementId } = await params;
+    const supabase = ctx.supabase;
 
     // Context verify
     const { data: agreement, error } = await supabase
        .from('agreements')
        .select('id, signwell_document_id')
        .eq('id', agreementId)
-       .eq('agency_id', agency.id)
+       .eq('agency_id', ctx.agencyId)
        .single();
 
     if (error || !agreement || !agreement.signwell_document_id) {

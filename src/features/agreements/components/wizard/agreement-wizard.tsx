@@ -11,8 +11,14 @@ import type { AgencyWizardContext, AgreementWizardFormData, ClientPickerOption, 
 import { createInitialWizardForm, generateProvisionalAgreementRef } from "../../types/wizard"
 
 import { WizardStepper } from "./WizardStepper"
-import { AutosaveIndicator, type AutosaveStatus } from "@/components/ui/standards"
+import { AutosaveIndicator, type AutosaveStatus, withGlobalTask } from "@/components/ui/standards"
 import { notifyError, notifySuccess } from "@/lib/ux/feedback"
+import type { DispatchStageRecord } from "@/lib/dispatch/stage-tracker"
+import {
+  createAgreementSendTimeline,
+  markTimelineRunning,
+  mergeServerDispatchStages,
+} from "@/lib/dispatch/client-timeline"
 
 import { ClientStep } from "./steps/ClientStep"
 
@@ -62,7 +68,8 @@ export function AgreementWizard({ agencyId, agencySlug, userId, agency, user, rm
   const [currentStep, setCurrentStep] = React.useState(0)
 
   const [saving, setSaving] = React.useState(false)
-  const [dispatchStep, setDispatchStep] = React.useState(0)
+  const [dispatchStages, setDispatchStages] = React.useState<DispatchStageRecord[]>([])
+  const [dispatchSupportRef, setDispatchSupportRef] = React.useState<string | null>(null)
   const [autosaveStatus, setAutosaveStatus] = React.useState<AutosaveStatus>("idle")
   const [lastSavedAt, setLastSavedAt] = React.useState<Date | null>(null)
   const saveTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -223,16 +230,13 @@ export function AgreementWizard({ agencyId, agencySlug, userId, agency, user, rm
 
 
   const handleSend = async () => {
-    const stepTimers: ReturnType<typeof setTimeout>[] = []
     try {
       setSaving(true)
-      setDispatchStep(0)
-      stepTimers.push(
-        setTimeout(() => setDispatchStep(1), 500),
-        setTimeout(() => setDispatchStep(2), 1500),
-        setTimeout(() => setDispatchStep(3), 2800),
-      )
       setApiError(null)
+      setDispatchSupportRef(null)
+      let stages = createAgreementSendTimeline()
+      stages = markTimelineRunning(stages, "agreement")
+      setDispatchStages(stages)
 
 
 
@@ -274,60 +278,59 @@ export function AgreementWizard({ agencyId, agencySlug, userId, agency, user, rm
 
 
 
-      const res = await fetch("/api/agreements/standard", {
+      const data = await withGlobalTask(
+        "agreement-send",
+        "Generating and sending agreement",
+        async () => {
+          const res = await fetch("/api/agreements/standard", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          })
+          const json = await res.json()
+          if (!res.ok) {
+            const err = new Error(
+              json.error ||
+                (json.stage === "pdf_generation_failed"
+                  ? `${json.error} (Agreement ${json.agreementId} saved as draft.)`
+                  : `HTTP ${res.status}`),
+            ) as Error & { stages?: DispatchStageRecord[]; supportRef?: string }
+            err.stages = json.stages
+            err.supportRef = json.supportRef
+            throw err
+          }
+          if (!json.success) {
+            throw new Error(json.error || "Agreement dispatch failed")
+          }
+          if (!json.signwellResult?.id) {
+            throw new Error("SignWell did not return a document id. Agreement was not sent.")
+          }
+          return json
+        },
+        { overlay: true },
+      )
 
-        method: "POST",
-
-        headers: { "Content-Type": "application/json" },
-
-        body: JSON.stringify(payload),
-
-      })
 
 
-
-      const data = await res.json()
-
-
-
-      if (!res.ok) {
-
-        if (data.agreementId && data.stage === "pdf_generation_failed") {
-
-          throw new Error(
-
-            `${data.error} (Agreement ${data.agreementId} saved as draft — you can retry from the agreements list.)`
-
-          )
-
-        }
-
-        throw new Error(data.error || `HTTP ${res.status}`)
-
+      if (data.supportRef) setDispatchSupportRef(data.supportRef)
+      if (data.stages?.length) {
+        stages = mergeServerDispatchStages(stages, data.stages)
+      } else {
+        stages = stages.map((s) => ({ ...s, status: "success" as const, completedAt: new Date().toISOString() }))
       }
+      setDispatchStages(stages)
 
-
-
-      if (!data.success) {
-
-        throw new Error(data.error || "Agreement dispatch failed")
-
-      }
-
-
-
-      fetch('/api/agreements/wizard-draft', { method: 'DELETE' }).catch(() => {})
-
-      setDispatchStep(4)
+      fetch("/api/agreements/wizard-draft", { method: "DELETE" }).catch(() => {})
       setApiResponse(data)
       setDispatched(true)
       notifySuccess("Agreement sent", "PDF generated and signature request dispatched.")
     } catch (e: unknown) {
-      const err = e as Error
+      const err = e as Error & { stages?: DispatchStageRecord[]; supportRef?: string }
+      if (err.supportRef) setDispatchSupportRef(err.supportRef)
+      if (err.stages?.length) setDispatchStages(mergeServerDispatchStages(dispatchStages, err.stages))
       setApiError(err.message || "Failed to send agreement.")
       notifyError("Agreement dispatch failed", err.message)
     } finally {
-      stepTimers.forEach(clearTimeout)
       setSaving(false)
     }
 
@@ -475,7 +478,8 @@ export function AgreementWizard({ agencyId, agencySlug, userId, agency, user, rm
 
               saving={saving}
 
-              dispatchStep={dispatchStep}
+              dispatchStages={dispatchStages}
+              dispatchSupportRef={dispatchSupportRef}
 
               dispatched={dispatched}
 

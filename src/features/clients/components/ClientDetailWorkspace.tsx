@@ -5,6 +5,7 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
 import { getRealAgencyId } from "@/lib/hooks/useSupabaseData"
 import { PageEmptyState } from "@/components/ui/standards"
+import { EmptyState } from "@/components/ui/empty-state"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -169,13 +170,8 @@ export function ClientDetailWorkspace({
               </ul>
             ) : (
               <PageEmptyState
-                title="No agreements yet"
-                description="Create a service agreement for this client to start the matter."
-                action={
-                  <Button asChild className="rounded-xl bg-[#0D9F8C] font-bold">
-                    <Link href={`${prefix}/agreements/new`}>Create agreement</Link>
-                  </Button>
-                }
+                module="agreements"
+                actionHref={`${prefix}/agreements/new`}
               />
             )
           )}
@@ -196,7 +192,10 @@ export function ClientDetailWorkspace({
                 ))}
               </ul>
             ) : (
-              <PageEmptyState title="No approvals" description="Application approvals for this client will appear here." />
+              <PageEmptyState
+                module="approvals"
+                actionHref={`${prefix}/approvals/new`}
+              />
             )
           )}
 
@@ -214,13 +213,8 @@ export function ClientDetailWorkspace({
               </ul>
             ) : (
               <PageEmptyState
-                title="No documents"
-                description="Send a document for signature from the document library."
-                action={
-                  <Button asChild variant="outline" className="rounded-xl font-bold">
-                    <Link href={`${prefix}/documents/send`}>Send document</Link>
-                  </Button>
-                }
+                module="documents"
+                actionHref={`${prefix}/documents/send`}
               />
             )
           )}
@@ -241,7 +235,12 @@ export function ClientDetailWorkspace({
                 ))}
               </ul>
             ) : (
-              <PageEmptyState title="No timeline events" description="Agreement and approval activity will build the matter timeline." />
+              <EmptyState
+                icon={<Clock className="h-8 w-8 text-slate-400" />}
+                title="No timeline events"
+                description="Agreement and approval activity will build the matter timeline."
+                className="min-h-[240px] border-slate-200/60 bg-white/50"
+              />
             )
           )}
 
@@ -280,7 +279,12 @@ export function ClientDetailWorkspace({
                 ))}
               </ul>
             ) : (
-              <PageEmptyState title="No activity" description="Workspace activity linked to this client will show here." />
+              <EmptyState
+                icon={<FileText className="h-8 w-8 text-slate-400" />}
+                title="No activity"
+                description="Workspace activity linked to this client will show here."
+                className="min-h-[240px] border-slate-200/60 bg-white/50"
+              />
             )
           )}
         </CardContent>

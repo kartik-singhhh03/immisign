@@ -741,12 +741,30 @@ export function useClientTimeline(clientId?: string) {
         });
       }
 
-      // 3. Approvals
-      const { data: approvals } = await supabase.from('application_approvals').select('created_at, updated_at, status, application_type').eq('client_id', clientId);
-      if (approvals) {
-        approvals.forEach(ap => {
-          if (ap.created_at) timeline.push({ type: 'approval_submitted', title: `Approval Submitted: ${ap.application_type}`, date: new Date(ap.created_at) });
-          if (ap.status === 'approved' && ap.updated_at) timeline.push({ type: 'approval_approved', title: `Approved: ${ap.application_type}`, date: new Date(ap.updated_at) });
+      // 3. Approvals (schema: title, visa_subclass, approval_number — not application_type)
+      const { data: approvals, error: approvalsErr } = await supabase
+        .from('application_approvals')
+        .select('created_at, updated_at, status, title, visa_subclass, approval_number')
+        .eq('client_id', clientId)
+        .is('deleted_at', null);
+      if (!approvalsErr && approvals) {
+        approvals.forEach((ap) => {
+          const label =
+            ap.title || ap.approval_number || ap.visa_subclass || 'Application approval';
+          if (ap.created_at) {
+            timeline.push({
+              type: 'approval_submitted',
+              title: `Approval submitted: ${label}`,
+              date: new Date(ap.created_at),
+            });
+          }
+          if (ap.status === 'approved' && ap.updated_at) {
+            timeline.push({
+              type: 'approval_approved',
+              title: `Approved: ${label}`,
+              date: new Date(ap.updated_at),
+            });
+          }
         });
       }
 

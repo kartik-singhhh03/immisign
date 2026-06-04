@@ -63,7 +63,10 @@ export class SignWellClient {
       });
   }
 
-  async sendDocument(documentId: string): Promise<SignWellDocumentResponse> {
+  async sendDocument(
+    documentId: string,
+    sendBody?: { subject?: string; message?: string },
+  ): Promise<SignWellDocumentResponse> {
       const existing = await this.getDocument(documentId);
       if (existing.status && existing.status.toLowerCase() !== 'draft') {
           return existing;
@@ -71,6 +74,10 @@ export class SignWellClient {
       try {
         return await this.fetchWithRetry<SignWellDocumentResponse>(`/documents/${documentId}/send`, {
             method: 'POST',
+            body: JSON.stringify({
+              subject: sendBody?.subject || 'Signature required',
+              message: sendBody?.message || 'Please review and sign the attached document.',
+            }),
         });
       } catch (error: unknown) {
         const msg = error instanceof Error ? error.message : String(error);

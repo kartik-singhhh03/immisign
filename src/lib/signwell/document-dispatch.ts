@@ -9,8 +9,9 @@ export function isSignwellDispatchedStatus(status: string | undefined): boolean 
   const s = (status || '').toLowerCase();
   if (!s) return false;
   if (isSignwellDraftStatus(s)) return false;
+  if (s === 'created') return false;
   if (s === 'canceled' || s === 'cancelled') return false;
-  return true;
+  return ['sent', 'pending', 'completed', 'viewed', 'action required'].includes(s);
 }
 
 /**
@@ -26,15 +27,32 @@ export async function createAndSendSignwellDocument(
     draft: true,
   });
 
+  const sendBody = {
+    subject: payload.subject,
+    message: payload.message,
+  };
+
   if (isSignwellDraftStatus(created.status)) {
-    return client.sendDocument(created.id);
+    const sent = await client.sendDocument(created.id, sendBody);
+    if (!isSignwellDispatchedStatus(sent.status)) {
+      throw new Error(
+        `SignWell document ${created.id} remained in status "${sent.status}" after send — emails were not dispatched.`,
+      );
+    }
+    return sent;
   }
 
   if (isSignwellDispatchedStatus(created.status)) {
     return created;
   }
 
-  return client.sendDocument(created.id);
+  const sent = await client.sendDocument(created.id, sendBody);
+  if (!isSignwellDispatchedStatus(sent.status)) {
+    throw new Error(
+      `SignWell document ${created.id} remained in status "${sent.status}" after send — emails were not dispatched.`,
+    );
+  }
+  return sent;
 }
 
 export async function resumeSignwellDocumentIfDraft(
@@ -43,7 +61,14 @@ export async function resumeSignwellDocumentIfDraft(
 ): Promise<SignWellDocumentResponse> {
   const existing = await client.getDocument(signwellDocumentId);
   if (isSignwellDraftStatus(existing.status)) {
-    return client.sendDocument(signwellDocumentId);
+    const sent = await client.sendDocument(signwellDocumentId, {
+      subject: 'Signature required',
+      message: 'Please review and sign the attached document.',
+    });
+    if (!isSignwellDispatchedStatus(sent.status)) {
+      throw new Error(`SignWell document ${signwellDocumentId} could not be sent (status: ${sent.status}).`);
+    }
+    return sent;
   }
   if (isSignwellDispatchedStatus(existing.status)) {
     return existing;

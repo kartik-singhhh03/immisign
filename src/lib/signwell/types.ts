@@ -10,6 +10,7 @@ export interface SignWellSignerRequest {
   routing_order?: number;
   role?: string;
   message?: string;
+  /** Only valid when embedded signing is enabled on the document. */
   send_email?: boolean;
   send_email_delay?: number;
 }

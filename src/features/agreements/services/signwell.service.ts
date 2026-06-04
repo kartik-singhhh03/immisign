@@ -94,8 +94,6 @@ export class SignWellService {
       email: string;
       routing_order: number;
       role: string;
-      send_email: boolean;
-      send_email_delay: number;
     }> = [];
     const seenEmails = new Set<string>();
 
@@ -109,8 +107,6 @@ export class SignWellService {
         email: normalized,
         routing_order: routingOrder,
         role: swRole,
-        send_email: true,
-        send_email_delay: 0,
       });
     };
 

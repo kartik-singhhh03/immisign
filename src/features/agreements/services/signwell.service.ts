@@ -12,6 +12,7 @@ import { buildSignwellDispatchExtras } from '@/lib/signwell/dispatch-extras';
 import { signwellTestMode } from '@/lib/signwell/test-mode';
 import { createAndSendSignwellDocument } from '@/lib/signwell/document-dispatch';
 import { buildDocumentSignatureFields } from '@/lib/signwell/signature-fields';
+import { countPdfPages } from '@/lib/pdf/page-count';
 
 const SIGNWELL_ROLE_LABELS: Record<string, string> = {
   primary_applicant: 'Primary Applicant',
@@ -68,6 +69,23 @@ export class SignWellService {
       .createSignedUrl(document.file_url, 3600);
       
     if (!urlData?.signedUrl) throw new Error("Could not generate signed URL for document");
+
+    let lastPage = Math.max(1, Number(document.page_count) || 1);
+    if (!document.page_count) {
+      try {
+        const pdfRes = await fetch(urlData.signedUrl);
+        if (pdfRes.ok) {
+          const buf = Buffer.from(await pdfRes.arrayBuffer());
+          lastPage = countPdfPages(buf);
+          await this.supabase
+            .from('documents')
+            .update({ page_count: lastPage })
+            .eq('id', document.id);
+        }
+      } catch {
+        /* keep lastPage = 1 */
+      }
+    }
 
     const { data: client } = await this.supabase.from('clients').select('name, email').eq('id', agreement.client_id).single();
     if (!client) throw new Error("Client not found for agreement");
@@ -162,7 +180,7 @@ export class SignWellService {
       text_tags: true,
       fields: buildDocumentSignatureFields(
         signwellSigners.map((s) => ({ id: s.id, name: s.name, email: s.email })),
-        { lastPage: 1 },
+        { lastPage },
       ),
       ...dispatchExtras,
     };

@@ -1,3 +1,3 @@
-import { ClientDetailPage } from "@/components/saas/dashboard-pages"
+import { ClientDetailPage } from "@/features/clients/components/ClientDetailPage"
 
 export default ClientDetailPage

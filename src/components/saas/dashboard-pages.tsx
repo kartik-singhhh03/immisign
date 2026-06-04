@@ -57,11 +57,6 @@ export const ClientsPage = dynamic(
   { loading: () => <PageLoading /> }
 )
 
-export const ClientDetailPage = dynamic(
-  () => import("@/features/clients/components/ClientDetailPage").then(m => m.ClientDetailPage),
-  { loading: () => <PageLoading /> }
-)
-
 export const ReportsPage = dynamic(
   () => import("@/features/reports/components/ReportsPage").then(m => m.ReportsPage),
   { loading: () => <PageLoading /> }

@@ -47,6 +47,7 @@ export function ApprovalDetailPage({
   const [data, setData] = useState(initial)
   const [comment, setComment] = useState("")
   const [busy, setBusy] = useState<string | null>(null)
+  const fileInputRef = React.useRef<HTMLInputElement>(null)
 
   const approval = data.approval as {
     id: string
@@ -279,20 +280,27 @@ export function ApprovalDetailPage({
               <CardTitle className="text-sm font-black flex items-center gap-2">
                 <FileText className="h-4 w-4" /> Attachments
               </CardTitle>
-              <label className="cursor-pointer">
-                <input
-                  type="file"
-                  className="hidden"
-                  accept=".pdf,.doc,.docx,image/*"
-                  onChange={(e) => {
-                    const f = e.target.files?.[0]
-                    if (f) uploadFile(f)
-                  }}
-                />
-                <Button variant="outline" size="sm" className="rounded-lg text-xs font-bold" disabled={busy === "upload"}>
-                  <Upload className="h-3 w-3 mr-1" /> Upload
-                </Button>
-              </label>
+              <input
+                ref={fileInputRef}
+                type="file"
+                className="hidden"
+                accept=".pdf,.doc,.docx,image/*"
+                onChange={(e) => {
+                  const f = e.target.files?.[0]
+                  if (f) uploadFile(f)
+                  e.target.value = ""
+                }}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="rounded-lg text-xs font-bold"
+                disabled={busy === "upload"}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Upload className="h-3 w-3 mr-1" /> Upload
+              </Button>
             </CardHeader>
             <CardContent className="divide-y divide-slate-100">
               {data.attachments.length === 0 ? (

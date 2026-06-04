@@ -1,8 +1,8 @@
-import React, { useState } from "react"
-import { useApprovalStore } from "@/store/approvalStore"
+import React, { useRef, useState } from "react"
 import { useAuthStore } from "@/store/authStore"
-import { UploadCloud, FileText, X } from "lucide-react"
+import { UploadCloud } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { notifyError, notifySuccess } from "@/lib/ux/feedback"
 
 interface UploadManagerProps {
   approvalId: string
@@ -10,42 +10,90 @@ interface UploadManagerProps {
 
 export function UploadManager({ approvalId }: UploadManagerProps) {
   const [isDragging, setIsDragging] = useState(false)
-  const addDocument = useApprovalStore(s => s.addDocument)
-  const activeWorkspace = useAuthStore(s => s.activeWorkspace)
+  const [uploading, setUploading] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const activeWorkspace = useAuthStore((s) => s.activeWorkspace)
+
+  const uploadOne = async (file: File) => {
+    if (!activeWorkspace?.id) {
+      notifyError("Workspace required", "Select a workspace before uploading.")
+      return
+    }
+    setUploading(true)
+    try {
+      const fd = new FormData()
+      fd.append("file", file)
+      const res = await fetch(`/api/approvals/${approvalId}/attachments`, {
+        method: "POST",
+        body: fd,
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || "Upload failed")
+      notifySuccess("Document uploaded", file.name)
+      window.location.reload()
+    } catch (e: unknown) {
+      notifyError(
+        "Upload failed",
+        e instanceof Error ? e.message : "Could not upload file",
+      )
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleFiles = async (files: FileList | null) => {
+    const file = files?.[0]
+    if (!file) return
+    await uploadOne(file)
+  }
 
   const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault()
     setIsDragging(false)
-    if (!activeWorkspace?.id) return
-
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const file = e.dataTransfer.files[0]
-      await addDocument(approvalId, activeWorkspace.id, {
-        name: file.name,
-        size: file.size,
-        type: file.type || "application/octet-stream",
-        status: "uploaded",
-        url: URL.createObjectURL(file), // Mock URL
-        created_by: "system" // Should be actual user
-      })
-    }
+    await handleFiles(e.dataTransfer.files)
   }
 
   return (
-    <div 
-      className={`border-2 border-dashed rounded-2xl p-12 text-center transition-colors cursor-pointer ${isDragging ? 'border-[#0D9F8C] bg-[#0D9F8C]/5' : 'border-slate-300 bg-slate-50/50 hover:bg-slate-50'}`}
-      onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
+    <div
+      className={`border-2 border-dashed rounded-2xl p-12 text-center transition-colors cursor-pointer ${isDragging ? "border-[#0D9F8C] bg-[#0D9F8C]/5" : "border-slate-300 bg-slate-50/50 hover:bg-slate-50"}`}
+      onDragOver={(e) => {
+        e.preventDefault()
+        setIsDragging(true)
+      }}
       onDragLeave={() => setIsDragging(false)}
       onDrop={handleDrop}
-      onClick={() => {
-        // In a real app, this would trigger an input type="file"
-        alert("File picker simulation. Try dragging and dropping a file instead.")
-      }}
+      onClick={() => inputRef.current?.click()}
+      role="presentation"
     >
-      <UploadCloud className={`h-10 w-10 mx-auto mb-4 ${isDragging ? 'text-[#0D9F8C]' : 'text-slate-400'}`} />
+      <input
+        ref={inputRef}
+        type="file"
+        className="hidden"
+        accept=".pdf,.doc,.docx,image/*"
+        onChange={(e) => {
+          void handleFiles(e.target.files)
+          e.target.value = ""
+        }}
+      />
+      <UploadCloud
+        className={`h-10 w-10 mx-auto mb-4 ${isDragging ? "text-[#0D9F8C]" : "text-slate-400"}`}
+      />
       <h3 className="font-bold text-slate-700 text-lg">Drag & drop application documents</h3>
-      <p className="text-sm text-slate-500 mt-2 max-w-sm mx-auto">Upload forms, statutory declarations, and cover letters that require client review.</p>
-      <Button variant="outline" className="mt-6 font-bold" onClick={(e) => { e.stopPropagation(); alert("Simulating file browse...")}}>Browse Files</Button>
+      <p className="text-sm text-slate-500 mt-2 max-w-sm mx-auto">
+        Upload forms, statutory declarations, and cover letters that require client review.
+      </p>
+      <Button
+        type="button"
+        variant="outline"
+        className="mt-6 font-bold"
+        disabled={uploading}
+        onClick={(e) => {
+          e.stopPropagation()
+          inputRef.current?.click()
+        }}
+      >
+        {uploading ? "Uploading…" : "Browse files"}
+      </Button>
     </div>
   )
 }

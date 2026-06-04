@@ -16,6 +16,7 @@ export type AgreementPreviewContext = {
   rma: RmaOption | null
   agreementRef?: string
   statusLabel?: string
+  clientSigned?: boolean
   matterTypeConfig?: MatterTypeConfig | null
   selectedClauses?: Array<{ title: string; content: string; orderIndex?: number }>
   agentSignature?: AgentSignaturePreview | null
@@ -503,12 +504,14 @@ export function buildAgreementPreviewHtml(ctx: AgreementPreviewContext): string 
           ${agentMarn ? `<p class="sig-meta">MARN: ${escapeHtml(agentMarn)}</p>` : '<p class="sig-meta">&nbsp;</p>'}
           <div class="sig-date">Date Signed: ${agentSig?.completed ? escapeHtml(agentSig.signedAt) : '_______________________________'}</div>
         </div>
-        <div class="sig-card">
+        <div class="sig-card ${ctx.clientSigned ? 'sig-completed' : ''}">
           <h3>Client Signature</h3>
           <p class="sig-name">${escapeHtml(clientName || '—')}</p>
           <p class="sig-meta">&nbsp;</p>
-          <div class="sig-box">Sign here</div>
-          <div class="sig-date">Date: _______________________________</div>
+          ${ctx.clientSigned
+            ? '<p class="sig-label">Signature</p><div class="sig-applied" style="font-size:11pt;font-weight:700;color:#0A5B52;">Signed electronically via SignWell</div>'
+            : '<div class="sig-box">Sign here</div>'}
+          <div class="sig-date">Date Signed: ${ctx.clientSigned ? escapeHtml(formatDisplayDateForSignature(new Date())) : '_______________________________'}</div>
         </div>
       </div>
     </section>

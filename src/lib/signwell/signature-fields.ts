@@ -10,22 +10,29 @@ export type SignwellFieldRecipient = {
  * Default signature + date fields on the last page of the primary document.
  * SignWell does not need the migration agent as a recipient — agent signs via attestation PDF in-app.
  */
+/** A4 page height in px (SignWell field coordinates are top-left origin). */
+const DEFAULT_PAGE_HEIGHT = 792;
+/** Align with client signature block on agreement signature page (bottom of page). */
+const CLIENT_SIGNATURE_Y = 620;
+
 export function buildDocumentSignatureFields(
   recipients: SignwellFieldRecipient[],
-  options?: { lastPage?: number },
+  options?: { lastPage?: number; pageHeight?: number },
 ): SignWellField[][] {
   const page = Math.max(1, options?.lastPage ?? 1);
+  const pageHeight = options?.pageHeight ?? DEFAULT_PAGE_HEIGHT;
   const fields: SignWellField[] = [];
 
   recipients.forEach((recipient, idx) => {
-    const yBase = 140 + idx * 72;
+    const yBase = CLIENT_SIGNATURE_Y - idx * 72;
+    const y = Math.max(80, Math.min(yBase, pageHeight - 60));
     fields.push({
       api_id: `signature_${recipient.id}`,
       type: 'signature',
       recipient_id: recipient.id,
       page,
       x: 72,
-      y: yBase,
+      y,
       width: 220,
       height: 40,
       required: true,
@@ -36,7 +43,7 @@ export function buildDocumentSignatureFields(
       recipient_id: recipient.id,
       page,
       x: 310,
-      y: yBase + 4,
+      y: y + 4,
       width: 130,
       height: 32,
       required: true,

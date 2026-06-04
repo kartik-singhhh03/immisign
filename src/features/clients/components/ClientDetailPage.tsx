@@ -1,6 +1,7 @@
 "use client"
 import * as React from "react"
 import { useParams, useRouter } from "next/navigation"
+import { useAuthStore } from "@/features/auth/store/authStore"
 import { useRequireWorkspace } from "@/lib/hooks/use-workspace"
 import { getRealAgencyId, useClients, useClientTimeline } from "@/lib/hooks/useSupabaseData"
 import { createClient } from "@/lib/supabase/client"
@@ -16,6 +17,7 @@ import {
   Phone,
   User,
   Calendar,
+  FileSignature,
 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -26,6 +28,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { ClientDetailWorkspace } from "./ClientDetailWorkspace"
+import { ProfessionalErrorPanel } from "@/components/errors/professional-error"
 
 export function ClientDetailPage() {
   const params = useParams()
@@ -137,13 +141,13 @@ export function ClientDetailPage() {
 
   if (fetchError || !client) {
     return (
-      <div className="p-12 text-center">
-        <p className="text-slate-500 font-medium">{fetchError || "Client not found or access denied."}</p>
-        <Button asChild variant="outline" className="mt-4 rounded-xl">
-          <Link href={`/workspace/${currentSlug}/clients`}>
-            <ArrowLeft className="h-4 w-4 mr-1.5" /> Back to Clients
-          </Link>
-        </Button>
+      <div className="p-12 flex justify-center">
+        <ProfessionalErrorPanel
+          kind="client_not_found"
+          detail={fetchError || undefined}
+          backHref={`/workspace/${currentSlug}/clients`}
+          backLabel="Back to clients"
+        />
       </div>
     )
   }
@@ -267,6 +271,17 @@ export function ClientDetailPage() {
           </CardContent>
         </Card>
       </div>
+
+      {activeWorkspace?.id && currentSlug && (
+        <ClientDetailWorkspace
+          clientId={clientId}
+          agencyWorkspaceId={activeWorkspace.id}
+          workspaceSlug={currentSlug}
+          client={client}
+          timelineData={timelineData}
+          timelineLoading={timelineLoading}
+        />
+      )}
 
       {/* Edit Client Dialog */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>

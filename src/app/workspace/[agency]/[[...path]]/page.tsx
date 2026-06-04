@@ -15,7 +15,6 @@ import {
   SendDocumentPage,
   DocumentLibraryPage,
   ClientsPage,
-  ClientDetailPage,
   AnalyticsPage,
   ReportsPage,
   SettingsPage,
@@ -23,6 +22,7 @@ import {
   TemplatesPage,
   PlaceholderDashboardPage
 } from "@/components/saas/dashboard-pages"
+import { ClientDetailPage } from "@/features/clients/components/ClientDetailPage"
 
 export default function WorkspaceCatchAllPage() {
   const params = useParams()

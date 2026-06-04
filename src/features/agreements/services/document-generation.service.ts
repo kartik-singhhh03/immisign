@@ -13,6 +13,7 @@ import {
   formatDisplayDateForSignature,
   type AgentSignaturePreview,
 } from '@/features/agreements/lib/agreement-preview-html';
+import { countPdfPages } from '@/lib/pdf/page-count';
 import { createAdminClient } from '@/lib/supabase/admin';
 
 export class DocumentGenerationService {
@@ -455,6 +456,8 @@ export class DocumentGenerationService {
       (agreement.metadata as { matter_type_config?: unknown })?.matter_type_config || null;
 
     const agentSignature = this.resolveAgentSignaturePreview(agreement, user, rma);
+    const agreementStatus = (agreement as { status?: string }).status;
+    const statusLabel = this.resolveAgreementStatusLabel(agreementStatus, Boolean(agentSignature));
 
     const compiledHtml = buildAgreementPreviewHtml({
       form: wizardForm as Parameters<typeof buildAgreementPreviewHtml>[0]['form'],
@@ -487,13 +490,15 @@ export class DocumentGenerationService {
         : null,
       agreementRef:
         (agreement.metadata as { agreement_ref?: string })?.agreement_ref || agreement.agreement_number,
-      statusLabel: agentSignature ? 'AGENT SIGNED — AWAITING CLIENT' : 'AWAITING SIGNATURE',
+      statusLabel,
+      clientSigned: agreementStatus === AgreementStatus.SIGNED,
       matterTypeConfig: matterTypeConfigMeta as Parameters<typeof buildAgreementPreviewHtml>[0]['matterTypeConfig'],
       selectedClauses: selectedClausesMeta as Parameters<typeof buildAgreementPreviewHtml>[0]['selectedClauses'],
       agentSignature,
     });
 
     const pdfBuffer = await PDFService.generatePdf(compiledHtml);
+    const pageCount = countPdfPages(pdfBuffer);
     const fileName = `agreement-${agreement.agreement_number}.pdf`;
     const storagePath = StorageHelpers.getAgreementPath(agencyId, agreement.id, fileName);
 
@@ -521,6 +526,7 @@ export class DocumentGenerationService {
           .update({
             file_url: storagePath,
             file_size: pdfBuffer.length,
+            page_count: pageCount,
             updated_at: new Date().toISOString(),
           })
           .eq('id', existingDoc.id);
@@ -538,11 +544,23 @@ export class DocumentGenerationService {
         original_name: fileName,
         file_url: storagePath,
         file_size: pdfBuffer.length,
+        page_count: pageCount,
         mime_type: 'application/pdf',
       });
       if (docErr) throw new Error(`Failed to insert document: ${docErr.message}`);
     }
 
-    return { storagePath, size: pdfBuffer.length };
+    return { storagePath, size: pdfBuffer.length, pageCount };
+  }
+
+  private resolveAgreementStatusLabel(
+    status: string | undefined,
+    agentSigned: boolean,
+  ): string {
+    if (status === AgreementStatus.SIGNED) return 'FULLY EXECUTED';
+    if (status === AgreementStatus.VIEWED) return 'VIEWED — AWAITING CLIENT SIGNATURE';
+    if (status === AgreementStatus.SENT) return 'SENT — AWAITING CLIENT SIGNATURE';
+    if (agentSigned) return 'AGENT SIGNED — AWAITING CLIENT';
+    return 'AWAITING SIGNATURE';
   }
 }

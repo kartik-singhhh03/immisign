@@ -6,6 +6,7 @@ import { signwellClient } from '@/lib/signwell/client';
 import { AgreementRepository } from '@/features/agreements/repositories/agreement.repository';
 import { AgreementStatus } from '@/features/agreements/types';
 import { NotificationService, buildWorkspaceActionUrl } from '@/lib/notifications/notification.service';
+import { DocumentGenerationService } from '@/features/agreements/services/document-generation.service';
 
 const HANDLED_EVENTS = new Set([
   'document_viewed',
@@ -269,6 +270,22 @@ export async function POST(req: NextRequest) {
     }
     if (Object.keys(agreementUpdate).length) {
       await agreementRepo.update(agreement.id, agreementUpdate);
+    }
+
+    if (isFinalSign) {
+      try {
+        const meta = agreement.metadata as { wizard_form?: unknown } | null;
+        if (meta?.wizard_form) {
+          const docGen = new DocumentGenerationService(supabase);
+          await docGen.regenerateAgreementPdf(
+            agreement.agency_id,
+            agreement.created_by,
+            agreement.id,
+          );
+        }
+      } catch (err) {
+        console.error('Failed to regenerate agreement PDF with executed status', err);
+      }
     }
 
     await supabase.from('activity_logs').insert({

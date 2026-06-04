@@ -15,6 +15,7 @@ export const PermissionsMatrix = {
     "documents:read", "documents:write", "documents:delete",
     "approvals:read", "approvals:write", "approvals:delete",
     "templates:read", "templates:write", "templates:delete",
+    "clients:read", "clients:write", "clients:delete",
     "settings:read", "settings:write",
     "billing:read", "billing:write",
   ],
@@ -22,23 +23,27 @@ export const PermissionsMatrix = {
     "agreements:read", "agreements:write",
     "documents:read", "documents:write",
     "approvals:read", "approvals:write",
+    "clients:read", "clients:write",
     "templates:read", "templates:write", "templates:delete",
   ],
   [Role.CASE_MANAGER]: [
     "agreements:read", "agreements:write",
     "documents:read", "documents:write",
     "approvals:read", "approvals:write",
+    "clients:read", "clients:write",
     "templates:read", "templates:write", "templates:delete",
   ],
   [Role.ASSISTANT]: [
     "documents:read", "documents:write",
     "agreements:read",
+    "clients:read",
     "templates:read",
   ],
   [Role.READ_ONLY]: [
     "documents:read",
     "agreements:read",
     "approvals:read",
+    "clients:read",
     "templates:read",
   ],
 };
@@ -50,18 +55,26 @@ export function hasPermission(role: Role, action: string): boolean {
   return perms.includes(action);
 }
 
-export function canView(role: Role, resource: "agreements" | "documents" | "approvals" | "templates" | "billing"): boolean {
+type Resource =
+  | "agreements"
+  | "documents"
+  | "approvals"
+  | "templates"
+  | "billing"
+  | "clients";
+
+export function canView(role: Role, resource: Resource): boolean {
   return hasPermission(role, `${resource}:read`);
 }
 
-export function canCreate(role: Role, resource: "agreements" | "documents" | "approvals" | "templates" | "billing"): boolean {
+export function canCreate(role: Role, resource: Resource): boolean {
   return hasPermission(role, `${resource}:write`);
 }
 
-export function canEdit(role: Role, resource: "agreements" | "documents" | "approvals" | "templates" | "billing"): boolean {
+export function canEdit(role: Role, resource: Resource): boolean {
   return hasPermission(role, `${resource}:write`);
 }
 
-export function canDelete(role: Role, resource: "agreements" | "documents" | "approvals" | "templates" | "billing"): boolean {
+export function canDelete(role: Role, resource: Resource): boolean {
   return hasPermission(role, `${resource}:delete`);
 }

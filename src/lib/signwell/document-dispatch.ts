@@ -1,18 +1,18 @@
 import { signwellClient, SignWellClient } from './client';
 import type { SignWellDocumentRequest, SignWellDocumentResponse } from './types';
+import {
+  isSignwellDraftStatus,
+  isSignwellDispatchedStatus,
+  needsSignwellSendCall,
+  signwellDispatchConfirmed,
+} from './status';
 
-export function isSignwellDraftStatus(status: string | undefined): boolean {
-  return (status || '').toLowerCase() === 'draft';
-}
-
-export function isSignwellDispatchedStatus(status: string | undefined): boolean {
-  const s = (status || '').toLowerCase();
-  if (!s) return false;
-  if (isSignwellDraftStatus(s)) return false;
-  if (s === 'created') return false;
-  if (s === 'canceled' || s === 'cancelled') return false;
-  return ['sent', 'pending', 'completed', 'viewed', 'action required'].includes(s);
-}
+export {
+  isSignwellDraftStatus,
+  isSignwellDispatchedStatus,
+  needsSignwellSendCall,
+  signwellDispatchConfirmed,
+} from './status';
 
 /**
  * Create a draft document and send it. Skips /send when SignWell already moved the doc out of draft
@@ -32,22 +32,12 @@ export async function createAndSendSignwellDocument(
     message: payload.message,
   };
 
-  if (isSignwellDraftStatus(created.status)) {
-    const sent = await client.sendDocument(created.id, sendBody);
-    if (!isSignwellDispatchedStatus(sent.status)) {
-      throw new Error(
-        `SignWell document ${created.id} remained in status "${sent.status}" after send — emails were not dispatched.`,
-      );
-    }
-    return sent;
-  }
-
-  if (isSignwellDispatchedStatus(created.status)) {
+  if (signwellDispatchConfirmed(created)) {
     return created;
   }
 
   const sent = await client.sendDocument(created.id, sendBody);
-  if (!isSignwellDispatchedStatus(sent.status)) {
+  if (!signwellDispatchConfirmed(sent)) {
     throw new Error(
       `SignWell document ${created.id} remained in status "${sent.status}" after send — emails were not dispatched.`,
     );
@@ -57,23 +47,23 @@ export async function createAndSendSignwellDocument(
 
 export async function resumeSignwellDocumentIfDraft(
   signwellDocumentId: string,
+  sendBody?: { subject?: string; message?: string },
   client: SignWellClient = signwellClient,
 ): Promise<SignWellDocumentResponse> {
   const existing = await client.getDocument(signwellDocumentId);
-  if (isSignwellDraftStatus(existing.status)) {
-    const sent = await client.sendDocument(signwellDocumentId, {
-      subject: 'Signature required',
-      message: 'Please review and sign the attached document.',
-    });
-    if (!isSignwellDispatchedStatus(sent.status)) {
-      throw new Error(`SignWell document ${signwellDocumentId} could not be sent (status: ${sent.status}).`);
-    }
-    return sent;
-  }
-  if (isSignwellDispatchedStatus(existing.status)) {
+  if (signwellDispatchConfirmed(existing)) {
     return existing;
   }
-  throw new Error(
-    `SignWell document ${signwellDocumentId} is in status "${existing.status}" and cannot be sent.`,
-  );
+  if (!needsSignwellSendCall(existing.status)) {
+    throw new Error(
+      `SignWell document ${signwellDocumentId} is in status "${existing.status}" and cannot be sent.`,
+    );
+  }
+  const sent = await client.sendDocument(signwellDocumentId, sendBody);
+  if (!signwellDispatchConfirmed(sent)) {
+    throw new Error(
+      `SignWell document ${signwellDocumentId} could not be sent (status: ${sent.status}).`,
+    );
+  }
+  return sent;
 }

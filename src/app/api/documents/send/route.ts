@@ -6,15 +6,32 @@ import { applySenderSignatureOnDocumentSend } from '@/lib/signatures/document-se
 import { filterExternalDocumentSigners } from '@/lib/signatures/rma-signature';
 import { generateSenderAttestationPdf } from '@/lib/signatures/sender-attestation-pdf';
 import { buildSignwellDispatchExtras } from '@/lib/signwell/dispatch-extras';
-import { createAndSendSignwellDocument, resumeSignwellDocumentIfDraft } from '@/lib/signwell/document-dispatch';
+import {
+  createAndSendSignwellDocument,
+  resumeSignwellDocumentIfDraft,
+  signwellDispatchConfirmed,
+} from '@/lib/signwell/document-dispatch';
 import { buildMultiFileSignatureFields } from '@/lib/signwell/signature-fields';
 import {
   findDuplicateRecipientEmails,
   friendlySignwellError,
 } from '@/lib/signwell/recipient-validation';
 import { NotificationService, buildWorkspaceActionUrl } from '@/lib/notifications/notification.service';
+import { signwellTestMode } from '@/lib/signwell/test-mode';
+import {
+  DispatchStageTracker,
+  DOCUMENT_SEND_STAGES,
+  signwellEmailDispatched,
+} from '@/lib/dispatch/stage-tracker';
+
+function supportRef() {
+  return `DOC-${Date.now().toString(36).toUpperCase()}`;
+}
 
 export async function POST(req: NextRequest) {
+  const tracker = new DispatchStageTracker([...DOCUMENT_SEND_STAGES]);
+  const ref = supportRef();
+
   try {
     let supabase = (await createClient()) as any;
     let {
@@ -99,8 +116,12 @@ export async function POST(req: NextRequest) {
       throw new Error('Document not found or unauthorized');
     }
 
+    tracker.start('document');
+    tracker.complete('document');
+
     await applySenderSignatureOnDocumentSend(supabase, agencyId, documentId, user.id);
 
+    tracker.start('pdf');
     const bucket = document.agreement_id ? 'secure_documents' : 'documents';
 
     const { data: urlData, error: urlError } = await supabase.storage
@@ -137,8 +158,16 @@ export async function POST(req: NextRequest) {
       .createSignedUrl(attestationPath, 3600);
 
     if (attestationUrlErr || !attestationUrlData?.signedUrl) {
-      throw new Error('Could not generate signed URL for attestation PDF');
+      tracker.fail('pdf', 'Could not generate signed URL for attestation PDF');
+      return NextResponse.json(
+        { success: false, error: 'Could not generate signed URL for attestation PDF', stages: tracker.snapshot(), supportRef: ref },
+        { status: 500 },
+      );
     }
+    tracker.complete('pdf');
+
+    tracker.start('storage');
+    tracker.complete('storage');
 
     const signersToInsert = externalSigners.map((s: any, idx: number) => ({
       id: crypto.randomUUID(),
@@ -187,7 +216,7 @@ export async function POST(req: NextRequest) {
     ];
 
     const signwellPayload = {
-      test_mode: process.env.NODE_ENV !== 'production',
+      test_mode: signwellTestMode(),
       name: document.file_name,
       files: signwellFiles,
       recipients: signwellSigners,
@@ -203,6 +232,7 @@ export async function POST(req: NextRequest) {
       ...dispatchExtras,
     };
 
+    tracker.start('signwell_draft');
     let sentDoc;
     try {
       if (document.signwell_document_id) {
@@ -210,9 +240,11 @@ export async function POST(req: NextRequest) {
       } else {
         sentDoc = await createAndSendSignwellDocument(signwellPayload);
       }
+      tracker.complete('signwell_draft');
     } catch (signwellErr: unknown) {
       const raw = signwellErr instanceof Error ? signwellErr.message : String(signwellErr);
       const friendly = friendlySignwellError(raw);
+      tracker.fail(document.signwell_document_id ? 'email' : 'signwell_draft', friendly);
       await supabase
         .from('documents')
         .update({
@@ -221,14 +253,64 @@ export async function POST(req: NextRequest) {
         })
         .eq('id', documentId)
         .eq('agency_id', agencyId);
-      return NextResponse.json({ success: false, error: friendly }, { status: 422 });
+      return NextResponse.json(
+        { success: false, error: friendly, stages: tracker.snapshot(), supportRef: ref },
+        { status: 422 },
+      );
     }
+
+    if (!sentDoc?.id) {
+      tracker.fail('signwell_draft', 'SignWell did not return a document id');
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'SignWell did not return a document id',
+          stages: tracker.snapshot(),
+          supportRef: ref,
+        },
+        { status: 502 },
+      );
+    }
+
+    const testMode = signwellTestMode();
+    tracker.start('email');
+    const emailCheck = signwellEmailDispatched(sentDoc, testMode);
+    if (!emailCheck.ok) {
+      tracker.fail('email', emailCheck.reason || 'SignWell email dispatch not confirmed');
+      return NextResponse.json(
+        {
+          success: false,
+          error: emailCheck.reason || 'SignWell email dispatch not confirmed',
+          stages: tracker.snapshot(),
+          supportRef: ref,
+        },
+        { status: 502 },
+      );
+    }
+    tracker.complete('email');
+
+    tracker.start('confirm');
+    const confirmedStatus = sentDoc.status || '';
+    if (!signwellDispatchConfirmed(sentDoc)) {
+      tracker.fail('confirm', `SignWell status "${confirmedStatus}" — document was not sent (emails not dispatched)`);
+      return NextResponse.json(
+        {
+          success: false,
+          error: `SignWell returned status "${confirmedStatus}" — dispatch not confirmed`,
+          stages: tracker.snapshot(),
+          supportRef: ref,
+        },
+        { status: 502 },
+      );
+    }
+    tracker.complete('confirm');
 
     const signingLinks = (sentDoc.signers || [])
       .filter((s) => s.signing_url)
       .map((s) => ({ email: s.email, name: s.name, signing_url: s.signing_url }));
 
-    await supabase
+    tracker.start('records');
+    const { error: docUpdateErr } = await supabase
       .from('documents')
       .update({
         signwell_document_id: sentDoc.id,
@@ -242,7 +324,41 @@ export async function POST(req: NextRequest) {
       .eq('id', documentId)
       .eq('agency_id', agencyId);
 
-    await supabase.from('activity_logs').insert({
+    if (docUpdateErr) {
+      tracker.fail('records', docUpdateErr.message);
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Database update failed: ${docUpdateErr.message}`,
+          stages: tracker.snapshot(),
+          supportRef: ref,
+        },
+        { status: 500 },
+      );
+    }
+
+    const { data: verified } = await supabase
+      .from('documents')
+      .select('signwell_document_id')
+      .eq('id', documentId)
+      .eq('agency_id', agencyId)
+      .single();
+
+    if (!verified?.signwell_document_id) {
+      tracker.fail('records', 'signwell_document_id was not persisted');
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Dispatch could not be confirmed in the database',
+          stages: tracker.snapshot(),
+          supportRef: ref,
+        },
+        { status: 500 },
+      );
+    }
+    tracker.complete('records');
+
+    const { error: activityErr } = await supabase.from('activity_logs').insert({
       id: crypto.randomUUID(),
       agency_id: agencyId,
       user_id: user.id,
@@ -252,7 +368,11 @@ export async function POST(req: NextRequest) {
       reference_id: documentId,
       reference_type: 'document',
     });
+    if (activityErr) {
+      console.warn('activity_logs insert failed:', activityErr.message);
+    }
 
+    tracker.start('notification');
     const { data: agencyRow } = await supabase.from('agencies').select('slug').eq('id', agencyId).single();
     const notify = new NotificationService(supabase);
     await notify.notify({
@@ -266,6 +386,7 @@ export async function POST(req: NextRequest) {
       entityId: documentId,
       actorId: user.id,
     });
+    tracker.complete('notification');
 
     await supabase
       .from('send_document_drafts')
@@ -281,14 +402,30 @@ export async function POST(req: NextRequest) {
       senderAutoSigned: true,
       agentAttestationIncluded: true,
       signingLinks,
+      stages: tracker.snapshot(),
+      supportRef: ref,
+      signwellTestMode: testMode,
+      emailDispatched: emailCheck.ok,
+      emailNote: emailCheck.reason,
+      recipientEmails: externalSigners.map((s: { email: string }) => s.email),
       message:
         'Agent certification is stored separately. Only external signers receive SignWell requests on the uploaded document.',
     });
   } catch (err: unknown) {
     console.error('Document Dispatch Error Stack:', err);
     const message = err instanceof Error ? err.message : 'Dispatch failed';
+    const failed = tracker.failedStage();
+    if (!failed) {
+      const stageId = tracker.snapshot().find((s) => s.status === 'running')?.id || 'pdf';
+      tracker.fail(stageId, friendlySignwellError(message));
+    }
     return NextResponse.json(
-      { success: false, error: friendlySignwellError(message) },
+      {
+        success: false,
+        error: friendlySignwellError(message),
+        stages: tracker.snapshot(),
+        supportRef: ref,
+      },
       { status: 500 },
     );
   }

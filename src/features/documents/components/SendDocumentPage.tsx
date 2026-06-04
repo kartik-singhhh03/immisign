@@ -21,26 +21,18 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-import { WorkflowProgress } from "@/components/ui/standards"
+import { DispatchTimeline, withGlobalTask } from "@/components/ui/standards"
+import { ProfessionalErrorPanel } from "@/components/errors/professional-error"
 import { notifyError, notifySuccess } from "@/lib/ux/feedback"
 import { filterExternalDocumentSigners } from "@/lib/signatures/rma-signature"
-
-const DISPATCH_STEPS = [
-  { id: "upload", label: "Uploading document", description: "Storing file in your secure document library." },
-  { id: "pdf", label: "Preparing PDF", description: "Validating format and preparing for signature." },
-  { id: "signwell", label: "Creating SignWell draft", description: "Registering signers and document." },
-  { id: "send", label: "Sending document", description: "Dispatching signature request to recipients." },
-  { id: "done", label: "Completed", description: "Recipients will receive secure signing links." },
-]
-
-function dispatchStepFromProgress(p: number) {
-  if (p >= 100) return 4
-  if (p >= 80) return 3
-  if (p >= 60) return 2
-  if (p >= 40) return 1
-  if (p > 0) return 0
-  return 0
-}
+import type { DispatchStageRecord } from "@/lib/dispatch/stage-tracker"
+import {
+  createDocumentSendTimeline,
+  markTimelineFailed,
+  markTimelineRunning,
+  markTimelineSuccess,
+  mergeServerDispatchStages,
+} from "@/lib/dispatch/client-timeline"
 
 export function SendDocumentPage() {
   const { slug: currentSlug, agencyId, activeWorkspace } = useRequireWorkspace()
@@ -101,11 +93,13 @@ export function SendDocumentPage() {
   const [draftRestored, setDraftRestored] = React.useState(false)
 
   // Step 5: Send state
-  const [sendingProgress, setSendingProgress] = React.useState(0)
+  const [dispatchStages, setDispatchStages] = React.useState<DispatchStageRecord[]>([])
+  const [dispatchBusy, setDispatchBusy] = React.useState(false)
   const [sendSuccess, setSendSuccess] = React.useState(false)
-  const [sendLogs, setSendLogs] = React.useState<string[]>([])
   const [hasError, setHasError] = React.useState(false)
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null)
+  const [supportRef, setSupportRef] = React.useState<string | null>(null)
+  const [confirmedSignwellId, setConfirmedSignwellId] = React.useState<string | null>(null)
 
   React.useEffect(() => {
     let cancelled = false
@@ -116,7 +110,21 @@ export function SendDocumentPage() {
         const { draft } = await res.json()
         if (!draft?.draft_data || cancelled) return
         const d = draft.draft_data as Record<string, unknown>
-        if (typeof d.currentStep === "number") setCurrentStep(d.currentStep)
+        const hasFileMeta =
+          d.uploadedFileMeta &&
+          typeof d.uploadedFileMeta === "object" &&
+          !!(d.uploadedFileMeta as { name?: string }).name
+        let restoredStep = typeof d.currentStep === "number" ? d.currentStep : 0
+        // Never restore to Send (5) — old drafts showed a fake "uploading" spinner with no dispatch running
+        if (restoredStep >= 5) restoredStep = hasFileMeta ? 4 : 0
+        else if (restoredStep > 4) restoredStep = 4
+        setCurrentStep(restoredStep)
+        setSendSuccess(false)
+        setHasError(false)
+        setDispatchBusy(false)
+        setDispatchStages([])
+        setSupportRef(null)
+        setConfirmedSignwellId(null)
         if (Array.isArray(d.signersList)) setSignersList(d.signersList as SignerItem[])
         if (typeof d.emailSubject === "string") setEmailSubject(d.emailSubject)
         if (typeof d.emailMessage === "string") setEmailMessage(d.emailMessage)
@@ -153,13 +161,14 @@ export function SendDocumentPage() {
     setSaving(true)
     const timer = setTimeout(async () => {
       try {
+        const stepToPersist = currentStep >= 5 ? 4 : currentStep
         await fetch("/api/documents/wizard-draft", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            currentStep,
+            currentStep: stepToPersist,
             draftData: {
-              currentStep,
+              currentStep: stepToPersist,
               signersList,
               emailSubject,
               emailMessage,
@@ -253,36 +262,67 @@ export function SendDocumentPage() {
     setSignersList(updated)
   }
 
+  const clearWizardDraft = async () => {
+    try {
+      await fetch("/api/documents/wizard-draft", { method: "DELETE" })
+    } catch {
+      /* ignore */
+    }
+  }
+
+  const startOver = () => {
+    setCurrentStep(0)
+    setUploadedFile(null)
+    setSignersList([{ id: "S-1", name: "", email: "", role: "Client", order: 1 }])
+    setSendSuccess(false)
+    setHasError(false)
+    setDispatchBusy(false)
+    setDispatchStages([])
+    setDraftRestored(false)
+    void clearWizardDraft()
+  }
+
+  const goToStep = (index: number) => {
+    if (dispatchBusy) return
+    if (index > currentStep) return
+    if (index === 5) return
+    setCurrentStep(index)
+    setHasError(false)
+  }
+
   const triggerDispatch = async () => {
+    if (!uploadedFile?.file) {
+      notifyError("File required", "Upload a PDF on the Upload step before sending.")
+      setCurrentStep(1)
+      return
+    }
+    const invalidSigner = signersList.some((s) => !s.name?.trim() || !s.email?.trim())
+    if (invalidSigner) {
+      notifyError("Signers required", "Complete signer name and email before sending.")
+      setCurrentStep(2)
+      return
+    }
     setCurrentStep(5)
-    setSendingProgress(0)
+    setDispatchBusy(true)
     setSendSuccess(false)
     setHasError(false)
     setErrorMessage(null)
-    setSendLogs([])
+    setSupportRef(null)
+    setConfirmedSignwellId(null)
+    let stages = createDocumentSendTimeline()
+    setDispatchStages(stages)
 
     try {
-      if (!uploadedFile?.file) throw new Error("No file uploaded");
-      const resolvedAgencyId = agencyId || activeWorkspace?.id;
-      if (!resolvedAgencyId) throw new Error("No active workspace");
+      if (!uploadedFile?.file) throw new Error("No file uploaded")
+      const resolvedAgencyId = agencyId || activeWorkspace?.id
+      if (!resolvedAgencyId) throw new Error("No active workspace")
 
-      setSendLogs(curr => [...curr, "Initializing upload sequence..."])
-      setSendingProgress(10)
-
-      // Step 1: Upload to Supabase Storage
-      setSendLogs((curr) => [...curr, "Uploading document to secure storage…"])
-      const document = await addDocument({ file: uploadedFile.file });
-      setSendingProgress(35)
-      setSendLogs((curr) => [...curr, "Document stored successfully."])
-      setSendingProgress(45)
-
-      if (!document) throw new Error("Document upload returned empty result");
-
-      // Step 2: Register Signers & Dispatch
-      setSendLogs((curr) => [...curr, "Preparing PDF and creating SignWell draft…"])
-      setSendingProgress(55)
-      setSendLogs((curr) => [...curr, "Registering signers and dispatching to SignWell…"])
-      setSendingProgress(70)
+      stages = markTimelineRunning(stages, "upload")
+      setDispatchStages(stages)
+      const document = await addDocument({ file: uploadedFile.file })
+      if (!document) throw new Error("Document upload returned empty result")
+      stages = markTimelineSuccess(stages, "upload")
+      setDispatchStages(stages)
 
       const senderEmail = (user?.email || "").trim().toLowerCase()
       const externalSigners = filterExternalDocumentSigners(signersList, senderEmail)
@@ -292,41 +332,95 @@ export function SendDocumentPage() {
         )
       }
 
-      const res = await fetch('/api/documents/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          documentId: document.id,
-          agencyId: resolvedAgencyId,
-          signers: externalSigners,
-          pageCount: uploadedFile?.pages || 1,
-          emailSubject,
-          emailMessage,
-          ccMe,
-          autoRemind7Days,
-          emailOnComplete,
-        })
-      });
+      stages = markTimelineRunning(stages, "pdf")
+      setDispatchStages(stages)
 
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Failed to dispatch signature request");
+      const data = await withGlobalTask(
+        "send-document",
+        "Sending document for signature",
+        async () => {
+          const res = await fetch("/api/documents/send", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              documentId: document.id,
+              agencyId: resolvedAgencyId,
+              signers: externalSigners,
+              pageCount: uploadedFile?.pages || 1,
+              emailSubject,
+              emailMessage,
+              ccMe,
+              autoRemind7Days,
+              emailOnComplete,
+            }),
+          })
+          const json = await res.json()
+          if (!res.ok || !json.success) {
+            const err = new Error(json.error || "Failed to dispatch signature request") as Error & {
+              stages?: DispatchStageRecord[]
+              supportRef?: string
+            }
+            err.stages = json.stages
+            err.supportRef = json.supportRef
+            throw err
+          }
+          if (!json.signwellDocumentId) {
+            throw new Error(
+              "Dispatch did not return a SignWell document id. No signing emails were sent.",
+            )
+          }
+          return json
+        },
+        { overlay: true },
+      )
+
+      if (data.supportRef) setSupportRef(data.supportRef)
+      stages = mergeServerDispatchStages(stages, data.stages)
+
+      const verifyRes = await fetch(
+        `/api/documents/${document.id}/dispatch-verify?agencyId=${encodeURIComponent(resolvedAgencyId)}`,
+      )
+      const verify = await verifyRes.json()
+      if (!verifyRes.ok || !verify.confirmed || !verify.signwellDocumentId) {
+        throw new Error(
+          verify.error || "Database did not confirm SignWell dispatch. Success screen blocked.",
+        )
       }
 
-      setSendingProgress(85)
-      setSendLogs((curr) => [...curr, "Signature request accepted by SignWell."])
-      setSendingProgress(100)
-      setSendLogs((curr) => [...curr, "Activity logged. Dispatch completed successfully."])
-      notifySuccess("Document sent", "Signature requests were dispatched to all signers.")
-      setTimeout(() => setSendSuccess(true), 400)
-      
-    } catch (err: any) {
-      console.error(err);
-      setSendingProgress(0)
+      stages = markTimelineSuccess(stages, "completed")
+      setDispatchStages(stages)
+      setConfirmedSignwellId(verify.signwellDocumentId)
+      setSendSuccess(true)
+      const testNote = data.signwellTestMode
+        ? " SignWell test mode is on — set SIGNWELL_TEST_MODE=false on Vercel for real inbox delivery."
+        : ""
+      notifySuccess(
+        "Document sent",
+        `Signature requests dispatched.${testNote}`,
+      )
+    } catch (err: unknown) {
+      console.error(err)
+      const message = err instanceof Error ? err.message : "An unexpected error occurred."
+      const apiStages = (err as { stages?: DispatchStageRecord[] }).stages
+      const apiRef = (err as { supportRef?: string }).supportRef
+      if (apiRef) setSupportRef(apiRef)
+      let failedStages = stages
+      if (apiStages?.length) {
+        failedStages = mergeServerDispatchStages(stages, apiStages)
+      } else {
+        const running = failedStages.find((s) => s.status === "running")
+        failedStages = markTimelineFailed(
+          failedStages,
+          running?.id || "pdf",
+          message,
+        )
+      }
+      setDispatchStages(failedStages)
       setHasError(true)
-      setErrorMessage(err.message || "An unexpected error occurred.")
-      setSendLogs((curr) => [...curr, "ERROR: " + (err.message || "Upload failed!")])
-      notifyError("Document dispatch failed", err.message || "An unexpected error occurred.")
+      setErrorMessage(message)
+      notifyError("Document dispatch failed", message)
+    } finally {
+      setDispatchBusy(false)
     }
   }
 
@@ -442,11 +536,17 @@ export function SendDocumentPage() {
         )}
       </div>
 
-      {/* Removed Mock Options */}
-      <div className="mt-6 flex justify-end">
-        <Button 
-          disabled={!uploadedFile}
-          onClick={() => setCurrentStep(2)} 
+      <div className="mt-6 flex justify-between">
+        <Button
+          variant="outline"
+          onClick={() => setCurrentStep(0)}
+          className="rounded-xl border-slate-200 bg-white font-bold px-6"
+        >
+          Back
+        </Button>
+        <Button
+          disabled={!uploadedFile?.file}
+          onClick={() => setCurrentStep(2)}
           className="rounded-xl bg-[#0D9F8C] font-bold px-6 shadow-md hover:bg-[#0A5B52] disabled:opacity-40 disabled:hover:bg-[#0D9F8C]"
         >
           Assign Signers <ArrowRight className="h-4 w-4 ml-1.5" />
@@ -455,14 +555,43 @@ export function SendDocumentPage() {
     </div>
   )
 
+  const demoSignerEmail =
+    process.env.NEXT_PUBLIC_DEMO_SIGNER_EMAIL ||
+    (process.env.NODE_ENV !== "production" ? "kartiksingh2829@gmail.com" : "")
+
+  const fillDemoSigner = () => {
+    if (!demoSignerEmail) return
+    setSignersList([
+      {
+        id: signersList[0]?.id || "S-1",
+        name: "Kartik Singh",
+        email: demoSignerEmail,
+        role: "Client",
+        order: 1,
+      },
+    ])
+  }
+
   const renderSignersStep = () => (
     <div className="space-y-6">
       <div className="rounded-xl border border-emerald-100 bg-emerald-50/80 p-4 text-xs font-semibold text-emerald-900">
         Your signature ({user?.name || 'sender'}) is applied automatically when you send. Only external recipients below receive SignWell signing requests.
       </div>
       <div className="space-y-4">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center flex-wrap gap-2">
           <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">External recipients only</div>
+          <div className="flex gap-2">
+            {demoSignerEmail && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={fillDemoSigner}
+                className="h-9 rounded-xl border-slate-200 font-bold text-xs"
+              >
+                Use verification recipient
+              </Button>
+            )}
           <Button 
             variant="outline" 
             size="sm"
@@ -471,6 +600,7 @@ export function SendDocumentPage() {
           >
             <Plus className="h-4 w-4 mr-1" /> Add Recipient Signer
           </Button>
+          </div>
         </div>
 
         <div className="space-y-3">
@@ -777,7 +907,7 @@ export function SendDocumentPage() {
           Back
         </Button>
         <Button
-          disabled={!uploadedFile?.file || (sendingProgress > 0 && !sendSuccess && !hasError)}
+          disabled={!uploadedFile?.file || dispatchBusy}
           onClick={triggerDispatch}
           className="rounded-xl bg-[#081B2E] text-white font-bold px-6 shadow-md hover:bg-slate-800 disabled:opacity-50"
         >
@@ -787,38 +917,73 @@ export function SendDocumentPage() {
     </div>
   )
 
-  const renderSendStep = () => (
-    <div className="flex min-h-[400px] flex-col items-center justify-center p-8 text-center animate-in fade-in zoom-in-95 duration-500">
-      {hasError ? (
-        <div className="space-y-6">
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-red-100 text-red-600 shadow-[0_0_0_8px_rgba(239,68,68,0.1)]">
-            <Filter className="h-10 w-10 rotate-180" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight text-[#081B2E]">Dispatch Failed</h2>
-            <p className="mt-2 text-sm text-red-500 font-medium max-w-md mx-auto">
-              {errorMessage}
-            </p>
-          </div>
-          <div className="flex justify-center gap-3 pt-4">
-            <Button variant="outline" onClick={() => setCurrentStep(4)} className="rounded-xl border-slate-200 font-bold px-6">Review & Try Again</Button>
-            <Link href={`/workspace/${currentSlug}/dashboard`}>
-              <Button className="rounded-xl bg-[#081B2E] text-white font-bold px-6 shadow-md hover:bg-slate-800">Return to Dashboard</Button>
-            </Link>
+  const renderSendStep = () => {
+    const dispatchIdle = !dispatchBusy && !hasError && !sendSuccess
+    if (dispatchIdle) {
+      return (
+        <div className="flex min-h-[400px] flex-col items-center justify-center p-8 text-center space-y-6">
+          <p className="text-sm text-slate-600 font-medium max-w-md">
+            Dispatch has not started. Go back to review your file and signers, then send from the Review step.
+          </p>
+          <div className="flex flex-wrap justify-center gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setCurrentStep(4)}
+              className="rounded-xl border-slate-200 font-bold px-6"
+            >
+              Back to Review
+            </Button>
+            <Button
+              disabled={!uploadedFile?.file}
+              onClick={() => void triggerDispatch()}
+              className="rounded-xl bg-[#0D9F8C] font-bold px-6"
+            >
+              Send now
+            </Button>
           </div>
         </div>
-      ) : sendSuccess ? (
-        <div className="space-y-6">
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 shadow-[0_0_0_8px_rgba(16,185,129,0.1)]">
-            <FileCheck2 className="h-10 w-10" />
+      )
+    }
+
+    return (
+    <div className="flex min-h-[400px] flex-col items-center justify-center p-8 text-center animate-in fade-in zoom-in-95 duration-500">
+      {hasError ? (
+        <div className="w-full max-w-2xl space-y-6">
+          {dispatchStages.length > 0 && (
+            <DispatchTimeline
+              title="Dispatch failed"
+              subtitle="The operation stopped at the step shown below."
+              stages={dispatchStages}
+              supportRef={supportRef || undefined}
+            />
+          )}
+          <ProfessionalErrorPanel
+            kind="signwell_failure"
+            detail={errorMessage || undefined}
+            supportRef={supportRef || undefined}
+            onRetry={() => {
+              setHasError(false)
+              setCurrentStep(4)
+            }}
+            backHref={`/workspace/${currentSlug}/documents/send`}
+            backLabel="Back to Review"
+          />
+        </div>
+      ) : sendSuccess && confirmedSignwellId ? (
+        <div className="w-full max-w-2xl space-y-6">
+          {dispatchStages.length > 0 && (
+            <DispatchTimeline
+              title="Document dispatched securely"
+              subtitle="SignWell confirmed and the database was updated."
+              stages={dispatchStages}
+              supportRef={supportRef || undefined}
+            />
+          )}
+          <div className="text-center space-y-2">
+            <p className="text-xs font-mono text-slate-500">SignWell ID: {confirmedSignwellId}</p>
+            <p className="text-xs text-emerald-700 font-semibold">Database confirmation received.</p>
           </div>
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight text-[#081B2E]">Document Dispatched Securely</h2>
-            <p className="mt-2 text-sm text-slate-500 font-medium max-w-md mx-auto">
-              Your signature requests have been securely routed via the Sydney region SES nodes. Activity logs are now active.
-            </p>
-          </div>
-          <div className="flex justify-center gap-3 pt-4">
+          <div className="flex justify-center gap-3">
             <Link href={`/workspace/${currentSlug}/documents`}>
               <Button variant="outline" className="rounded-xl border-slate-200 font-bold px-6">View Documents</Button>
             </Link>
@@ -829,17 +994,17 @@ export function SendDocumentPage() {
         </div>
       ) : (
         <div className="w-full max-w-lg">
-          <WorkflowProgress
+          <DispatchTimeline
             title="Sending document for signature"
             subtitle="Do not close this window until dispatch completes."
-            steps={DISPATCH_STEPS}
-            activeIndex={dispatchStepFromProgress(sendingProgress)}
-            logs={sendLogs}
+            stages={dispatchStages.length ? dispatchStages : createDocumentSendTimeline()}
+            supportRef={supportRef || undefined}
           />
         </div>
       )}
     </div>
-  )
+    )
+  }
 
   return (
     <div className="mx-auto max-w-5xl">
@@ -849,6 +1014,16 @@ export function SendDocumentPage() {
           <p className="mt-2 text-sm text-slate-500 font-medium">Upload documents, assign recipients, and execute securely.</p>
         </div>
         <div className="flex items-center gap-3 text-xs font-bold text-slate-400">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            disabled={dispatchBusy}
+            onClick={startOver}
+            className="text-slate-500 font-bold"
+          >
+            Start over
+          </Button>
           {saving ? (
             <span className="flex items-center text-amber-500"><span className="h-1.5 w-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse" /> Saving...</span>
           ) : (
@@ -862,8 +1037,18 @@ export function SendDocumentPage() {
           {steps.map((step, index) => {
             const isActive = index === currentStep
             const isCompleted = index < currentStep
+            const canNavigateBack = isCompleted && !dispatchBusy && index < 5
             return (
               <div key={step} className="flex items-center gap-3 shrink-0">
+                <button
+                  type="button"
+                  disabled={!canNavigateBack}
+                  onClick={() => goToStep(index)}
+                  className={cn(
+                    "flex items-center gap-3 shrink-0 text-left",
+                    canNavigateBack ? "cursor-pointer hover:opacity-80" : "cursor-default",
+                  )}
+                >
                 <div className={cn(
                   "flex h-7 w-7 items-center justify-center rounded-full text-xs font-black transition-colors duration-300",
                   isActive ? "bg-[#0D9F8C] text-white shadow-[0_4px_12px_rgba(13,159,140,0.2)]" :
@@ -878,6 +1063,7 @@ export function SendDocumentPage() {
                 )}>
                   {step}
                 </span>
+                </button>
                 {index < steps.length - 1 && <ArrowRight className="h-3.5 w-3.5 text-slate-200 mr-6" />}
               </div>
             )

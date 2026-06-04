@@ -60,7 +60,8 @@ export async function PUT(req: NextRequest) {
         agency_id: profile.agency_id,
         user_id: user.id,
         draft_data: draftData || {},
-        current_step: typeof currentStep === 'number' ? currentStep : 0,
+        current_step:
+          typeof currentStep === 'number' ? Math.min(Math.max(0, currentStep), 4) : 0,
         updated_at: new Date().toISOString(),
       },
       { onConflict: 'agency_id,user_id' },

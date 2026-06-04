@@ -24,6 +24,7 @@ export const metadata: Metadata = {
 };
 
 import { AuthProvider } from "@/components/providers/AuthProvider";
+import { GlobalUxProvider } from "@/components/providers/GlobalUxProvider";
 import { Toaster } from "@/components/ui/toaster";
 
 export default function RootLayout({
@@ -36,7 +37,9 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${instrumentSerif.variable} font-sans antialiased bg-background text-foreground min-h-screen flex flex-col overflow-x-hidden`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <AuthProvider>
-            {children}
+            <GlobalUxProvider>
+              {children}
+            </GlobalUxProvider>
             <Toaster />
           </AuthProvider>
         </ThemeProvider>

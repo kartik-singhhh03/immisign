@@ -15,7 +15,7 @@ export async function requireActiveSubscription() {
 
   if (!status || !['active', 'trialing'].includes(status)) {
     throw new AppError(
-      'An active ImmiSign subscription is required. Subscribe from Billing settings.',
+      'An active ImmiMate subscription is required. Subscribe from Billing settings.',
       'FORBIDDEN',
       403,
     );
@@ -32,7 +32,7 @@ export async function requireDocumentCapacity() {
 }
 
 /**
- * Premium features are included in the ImmiSign plan.
+ * Premium features are included in the ImmiMate plan.
  */
 export async function requireFeature(
   _featureKey: keyof ReturnType<typeof getImmisignPlan>['features'],

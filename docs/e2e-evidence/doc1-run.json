@@ -1,0 +1,607 @@
+{
+  "stamp": 1781086203949,
+  "agency": {
+    "id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+    "slug": "ritiklabs",
+    "name": "Ritiklabs SETTINGS1 1781085718037"
+  },
+  "owner": {
+    "id": "2cab360f-fd21-461a-8a57-67573dee0530",
+    "email": "nayramalik1018@gmail.com"
+  },
+  "results": [
+    {
+      "area": "SETUP",
+      "check": "AUTH",
+      "status": "PASS",
+      "msg": "nayramalik1018@gmail.com",
+      "detail": {},
+      "ts": "2026-06-10T10:10:05.664Z"
+    },
+    {
+      "area": "SETUP",
+      "check": "BROWSER",
+      "status": "PASS",
+      "msg": "Chrome ready",
+      "detail": {},
+      "ts": "2026-06-10T10:10:06.470Z"
+    },
+    {
+      "area": "PART1",
+      "check": "UPLOAD-PDF",
+      "status": "PASS",
+      "msg": "8ee8bd3f-a8b3-4baa-aa55-68bd80897d88 @ 3cd3a307-b7e5-4984-82d4-bf757e834afd/documents/8ee8bd3f-a8b3-4baa-aa55-68bd80897d88/doc1-1781086203949.pdf",
+      "detail": {},
+      "ts": "2026-06-10T10:10:07.267Z"
+    },
+    {
+      "area": "PART1",
+      "check": "STORAGE-PDF",
+      "status": "PASS",
+      "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/documents/8ee8bd3f-a8b3-4baa-aa55-68bd80897d88/doc1-1781086203949.pdf",
+      "detail": {},
+      "ts": "2026-06-10T10:10:07.479Z"
+    },
+    {
+      "area": "PART1",
+      "check": "UPLOAD-DOCX",
+      "status": "PASS",
+      "msg": "dd28e79e-9773-45cb-8691-a49168701f7a @ 3cd3a307-b7e5-4984-82d4-bf757e834afd/documents/dd28e79e-9773-45cb-8691-a49168701f7a/doc1-1781086203949.docx",
+      "detail": {},
+      "ts": "2026-06-10T10:10:07.936Z"
+    },
+    {
+      "area": "PART1",
+      "check": "STORAGE-DOCX",
+      "status": "PASS",
+      "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/documents/dd28e79e-9773-45cb-8691-a49168701f7a/doc1-1781086203949.docx",
+      "detail": {},
+      "ts": "2026-06-10T10:10:08.142Z"
+    },
+    {
+      "area": "PART1",
+      "check": "UPLOAD-PNG",
+      "status": "PASS",
+      "msg": "73a8867c-055f-4a86-a2f5-16ccd10760ae @ 3cd3a307-b7e5-4984-82d4-bf757e834afd/documents/73a8867c-055f-4a86-a2f5-16ccd10760ae/doc1-1781086203949.png",
+      "detail": {},
+      "ts": "2026-06-10T10:10:08.648Z"
+    },
+    {
+      "area": "PART1",
+      "check": "STORAGE-PNG",
+      "status": "PASS",
+      "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/documents/73a8867c-055f-4a86-a2f5-16ccd10760ae/doc1-1781086203949.png",
+      "detail": {},
+      "ts": "2026-06-10T10:10:08.858Z"
+    },
+    {
+      "area": "PART2",
+      "check": "SIGNED-URL",
+      "status": "PASS",
+      "msg": "https://wnohcmgmyhamsbmkiybc.supabase.co/storage/v1/object/sign/documents/3cd3a3",
+      "detail": {},
+      "ts": "2026-06-10T10:10:09.071Z"
+    },
+    {
+      "area": "PART3",
+      "check": "DOWNLOAD-PDF",
+      "status": "PASS",
+      "msg": "200 440b",
+      "detail": {},
+      "ts": "2026-06-10T10:10:09.782Z"
+    },
+    {
+      "area": "PART2",
+      "check": "VIEW-PDF-BROWSER",
+      "status": "PASS",
+      "msg": "PDF opened",
+      "detail": {},
+      "ts": "2026-06-10T10:10:13.158Z"
+    },
+    {
+      "area": "PART4",
+      "check": "PREVIEW-PDF",
+      "status": "PASS",
+      "msg": "No crash on PDF preview",
+      "detail": {},
+      "ts": "2026-06-10T10:10:13.158Z"
+    },
+    {
+      "area": "PART4",
+      "check": "PREVIEW-IMAGE",
+      "status": "PASS",
+      "msg": "Image preview loaded",
+      "detail": {},
+      "ts": "2026-06-10T10:10:15.894Z"
+    },
+    {
+      "area": "PART2",
+      "check": "LIBRARY-UI",
+      "status": "PASS",
+      "msg": "Document visible in library",
+      "detail": {},
+      "ts": "2026-06-10T10:10:23.165Z"
+    },
+    {
+      "area": "PART3",
+      "check": "DOWNLOAD-DOCX",
+      "status": "PASS",
+      "msg": "200 30b",
+      "detail": {},
+      "ts": "2026-06-10T10:10:24.575Z"
+    },
+    {
+      "area": "PART3",
+      "check": "DOWNLOAD-PNG",
+      "status": "PASS",
+      "msg": "200 70b",
+      "detail": {},
+      "ts": "2026-06-10T10:10:25.328Z"
+    },
+    {
+      "area": "PART5",
+      "check": "DELETE-BEFORE-DB",
+      "status": "PASS",
+      "msg": "dd28e79e-9773-45cb-8691-a49168701f7a",
+      "detail": {},
+      "ts": "2026-06-10T10:10:25.518Z"
+    },
+    {
+      "area": "PART5",
+      "check": "DELETE-DB",
+      "status": "PASS",
+      "msg": "removed",
+      "detail": {},
+      "ts": "2026-06-10T10:10:26.382Z"
+    },
+    {
+      "area": "PART5",
+      "check": "DELETE-STORAGE",
+      "status": "PASS",
+      "msg": "storage cleaned",
+      "detail": {},
+      "ts": "2026-06-10T10:10:26.382Z"
+    },
+    {
+      "area": "PART5",
+      "check": "DELETE-UI",
+      "status": "WARN",
+      "msg": "Library UI delete button disabled — API/DB delete verified",
+      "detail": {},
+      "ts": "2026-06-10T10:10:26.382Z"
+    },
+    {
+      "area": "PART6",
+      "check": "SEND-API",
+      "status": "PASS",
+      "msg": "status 200",
+      "detail": {},
+      "ts": "2026-06-10T10:10:39.945Z"
+    },
+    {
+      "area": "PART6",
+      "check": "SIGNWELL-ID",
+      "status": "PASS",
+      "msg": "05623133-e031-4935-a45f-4b8d653f4579",
+      "detail": {},
+      "ts": "2026-06-10T10:10:40.168Z"
+    },
+    {
+      "area": "PART6",
+      "check": "SIGNWELL-VISIBLE",
+      "status": "PASS",
+      "msg": "Sent",
+      "detail": {},
+      "ts": "2026-06-10T10:10:41.465Z"
+    },
+    {
+      "area": "PART6",
+      "check": "WEBHOOK-READY",
+      "status": "PASS",
+      "msg": "2 webhook_events in window",
+      "detail": {},
+      "ts": "2026-06-10T10:10:41.652Z"
+    },
+    {
+      "area": "PART7",
+      "check": "RLS-DB",
+      "status": "PASS",
+      "msg": "no row",
+      "detail": {},
+      "ts": "2026-06-10T10:10:42.969Z"
+    },
+    {
+      "area": "PART7",
+      "check": "RLS-STORAGE",
+      "status": "PASS",
+      "msg": "no signed url for foreign agency",
+      "detail": {},
+      "ts": "2026-06-10T10:10:43.229Z"
+    },
+    {
+      "area": "PART8",
+      "check": "SEARCH-DB",
+      "status": "PASS",
+      "msg": "matches=2 total=2",
+      "detail": {},
+      "ts": "2026-06-10T10:10:44.929Z"
+    },
+    {
+      "area": "PART8",
+      "check": "PAGINATION",
+      "status": "PASS",
+      "msg": "page size=3 count=21",
+      "detail": {},
+      "ts": "2026-06-10T10:10:45.121Z"
+    },
+    {
+      "area": "PART8",
+      "check": "SEARCH-UI",
+      "status": "PASS",
+      "msg": "Search filter in library",
+      "detail": {},
+      "ts": "2026-06-10T10:10:51.912Z"
+    },
+    {
+      "area": "CLEANUP",
+      "check": "TEST-DOCS",
+      "status": "PASS",
+      "msg": "Removed 5 test document(s)",
+      "detail": {},
+      "ts": "2026-06-10T10:10:54.316Z"
+    }
+  ],
+  "evidence": {
+    "db": [
+      {
+        "table": "documents",
+        "row": {
+          "id": "8ee8bd3f-a8b3-4baa-aa55-68bd80897d88",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "agreement_id": null,
+          "uploaded_by": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "file_name": "doc1-1781086203949.pdf",
+          "original_name": "doc1-1781086203949.pdf",
+          "file_url": "3cd3a307-b7e5-4984-82d4-bf757e834afd/documents/8ee8bd3f-a8b3-4baa-aa55-68bd80897d88/doc1-1781086203949.pdf",
+          "file_size": 440,
+          "mime_type": "application/pdf",
+          "page_count": 1,
+          "checksum": null,
+          "storage_provider": "supabase",
+          "is_encrypted": false,
+          "created_at": "2026-06-10T10:10:09.320326+00:00",
+          "updated_at": "2026-06-10T10:10:09.320326+00:00",
+          "sender_signed_at": null,
+          "sender_signature_url": null,
+          "sender_signature_text": null,
+          "sender_user_id": null,
+          "signwell_document_id": null,
+          "signwell_status": null,
+          "signwell_sent_at": null,
+          "signwell_completed_at": null,
+          "sender_attestation_path": null,
+          "signwell_declined_at": null,
+          "signwell_dispatch_error": null,
+          "signwell_external_signer_count": null,
+          "signwell_signing_links": null
+        }
+      },
+      {
+        "table": "documents",
+        "row": {
+          "id": "dd28e79e-9773-45cb-8691-a49168701f7a",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "agreement_id": null,
+          "uploaded_by": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "file_name": "doc1-1781086203949.docx",
+          "original_name": "doc1-1781086203949.docx",
+          "file_url": "3cd3a307-b7e5-4984-82d4-bf757e834afd/documents/dd28e79e-9773-45cb-8691-a49168701f7a/doc1-1781086203949.docx",
+          "file_size": 30,
+          "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "page_count": 1,
+          "checksum": null,
+          "storage_provider": "supabase",
+          "is_encrypted": false,
+          "created_at": "2026-06-10T10:10:10.00595+00:00",
+          "updated_at": "2026-06-10T10:10:10.00595+00:00",
+          "sender_signed_at": null,
+          "sender_signature_url": null,
+          "sender_signature_text": null,
+          "sender_user_id": null,
+          "signwell_document_id": null,
+          "signwell_status": null,
+          "signwell_sent_at": null,
+          "signwell_completed_at": null,
+          "sender_attestation_path": null,
+          "signwell_declined_at": null,
+          "signwell_dispatch_error": null,
+          "signwell_external_signer_count": null,
+          "signwell_signing_links": null
+        }
+      },
+      {
+        "table": "documents",
+        "row": {
+          "id": "73a8867c-055f-4a86-a2f5-16ccd10760ae",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "agreement_id": null,
+          "uploaded_by": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "file_name": "doc1-1781086203949.png",
+          "original_name": "doc1-1781086203949.png",
+          "file_url": "3cd3a307-b7e5-4984-82d4-bf757e834afd/documents/73a8867c-055f-4a86-a2f5-16ccd10760ae/doc1-1781086203949.png",
+          "file_size": 70,
+          "mime_type": "image/png",
+          "page_count": 1,
+          "checksum": null,
+          "storage_provider": "supabase",
+          "is_encrypted": false,
+          "created_at": "2026-06-10T10:10:10.70904+00:00",
+          "updated_at": "2026-06-10T10:10:10.70904+00:00",
+          "sender_signed_at": null,
+          "sender_signature_url": null,
+          "sender_signature_text": null,
+          "sender_user_id": null,
+          "signwell_document_id": null,
+          "signwell_status": null,
+          "signwell_sent_at": null,
+          "signwell_completed_at": null,
+          "sender_attestation_path": null,
+          "signwell_declined_at": null,
+          "signwell_dispatch_error": null,
+          "signwell_external_signer_count": null,
+          "signwell_signing_links": null
+        }
+      }
+    ],
+    "api": [
+      {
+        "path": "/api/documents/send",
+        "status": 200,
+        "json": {
+          "success": true,
+          "signwellResult": {
+            "id": "05623133-e031-4935-a45f-4b8d653f4579",
+            "archived": false,
+            "created_at": "2026-06-10T10:10:37Z",
+            "decline_message": null,
+            "embedded_edit_url": "https://www.signwell.com/app/edit/document/1cc8cf17-b560-4a94-bec5-dc4519633517/",
+            "error_message": null,
+            "embedded_preview_url": null,
+            "language": "en",
+            "name": "doc1-1781086203949.pdf",
+            "requester_email_address": "nayramalik1018@gmail.com",
+            "status": "Created",
+            "test_mode": true,
+            "updated_at": "2026-06-10T10:10:37Z",
+            "allow_decline": true,
+            "allow_reassign": true,
+            "api_application_id": null,
+            "custom_requester_email": "nayramalik1018@gmail.com",
+            "custom_requester_name": null,
+            "decline_redirect_url": null,
+            "embedded_signing": false,
+            "expires_in": 30,
+            "metadata": {},
+            "redirect_url": null,
+            "reminders": false,
+            "apply_signing_order": false,
+            "message": "Please sign this test document.",
+            "subject": "DOC1 test sign",
+            "labels": [],
+            "fields": [
+              [
+                {
+                  "api_id": "signature_signer_1",
+                  "height": "40.0",
+                  "page": 1,
+                  "required": true,
+                  "type": "signature",
+                  "value": null,
+                  "width": "220.0",
+                  "x": 72,
+                  "y": 620,
+                  "recipient_id": "signer_1"
+                },
+                {
+                  "api_id": "date_signer_1",
+                  "height": "32.0",
+                  "page": 1,
+                  "required": true,
+                  "type": "date",
+                  "value": null,
+                  "width": "130.0",
+                  "x": 310,
+                  "y": 624,
+                  "date_format": "MM/DD/YYYY",
+                  "formula": "",
+                  "lock_sign_date": false,
+                  "recipient_id": "signer_1"
+                }
+              ],
+              []
+            ],
+            "files": [
+              {
+                "name": "doc1-1781086203949.pdf",
+                "pages_number": 0
+              },
+              {
+                "name": "Agent-Certification.pdf",
+                "pages_number": 0
+              }
+            ],
+            "copied_contacts": [],
+            "recipients": [
+              {
+                "email": "doc1.signer.1781086203949@immimate.au",
+                "id": "signer_1",
+                "message": null,
+                "name": "DOC1 Signer",
+                "passcode": null,
+                "send_email": false,
+                "send_email_delay": 0,
+                "status": "created",
+                "subject": null,
+                "signing_order": 1,
+                "signing_url": "https://www.signwell.com/docs/8d75318cea/",
+                "bounced": null,
+                "bounced_details": null,
+                "passcode_delivery": {
+                  "enabled": false,
+                  "methods": null,
+                  "expire_after_access": false
+                },
+                "attachment_requests": []
+              }
+            ],
+            "checkbox_groups": [],
+            "signers": [
+              {
+                "email": "doc1.signer.1781086203949@immimate.au",
+                "id": "signer_1",
+                "message": null,
+                "name": "DOC1 Signer",
+                "passcode": null,
+                "send_email": false,
+                "send_email_delay": 0,
+                "status": "created",
+                "subject": null,
+                "signing_order": 1,
+                "signing_url": "https://www.signwell.com/docs/8d75318cea/",
+                "bounced": null,
+                "bounced_details": null,
+                "passcode_delivery": {
+                  "enabled": false,
+                  "methods": null,
+                  "expire_after_access": false
+                },
+                "attachment_requests": []
+              }
+            ]
+          },
+          "signwellDocumentId": "05623133-e031-4935-a45f-4b8d653f4579",
+          "externalSignerCount": 1,
+          "senderAutoSigned": true,
+          "agentAttestationIncluded": true,
+          "signingLinks": [
+            {
+              "email": "doc1.signer.1781086203949@immimate.au",
+              "name": "DOC1 Signer",
+              "signing_url": "https://www.signwell.com/docs/8d75318cea/"
+            }
+          ],
+          "stages": [
+            {
+              "id": "document",
+              "label": "Creating document",
+              "status": "success",
+              "startedAt": "2026-06-10T10:10:29.217Z",
+              "completedAt": "2026-06-10T10:10:29.217Z",
+              "durationMs": 0
+            },
+            {
+              "id": "pdf",
+              "label": "Generating PDF",
+              "status": "success",
+              "startedAt": "2026-06-10T10:10:29.980Z",
+              "completedAt": "2026-06-10T10:10:32.647Z",
+              "durationMs": 2667
+            },
+            {
+              "id": "storage",
+              "label": "Uploading file",
+              "status": "success",
+              "startedAt": "2026-06-10T10:10:32.647Z",
+              "completedAt": "2026-06-10T10:10:32.647Z",
+              "durationMs": 0
+            },
+            {
+              "id": "signwell_draft",
+              "label": "Creating SignWell draft",
+              "status": "success",
+              "startedAt": "2026-06-10T10:10:32.843Z",
+              "completedAt": "2026-06-10T10:10:37.496Z",
+              "durationMs": 4653
+            },
+            {
+              "id": "email",
+              "label": "Sending email",
+              "status": "success",
+              "startedAt": "2026-06-10T10:10:37.496Z",
+              "completedAt": "2026-06-10T10:10:37.497Z",
+              "durationMs": 1
+            },
+            {
+              "id": "confirm",
+              "label": "Waiting confirmation",
+              "status": "success",
+              "startedAt": "2026-06-10T10:10:37.497Z",
+              "completedAt": "2026-06-10T10:10:37.497Z",
+              "durationMs": 0
+            },
+            {
+              "id": "records",
+              "label": "Updating records",
+              "status": "success",
+              "startedAt": "2026-06-10T10:10:37.497Z",
+              "completedAt": "2026-06-10T10:10:38.034Z",
+              "durationMs": 537
+            },
+            {
+              "id": "notification",
+              "label": "Creating notification",
+              "status": "success",
+              "startedAt": "2026-06-10T10:10:38.249Z",
+              "completedAt": "2026-06-10T10:10:39.751Z",
+              "durationMs": 1502
+            }
+          ],
+          "supportRef": "DOC-MQ7WR5GS",
+          "signwellTestMode": true,
+          "emailDispatched": true,
+          "emailNote": "SignWell test mode — emails are not delivered to real inboxes",
+          "recipientEmails": [
+            "doc1.signer.1781086203949@immimate.au"
+          ],
+          "message": "Agent certification is stored separately. Only external signers receive SignWell requests on the uploaded document."
+        }
+      }
+    ],
+    "storage": [
+      {
+        "download": {
+          "status": 200,
+          "bytes": 440
+        }
+      }
+    ],
+    "screenshots": [
+      "doc-view-pdf.png",
+      "doc-preview-image.png",
+      "library-list.png",
+      "doc-sent.png",
+      "library-search.png"
+    ],
+    "uploads": [
+      {
+        "id": "8ee8bd3f-a8b3-4baa-aa55-68bd80897d88",
+        "storagePath": "3cd3a307-b7e5-4984-82d4-bf757e834afd/documents/8ee8bd3f-a8b3-4baa-aa55-68bd80897d88/doc1-1781086203949.pdf",
+        "size": 440,
+        "mime": "application/pdf"
+      },
+      {
+        "id": "dd28e79e-9773-45cb-8691-a49168701f7a",
+        "storagePath": "3cd3a307-b7e5-4984-82d4-bf757e834afd/documents/dd28e79e-9773-45cb-8691-a49168701f7a/doc1-1781086203949.docx",
+        "size": 30,
+        "mime": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      },
+      {
+        "id": "73a8867c-055f-4a86-a2f5-16ccd10760ae",
+        "storagePath": "3cd3a307-b7e5-4984-82d4-bf757e834afd/documents/73a8867c-055f-4a86-a2f5-16ccd10760ae/doc1-1781086203949.png",
+        "size": 70,
+        "mime": "image/png"
+      }
+    ]
+  },
+  "verdict": "PASS"
+}

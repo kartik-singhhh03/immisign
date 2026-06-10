@@ -35,7 +35,7 @@ export function ApplicationApprovalsHomePage() {
         description="Secure visa lodgement approvals and verification workflows."
         action={
           <Link href={`/workspace/${currentSlug}/application-approvals/new`}>
-            <Button className="rounded-xl bg-[#0D9F8C] font-bold hover:bg-[#0A5B52]">
+            <Button className="rounded-xl bg-[#111111] font-bold hover:bg-[#222222]">
               <Plus className="mr-2 h-4 w-4" />
               New Approval Request
             </Button>
@@ -46,7 +46,7 @@ export function ApplicationApprovalsHomePage() {
       <div className="mb-6 flex flex-col gap-3 md:flex-row">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-          <Input placeholder="Search client or ID..." className="h-10 rounded-xl border-slate-200 bg-white/70 pl-11 focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" />
+          <Input placeholder="Search client or ID..." className="h-10 rounded-xl border-slate-200 bg-white/70 pl-11 focus-visible:ring-1 focus-visible:ring-[#111111]" />
         </div>
         <Button variant="outline" className="h-10 rounded-xl bg-white/70">
           <Filter className="mr-2 h-4 w-4 text-slate-500" />
@@ -73,7 +73,7 @@ export function ApplicationApprovalsHomePage() {
               className="grid grid-cols-[1.5fr_1fr_1fr_1.2fr_0.3fr] items-center px-6 py-4 hover:bg-slate-50 transition-colors group cursor-pointer"
             >
               <div>
-                <div className="font-bold text-slate-900 group-hover:text-[#0D9F8C] transition-colors">{approval.client}</div>
+                <div className="font-bold text-slate-900 group-hover:text-[#111111] transition-colors">{approval.client}</div>
                 <div className="text-xs font-semibold text-slate-500">{approval.type} • {approval.id}</div>
               </div>
               <div className="flex items-center gap-2">
@@ -84,7 +84,7 @@ export function ApplicationApprovalsHomePage() {
               </div>
               <div>
                 <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold leading-5 ${
-                  approval.status === 'approved' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                  approval.status === 'approved' ? 'bg-[#FAFAFA] text-[#111111] border border-[#E7E7E7]' :
                   approval.status === 'under_review' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
                   'bg-blue-50 text-blue-700 border border-blue-200'
                 }`}>
@@ -152,21 +152,23 @@ export function NewApplicationApprovalPage() {
         <ChevronLeft className="mr-1 h-4 w-4" /> Back to Approvals
       </Link>
       
-      <div className="mb-8">
-        <h1 className="text-3xl font-black text-slate-900">New Lodgement Approval</h1>
-        <p className="mt-2 text-slate-500 font-medium">Configure secure client verification and approval for lodgement.</p>
-      </div>
+      <PageHeader
+        variant="wizard"
+        eyebrow="Workflow"
+        title="New Lodgement Approval"
+        description="Configure secure client verification and approval for lodgement."
+      />
 
       <div className="flex gap-2 mb-8">
         {[1,2,3,4].map((s) => (
-          <div key={s} className={`h-2 flex-1 rounded-full ${s <= step ? 'bg-[#0D9F8C]' : 'bg-slate-200'}`} />
+          <div key={s} className={`h-2 flex-1 rounded-full ${s <= step ? 'bg-[#111111]' : 'bg-slate-200'}`} />
         ))}
       </div>
 
       <Card className="border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl overflow-hidden">
         {step === 1 && (
           <div className="p-8">
-            <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><FileText className="text-[#0D9F8C] h-5 w-5"/> Application Details</h2>
+            <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><FileText className="text-[#111111] h-5 w-5"/> Application Details</h2>
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="text-sm font-bold text-slate-700">Application Title</label>
@@ -210,7 +212,7 @@ export function NewApplicationApprovalPage() {
 
         {step === 2 && (
           <div className="p-8">
-            <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><UploadCloud className="text-[#0D9F8C] h-5 w-5"/> Document Upload</h2>
+            <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><UploadCloud className="text-[#111111] h-5 w-5"/> Document Upload</h2>
             <div className="border-2 border-dashed border-slate-300 rounded-2xl p-12 text-center bg-slate-50/50 hover:bg-slate-50 transition-colors cursor-pointer">
               <UploadCloud className="h-10 w-10 text-slate-400 mx-auto mb-4" />
               <h3 className="font-bold text-slate-700 text-lg">Drag & drop application documents</h3>
@@ -222,30 +224,30 @@ export function NewApplicationApprovalPage() {
 
         {step === 3 && (
           <div className="p-8">
-            <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><CheckCircle2 className="text-[#0D9F8C] h-5 w-5"/> Client Verification Requirements</h2>
+            <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><CheckCircle2 className="text-[#111111] h-5 w-5"/> Client Verification Requirements</h2>
             <div className="space-y-4">
               <div className="flex items-start gap-4 p-4 border border-slate-200 rounded-xl bg-slate-50">
-                <div className="mt-1"><Check className="h-5 w-5 text-[#0D9F8C]"/></div>
+                <div className="mt-1"><Check className="h-5 w-5 text-[#111111]"/></div>
                 <div>
                   <h4 className="font-bold text-slate-900">Personal Details Confirmation</h4>
                   <p className="text-sm text-slate-500 leading-tight mt-1">Client must verify passport, address, and contact details are correct in the final forms.</p>
                 </div>
               </div>
               <div className="flex items-start gap-4 p-4 border border-slate-200 rounded-xl bg-slate-50">
-                <div className="mt-1"><Check className="h-5 w-5 text-[#0D9F8C]"/></div>
+                <div className="mt-1"><Check className="h-5 w-5 text-[#111111]"/></div>
                 <div>
                   <h4 className="font-bold text-slate-900">Lodgement Authorization Declaration</h4>
                   <p className="text-sm text-slate-500 leading-tight mt-1">Client declares they authorize the migration agency to submit the application to the Department of Home Affairs.</p>
                 </div>
               </div>
-              <Button variant="ghost" className="text-[#0D9F8C] font-bold"><Plus className="mr-2 h-4 w-4"/> Add Custom Declaration</Button>
+              <Button variant="ghost" className="text-[#111111] font-bold"><Plus className="mr-2 h-4 w-4"/> Add Custom Declaration</Button>
             </div>
           </div>
         )}
 
         {step === 4 && (
           <div className="p-8 text-center">
-             <ShieldCheck className="h-16 w-16 text-[#0D9F8C] mx-auto mb-4" />
+             <ShieldCheck className="h-16 w-16 text-[#111111] mx-auto mb-4" />
              <h2 className="text-2xl font-black mb-2">Ready to Send for Approval</h2>
              <p className="text-slate-500 max-w-md mx-auto mb-8">A secure link will be emailed to {formData.clientEmail || 'the client'}. They will be guided through a verified review experience to authorize the lodgement.</p>
           </div>
@@ -254,9 +256,9 @@ export function NewApplicationApprovalPage() {
         <div className="bg-slate-50 border-t border-slate-200 p-6 flex justify-between items-center">
           <Button variant="ghost" onClick={() => setStep(step > 1 ? step - 1 : 1)} disabled={step === 1}>Back</Button>
           {step < 4 ? (
-            <Button onClick={handleNext} className="bg-[#0D9F8C] font-bold hover:bg-[#0A5B52]">Next Step <ChevronLeft className="ml-2 h-4 w-4 rotate-180" /></Button>
+            <Button onClick={handleNext} className="bg-[#111111] font-bold hover:bg-[#222222]">Next Step <ChevronLeft className="ml-2 h-4 w-4 rotate-180" /></Button>
           ) : (
-            <Button onClick={handleFinish} className="bg-[#0D9F8C] font-bold hover:bg-[#0A5B52]">Send for Approval <Send className="ml-2 h-4 w-4" /></Button>
+            <Button onClick={handleFinish} className="bg-[#111111] font-bold hover:bg-[#222222]">Send for Approval <Send className="ml-2 h-4 w-4" /></Button>
           )}
         </div>
       </Card>
@@ -292,38 +294,37 @@ export function ApplicationApprovalDetailPage({ id }: { id: string }) {
         <ChevronLeft className="mr-1 h-4 w-4" /> Back to Approvals
       </Link>
       
-      <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-8">
-        <div>
-          <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-3xl font-black text-slate-900">{approval.client}</h1>
+      <PageHeader
+        eyebrow="Application Approval"
+        title={approval.client}
+        description={`${approval.title} • ${approval.type} • ${approval.id}`}
+        action={
+          <div className="flex flex-wrap items-center gap-3">
             <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold leading-5 ${
-              isApproved ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
-              approval.status === 'under_review' || approval.status === 'Pending Review' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
-              'bg-blue-50 text-blue-700 border border-blue-200'
+              isApproved ? "bg-[#FAFAFA] text-[#111111] border border-[#E7E7E7]" :
+              approval.status === "under_review" || approval.status === "Pending Review" ? "bg-amber-50 text-amber-700 border border-amber-200" :
+              "bg-[#FAFAFA] text-[#5C5C5C] border border-[#E7E7E7]"
             }`}>
-              {approval.status.replace('_', ' ').toUpperCase()}
+              {approval.status.replace("_", " ").toUpperCase()}
             </span>
-          </div>
-          <p className="text-slate-500 font-medium">{approval.title} • {approval.type} • {approval.id}</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Button variant="outline" className="font-bold border-slate-200">
-            <Mail className="mr-2 h-4 w-4 text-slate-400" /> Reminder
-          </Button>
-          {!isApproved && (
-            <Button className="bg-slate-900 text-white font-bold hover:bg-slate-800">
-              <Eye className="mr-2 h-4 w-4" /> View Portal
+            <Button variant="outline" className="font-bold border-slate-200">
+              <Mail className="mr-2 h-4 w-4 text-slate-400" /> Reminder
             </Button>
-          )}
-        </div>
-      </div>
+            {!isApproved && (
+              <Button className="bg-[#111111] text-white font-bold hover:bg-[#222222]">
+                <Eye className="mr-2 h-4 w-4" /> View Portal
+              </Button>
+            )}
+          </div>
+        }
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2 space-y-6">
           <Card className="border-slate-200/60 shadow-sm rounded-2xl overflow-hidden">
             <CardContent className="p-6">
               <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-slate-900">
-                <FileText className="h-5 w-5 text-[#0D9F8C]"/> Application Documents
+                <FileText className="h-5 w-5 text-[#111111]"/> Application Documents
               </h2>
               <div className="space-y-3">
                 {documents.map((doc: any) => (
@@ -337,7 +338,7 @@ export function ApplicationApprovalDetailPage({ id }: { id: string }) {
                         <p className="text-xs text-slate-500 font-medium">{(doc.size / 1024 / 1024).toFixed(2)} MB • PDF</p>
                       </div>
                     </div>
-                    <Button variant="ghost" size="sm" className="text-[#0D9F8C] font-bold text-xs uppercase tracking-wider">Preview</Button>
+                    <Button variant="ghost" size="sm" className="text-[#111111] font-bold text-xs uppercase tracking-wider">Preview</Button>
                   </div>
                 ))}
                 {documents.length === 0 && (
@@ -357,16 +358,16 @@ export function ApplicationApprovalDetailPage({ id }: { id: string }) {
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-bold flex items-center gap-2 text-slate-900">
-                  <ShieldCheck className="h-5 w-5 text-[#0D9F8C]"/> Client Verification
+                  <ShieldCheck className="h-5 w-5 text-[#111111]"/> Client Verification
                 </h2>
-                <span className="text-sm font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-100">
+                <span className="text-sm font-bold text-[#5C5C5C] bg-[#FAFAFA] px-2.5 py-1 rounded-lg border border-[#E7E7E7]">
                   {verifiedPercentage}% Completed
                 </span>
               </div>
               <div className="space-y-3">
                 {verificationChecklist.map((item: any) => (
                   <div key={item.id} className="flex items-start gap-3 p-3 border border-slate-100 rounded-xl bg-white">
-                    <div className={`mt-0.5 flex-shrink-0 h-5 w-5 rounded-full flex items-center justify-center ${item.isCompleted ? 'bg-[#0D9F8C] text-white' : 'bg-slate-100 border border-slate-200 text-transparent'}`}>
+                    <div className={`mt-0.5 flex-shrink-0 h-5 w-5 rounded-full flex items-center justify-center ${item.isCompleted ? 'bg-[#111111] text-white' : 'bg-slate-100 border border-slate-200 text-transparent'}`}>
                       <Check className="h-3 w-3" />
                     </div>
                     <div>

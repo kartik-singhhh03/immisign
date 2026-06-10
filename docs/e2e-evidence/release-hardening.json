@@ -1,0 +1,282 @@
+{
+  "results": [
+    {
+      "part": "SETUP",
+      "check": "AUTH",
+      "status": "PASS",
+      "msg": "nayramalik1018@gmail.com",
+      "detail": {},
+      "ts": "2026-06-10T11:58:08.137Z"
+    },
+    {
+      "part": "EMAIL-AUDIT-1",
+      "check": "TABLE-EXISTS",
+      "status": "PASS",
+      "msg": "ok",
+      "detail": {},
+      "ts": "2026-06-10T11:58:09.675Z"
+    },
+    {
+      "part": "EMAIL-AUDIT-1",
+      "check": "DB-BEFORE",
+      "status": "PASS",
+      "msg": "total_rows=81",
+      "detail": {},
+      "ts": "2026-06-10T11:58:09.917Z"
+    },
+    {
+      "part": "EMAIL-AUDIT-1",
+      "check": "FLOW-GENERAL",
+      "status": "PASS",
+      "msg": "resend_id=14ca1a09-306e-4884-bc0d-15643083f152 audit_id=e8ac0766-dee3-4bb8-a4d2-ba3cb7ebce13",
+      "detail": {},
+      "ts": "2026-06-10T11:58:15.562Z"
+    },
+    {
+      "part": "EMAIL-AUDIT-1",
+      "check": "FLOW-INVITE",
+      "status": "PASS",
+      "msg": "team_invite status=sent",
+      "detail": {},
+      "ts": "2026-06-10T11:58:33.150Z"
+    },
+    {
+      "part": "EMAIL-AUDIT-1",
+      "check": "FLOW-NOTIFICATION",
+      "status": "PASS",
+      "msg": "status=accepted",
+      "detail": {},
+      "ts": "2026-06-10T11:58:35.659Z"
+    },
+    {
+      "part": "EMAIL-AUDIT-1",
+      "check": "FLOW-PASSWORD-RESET",
+      "status": "PASS",
+      "msg": "INTENTIONAL: Supabase Auth recovery (For security purposes, you can only request this after 31 seconds.) — not audited via Resend",
+      "detail": {},
+      "ts": "2026-06-10T11:58:35.867Z"
+    },
+    {
+      "part": "EMAIL-AUDIT-1",
+      "check": "AUDIT-FIELDS",
+      "status": "PASS",
+      "msg": "complete",
+      "detail": {},
+      "ts": "2026-06-10T11:58:35.868Z"
+    },
+    {
+      "part": "EMAIL-AUDIT-1",
+      "check": "DB-AUDIT-ROWS",
+      "status": "PASS",
+      "msg": "agency=67 total=84",
+      "detail": {},
+      "ts": "2026-06-10T11:58:36.272Z"
+    },
+    {
+      "part": "SIGNATURE-PERSISTENCE-1",
+      "check": "TARGET-AGREEMENT",
+      "status": "PASS",
+      "msg": "33a454ab-3ec3-4cb3-8788-817bf6dcc93a doc=254bde7c-6d5b-48f5-b84d-a6a71bb70486",
+      "detail": {},
+      "ts": "2026-06-10T11:58:36.491Z"
+    },
+    {
+      "part": "SIGNATURE-PERSISTENCE-1",
+      "check": "WEBHOOK-VIEWED",
+      "status": "PASS",
+      "msg": "status=200",
+      "detail": {},
+      "ts": "2026-06-10T11:58:49.757Z"
+    },
+    {
+      "part": "SIGNATURE-PERSISTENCE-1",
+      "check": "WEBHOOK-COMPLETED",
+      "status": "PASS",
+      "msg": "status=200",
+      "detail": {},
+      "ts": "2026-06-10T11:59:00.244Z"
+    },
+    {
+      "part": "SIGNATURE-PERSISTENCE-1",
+      "check": "SIGNATURE-ROW",
+      "status": "PASS",
+      "msg": "agr2.prod.1781084968345@immimate.au provider=signwell",
+      "detail": {},
+      "ts": "2026-06-10T11:59:03.021Z"
+    },
+    {
+      "part": "SIGNATURE-PERSISTENCE-1",
+      "check": "WEBHOOK-EVENT-ID",
+      "status": "PASS",
+      "msg": "linked",
+      "detail": {},
+      "ts": "2026-06-10T11:59:03.021Z"
+    },
+    {
+      "part": "SIGNATURE-PERSISTENCE-1",
+      "check": "IDEMPOTENCY",
+      "status": "PASS",
+      "msg": "1 → 1",
+      "detail": {},
+      "ts": "2026-06-10T11:59:10.172Z"
+    },
+    {
+      "part": "GITHUB-SECRETS-1",
+      "check": "TRACKED-SECRETS",
+      "status": "PASS",
+      "msg": "0 literal secret values in src/",
+      "detail": {},
+      "ts": "2026-06-10T11:59:10.447Z"
+    },
+    {
+      "part": "GITHUB-SECRETS-1",
+      "check": "GITIGNORE-ENV",
+      "status": "PASS",
+      "msg": ".env.local and .env.production ignored",
+      "detail": {},
+      "ts": "2026-06-10T11:59:10.447Z"
+    },
+    {
+      "part": "GITHUB-SECRETS-1",
+      "check": "COMMITTED-ENV-FILES",
+      "status": "PASS",
+      "msg": ".env.example,.env.production.example",
+      "detail": {},
+      "ts": "2026-06-10T11:59:10.448Z"
+    },
+    {
+      "part": "VERCEL-HARDENING-1",
+      "check": "NO-HARDCODED-LOCALHOST",
+      "status": "PASS",
+      "msg": "dev fallbacks gated by NODE_ENV in allowlist",
+      "detail": {},
+      "ts": "2026-06-10T11:59:10.579Z"
+    },
+    {
+      "part": "VERCEL-HARDENING-1",
+      "check": "APP-URL-ENV",
+      "status": "PASS",
+      "msg": "http://localhost:3000",
+      "detail": {},
+      "ts": "2026-06-10T11:59:10.579Z"
+    },
+    {
+      "part": "BUILD-READY",
+      "check": "NPM-BUILD",
+      "status": "PASS",
+      "msg": "exit=0",
+      "detail": {},
+      "ts": "2026-06-10T11:59:53.929Z"
+    },
+    {
+      "part": "FINAL-CHECK",
+      "check": "PAG-1",
+      "status": "PASS",
+      "msg": "scripts/pag1-verify.mjs",
+      "detail": {},
+      "ts": "2026-06-10T12:04:47.920Z"
+    },
+    {
+      "part": "FINAL-CHECK",
+      "check": "MOCK-1",
+      "status": "PASS",
+      "msg": "scripts/mock1-verify.mjs",
+      "detail": {},
+      "ts": "2026-06-10T12:05:33.789Z"
+    }
+  ],
+  "evidence": {
+    "email": [
+      {
+        "id": "d98a611f-71af-4aa9-ae93-5a0aec6915aa",
+        "recipient": "hardening.invite.1781092687006@immimate.au",
+        "resend_id": "fa56d35c-0230-4611-9036-35857648041f",
+        "email_type": "team_invite",
+        "status": "sent",
+        "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+        "created_at": "2026-06-10T11:58:30.385495+00:00"
+      },
+      {
+        "flows": [
+          {
+            "flow": "general_notification",
+            "api": "/api/debug/resend/send-test",
+            "resendId": "14ca1a09-306e-4884-bc0d-15643083f152",
+            "auditId": "e8ac0766-dee3-4bb8-a4d2-ba3cb7ebce13",
+            "ok": "e8ac0766-dee3-4bb8-a4d2-ba3cb7ebce13"
+          },
+          {
+            "flow": "team_invite",
+            "audit": {
+              "id": "d98a611f-71af-4aa9-ae93-5a0aec6915aa",
+              "recipient": "hardening.invite.1781092687006@immimate.au",
+              "resend_id": "fa56d35c-0230-4611-9036-35857648041f",
+              "email_type": "team_invite",
+              "status": "sent",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "created_at": "2026-06-10T11:58:30.385495+00:00"
+            },
+            "inviteOk": true
+          }
+        ],
+        "agencyCount": 67,
+        "totalCount": 84
+      }
+    ],
+    "signatures": [
+      {
+        "id": "6d357c42-dedb-4e7d-a6a9-a4a81d973ab7",
+        "agreement_id": "33a454ab-3ec3-4cb3-8788-817bf6dcc93a",
+        "signer_role": "client",
+        "signwell_signer_id": null,
+        "signing_url": null,
+        "signed_at": "2026-06-10T09:50:32.466+00:00",
+        "ip_address": null,
+        "created_at": "2026-06-10T09:50:38.757856+00:00",
+        "updated_at": "2026-06-10T09:50:38.757856+00:00",
+        "signer_id": null,
+        "signer_email": "agr2.prod.1781084968345@immimate.au",
+        "provider": "signwell",
+        "provider_document_id": "254bde7c-6d5b-48f5-b84d-a6a71bb70486",
+        "webhook_event_id": "a379513e-7b33-44a3-ab50-edef7c357aac"
+      }
+    ],
+    "secrets": [],
+    "build": {
+      "exitCode": 0,
+      "stderr": " \"Route /api/security/sessions couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error\",\n  digest: 'DYNAMIC_SERVER_USAGE'\n}\n[API] GET /api/stripe/usage n [Error]: Dynamic server usage: Route /api/stripe/usage couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error\n    at l (C:\\Users\\Lenovo\\Desktop\\immisign\\.next\\server\\chunks\\8948.js:1:37220)\n    at f (C:\\Users\\Lenovo\\Desktop\\immisign\\.next\\server\\chunks\\6400.js:23:9497)\n    at s (C:\\Users\\Lenovo\\Desktop\\immisign\\.next\\server\\chunks\\8830.js:1:9757)\n    at i (C:\\Users\\Lenovo\\Desktop\\immisign\\.next\\server\\app\\api\\agreements\\route.js:1:2947)\n    at C:\\Users\\Lenovo\\Desktop\\immisign\\.next\\server\\app\\api\\stripe\\usage\\route.js:1:916\n    at o (C:\\Users\\Lenovo\\Desktop\\immisign\\.next\\server\\app\\api\\agreements\\route.js:1:1914)\n    at p (C:\\Users\\Lenovo\\Desktop\\immisign\\.next\\server\\app\\api\\stripe\\usage\\route.js:1:856)\n    at C:\\Users\\Lenovo\\Desktop\\immisign\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:6:38417\n    at C:\\Users\\Lenovo\\Desktop\\immisign\\node_modules\\next\\dist\\server\\lib\\trace\\tracer.js:140:36\n    at NoopContextManager.with (C:\\Users\\Lenovo\\Desktop\\immisign\\node_modules\\next\\dist\\compiled\\@opentelemetry\\api\\index.js:1:7062) {\n  description: \"Route /api/stripe/usage couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error\",\n  digest: 'DYNAMIC_SERVER_USAGE'\n}\n[API] GET /api/stripe/billing n [Error]: Dynamic server usage: Route /api/stripe/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error\n    at l (C:\\Users\\Lenovo\\Desktop\\immisign\\.next\\server\\chunks\\8948.js:1:37220)\n    at f (C:\\Users\\Lenovo\\Desktop\\immisign\\.next\\server\\chunks\\6400.js:23:9497)\n    at n (C:\\Users\\Lenovo\\Desktop\\immisign\\.next\\server\\app\\api\\agreements\\preview-pdf\\route.js:1:2687)\n    at n (C:\\Users\\Lenovo\\Desktop\\immisign\\.next\\server\\app\\api\\activity\\route.js:1:2826)\n    at C:\\Users\\Lenovo\\Desktop\\immisign\\.next\\server\\app\\api\\stripe\\billing\\route.js:1:1131\n    at o (C:\\Users\\Lenovo\\Desktop\\immisign\\.next\\server\\app\\api\\activity\\route.js:1:2565)\n    at m (C:\\Users\\Lenovo\\Desktop\\immisign\\.next\\server\\app\\api\\stripe\\billing\\route.js:1:1069)\n    at C:\\Users\\Lenovo\\Desktop\\immisign\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:6:38417\n    at C:\\Users\\Lenovo\\Desktop\\immisign\\node_modules\\next\\dist\\server\\lib\\trace\\tracer.js:140:36\n    at NoopContextManager.with (C:\\Users\\Lenovo\\Desktop\\immisign\\node_modules\\next\\dist\\compiled\\@opentelemetry\\api\\index.js:1:7062) {\n  description: \"Route /api/stripe/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error\",\n  digest: 'DYNAMIC_SERVER_USAGE'\n}\n",
+      "stdoutTail": "                                       193 B           121 kB\n├ ○ /verify-email                                                   3.13 kB         109 kB\n├ ƒ /workspace/[agency]/[[...path]]                                 7.7 kB          280 kB\n├ ƒ /workspace/[agency]/activity                                    2.6 kB         99.4 kB\n├ ƒ /workspace/[agency]/agreements                                  4.14 kB         225 kB\n├ ƒ /workspace/[agency]/agreements/[id]                             10.4 kB         107 kB\n├ ƒ /workspace/[agency]/agreements/new                              22.8 kB         184 kB\n├ ƒ /workspace/[agency]/approvals                                   8.47 kB         166 kB\n├ ƒ /workspace/[agency]/approvals/[id]                              8.74 kB         114 kB\n├ ƒ /workspace/[agency]/approvals/new                               5.48 kB         141 kB\n├ ƒ /workspace/[agency]/billing                                     8.14 kB         105 kB\n├ ƒ /workspace/[agency]/dashboard                                   11.7 kB         117 kB\n├ ƒ /workspace/[agency]/documents                                   7.74 kB         201 kB\n├ ƒ /workspace/[agency]/file-notes                                  4.67 kB         110 kB\n├ ƒ /workspace/[agency]/notifications                               7.56 kB         179 kB\n├ ƒ /workspace/[agency]/service-statements/[id]                     147 B           117 kB\n├ ƒ /workspace/[agency]/service-statements/new                      147 B           117 kB\n└ ƒ /workspace/[agency]/settings                                    18.7 kB         250 kB\n+ First Load JS shared by all                                       88.2 kB\n  ├ chunks/2117-1a29d3e533e5b2b3.js                                 31.9 kB\n  ├ chunks/fd9d1056-4c7c47cd4dd0ca36.js                             53.6 kB\n  └ other shared chunks (total)                                     2.68 kB\n\n\n○  (Static)   prerendered as static content\nƒ  (Dynamic)  server-rendered on demand\n\n"
+    },
+    "vercel": [],
+    "subprocess": [
+      {
+        "name": "PAG-1",
+        "ok": true
+      },
+      {
+        "name": "MOCK-1",
+        "ok": true
+      }
+    ]
+  },
+  "verdict": "PASS",
+  "vercelEnvVars": [
+    "NEXT_PUBLIC_APP_URL",
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SIGNWELL_API_KEY",
+    "SIGNWELL_WEBHOOK_ID",
+    "SIGNWELL_WEBHOOK_SECRET",
+    "SIGNWELL_BASE_URL",
+    "STRIPE_SECRET_KEY",
+    "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
+    "STRIPE_WEBHOOK_SECRET",
+    "STRIPE_IMMISIGN_BASE_PRICE_ID",
+    "STRIPE_IMMISIGN_SEAT_PRICE_ID",
+    "RESEND_API_KEY",
+    "RESEND_FROM_EMAIL",
+    "CRON_SECRET",
+    "NODE_ENV=production"
+  ]
+}

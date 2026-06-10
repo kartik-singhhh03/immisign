@@ -56,7 +56,7 @@ export function SettingsListEditor({ items, loading, placeholder, disabled, onAd
             placeholder={placeholder}
             className="h-11 rounded-xl border-slate-200"
           />
-          <Button type="button" onClick={handleAdd} disabled={saving} className="rounded-xl bg-[#0D9F8C] font-bold hover:bg-[#0A5B52]">
+          <Button type="button" onClick={handleAdd} disabled={saving} className="rounded-xl bg-[#111111] font-bold hover:bg-[#222222]">
             <Plus className="h-4 w-4 mr-1" /> Add
           </Button>
         </div>
@@ -130,7 +130,7 @@ export function AgencyProfilePanel({
         </label>
       </div>
       {!disabled && (
-        <Button type="submit" className="rounded-xl bg-[#0D9F8C] font-bold hover:bg-[#0A5B52]">Save Settings</Button>
+        <Button type="submit" className="rounded-xl bg-[#111111] font-bold hover:bg-[#222222]">Save Settings</Button>
       )}
     </form>
   )
@@ -177,7 +177,7 @@ function RmaSignatureEditor({
           type="button"
           disabled={disabled}
           onClick={() => setMode('typed')}
-          className={`rounded-lg px-3 py-1.5 text-xs font-bold ${mode === 'typed' ? 'bg-[#0D9F8C] text-white' : 'bg-white border border-slate-200 text-slate-600'}`}
+          className={`rounded-lg px-3 py-1.5 text-xs font-bold ${mode === 'typed' ? 'bg-[#111111] text-white' : 'bg-white border border-slate-200 text-slate-600'}`}
         >
           Typed Signature
         </button>
@@ -185,7 +185,7 @@ function RmaSignatureEditor({
           type="button"
           disabled={disabled}
           onClick={() => setMode('upload')}
-          className={`rounded-lg px-3 py-1.5 text-xs font-bold ${mode === 'upload' ? 'bg-[#0D9F8C] text-white' : 'bg-white border border-slate-200 text-slate-600'}`}
+          className={`rounded-lg px-3 py-1.5 text-xs font-bold ${mode === 'upload' ? 'bg-[#111111] text-white' : 'bg-white border border-slate-200 text-slate-600'}`}
         >
           Uploaded Signature
         </button>
@@ -200,7 +200,7 @@ function RmaSignatureEditor({
             className="h-10 rounded-lg text-sm font-semibold"
             style={{ fontFamily: "'Brush Script MT', cursive" }}
           />
-          <Button type="button" size="sm" disabled={disabled || saving} onClick={() => void handleSave()} className="rounded-lg bg-[#0D9F8C] text-xs font-bold">
+          <Button type="button" size="sm" disabled={disabled || saving} onClick={() => void handleSave()} className="rounded-lg bg-[#111111] text-xs font-bold">
             {saving ? 'Saving...' : 'Save typed signature'}
           </Button>
         </div>
@@ -217,7 +217,7 @@ function RmaSignatureEditor({
             }}
           />
           {rma.signature_mode === 'upload' && (
-            <p className="text-[10px] text-emerald-700 font-semibold">Uploaded signature on file</p>
+            <p className="text-[10px] text-[#111111] font-semibold">Uploaded signature on file</p>
           )}
         </div>
       )}
@@ -264,7 +264,7 @@ export function RmaTeamPanel({
     <div className="space-y-6">
       {!disabled && membersWithoutRma.length > 0 && (
         <div className="rounded-xl border border-slate-200 p-4 space-y-3">
-          <h4 className="text-xs font-bold text-[#081B2E]">Add RMA</h4>
+          <h4 className="text-xs font-bold text-[#111111]">Add RMA</h4>
           <div className="grid gap-3 md:grid-cols-4">
             <select value={selectedUserId} onChange={(e) => setSelectedUserId(e.target.value)} className="h-11 rounded-xl border border-slate-200 px-3 text-sm">
               <option value="">Select team member...</option>
@@ -274,7 +274,7 @@ export function RmaTeamPanel({
             </select>
             <DigitsInput value={marn} onChange={setMarn} maxDigits={7} placeholder="MARN (7 digits)" className="h-11 rounded-xl" />
             <PhoneInput value={phone} onChange={setPhone} placeholder="Phone" className="h-11 rounded-xl" />
-            <Button type="button" onClick={handleAdd} className="rounded-xl bg-[#0D9F8C] font-bold"><Plus className="h-4 w-4 mr-1" /> Add RMA</Button>
+            <Button type="button" onClick={handleAdd} className="rounded-xl bg-[#111111] font-bold"><Plus className="h-4 w-4 mr-1" /> Add RMA</Button>
           </div>
         </div>
       )}
@@ -287,13 +287,13 @@ export function RmaTeamPanel({
             <div key={rma.id} className="rounded-xl border border-slate-200 bg-white p-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <div className="font-bold text-[#081B2E]">{rma.users?.full_name}</div>
+                  <div className="font-bold text-[#111111]">{rma.users?.full_name}</div>
                   <div className="text-xs text-slate-500 mt-1">MARN: {rma.mara_number} · {rma.users?.email}</div>
                   {rma.phone && <div className="text-xs text-slate-500">{rma.phone}</div>}
                   <div className="flex gap-2 mt-2">
-                    {rma.is_default && <span className="rounded bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">Default</span>}
+                    {rma.is_default && <span className="rounded bg-[#FAFAFA] px-2 py-0.5 text-[10px] font-bold text-[#111111]">Default</span>}
                     <span className="rounded bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600 capitalize">{rma.rma_tier || "associate"}</span>
-                    <span className={`rounded px-2 py-0.5 text-[10px] font-bold capitalize ${rma.rma_status === "active" ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-600"}`}>
+                    <span className={`rounded px-2 py-0.5 text-[10px] font-bold capitalize ${rma.rma_status === "active" ? "bg-[#FAFAFA] text-[#111111]" : "bg-slate-100 text-slate-600"}`}>
                       {rma.rma_status || "active"}
                     </span>
                   </div>
@@ -325,6 +325,52 @@ export function RmaTeamPanel({
         </div>
       )}
     </div>
+  )
+}
+
+export function FinancialSettingsPanel({
+  defaults,
+  disabled,
+  onSave,
+}: {
+  defaults: any
+  disabled?: boolean
+  onSave: (updates: Record<string, unknown>) => Promise<void>
+}) {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const fd = new FormData(e.currentTarget)
+    const raw = String(fd.get("surcharge") || "").trim()
+    await onSave({
+      card_processing_surcharge_percent: raw === "" ? null : parseFloat(raw),
+    })
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-md">
+      <label className="grid gap-2 text-xs font-bold text-slate-500">
+        Card Processing Surcharge %
+        <p className="text-[11px] font-normal text-slate-400">
+          Applied to visa/government fees during client onboarding. Leave empty until your agency configures a rate.
+        </p>
+        <Input
+          name="surcharge"
+          type="number"
+          step="0.01"
+          min="0"
+          max="100"
+          placeholder="Not configured"
+          defaultValue={defaults?.card_processing_surcharge_percent ?? ""}
+          disabled={disabled}
+          className="h-11 rounded-xl"
+        />
+      </label>
+      {!disabled && (
+        <Button type="submit" className="rounded-xl bg-[#111111] font-bold hover:bg-[#222222]">
+          Save Financial Settings
+        </Button>
+      )}
+    </form>
   )
 }
 
@@ -363,7 +409,7 @@ export function DefaultsPanel({
         Default Professional Fee ($)
         <Input name="fee" type="number" step="0.01" defaultValue={defaults?.default_professional_fee || 0} disabled={disabled} className="h-11 rounded-xl" />
       </label>
-      {!disabled && <Button type="submit" className="rounded-xl bg-[#0D9F8C] font-bold hover:bg-[#0A5B52]">Save Settings</Button>}
+      {!disabled && <Button type="submit" className="rounded-xl bg-[#111111] font-bold hover:bg-[#222222]">Save Settings</Button>}
     </form>
   )
 }

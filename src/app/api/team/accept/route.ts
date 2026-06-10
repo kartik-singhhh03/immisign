@@ -4,6 +4,7 @@ import { adminRest } from '@/lib/supabase/admin-rest';
 import { dbRoleToUi } from '@/lib/auth/db-roles';
 import { createRmaFromInvite } from '@/lib/rma/create-from-invite';
 import { stripeService } from '@/lib/stripe/service';
+import { NotificationService, buildWorkspaceActionUrl } from '@/lib/notifications/notification.service';
 
 export async function POST(req: NextRequest) {
   const { token, password, full_name } = (await req.json()) as {
@@ -123,6 +124,39 @@ export async function POST(req: NextRequest) {
   } catch (syncErr) {
     console.error('SEAT_SYNC_AFTER_ACCEPT', syncErr);
   }
+
+  const { data: admins } = await admin
+    .from('users')
+    .select('id')
+    .eq('agency_id', invite.agency_id)
+    .in('role', ['owner', 'admin'])
+    .neq('id', userId);
+
+  const notifications = new NotificationService(admin);
+  const slug = agency?.slug || 'workspace';
+  for (const adminUser of admins || []) {
+    await notifications.notify({
+      agencyId: invite.agency_id,
+      userId: adminUser.id,
+      type: 'team',
+      title: 'Team member joined',
+      message: `${displayName} accepted their invitation and joined the workspace.`,
+      actionUrl: buildWorkspaceActionUrl(slug, '/settings?section=RmaTeam'),
+      entityType: 'user',
+      entityId: userId,
+      actorId: userId,
+    });
+  }
+
+  await admin.from('activity_logs').insert({
+    agency_id: invite.agency_id,
+    user_id: userId,
+    type: 'team.joined',
+    title: 'Team member joined',
+    description: `${displayName} joined the workspace`,
+    reference_id: userId,
+    reference_type: 'user',
+  });
 
   return NextResponse.json({
     success: true,

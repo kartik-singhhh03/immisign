@@ -17,7 +17,7 @@ export default function Error({
     <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4 text-center">
       <h2 className="text-xl font-bold text-slate-900">Something went wrong in approvals!</h2>
       <button
-        className="rounded-md bg-[#0D9F8C] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#0A8070]"
+        className="rounded-md bg-[#111111] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#222222]"
         onClick={() => reset()}
       >
         Try again

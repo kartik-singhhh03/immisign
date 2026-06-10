@@ -26,11 +26,15 @@ export async function loadAgencySettings(
     .eq('agency_id', agencyId)
     .maybeSingle()
 
-  const { data: matterTypeRows } = await supabase
+  const { data: matterTypeRowsRaw } = await supabase
     .from('matter_types')
-    .select('id, name, sort_order, subclass_placeholder, show_secondary_applicant, show_sponsor, show_dependants')
+    .select('id, name, sort_order, subclass_placeholder, show_secondary_applicant, show_sponsor, show_dependants, is_active, archived_at')
     .eq('agency_id', agencyId)
     .order('sort_order', { ascending: true })
+
+  const matterTypeRows = (matterTypeRowsRaw || []).filter(
+    (m) => !m.archived_at && m.is_active !== false,
+  )
 
   const matterTypeIds = (matterTypeRows || []).map((m) => m.id)
   let fieldRows: any[] = []
@@ -68,6 +72,9 @@ export async function loadAgencySettings(
     showSecondaryApplicant: Boolean(m.show_secondary_applicant),
     showSponsor: Boolean(m.show_sponsor),
     showDependants: Boolean(m.show_dependants),
+    isActive: m.is_active !== false,
+    archivedAt: m.archived_at || null,
+    sortOrder: m.sort_order ?? 0,
     fields: fieldRows
       .filter((f) => f.matter_type_id === m.id)
       .map((f) => ({
@@ -105,8 +112,8 @@ export async function loadAgencySettings(
     },
     branding: {
       logoUrl: branding?.logo_url || undefined,
-      primaryColor: branding?.primary_color || '#0D9F8C',
-      secondaryColor: branding?.secondary_color || '#081B2E',
+      primaryColor: branding?.primary_color || '#111111',
+      secondaryColor: branding?.secondary_color || '#111111',
       fontFamily: branding?.font_family || 'Inter',
       emailFooter: branding?.email_footer || undefined,
       agreementRefPrefix: branding?.agreement_ref_prefix || 'AGR',

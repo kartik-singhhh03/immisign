@@ -27,7 +27,7 @@ export default function WorkspaceNotFound() {
         {slug && (
           <Link
             href={`/workspace/${slug}/dashboard`}
-            className="flex items-center gap-2 rounded-xl bg-[#0D9F8C] px-5 py-2.5 text-sm font-bold text-white transition-all hover:bg-[#0A8777] shadow-[0_4px_12px_rgba(13,159,140,0.2)] hover:shadow-[0_4px_16px_rgba(13,159,140,0.3)]"
+            className="flex items-center gap-2 rounded-xl bg-[#111111] px-5 py-2.5 text-sm font-bold text-white transition-all hover:bg-[#222222] shadow-[0_4px_12px_rgba(13,159,140,0.2)] hover:shadow-[0_4px_16px_rgba(13,159,140,0.3)]"
           >
             <Home className="h-4 w-4" />
             Dashboard

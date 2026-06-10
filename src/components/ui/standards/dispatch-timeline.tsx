@@ -17,12 +17,12 @@ function formatTime(iso?: string) {
 function StatusIcon({ status }: { status: DispatchStageStatus }) {
   if (status === "success")
     return (
-      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#FAFAFA] text-[#111111]">
         <Check className="h-4 w-4" />
       </span>
     )
   if (status === "running")
-    return <Loader2 className="h-7 w-7 text-[#0D9F8C] animate-spin" />
+    return <Loader2 className="h-7 w-7 text-[#111111] animate-spin" />
   if (status === "failed")
     return (
       <span className="flex h-7 w-7 items-center justify-center rounded-full bg-red-100 text-red-700">
@@ -61,7 +61,7 @@ export function DispatchTimeline({
       aria-live="polite"
     >
       <div>
-        <h3 className="text-lg font-bold text-[#081B2E]">{title}</h3>
+        <h3 className="text-lg font-bold text-[#111111]">{title}</h3>
         {subtitle && <p className="text-sm text-slate-500 mt-1 font-medium">{subtitle}</p>}
         {supportRef && (
           <p className="text-[10px] font-mono text-slate-400 mt-2">Reference: {supportRef}</p>
@@ -73,8 +73,8 @@ export function DispatchTimeline({
             key={stage.id}
             className={cn(
               "flex gap-3 rounded-xl border px-4 py-3",
-              stage.status === "success" && "border-emerald-100 bg-emerald-50/40",
-              stage.status === "running" && "border-[#0D9F8C]/30 bg-[#f3fcf9]",
+              stage.status === "success" && "border-[#E7E7E7] bg-[#FAFAFA]/40",
+              stage.status === "running" && "border-[#111111]/30 bg-[#FAFAFA]",
               stage.status === "failed" && "border-red-200 bg-red-50/60",
               stage.status === "pending" && "border-slate-100 bg-slate-50/40 opacity-80",
             )}
@@ -83,7 +83,7 @@ export function DispatchTimeline({
               <StatusIcon status={stage.status} />
             </div>
             <div className="min-w-0 flex-1">
-              <div className="text-sm font-bold text-[#081B2E]">{stage.label}</div>
+              <div className="text-sm font-bold text-[#111111]">{stage.label}</div>
               <div className="text-[11px] text-slate-500 mt-0.5 font-medium tabular-nums">
                 {stage.status === "pending" && "Pending"}
                 {stage.status === "running" && stage.startedAt && `Running · ${formatTime(stage.startedAt)}`}

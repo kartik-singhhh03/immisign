@@ -4,12 +4,13 @@ import * as React from "react"
 import { useAuthStore } from "@/store/authStore"
 import { isSettingsRestrictedForUiRole } from "@/lib/auth/db-roles"
 import { useTeamMembers, useInvitations, useAgencyProfile, useClauses, useUserProfile, useMatterTypesSettings, usePaymentScheduleSettings, useRmaTeam } from "@/lib/hooks/useSupabaseData"
-import { AgencyProfilePanel, DefaultsPanel, RmaTeamPanel, SettingsListEditor } from "./WorkspaceSettingsPanels"
+import { AgencyProfilePanel, DefaultsPanel, FinancialSettingsPanel, RmaTeamPanel, SettingsListEditor } from "./WorkspaceSettingsPanels"
 import { SecurityCenterPanel } from "./SecurityCenterPanel"
 import { BrandingSettingsPanel } from "./BrandingSettingsPanel"
 import { MatterTypesSettingsPanel } from "./MatterTypesSettingsPanel"
 import { NotificationPreferencesPanel } from "./NotificationPreferencesPanel"
 import Link from "next/link"
+import { PageHeader } from "@/components/layout/PageHeader"
 import { useSearchParams, useParams } from "next/navigation"
 import {
   ArrowRight,
@@ -67,34 +68,11 @@ import {
 
 
 function statusClass(status: string) {
-  if (status === "Signed" || status === "Active") return "border-emerald-200/70 bg-emerald-50/90 text-emerald-700 shadow-[0_0_0_1px_rgba(16,185,129,0.04),0_8px_18px_rgba(16,185,129,0.10)]"
+  if (status === "Signed" || status === "Active") return "border-[#E7E7E7]/70 bg-[#FAFAFA]/90 text-[#111111] shadow-[0_0_0_1px_rgba(17,17,17,0.04),0_8px_18px_rgba(17,17,17,0.10)]"
   if (status === "Awaiting" || status === "Awaiting signature") return "border-amber-200/70 bg-amber-50/90 text-amber-700 shadow-[0_8px_18px_rgba(245,158,11,0.10)]"
   if (status === "Sent" || status === "Document review") return "border-blue-200/70 bg-blue-50/90 text-blue-700 shadow-[0_8px_18px_rgba(59,130,246,0.10)]"
   if (status === "Expired") return "border-red-200/70 bg-red-50/90 text-red-700 shadow-[0_8px_18px_rgba(239,68,68,0.10)]"
   return "border-slate-200 bg-slate-100/80 text-slate-700"
-}
-
-function PageHeader({
-  eyebrow,
-  title,
-  description,
-  action,
-}: {
-  eyebrow?: string
-  title: string
-  description: string
-  action?: React.ReactNode
-}) {
-  return (
-    <div className="animate-enter mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-end">
-      <div>
-        {eyebrow && <div className="text-[11px] font-bold uppercase tracking-widest text-[#0D9F8C]">{eyebrow}</div>}
-        <h1 className="mt-2 text-3xl font-bold tracking-tight text-[#081B2E] md:text-4xl">{title}</h1>
-        <p className="mt-2.5 max-w-2xl text-[14px] leading-6 text-slate-500 font-medium">{description}</p>
-      </div>
-      {action}
-    </div>
-  )
 }
 
 function MetricCard({
@@ -111,17 +89,17 @@ function MetricCard({
   return (
     <Card className="group rounded-2xl border border-slate-200/50 bg-white/60 shadow-[0_1px_2px_rgba(8,27,46,0.01),0_8px_24px_rgba(8,27,46,0.02)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_1px_2px_rgba(8,27,46,0.02),0_18px_48px_rgba(8,27,46,0.05)] hover:border-slate-350/50">
       <CardContent className="relative p-6">
-        <div className="absolute right-4 top-4 h-20 w-20 rounded-full bg-[#0D9F8C]/5 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <div className="absolute right-4 top-4 h-20 w-20 rounded-full bg-[#111111]/5 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         <div className="flex items-center justify-between">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-emerald-100/50 bg-gradient-to-b from-[#f3fcf9] to-[#ffffff] text-[#0D9F8C] shadow-[0_4px_12px_rgba(13,159,140,0.05)] group-hover:scale-105 transition-transform duration-300">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#E7E7E7]/50 bg-gradient-to-b from-[#FAFAFA] to-[#ffffff] text-[#111111] shadow-[0_4px_12px_rgba(17,17,17,0.12)] group-hover:scale-105 transition-transform duration-300">
             <Icon className="h-5 w-5" />
           </div>
-          <span className="rounded-full border border-emerald-100/50 bg-emerald-50/50 px-2.5 py-0.5 text-xs font-bold text-[#0A8F7E]">{change}</span>
+          <span className="rounded-full border border-[#E7E7E7]/50 bg-[#FAFAFA]/50 px-2.5 py-0.5 text-xs font-bold text-[#222222]">{change}</span>
         </div>
         <div className="mt-6 text-[12px] font-bold uppercase tracking-wider text-slate-400">{label}</div>
-        <div className="mt-1.5 text-3xl font-bold tracking-tight text-[#081B2E]">{value}</div>
+        <div className="font-sans-ui mt-1.5 text-3xl font-bold tracking-tight text-[#111111]">{value}</div>
         <div className="mt-4 h-[5px] overflow-hidden rounded-full bg-slate-100/80">
-          <div className="chart-bar h-full rounded-full bg-gradient-to-r from-[#0D9F8C] to-[#33C48D]" style={{ width: "72%" }} />
+          <div className="chart-bar immimate-progress-fill h-full rounded-full" style={{ width: "72%" }} />
         </div>
       </CardContent>
     </Card>
@@ -145,7 +123,7 @@ export function SettingsPage({ section = "" }: { section?: string }) {
 
   const currentRole = user?.role || "Owner"
   const isSettingsRestricted = isSettingsRestrictedForUiRole(currentRole)
-  const currentWorkspace = activeWorkspace || { name: "", slug: "", color: "#0D9F8C", initials: "IS" }
+  const currentWorkspace = activeWorkspace || { name: "", slug: "", color: "#111111", initials: "IS" }
   const currentSlug = currentWorkspace.slug
 
   const searchParams = useSearchParams()
@@ -161,6 +139,8 @@ export function SettingsPage({ section = "" }: { section?: string }) {
     "Payment Schedules": "PaymentSchedules",
     "Defaults": "Defaults",
     "Matter Defaults": "Defaults",
+    "Financial Settings": "Financial",
+    "Financial": "Financial",
     "Security": "Security",
     "My Profile": "Profile",
   }
@@ -176,6 +156,7 @@ export function SettingsPage({ section = "" }: { section?: string }) {
     MatterTypes: "Matter Types",
     PaymentSchedules: "Payment Schedules",
     Defaults: "Defaults & Special Terms",
+    Financial: "Financial Settings",
     Profile: "My Profile",
     Security: "Security",
     MFA: "Security",
@@ -190,6 +171,7 @@ export function SettingsPage({ section = "" }: { section?: string }) {
     ["Matter Types", "MatterTypes"],
     ["Payment Schedules", "PaymentSchedules"],
     ["Defaults", "Defaults"],
+    ["Financial Settings", "Financial"],
     ["Notifications", "Notifications"],
   ] as const
 
@@ -285,11 +267,11 @@ export function SettingsPage({ section = "" }: { section?: string }) {
   }
 
   // Branding State
-  const [brandColor, setBrandColor] = React.useState(agencyProfile?.branding?.primary_color || "#0D9F8C")
+  const [brandColor, setBrandColor] = React.useState(agencyProfile?.branding?.primary_color || "#111111")
   const [brandInitials, setBrandInitials] = React.useState(currentWorkspace.initials)
   React.useEffect(() => {
     if (agencyProfile?.branding) {
-      setBrandColor(agencyProfile.branding.primary_color || "#0D9F8C")
+      setBrandColor(agencyProfile.branding.primary_color || "#111111")
     }
   }, [agencyProfile])
 
@@ -481,7 +463,7 @@ export function SettingsPage({ section = "" }: { section?: string }) {
         onDelete={async (id) => { await deleteSchedule(id); triggerToast("Payment schedule removed"); }}
       />
       {!isSettingsRestricted && (
-        <Button type="button" onClick={() => triggerToast("Payment schedules saved")} className="rounded-xl bg-[#0D9F8C] font-bold">Save Settings</Button>
+        <Button type="button" onClick={() => triggerToast("Payment schedules saved")} className="rounded-xl bg-[#111111] font-bold">Save Settings</Button>
       )}
     </div>
   )
@@ -497,10 +479,21 @@ export function SettingsPage({ section = "" }: { section?: string }) {
     />
   )
 
+  const renderFinancialSettings = () => (
+    <FinancialSettingsPanel
+      defaults={agencyProfile?.defaults}
+      disabled={isSettingsRestricted}
+      onSave={async (updates) => {
+        await updateDefaults(updates);
+        triggerToast("Financial settings saved successfully!");
+      }}
+    />
+  )
+
   const renderBranding = () => (
     <div className="space-y-6">
       <div className="rounded-xl bg-slate-50 p-4 border border-slate-100 flex items-start gap-3">
-        <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded bg-emerald-100 text-emerald-700">
+        <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded bg-[#FAFAFA] text-[#111111]">
           <Palette className="h-3.5 w-3.5" />
         </div>
         <div>
@@ -527,14 +520,14 @@ export function SettingsPage({ section = "" }: { section?: string }) {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
         <div>
-          <h3 className="text-sm font-bold text-[#081B2E]">Workspace Team Members ({teamMembers ? teamMembers.length : 1})</h3>
+          <h3 className="text-sm font-bold text-[#111111]">Workspace Team Members ({teamMembers ? teamMembers.length : 1})</h3>
           <p className="text-xs text-slate-400 mt-1 font-semibold">Active practitioners and administrative seats.</p>
         </div>
         {!isSettingsRestricted && (
           <Button
             onClick={() => setIsInviteOpen(true)}
             size="sm"
-            className="rounded-xl bg-[#0D9F8C] font-bold hover:bg-[#0A5B52] self-start"
+            className="rounded-xl bg-[#111111] font-bold hover:bg-[#222222] self-start"
           >
             <Plus className="h-4 w-4 mr-1" /> Invite Practitioner
           </Button>
@@ -560,7 +553,7 @@ export function SettingsPage({ section = "" }: { section?: string }) {
               <tr><td colSpan={7} className="p-8 text-center text-slate-500 font-medium">Loading team members...</td></tr>
             ) : teamMembers.map((member: any) => (
               <tr key={member.id} className="hover:bg-slate-50/50 transition-colors">
-                <td className="p-4 font-bold text-[#081B2E]">
+                <td className="p-4 font-bold text-[#111111]">
                   <div className="flex items-center gap-3">
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[10px] font-black text-white shadow-sm" style={{ backgroundColor: currentWorkspace.color }}>
                       {member.full_name?.split(" ").map((n: string) => n[0]).join("")}
@@ -575,7 +568,7 @@ export function SettingsPage({ section = "" }: { section?: string }) {
                     value={member.role}
                     onChange={(e) => updateRole(member.id, e.target.value)}
                     disabled={isSettingsRestricted || member.id === user?.id}
-                    className="h-8 rounded-lg border border-slate-200 bg-white px-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C] disabled:bg-slate-50"
+                    className="h-8 rounded-lg border border-slate-200 bg-white px-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#111111] disabled:bg-slate-50"
                   >
                     <option value="owner">Owner</option>
                     <option value="admin">Admin</option>
@@ -586,8 +579,8 @@ export function SettingsPage({ section = "" }: { section?: string }) {
                   </select>
                 </td>
                 <td className="p-4">
-                  <span className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold ${member.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>
-                    <span className={`h-1.5 w-1.5 rounded-full ${member.is_active ? 'bg-emerald-500' : 'bg-slate-400'}`}></span>
+                  <span className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold ${member.is_active ? 'bg-[#FAFAFA] text-[#111111]' : 'bg-slate-100 text-slate-600'}`}>
+                    <span className={`h-1.5 w-1.5 rounded-full ${member.is_active ? 'bg-[#FAFAFA]0' : 'bg-slate-400'}`}></span>
                     {member.is_active ? 'Active' : 'Disabled'}
                   </span>
                 </td>
@@ -622,7 +615,7 @@ export function SettingsPage({ section = "" }: { section?: string }) {
       {/* Pending Invitations Table */}
       {(invitations && invitations.length > 0) && (
         <div className="mb-6">
-          <h4 className="text-xs font-bold text-[#081B2E] mb-3 uppercase tracking-wider">Pending Invitations</h4>
+          <h4 className="text-xs font-bold text-[#111111] mb-3 uppercase tracking-wider">Pending Invitations</h4>
           <div className="rounded-2xl border border-slate-200/50 overflow-x-auto bg-white shadow-sm">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
@@ -656,7 +649,7 @@ export function SettingsPage({ section = "" }: { section?: string }) {
 
       {/* Permissions Matrix */}
       <div>
-        <h4 className="text-xs font-bold text-[#081B2E] mb-3 uppercase tracking-wider">Role Permissions Matrix</h4>
+        <h4 className="text-xs font-bold text-[#111111] mb-3 uppercase tracking-wider">Role Permissions Matrix</h4>
         <div className="rounded-2xl border border-slate-200/50 overflow-hidden bg-white/40 backdrop-blur-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
@@ -678,8 +671,8 @@ export function SettingsPage({ section = "" }: { section?: string }) {
                   ["Billing & Stripe Controls", "Full Access", "Locked", "Locked", "Locked"]
                 ].map(([capability, owner, agent, manager, assistant]) => (
                   <tr key={capability} className="hover:bg-white/40 transition-colors">
-                    <td className="p-3 font-bold text-[#081B2E]">{capability}</td>
-                    <td className="p-3 text-center font-semibold text-emerald-600 bg-emerald-50/10">{owner}</td>
+                    <td className="p-3 font-bold text-[#111111]">{capability}</td>
+                    <td className="p-3 text-center font-semibold text-[#5C5C5C] bg-[#FAFAFA]/10">{owner}</td>
                     <td className="p-3 text-center font-semibold text-slate-500">{agent}</td>
                     <td className="p-3 text-center font-semibold text-slate-500">{manager}</td>
                     <td className="p-3 text-center font-semibold text-slate-400">{assistant}</td>
@@ -697,14 +690,14 @@ export function SettingsPage({ section = "" }: { section?: string }) {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-sm font-bold text-[#081B2E]">Visa Clause Libraries ({clausesList?.length || 0})</h3>
+          <h3 className="text-sm font-bold text-[#111111]">Visa Clause Libraries ({clausesList?.length || 0})</h3>
           <p className="text-xs text-slate-400 mt-1 font-semibold">Reusable legal boilerplate and terms to drag-and-drop into service agreements.</p>
         </div>
         {!isSettingsRestricted && (
           <Button
             onClick={() => setIsClauseOpen(true)}
             size="sm"
-            className="rounded-xl bg-[#0D9F8C] font-bold hover:bg-[#0A5B52]"
+            className="rounded-xl bg-[#111111] font-bold hover:bg-[#222222]"
           >
             <Plus className="h-4 w-4 mr-1" /> Add Clause
           </Button>
@@ -716,10 +709,10 @@ export function SettingsPage({ section = "" }: { section?: string }) {
           <div key={clause.id} className="rounded-xl border border-slate-200/50 bg-white p-5 shadow-sm hover:border-slate-350/50 transition-all duration-200">
             <div className="flex justify-between items-start gap-4">
               <div className="space-y-2">
-                <span className="font-mono text-xs font-bold text-[#0D9F8C] bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded">
+                <span className="font-mono text-xs font-bold text-[#111111] bg-[#FAFAFA] border border-[#E7E7E7] px-2 py-0.5 rounded">
                   {clause.is_mandatory ? "MANDATORY" : "OPTIONAL"}
                 </span>
-                <h4 className="text-sm font-bold text-[#081B2E]">{clause.title}</h4>
+                <h4 className="text-sm font-bold text-[#111111]">{clause.title}</h4>
                 <p className="text-xs text-slate-500 leading-relaxed font-medium whitespace-pre-wrap">{clause.content}</p>
               </div>
               <Button variant="ghost" size="icon" onClick={() => deleteClause(clause.id)} className="h-8 w-8 text-red-400 hover:text-red-600 rounded-lg hover:bg-red-50">
@@ -747,9 +740,9 @@ export function SettingsPage({ section = "" }: { section?: string }) {
           {user?.user_metadata?.full_name ? user.user_metadata.full_name.split(" ").map((n: string) => n[0]).join("") : "U"}
         </div>
         <div>
-          <h4 className="text-sm font-bold text-[#081B2E]">{myFullName || user?.email || "Unknown User"}</h4>
+          <h4 className="text-sm font-bold text-[#111111]">{myFullName || user?.email || "Unknown User"}</h4>
           <p className="text-xs text-slate-400 font-semibold mt-0.5">{user?.email || ""}</p>
-          <span className="mt-2 inline-block rounded bg-emerald-50 border border-emerald-100 px-2 py-0.5 text-xs font-bold text-[#0D9F8C] capitalize">{currentRole}</span>
+          <span className="mt-2 inline-block rounded bg-[#FAFAFA] border border-[#E7E7E7] px-2 py-0.5 text-xs font-bold text-[#111111] capitalize">{currentRole}</span>
         </div>
       </div>
 
@@ -772,10 +765,10 @@ export function SettingsPage({ section = "" }: { section?: string }) {
         </label>
       </div>
 
-      <Button onClick={handleSaveMyProfile} disabled={userLoading} className="rounded-xl bg-[#0D9F8C] font-bold shadow-sm hover:bg-[#0A5B52]">Save Profile</Button>
+      <Button onClick={handleSaveMyProfile} disabled={userLoading} className="rounded-xl bg-[#111111] font-bold shadow-sm hover:bg-[#222222]">Save Profile</Button>
 
       <div className="space-y-4 rounded-xl border border-slate-200/50 bg-white p-4">
-        <h4 className="text-xs font-bold text-[#081B2E]">Signature Management</h4>
+        <h4 className="text-xs font-bold text-[#111111]">Signature Management</h4>
         <p className="text-[11px] text-slate-500 font-semibold">
           Configure default practitioner signatures for agreement generation workflows.
         </p>
@@ -814,7 +807,7 @@ export function SettingsPage({ section = "" }: { section?: string }) {
                 <div key={sig.id} className="flex items-center justify-between rounded-lg border border-slate-200 p-2">
                   <div className="text-xs">
                     <span className="font-bold text-slate-700 capitalize">{sig.signature_type}</span>
-                    {sig.is_default && <span className="ml-2 rounded bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">Default</span>}
+                    {sig.is_default && <span className="ml-2 rounded bg-[#FAFAFA] px-2 py-0.5 text-[10px] font-bold text-[#111111]">Default</span>}
                   </div>
                   <div className="flex items-center gap-2">
                     {!sig.is_default && (
@@ -865,6 +858,8 @@ export function SettingsPage({ section = "" }: { section?: string }) {
         return renderPaymentSchedulesSettings()
       case "Defaults":
         return renderDefaultsSettings()
+      case "Financial":
+        return renderFinancialSettings()
       case "Profile":
         return renderMyProfile()
       case "Security":
@@ -881,8 +876,8 @@ export function SettingsPage({ section = "" }: { section?: string }) {
     <div className="relative">
       {/* Toast Alert */}
       {toastMessage && (
-        <div className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-xl bg-[#081B2E] px-4 py-3 text-xs font-bold text-white shadow-2xl border border-slate-700/50 animate-in fade-in slide-in-from-bottom-3 duration-300">
-          <CheckCircle2 className="h-4 w-4 text-[#0D9F8C]" />
+        <div className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-xl bg-[#111111] px-4 py-3 text-xs font-bold text-white shadow-2xl border border-slate-700/50 animate-in fade-in slide-in-from-bottom-3 duration-300">
+          <CheckCircle2 className="h-4 w-4 text-[#111111]" />
           {toastMessage}
         </div>
       )}
@@ -891,7 +886,7 @@ export function SettingsPage({ section = "" }: { section?: string }) {
       <Dialog open={isInviteOpen} onOpenChange={setIsInviteOpen}>
         <DialogContent className="max-w-md rounded-2xl border-slate-200 p-6 bg-white/95 backdrop-blur-md shadow-2xl">
           <DialogHeader>
-            <DialogTitle className="text-base font-bold text-[#081B2E] tracking-tight">Invite OMARA Practitioner</DialogTitle>
+            <DialogTitle className="text-base font-bold text-[#111111] tracking-tight">Invite OMARA Practitioner</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleInviteSubmit} className="space-y-4 mt-3">
             <label className="grid gap-2 text-xs font-bold text-slate-500">
@@ -951,19 +946,19 @@ export function SettingsPage({ section = "" }: { section?: string }) {
 
             {inviting && (
               <div className="space-y-1">
-                <div className="flex justify-between text-xs font-bold text-[#0D9F8C]">
+                <div className="flex justify-between text-xs font-bold text-[#111111]">
                   <span>Provisioning secure license...</span>
                   <span>{inviteProgress}%</span>
                 </div>
                 <div className="h-1 rounded-full bg-slate-100 overflow-hidden">
-                  <div className="h-full bg-[#0D9F8C] transition-all duration-150" style={{ width: `${inviteProgress}%` }}></div>
+                  <div className="h-full bg-[#111111] transition-all duration-150" style={{ width: `${inviteProgress}%` }}></div>
                 </div>
               </div>
             )}
 
             <div className="flex gap-2 justify-end pt-2">
               <Button type="button" variant="outline" onClick={() => setIsInviteOpen(false)} className="rounded-xl h-11 text-xs font-bold border-slate-200 bg-white">Cancel</Button>
-              <Button type="submit" disabled={inviting} className="rounded-xl h-11 text-xs font-bold bg-[#0D9F8C] hover:bg-[#0A5B52]">Send Invite Link</Button>
+              <Button type="submit" disabled={inviting} className="rounded-xl h-11 text-xs font-bold bg-[#111111] hover:bg-[#222222]">Send Invite Link</Button>
             </div>
           </form>
         </DialogContent>
@@ -973,7 +968,7 @@ export function SettingsPage({ section = "" }: { section?: string }) {
       <Dialog open={isClauseOpen} onOpenChange={setIsClauseOpen}>
         <DialogContent className="max-w-md rounded-2xl border-slate-200 p-6 bg-white/95 backdrop-blur-md shadow-2xl">
           <DialogHeader>
-            <DialogTitle className="text-base font-bold text-[#081B2E] tracking-tight">Create Boileplate Clause</DialogTitle>
+            <DialogTitle className="text-base font-bold text-[#111111] tracking-tight">Create Boileplate Clause</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleClauseSubmit} className="space-y-4 mt-3">
             <label className="grid gap-2 text-xs font-bold text-slate-500">
@@ -1002,14 +997,14 @@ export function SettingsPage({ section = "" }: { section?: string }) {
                 required
                 value={clauseText}
                 onChange={(e) => setClauseText(e.target.value)}
-                className="flex min-h-[100px] w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]"
+                className="flex min-h-[100px] w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#111111]"
                 placeholder="Enter the full legal wording of the clause..."
               />
             </label>
 
             <div className="flex gap-2 justify-end pt-2">
               <Button type="button" variant="outline" onClick={() => setIsClauseOpen(false)} className="rounded-xl h-11 text-xs font-bold border-slate-200 bg-white">Cancel</Button>
-              <Button type="submit" className="rounded-xl h-11 text-xs font-bold bg-[#0D9F8C] hover:bg-[#0A5B52]">Save to Library</Button>
+              <Button type="submit" className="rounded-xl h-11 text-xs font-bold bg-[#111111] hover:bg-[#222222]">Save to Library</Button>
             </div>
           </form>
         </DialogContent>
@@ -1038,7 +1033,7 @@ export function SettingsPage({ section = "" }: { section?: string }) {
                   <Link
                     key={item}
                     href={`/workspace/${currentSlug}/settings?section=${target}`}
-                    className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-bold transition-all duration-200 ${target === activeSectionKey ? "bg-[#0D9F8C] text-white shadow-sm" : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"}`}
+                    className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-bold transition-all duration-200 ${target === activeSectionKey ? "bg-[#111111] text-white shadow-sm" : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"}`}
                   >
                     <span>{item}</span>
                   </Link>
@@ -1053,7 +1048,7 @@ export function SettingsPage({ section = "" }: { section?: string }) {
                   <Link
                     key={item}
                     href={`/workspace/${currentSlug}/settings?section=${target}&tab=profile`}
-                    className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-bold transition-all duration-200 ${target === activeSectionKey ? "bg-[#0D9F8C] text-white shadow-sm" : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"}`}
+                    className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-bold transition-all duration-200 ${target === activeSectionKey ? "bg-[#111111] text-white shadow-sm" : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"}`}
                   >
                     <span>{item}</span>
                   </Link>
@@ -1066,7 +1061,7 @@ export function SettingsPage({ section = "" }: { section?: string }) {
         {/* Settings Content Area */}
         <Card className="rounded-2xl border border-slate-200/50 bg-white/60 shadow-[0_1px_2px_rgba(8,27,46,0.01),0_8px_24px_rgba(8,27,46,0.02)]">
           <CardContent className="p-7">
-            <h2 className="text-lg font-bold tracking-tight text-[#081B2E] mb-5">{currentTitle}</h2>
+            <h2 className="text-lg font-bold tracking-tight text-[#111111] mb-5">{currentTitle}</h2>
             {renderContent()}
           </CardContent>
         </Card>

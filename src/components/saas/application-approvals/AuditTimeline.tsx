@@ -15,7 +15,7 @@ export function AuditTimeline({ events }: AuditTimelineProps) {
       {events.map((evt) => (
         <div key={evt.id} className="relative pl-6">
           <span className={`absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 border-white ${
-            evt.type === 'approved' ? 'bg-[#0D9F8C]' :
+            evt.type === 'approved' ? 'bg-[#111111]' :
             evt.type === 'sent' ? 'bg-blue-400' :
             evt.type === 'reminder_sent' ? 'bg-amber-400' :
             'bg-slate-300'

@@ -5,24 +5,26 @@ import { useParams, useRouter } from "next/navigation"
 import { useAuthStore } from "@/store/authStore"
 import { uiRoleToDb } from "@/lib/auth/db-roles"
 import { canAccessWorkspacePath } from "@/lib/auth/route-access"
+import { DashboardSkeleton } from "@/components/ui/skeletons"
 
 // Import all subpages from saas components
+import { AgreementsList } from "@/features/agreements/components/list/agreements-list"
 import { 
   DashboardHomePage,
-  AgreementsPage,
   NewAgreementPage,
   AgreementDetailPage,
   SendDocumentPage,
   DocumentLibraryPage,
   ClientsPage,
-  AnalyticsPage,
-  ReportsPage,
   SettingsPage,
   BillingPage,
   TemplatesPage,
-  PlaceholderDashboardPage
+  PlaceholderDashboardPage,
+  ReportsPage,
+  SystemHealthPage,
 } from "@/components/saas/dashboard-pages"
 import { ClientDetailPage } from "@/features/clients/components/ClientDetailPage"
+import { OnboardingWizardPage } from "@/features/onboarding/components/OnboardingWizardPage"
 
 export default function WorkspaceCatchAllPage() {
   const params = useParams()
@@ -81,7 +83,7 @@ export default function WorkspaceCatchAllPage() {
             </div>
           )
         }
-        return <AgreementsPage />
+        return <AgreementsList agencySlug={agencySlug} />
 
       case "documents":
         if (path[1] === "send") {
@@ -95,6 +97,17 @@ export default function WorkspaceCatchAllPage() {
       case "templates":
         return <TemplatesPage />
 
+      case "onboarding":
+        if (path[1] === "new") {
+          return <OnboardingWizardPage agencySlug={agencySlug} />
+        }
+        router.replace(`/workspace/${agencySlug}/clients`)
+        return (
+          <div className="p-8 text-center text-slate-500 text-sm font-medium">
+            Redirecting to clients…
+          </div>
+        )
+
       case "clients":
         if (path[1]) {
           return <ClientDetailPage />
@@ -102,13 +115,24 @@ export default function WorkspaceCatchAllPage() {
         return <ClientsPage />
 
       case "analytics":
-        return <AnalyticsPage />
+        router.replace(`/workspace/${agencySlug}/dashboard`)
+        return (
+          <div className="p-8 text-center text-slate-500 text-sm font-medium">
+            Redirecting to dashboard…
+          </div>
+        )
 
       case "reports":
         return <ReportsPage />
 
       case "billing":
         return <BillingPage />
+
+      case "admin":
+        if (path[1] === "system-health") {
+          return <SystemHealthPage />
+        }
+        return <PlaceholderDashboardPage title="Admin" />
 
       case "settings":
         if (path[1]) {
@@ -120,6 +144,7 @@ export default function WorkspaceCatchAllPage() {
             "matter-types": "Matter Types",
             "payment-schedules": "Payment Schedules",
             defaults: "Defaults",
+            financial: "Financial Settings",
             security: "Security",
           }
           const sectionName = sectionMap[path[1].toLowerCase()] || "Agency Profile"
@@ -134,12 +159,7 @@ export default function WorkspaceCatchAllPage() {
 
   // Loading state placeholder while AuthProvider resolves the real Cloud Supabase agency.
   if (agencySlug && (!activeWorkspace || activeWorkspace.slug !== agencySlug)) {
-    return (
-      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4 text-center">
-        <span className="h-8 w-8 animate-spin rounded-full border-4 border-[#0D9F8C] border-t-transparent" />
-        <p className="text-sm font-bold text-slate-500">Syncing workspace credentials...</p>
-      </div>
-    )
+    return <DashboardSkeleton />
   }
 
   return renderSubPage()

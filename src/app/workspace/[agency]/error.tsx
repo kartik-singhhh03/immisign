@@ -9,18 +9,18 @@ export default function WorkspaceError({
 }) {
   return (
     <div className="flex min-h-[70vh] flex-col items-center justify-center text-center px-4">
-      <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-red-50 text-red-500 shadow-sm border border-red-100">
+      <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#FAFAFA] text-[#111111] shadow-sm border border-[#E7E7E7]">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </div>
-      <h2 className="text-2xl font-bold tracking-tight text-slate-900">Something went wrong</h2>
-      <p className="mt-2 max-w-md text-sm text-slate-500 font-medium">
+      <h2 className="font-serif text-3xl font-normal tracking-tight text-[#111111]">Something went wrong</h2>
+      <p className="mt-2 max-w-md text-sm text-[#5C5C5C] font-medium">
         We encountered an error while trying to render this section. 
         Don't worry, your data is safe.
       </p>
       <div className="mt-8 flex gap-3">
         <button
           onClick={reset}
-          className="rounded-xl bg-[#0D9F8C] px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#0A8777] shadow-sm"
+          className="rounded-xl bg-[#111111] px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#222222] shadow-sm"
         >
           Try again
         </button>

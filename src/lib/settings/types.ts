@@ -15,6 +15,9 @@ export type MatterTypeConfig = {
   showSecondaryApplicant: boolean
   showSponsor: boolean
   showDependants: boolean
+  isActive?: boolean
+  archivedAt?: string | null
+  sortOrder?: number
   fields: MatterTypeFieldDef[]
 }
 

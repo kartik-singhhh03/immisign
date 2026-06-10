@@ -94,19 +94,29 @@ export class ActivityLogsRepository {
 export class ClientsRepository {
   constructor(private supabase: SupabaseClient) {}
 
-  async list(agencyId: string, options: { page?: number; limit?: number; search?: string } = {}) {
-    const { page = 1, limit = 10, search = '' } = options;
+  async list(
+    agencyId: string,
+    options: {
+      page?: number;
+      limit?: number;
+      search?: string;
+      sort?: string;
+      ascending?: boolean;
+    } = {},
+  ) {
+    const { page = 1, limit = 10, search = '', sort = 'created_at', ascending = false } = options;
     const offset = (page - 1) * limit;
+    const sortCol = ['created_at', 'updated_at', 'name', 'email'].includes(sort) ? sort : 'created_at';
 
     let query = this.supabase
       .from('clients')
       .select('id, agency_id, name, email, phone, created_at, updated_at, agreements(id, status, payment_schedules(total_amount, currency))', { count: 'exact' })
       .eq('agency_id', agencyId)
-      .order('created_at', { ascending: false })
+      .order(sortCol, { ascending })
       .range(offset, offset + limit - 1);
 
     if (search) {
-      query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%`);
+      query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%,phone.ilike.%${search}%`);
     }
 
     const { data, error, count } = await query;
@@ -167,8 +177,10 @@ export class ClientsRepository {
   async create(client: any) {
     const { parseOrThrow } = await import('@/lib/validations/fields');
     const { clientCreateSchema } = await import('@/lib/validations/schemas');
+    const { allocateClientNumber } = await import('@/lib/clients/client-number');
     const parsed = parseOrThrow(clientCreateSchema, client);
     if (!client.agency_id) throw new Error('agency_id is required');
+    const clientNumber = await allocateClientNumber(client.agency_id, this.supabase);
     const { data, error } = await this.supabase
       .from('clients')
       .insert({
@@ -176,6 +188,7 @@ export class ClientsRepository {
         name: parsed.name,
         email: parsed.email,
         phone: parsed.phone,
+        client_number: clientNumber,
       })
       .select()
       .single();
@@ -220,39 +233,69 @@ export class ClientsRepository {
 export class AgreementsRepository {
   constructor(private supabase: SupabaseClient) {}
 
-  async list(agencyId: string, options: { page?: number; limit?: number; search?: string } = {}) {
-    const { page = 1, limit = 10, search = '' } = options;
+  async list(
+    agencyId: string,
+    options: {
+      page?: number;
+      limit?: number;
+      search?: string;
+      sort?: string;
+      ascending?: boolean;
+      status?: string;
+    } = {},
+  ) {
+    const { page = 1, limit = 10, search = '', sort = 'created_at', ascending = false, status = '' } = options;
     const offset = (page - 1) * limit;
+    const sortCol = ['created_at', 'updated_at', 'status', 'agreement_number', 'client_name'].includes(sort)
+      ? sort
+      : 'created_at';
 
     let query = this.supabase
       .from('agreements')
-      .select('*, clients!inner(name, email), matter_types(name)', { count: 'exact' })
+      .select('*, payment_schedules(total_amount)', { count: 'exact' })
       .eq('agency_id', agencyId)
-      .order('created_at', { ascending: false })
+      .is('deleted_at', null)
+      .order(sortCol, { ascending })
       .range(offset, offset + limit - 1);
-      
+
     if (search) {
-      query = query.or(`clients.name.ilike.%${search}%,clients.email.ilike.%${search}%`);
+      query = query.or(
+        `agreement_number.ilike.%${search}%,client_name.ilike.%${search}%,client_email.ilike.%${search}%`,
+      );
+    }
+    if (status && status !== 'all') {
+      query = query.eq('status', status.toLowerCase());
     }
 
     const { data, error, count } = await query;
     if (error) throw error;
-    
+
     return {
-      data: data.map(a => ({
-        id: a.id,
-        ref: a.agreement_number || a.id,
-        real_id: a.id,
-        client: a.clients?.name || a.client_name,
-        email: a.clients?.email || a.client_email,
-        matter: a.matter_types?.name || 'Standard Matter',
-        fee: '$' + (a.professional_fee || 3500).toLocaleString(),
-        status: a.status === 'pending' ? 'Sent' : a.status === 'signed' ? 'Signed' : 'Draft',
-        date: new Date(a.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-        scope: 'Professional services representation',
-        law: 'New South Wales (NSW)'
-      })),
-      count: count || 0
+      data: (data || []).map((a: any) => {
+        const schedules = a.payment_schedules;
+        const schedule = Array.isArray(schedules) ? schedules[0] : schedules;
+        const totalAmount = schedule?.total_amount ? parseFloat(schedule.total_amount) : Number(a.professional_fee) || 0;
+        const statusLabel = a.status ? a.status.charAt(0).toUpperCase() + a.status.slice(1) : 'Draft';
+        return {
+          id: a.id,
+          agreementUuid: a.id,
+          ref: a.agreement_number || `AGR-${String(a.id).slice(0, 8).toUpperCase()}`,
+          real_id: a.id,
+          client: a.client_name || 'Unnamed Client',
+          email: a.client_email || '',
+          matter: a.metadata?.visa_category || a.description || 'General Service Agreement',
+          fee: totalAmount > 0 ? `$${totalAmount.toLocaleString()}` : '$0.00',
+          status: statusLabel,
+          date: new Date(a.created_at).toLocaleDateString('en-AU', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+          }),
+          scope: a.description || 'Standard agency representation services.',
+          law: 'New South Wales (NSW)',
+        };
+      }),
+      count: count || 0,
     };
   }
 
@@ -326,20 +369,52 @@ export class ApprovalsRepository {
 export class DocumentsRepository {
   constructor(private supabase: SupabaseClient) {}
 
-  async list(agencyId: string, options: { page?: number; limit?: number; search?: string } = {}) {
-    const { page = 1, limit = 10, search = '' } = options;
+  async list(
+    agencyId: string,
+    options: {
+      page?: number;
+      limit?: number;
+      search?: string;
+      sort?: string;
+      ascending?: boolean;
+      mimeType?: string;
+      dateFrom?: string;
+      dateTo?: string;
+    } = {},
+  ) {
+    const {
+      page = 1,
+      limit = 10,
+      search = '',
+      sort = 'created_at',
+      ascending = false,
+      mimeType = '',
+      dateFrom = '',
+      dateTo = '',
+    } = options;
     const offset = (page - 1) * limit;
+    const sortCol = ['created_at', 'updated_at', 'file_name'].includes(sort) ? sort : 'created_at';
 
     let query = this.supabase
       .from('documents')
       .select('*', { count: 'exact' })
       .eq('agency_id', agencyId)
-      .order('created_at', { ascending: false })
+      .is('agreement_id', null)
+      .order(sortCol, { ascending })
       .range(offset, offset + limit - 1);
-    
+
     if (search) {
       query = query.ilike('file_name', `%${search}%`);
     }
+    if (mimeType === 'pdf') {
+      query = query.ilike('mime_type', '%pdf%');
+    } else if (mimeType === 'image') {
+      query = query.or('mime_type.ilike.%image%,mime_type.ilike.%png%,mime_type.ilike.%jpeg%');
+    } else if (mimeType === 'doc') {
+      query = query.or('mime_type.ilike.%word%,mime_type.ilike.%doc%');
+    }
+    if (dateFrom) query = query.gte('created_at', dateFrom);
+    if (dateTo) query = query.lte('created_at', dateTo);
 
     const { data, error, count } = await query;
     if (error) throw error;
@@ -592,6 +667,7 @@ export class MatterDefaultsRepository {
         default_scope_of_services: updates.default_scope_of_services,
         default_special_terms: updates.default_special_terms,
         default_payment_schedule: updates.default_payment_schedule,
+        card_processing_surcharge_percent: updates.card_processing_surcharge_percent,
         updated_at: new Date().toISOString()
       }, { onConflict: 'agency_id' })
       .select()
@@ -757,6 +833,9 @@ export class MatterTypesRepository {
     show_secondary_applicant?: boolean;
     show_sponsor?: boolean;
     show_dependants?: boolean;
+    is_active?: boolean;
+    archived_at?: string | null;
+    sort_order?: number;
   }) {
     const { data, error } = await this.supabase
       .from('matter_types')
@@ -766,6 +845,44 @@ export class MatterTypesRepository {
       .single();
     if (error) throw error;
     return data;
+  }
+
+  async archive(id: string) {
+    return this.updateMatterTypeFlags(id, {
+      is_active: false,
+      archived_at: new Date().toISOString(),
+    });
+  }
+
+  async restore(id: string) {
+    return this.updateMatterTypeFlags(id, {
+      is_active: true,
+      archived_at: null,
+    });
+  }
+
+  async reorder(agencyId: string, orderedIds: string[]) {
+    for (let i = 0; i < orderedIds.length; i++) {
+      const { error } = await this.supabase
+        .from('matter_types')
+        .update({ sort_order: i + 1, updated_at: new Date().toISOString() })
+        .eq('id', orderedIds[i])
+        .eq('agency_id', agencyId);
+      if (error) throw error;
+    }
+    return true;
+  }
+
+  async listAll(agencyId: string, includeArchived = false) {
+    const { data, error } = await this.supabase
+      .from('matter_types')
+      .select('*')
+      .eq('agency_id', agencyId)
+      .order('sort_order', { ascending: true });
+    if (error) throw error;
+    const rows = data || [];
+    if (includeArchived) return rows;
+    return rows.filter((r) => !r.archived_at);
   }
 }
 

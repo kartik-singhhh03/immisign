@@ -1,0 +1,786 @@
+{
+  "stamp": 1781087215151,
+  "agency": {
+    "id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+    "slug": "ritiklabs",
+    "name": "Ritiklabs SETTINGS1 1781085718037",
+    "stripe_customer_id": "cus_Ug4GJv8NITRqwi"
+  },
+  "owner": {
+    "id": "2cab360f-fd21-461a-8a57-67573dee0530",
+    "email": "nayramalik1018@gmail.com",
+    "full_name": "ritik singh"
+  },
+  "results": [
+    {
+      "area": "SETUP",
+      "check": "AUTH",
+      "status": "PASS",
+      "msg": "nayramalik1018@gmail.com",
+      "detail": {},
+      "ts": "2026-06-10T10:26:56.346Z"
+    },
+    {
+      "area": "SETUP",
+      "check": "BROWSER",
+      "status": "PASS",
+      "msg": "Chrome ready",
+      "detail": {},
+      "ts": "2026-06-10T10:26:56.774Z"
+    },
+    {
+      "area": "A1",
+      "check": "DB-CLIENTS",
+      "status": "PASS",
+      "msg": "count=15",
+      "detail": {},
+      "ts": "2026-06-10T10:26:56.994Z"
+    },
+    {
+      "area": "A1",
+      "check": "DB-MATTERS",
+      "status": "PASS",
+      "msg": "agreements=19",
+      "detail": {},
+      "ts": "2026-06-10T10:26:56.994Z"
+    },
+    {
+      "area": "A1",
+      "check": "DB-PENDING-AGR",
+      "status": "PASS",
+      "msg": "pending=null",
+      "detail": {},
+      "ts": "2026-06-10T10:26:56.994Z"
+    },
+    {
+      "area": "A1",
+      "check": "DB-REVENUE",
+      "status": "PASS",
+      "msg": "sum_fees=0",
+      "detail": {},
+      "ts": "2026-06-10T10:26:56.994Z"
+    },
+    {
+      "area": "A1",
+      "check": "DB-TEAM",
+      "status": "PASS",
+      "msg": "members=16",
+      "detail": {},
+      "ts": "2026-06-10T10:26:56.994Z"
+    },
+    {
+      "area": "A1",
+      "check": "API-DASHBOARD",
+      "status": "PASS",
+      "msg": "cards=5",
+      "detail": {},
+      "ts": "2026-06-10T10:26:57.918Z"
+    },
+    {
+      "area": "A1",
+      "check": "KPI-REAL-COUNTS",
+      "status": "PASS",
+      "msg": "ids=missing_sa,pending_approval,awaiting_lodge,missing_sos,incomplete_matters",
+      "detail": {},
+      "ts": "2026-06-10T10:26:57.919Z"
+    },
+    {
+      "area": "A1",
+      "check": "KPI-TRADITIONAL-WIDGETS",
+      "status": "WARN",
+      "msg": "Live dashboard uses compliance KPIs (Missing SA, Pending Approvals, etc.) not Total Clients/Revenue cards",
+      "detail": {},
+      "ts": "2026-06-10T10:26:57.919Z"
+    },
+    {
+      "area": "A1",
+      "check": "KPI-UI",
+      "status": "PASS",
+      "msg": "Compliance cards rendered",
+      "detail": {},
+      "ts": "2026-06-10T10:27:04.189Z"
+    },
+    {
+      "area": "A1",
+      "check": "NO-FAKE-NUMBERS",
+      "status": "PASS",
+      "msg": "No obvious placeholders",
+      "detail": {},
+      "ts": "2026-06-10T10:27:04.190Z"
+    },
+    {
+      "area": "A2",
+      "check": "CREATE-CLIENT",
+      "status": "PASS",
+      "msg": "f72f29d6-8269-4573-a066-351884bc59f5",
+      "detail": {},
+      "ts": "2026-06-10T10:27:04.690Z"
+    },
+    {
+      "area": "A2",
+      "check": "CREATE-DOCUMENT",
+      "status": "PASS",
+      "msg": "abcaf420-f85a-4209-b372-fb6637a02977",
+      "detail": {},
+      "ts": "2026-06-10T10:27:07.183Z"
+    },
+    {
+      "area": "A2",
+      "check": "ACTIVITY-FEED-API",
+      "status": "PASS",
+      "msg": "items=20",
+      "detail": {},
+      "ts": "2026-06-10T10:27:08.069Z"
+    },
+    {
+      "area": "A2",
+      "check": "ACTIVITY-FEED-UPDATE",
+      "status": "PASS",
+      "msg": "New DASH1 events in compliance activity feed",
+      "detail": {},
+      "ts": "2026-06-10T10:27:08.069Z"
+    },
+    {
+      "area": "A2",
+      "check": "ACTIVITY-LOGS-DB",
+      "status": "PASS",
+      "msg": "dash1_logs=1",
+      "detail": {},
+      "ts": "2026-06-10T10:27:08.261Z"
+    },
+    {
+      "area": "A2",
+      "check": "ACTIVITY-UI",
+      "status": "WARN",
+      "msg": "Activity section present",
+      "detail": {},
+      "ts": "2026-06-10T10:27:09.397Z"
+    },
+    {
+      "area": "A3",
+      "check": "PENDING-DB",
+      "status": "PASS",
+      "msg": "pending_agreements=0",
+      "detail": {},
+      "ts": "2026-06-10T10:27:13.128Z"
+    },
+    {
+      "area": "A3",
+      "check": "PENDING-API",
+      "status": "PASS",
+      "msg": "pendingSignatures=0",
+      "detail": {},
+      "ts": "2026-06-10T10:27:13.128Z"
+    },
+    {
+      "area": "A3",
+      "check": "PENDING-WIDGET-UI",
+      "status": "WARN",
+      "msg": "Pending signatures widget in /api/dashboard/summary — not mounted on live compliance dashboard",
+      "detail": {},
+      "ts": "2026-06-10T10:27:13.128Z"
+    },
+    {
+      "area": "A4",
+      "check": "NOTIF-API",
+      "status": "PASS",
+      "msg": "returned=10",
+      "detail": {},
+      "ts": "2026-06-10T10:27:14.153Z"
+    },
+    {
+      "area": "A4",
+      "check": "NOTIF-DB",
+      "status": "PASS",
+      "msg": "total=84",
+      "detail": {},
+      "ts": "2026-06-10T10:27:14.153Z"
+    },
+    {
+      "area": "A4",
+      "check": "NOTIF-BELL-UI",
+      "status": "PASS",
+      "msg": "Notification bell in shell",
+      "detail": {},
+      "ts": "2026-06-10T10:27:15.339Z"
+    },
+    {
+      "area": "A5",
+      "check": "APPROVAL-WIDGETS-API",
+      "status": "PASS",
+      "msg": "{\"awaitingReview\":1,\"awaitingApproval\":0,\"changesRequested\":0,\"readyToLodge\":1,\"recentlyApproved\":0,\"myAssignedReviews\":",
+      "detail": {},
+      "ts": "2026-06-10T10:27:17.224Z"
+    },
+    {
+      "area": "A5",
+      "check": "APPROVAL-DB",
+      "status": "PASS",
+      "msg": "pending_status=1",
+      "detail": {},
+      "ts": "2026-06-10T10:27:17.224Z"
+    },
+    {
+      "area": "A5",
+      "check": "ATTENTION-QUEUE",
+      "status": "PASS",
+      "msg": "queue_rows=15",
+      "detail": {},
+      "ts": "2026-06-10T10:27:17.224Z"
+    },
+    {
+      "area": "A6",
+      "check": "STRIPE-BILLING-API",
+      "status": "PASS",
+      "msg": "{\"status\":\"active\",\"planName\":\"IMMISIGN\",\"currentPeriodEnd\":\"2026-07-10T09:09:01",
+      "detail": {},
+      "ts": "2026-06-10T10:27:18.819Z"
+    },
+    {
+      "area": "A6",
+      "check": "REVENUE-CHART",
+      "status": "WARN",
+      "msg": "Practice revenue analytics chart not implemented on dashboard",
+      "detail": {},
+      "ts": "2026-06-10T10:27:18.819Z"
+    },
+    {
+      "area": "A6",
+      "check": "REVENUE-DB-SUM",
+      "status": "PASS",
+      "msg": "agreements.professional_fee sum=0 (real DB, no chart)",
+      "detail": {},
+      "ts": "2026-06-10T10:27:18.819Z"
+    },
+    {
+      "area": "A7",
+      "check": "SEARCH-CLIENT",
+      "status": "PASS",
+      "msg": "Client searchable",
+      "detail": {},
+      "ts": "2026-06-10T10:27:21.621Z"
+    },
+    {
+      "area": "A7",
+      "check": "SEARCH-AGREEMENT",
+      "status": "PASS",
+      "msg": "AUD-MATTER-A-190",
+      "detail": {},
+      "ts": "2026-06-10T10:27:24.178Z"
+    },
+    {
+      "area": "A7",
+      "check": "SEARCH-DOCUMENT",
+      "status": "PASS",
+      "msg": "Document search",
+      "detail": {},
+      "ts": "2026-06-10T10:27:26.573Z"
+    },
+    {
+      "area": "A7",
+      "check": "SEARCH-USER",
+      "status": "PASS",
+      "msg": "ritik singh",
+      "detail": {},
+      "ts": "2026-06-10T10:27:29.244Z"
+    },
+    {
+      "area": "A8",
+      "check": "CONSOLE-ERRORS",
+      "status": "WARN",
+      "msg": "2 errors",
+      "detail": {},
+      "ts": "2026-06-10T10:27:30.611Z"
+    },
+    {
+      "area": "A8",
+      "check": "BROKEN-LINKS",
+      "status": "PASS",
+      "msg": "placeholder_hrefs=0",
+      "detail": {},
+      "ts": "2026-06-10T10:27:30.674Z"
+    },
+    {
+      "area": "A8",
+      "check": "EMPTY-PLACEHOLDERS",
+      "status": "PASS",
+      "msg": "placeholder_text=0",
+      "detail": {},
+      "ts": "2026-06-10T10:27:30.676Z"
+    },
+    {
+      "area": "CLEANUP",
+      "check": "TEST-DATA",
+      "status": "PASS",
+      "msg": "DASH1 test rows removed",
+      "detail": {},
+      "ts": "2026-06-10T10:27:32.109Z"
+    }
+  ],
+  "evidence": {
+    "db": [
+      {
+        "table": "compliance_summary",
+        "rows": [
+          {
+            "id": "missing_sa",
+            "label": "Missing Service Agreements",
+            "count": 8,
+            "trend": "up",
+            "trendLabel": "+4 this week",
+            "lastUpdated": "2026-06-10T10:08:24.671863+00:00",
+            "clientIds": [
+              "c9d445c2-c0d6-4fd1-9a58-4876827ac60e",
+              "3463132e-212b-46a8-b175-7d46dcf47617",
+              "aa0915c8-41be-4ba5-a8ac-78d29b6a1f2a",
+              "80b23e15-65e3-463d-8a00-a2edc04c55f5",
+              "00ecd8d9-1ff8-4f09-b5f2-d8c9c62ee869",
+              "d018bba2-887a-42ed-ae21-0d4f4a3331cc"
+            ],
+            "matters": [
+              {
+                "clientId": "c9d445c2-c0d6-4fd1-9a58-4876827ac60e",
+                "fileId": "3557f901-060a-4bc7-858c-be8ff7d0175a",
+                "fileSource": "application_approval",
+                "fileNumber": "AGR-2026-0010"
+              },
+              {
+                "clientId": "3463132e-212b-46a8-b175-7d46dcf47617",
+                "fileId": "99299ec9-1e6a-4aaf-9ada-1bbb20fdc9f5",
+                "fileSource": "agreement",
+                "fileNumber": "AGR-2026-0002"
+              },
+              {
+                "clientId": "3463132e-212b-46a8-b175-7d46dcf47617",
+                "fileId": "4d63f99d-649a-4161-b53d-c90dfee78510",
+                "fileSource": "agreement",
+                "fileNumber": "AGR-2026-0006"
+              },
+              {
+                "clientId": "3463132e-212b-46a8-b175-7d46dcf47617",
+                "fileId": "b819eb06-374c-456d-8d24-66e46140252b",
+                "fileSource": "application_approval",
+                "fileNumber": "APP-2026-0001"
+              },
+              {
+                "clientId": "aa0915c8-41be-4ba5-a8ac-78d29b6a1f2a",
+                "fileId": "78d64530-c3c0-43fa-8cad-5f24c8f10b40",
+                "fileSource": "agreement",
+                "fileNumber": "AGR-2026-0005"
+              },
+              {
+                "clientId": "80b23e15-65e3-463d-8a00-a2edc04c55f5",
+                "fileId": "0497afa5-f5e7-4fac-9fc0-88fd759198ff",
+                "fileSource": "application_approval",
+                "fileNumber": "AGR-2026-0017"
+              },
+              {
+                "clientId": "00ecd8d9-1ff8-4f09-b5f2-d8c9c62ee869",
+                "fileId": "f83eb9b3-225b-4edf-8410-950f30e435dc",
+                "fileSource": "application_approval",
+                "fileNumber": "AGR-2026-0018"
+              },
+              {
+                "clientId": "d018bba2-887a-42ed-ae21-0d4f4a3331cc",
+                "fileId": "f3383546-d98a-40b6-9472-13eb4bb02fc3",
+                "fileSource": "application_approval",
+                "fileNumber": "AGR-2026-0019"
+              }
+            ]
+          },
+          {
+            "id": "pending_approval",
+            "label": "Pending Approvals",
+            "count": 0,
+            "trend": "stable",
+            "trendLabel": "No change",
+            "lastUpdated": null,
+            "clientIds": [],
+            "matters": []
+          },
+          {
+            "id": "awaiting_lodge",
+            "label": "Awaiting Lodgement",
+            "count": 1,
+            "trend": "up",
+            "trendLabel": "+2 this week",
+            "lastUpdated": "2026-06-09T16:38:41.207922+00:00",
+            "clientIds": [
+              "bad84fbf-d49b-44eb-888a-254503bfc1fa"
+            ],
+            "matters": [
+              {
+                "clientId": "bad84fbf-d49b-44eb-888a-254503bfc1fa",
+                "fileId": "3be6b8fb-ffea-46e5-b7be-82f4d346cff8",
+                "fileSource": "application_approval",
+                "fileNumber": "AUD-MATTER-B-820"
+              }
+            ]
+          },
+          {
+            "id": "missing_sos",
+            "label": "Missing SOS",
+            "count": 0,
+            "trend": "stable",
+            "trendLabel": "No change",
+            "lastUpdated": null,
+            "clientIds": [],
+            "matters": []
+          },
+          {
+            "id": "incomplete_matters",
+            "label": "Incomplete Matters",
+            "count": 14,
+            "trend": "up",
+            "trendLabel": "14 open matters",
+            "lastUpdated": "2026-06-10T10:08:19.560334+00:00",
+            "clientIds": [
+              "5b020012-2509-455d-8ec2-7367066f6ee8",
+              "82ee4ced-bc90-41c3-b1c5-4cf0542d6c1a",
+              "c9d445c2-c0d6-4fd1-9a58-4876827ac60e",
+              "3463132e-212b-46a8-b175-7d46dcf47617",
+              "aa0915c8-41be-4ba5-a8ac-78d29b6a1f2a",
+              "bad84fbf-d49b-44eb-888a-254503bfc1fa",
+              "80b23e15-65e3-463d-8a00-a2edc04c55f5",
+              "00ecd8d9-1ff8-4f09-b5f2-d8c9c62ee869",
+              "d018bba2-887a-42ed-ae21-0d4f4a3331cc"
+            ],
+            "matters": [
+              {
+                "clientId": "5b020012-2509-455d-8ec2-7367066f6ee8",
+                "fileId": "01e6cef2-6d44-4746-ae56-12ccd4a4ee93",
+                "fileSource": "application_approval",
+                "fileNumber": "AGR-2026-0015"
+              },
+              {
+                "clientId": "82ee4ced-bc90-41c3-b1c5-4cf0542d6c1a",
+                "fileId": "39fcca35-9b56-4807-a9ee-9c26c2d96d79",
+                "fileSource": "application_approval",
+                "fileNumber": "AGR-2026-0016"
+              },
+              {
+                "clientId": "c9d445c2-c0d6-4fd1-9a58-4876827ac60e",
+                "fileId": "3557f901-060a-4bc7-858c-be8ff7d0175a",
+                "fileSource": "application_approval",
+                "fileNumber": "AGR-2026-0010"
+              },
+              {
+                "clientId": "3463132e-212b-46a8-b175-7d46dcf47617",
+                "fileId": "99299ec9-1e6a-4aaf-9ada-1bbb20fdc9f5",
+                "fileSource": "agreement",
+                "fileNumber": "AGR-2026-0002"
+              },
+              {
+                "clientId": "3463132e-212b-46a8-b175-7d46dcf47617",
+                "fileId": "4d63f99d-649a-4161-b53d-c90dfee78510",
+                "fileSource": "agreement",
+                "fileNumber": "AGR-2026-0006"
+              },
+              {
+                "clientId": "3463132e-212b-46a8-b175-7d46dcf47617",
+                "fileId": "3559b814-a08f-4f01-8bf8-b9010752043c",
+                "fileSource": "agreement",
+                "fileNumber": "AGR-2026-0003"
+              },
+              {
+                "clientId": "3463132e-212b-46a8-b175-7d46dcf47617",
+                "fileId": "b819eb06-374c-456d-8d24-66e46140252b",
+                "fileSource": "application_approval",
+                "fileNumber": "APP-2026-0001"
+              },
+              {
+                "clientId": "aa0915c8-41be-4ba5-a8ac-78d29b6a1f2a",
+                "fileId": "78d64530-c3c0-43fa-8cad-5f24c8f10b40",
+                "fileSource": "agreement",
+                "fileNumber": "AGR-2026-0005"
+              },
+              {
+                "clientId": "bad84fbf-d49b-44eb-888a-254503bfc1fa",
+                "fileId": "3be6b8fb-ffea-46e5-b7be-82f4d346cff8",
+                "fileSource": "application_approval",
+                "fileNumber": "AUD-MATTER-B-820"
+              },
+              {
+                "clientId": "bad84fbf-d49b-44eb-888a-254503bfc1fa",
+                "fileId": "920d3aff-89dd-4f1a-bbfc-b27b8ab18bba",
+                "fileSource": "application_approval",
+                "fileNumber": "AUD-MATTER-C-AAT"
+              },
+              {
+                "clientId": "bad84fbf-d49b-44eb-888a-254503bfc1fa",
+                "fileId": "c9a483a0-c04b-424f-9f8c-3009da7e963c",
+                "fileSource": "agreement",
+                "fileNumber": "AGR-2026-0004"
+              },
+              {
+                "clientId": "80b23e15-65e3-463d-8a00-a2edc04c55f5",
+                "fileId": "0497afa5-f5e7-4fac-9fc0-88fd759198ff",
+                "fileSource": "application_approval",
+                "fileNumber": "AGR-2026-0017"
+              },
+              {
+                "clientId": "00ecd8d9-1ff8-4f09-b5f2-d8c9c62ee869",
+                "fileId": "f83eb9b3-225b-4edf-8410-950f30e435dc",
+                "fileSource": "application_approval",
+                "fileNumber": "AGR-2026-0018"
+              },
+              {
+                "clientId": "d018bba2-887a-42ed-ae21-0d4f4a3331cc",
+                "fileId": "f3383546-d98a-40b6-9472-13eb4bb02fc3",
+                "fileSource": "application_approval",
+                "fileNumber": "AGR-2026-0019"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "api": [
+      {
+        "path": "/api/compliance/dashboard",
+        "status": 200,
+        "json": {
+          "success": true,
+          "dashboard": {
+            "summary": "[5 items]",
+            "activity": "[20 items]",
+            "attentionQueue": "[15 items]",
+            "workflowFunnel": "[8 items]",
+            "auditReadiness": {
+              "percentage": 22,
+              "breakdown": {
+                "saSigned": {
+                  "count": 7,
+                  "total": 15,
+                  "percent": 47
+                },
+                "approvalSigned": {
+                  "count": 2,
+                  "total": 15,
+                  "percent": 13
+                },
+                "lodged": {
+                  "count": 1,
+                  "total": 15,
+                  "percent": 7
+                },
+                "sosAcknowledged": {
+                  "count": 3,
+                  "total": 15,
+                  "percent": 20
+                }
+              },
+              "missingRequirements": "[4 items]",
+              "explanation": "Matter readiness is the average of four workflow gates across active matters: signed service agreement, signed application approval, lodged application, and acknowledged Statement of Service. Each gate is calculated per matter unit, then averaged."
+            },
+            "filterOptions": {
+              "matterTypes": "[1 items]",
+              "visaSubclasses": "[5 items]",
+              "agents": "[1 items]",
+              "stages": "[6 items]",
+              "priorities": "[3 items]",
+              "complianceStatuses": "[3 items]"
+            },
+            "generatedAt": "2026-06-10T10:26:57.916Z"
+          }
+        }
+      },
+      {
+        "path": "/api/compliance/dashboard",
+        "status": 200,
+        "json": {
+          "success": true,
+          "dashboard": {
+            "summary": "[5 items]",
+            "activity": "[20 items]",
+            "attentionQueue": "[15 items]",
+            "workflowFunnel": "[8 items]",
+            "auditReadiness": {
+              "percentage": 22,
+              "breakdown": {
+                "saSigned": {
+                  "count": 7,
+                  "total": 15,
+                  "percent": 47
+                },
+                "approvalSigned": {
+                  "count": 2,
+                  "total": 15,
+                  "percent": 13
+                },
+                "lodged": {
+                  "count": 1,
+                  "total": 15,
+                  "percent": 7
+                },
+                "sosAcknowledged": {
+                  "count": 3,
+                  "total": 15,
+                  "percent": 20
+                }
+              },
+              "missingRequirements": "[4 items]",
+              "explanation": "Matter readiness is the average of four workflow gates across active matters: signed service agreement, signed application approval, lodged application, and acknowledged Statement of Service. Each gate is calculated per matter unit, then averaged."
+            },
+            "filterOptions": {
+              "matterTypes": "[1 items]",
+              "visaSubclasses": "[5 items]",
+              "agents": "[1 items]",
+              "stages": "[6 items]",
+              "priorities": "[3 items]",
+              "complianceStatuses": "[3 items]"
+            },
+            "generatedAt": "2026-06-10T10:27:08.068Z"
+          }
+        }
+      },
+      {
+        "path": "/api/dashboard/summary",
+        "status": 200,
+        "json": {
+          "success": true,
+          "summary": {
+            "approvalWidgets": {
+              "awaitingReview": 1,
+              "awaitingApproval": 0,
+              "changesRequested": 0,
+              "readyToLodge": 1,
+              "recentlyApproved": 0,
+              "myAssignedReviews": 0,
+              "openChecklistItems": 5
+            },
+            "myTasks": "[0 items]",
+            "myReviews": "[0 items]",
+            "recentNotifications": "[0 items]",
+            "recentActivity": "[0 items]",
+            "upcomingDeadlines": "[0 items]",
+            "overdueApprovals": "[0 items]",
+            "pendingSignatures": "[0 items]"
+          },
+          "warnings": "[1 items]"
+        }
+      },
+      {
+        "path": "/api/notifications?limit=10",
+        "status": 200,
+        "json": {
+          "success": true,
+          "data": "[10 items]",
+          "count": 63,
+          "page": 1,
+          "limit": 10
+        }
+      },
+      {
+        "path": "/api/approvals/widgets",
+        "status": 200,
+        "json": {
+          "success": true,
+          "widgets": {
+            "awaitingReview": 1,
+            "awaitingApproval": 0,
+            "changesRequested": 0,
+            "readyToLodge": 1,
+            "recentlyApproved": 0,
+            "myAssignedReviews": 0,
+            "openChecklistItems": 5
+          }
+        }
+      },
+      {
+        "path": "/api/stripe/billing",
+        "status": 200,
+        "plan": {
+          "id": "IMMISIGN",
+          "name": "ImmiMate Plan",
+          "baseMonthlyUsd": 49,
+          "seatMonthlyUsd": 10,
+          "features": {
+            "oneAgencyWorkspace": true,
+            "oneBusinessProfile": true,
+            "unlimitedAgreements": true,
+            "applicationApprovals": true,
+            "documentSigning": true,
+            "templates": true,
+            "branding": true,
+            "auditTrail": true
+          }
+        }
+      },
+      {
+        "path": "/api/search?meta=1&q=DASH1%20Client",
+        "status": 200,
+        "json": {
+          "success": true,
+          "query": "DASH1 Client",
+          "sections": "[1 items]",
+          "quickActions": "[6 items]",
+          "totalCount": 1,
+          "timingMs": 2033,
+          "recent": "[0 items]",
+          "saved": "[0 items]"
+        }
+      },
+      {
+        "path": "/api/search?meta=1&q=AUD-MATTER-A-190",
+        "status": 200,
+        "json": {
+          "success": true,
+          "query": "AUD-MATTER-A-190",
+          "sections": "[6 items]",
+          "quickActions": "[6 items]",
+          "totalCount": 14,
+          "timingMs": 1561,
+          "recent": "[0 items]",
+          "saved": "[0 items]"
+        }
+      },
+      {
+        "path": "/api/search?meta=1&q=dash1-1781087215151",
+        "status": 200,
+        "json": {
+          "success": true,
+          "query": "dash1-1781087215151",
+          "sections": "[1 items]",
+          "quickActions": "[6 items]",
+          "totalCount": 1,
+          "timingMs": 1636,
+          "recent": "[0 items]",
+          "saved": "[0 items]"
+        }
+      },
+      {
+        "path": "/api/search?meta=1&q=ritik%20singh",
+        "status": 200,
+        "json": {
+          "success": true,
+          "query": "ritik singh",
+          "sections": "[2 items]",
+          "quickActions": "[6 items]",
+          "totalCount": 10,
+          "timingMs": 1924,
+          "recent": "[0 items]",
+          "saved": "[0 items]"
+        }
+      }
+    ],
+    "screenshots": [
+      "dashboard-kpi.png",
+      "dashboard-activity.png",
+      "dashboard-notifications.png",
+      "dashboard-search.png"
+    ],
+    "consoleErrors": [
+      "`DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.\n\nIf you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.\n\nFor more information, see https://radix-ui.com/primitives/docs/components/dialog",
+      "`DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.\n\nIf you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.\n\nFor more information, see https://radix-ui.com/primitives/docs/components/dialog"
+    ],
+    "sql": {
+      "clientCount": 15,
+      "agreementCount": 19,
+      "pendingAgreements": null,
+      "teamCount": 16,
+      "revenueSum": 0
+    }
+  },
+  "verdict": "PASS"
+}

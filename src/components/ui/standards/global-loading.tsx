@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Loader2 } from "lucide-react"
+import { ImmiMateSkeleton } from "@/components/ui/skeleton"
 import { useAsyncTaskStore } from "@/lib/ux/async-task-store"
 import { cn } from "@/lib/utils"
 
@@ -13,14 +13,14 @@ export function GlobalLoadingOverlay() {
 
   return (
     <div
-      className="fixed inset-0 z-[200] flex items-center justify-center bg-[#081B2E]/25 backdrop-blur-[2px]"
+      className="fixed inset-0 z-[200] flex items-center justify-center bg-[#111111]/25 backdrop-blur-[2px]"
       role="status"
       aria-live="polite"
       aria-busy="true"
     >
       <div className="rounded-2xl border border-slate-200 bg-white px-8 py-6 shadow-xl flex items-center gap-3">
-        <Loader2 className="h-6 w-6 text-[#0D9F8C] animate-spin" />
-        <span className="text-sm font-bold text-[#081B2E]">{label || "Working…"}</span>
+        <ImmiMateSkeleton className="h-6 w-6 rounded-full" />
+        <span className="text-sm font-bold text-[#111111]">{label || "Working…"}</span>
       </div>
     </div>
   )
@@ -41,7 +41,7 @@ export function GlobalActionProgress({ className }: { className?: string }) {
     >
       {tasks.map((t) => (
         <div key={t.id} className="flex items-center gap-2 text-xs font-semibold text-slate-700">
-          <Loader2 className="h-3.5 w-3.5 text-[#0D9F8C] animate-spin shrink-0" />
+          <ImmiMateSkeleton className="h-3.5 w-3.5 rounded-full shrink-0" />
           <span className="truncate">{t.label}</span>
         </div>
       ))}

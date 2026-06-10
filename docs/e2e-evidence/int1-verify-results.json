@@ -1,0 +1,124 @@
+{
+  "timestamp": "2026-06-10T07:31:39.023Z",
+  "baseUrl": "http://localhost:3000",
+  "results": [
+    {
+      "id": "ENV-SIGNWELL_API_KEY",
+      "status": "PASS",
+      "msg": "SET",
+      "detail": {}
+    },
+    {
+      "id": "ENV-SIGNWELL_WEBHOOK_ID",
+      "status": "FAIL",
+      "msg": "MISSING",
+      "detail": {}
+    },
+    {
+      "id": "ENV-SIGNWELL_WEBHOOK_SECRET",
+      "status": "FAIL",
+      "msg": "PLACEHOLDER",
+      "detail": {}
+    },
+    {
+      "id": "ENV-RESEND_API_KEY",
+      "status": "PASS",
+      "msg": "SET",
+      "detail": {}
+    },
+    {
+      "id": "ENV-RESEND_FROM_EMAIL",
+      "status": "PASS",
+      "msg": "SET",
+      "detail": {}
+    },
+    {
+      "id": "ENV-NEXT_PUBLIC_APP_URL",
+      "status": "PASS",
+      "msg": "SET",
+      "detail": {}
+    },
+    {
+      "id": "ENV-DATABASE_URL",
+      "status": "FAIL",
+      "msg": "MISSING",
+      "detail": {}
+    },
+    {
+      "id": "ENV-CRON_SECRET",
+      "status": "FAIL",
+      "msg": "MISSING",
+      "detail": {}
+    },
+    {
+      "id": "ENV-SUPABASE_SERVICE_ROLE_KEY",
+      "status": "PASS",
+      "msg": "SET",
+      "detail": {}
+    },
+    {
+      "id": "SIGNWELL-API",
+      "status": "PASS",
+      "msg": "HTTP 200",
+      "detail": {
+        "uses": "X-Api-Key"
+      }
+    },
+    {
+      "id": "RESEND-API",
+      "status": "PASS",
+      "msg": "HTTP 200",
+      "detail": {}
+    },
+    {
+      "id": "APP-URL",
+      "status": "WARN",
+      "msg": "http://localhost:3001 vs http://localhost:3000",
+      "detail": {}
+    },
+    {
+      "id": "NTF1-notifications.priority",
+      "status": "FAIL",
+      "msg": "column notifications.priority does not exist",
+      "detail": {}
+    },
+    {
+      "id": "NTF1-notifications.scope",
+      "status": "FAIL",
+      "msg": "column notifications.scope does not exist",
+      "detail": {}
+    },
+    {
+      "id": "NTF1-notifications.deleted_at",
+      "status": "FAIL",
+      "msg": "column notifications.deleted_at does not exist",
+      "detail": {}
+    },
+    {
+      "id": "NTF1-activity_events",
+      "status": "PASS",
+      "msg": "Could not find the table 'public.activity_events' in the schema cache",
+      "detail": {}
+    },
+    {
+      "id": "INT1-webhook_events",
+      "status": "PASS",
+      "msg": "Could not find the table 'public.webhook_events' in the schema cache",
+      "detail": {}
+    },
+    {
+      "id": "AGREEMENT-LIFECYCLE",
+      "status": "FAIL",
+      "msg": "status=draft hasPdf=false",
+      "detail": {
+        "note": "draft requires POST /api/agreements/[id]/generate before send"
+      }
+    },
+    {
+      "id": "SYSTEM-HEALTH-UI",
+      "status": "MANUAL",
+      "msg": "Open http://localhost:3000/workspace/ritiklabs/admin/system-health as Owner/Admin",
+      "detail": {}
+    }
+  ]
+}

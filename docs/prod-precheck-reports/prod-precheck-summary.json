@@ -1,0 +1,398 @@
+{
+  "generatedAt": "2026-06-09T18:11:45.054Z",
+  "agencySlug": "ritiklabs",
+  "score": 100,
+  "passed": 39,
+  "failed": 0,
+  "total": 39,
+  "productionReady": true,
+  "results": [
+    {
+      "id": "DB-COMPLIANCE-EVENTS",
+      "status": "PASS",
+      "msg": "compliance_events table exists with RLS",
+      "area": "eventLogging"
+    },
+    {
+      "id": "DB-SOS-TEMPLATE",
+      "status": "PASS",
+      "msg": "sos_compliance_disclosure column exists",
+      "area": "general"
+    },
+    {
+      "id": "DB-SOS-WORDING",
+      "status": "PASS",
+      "msg": "Locked compliance disclosure seeded in template storage",
+      "area": "general"
+    },
+    {
+      "id": "SOS-FEE-CALC",
+      "status": "PASS",
+      "msg": "Fee comparison calculates difference correctly",
+      "area": "general"
+    },
+    {
+      "id": "SOS-FEE-HIDE",
+      "status": "PASS",
+      "msg": "Identical fees hide comparison",
+      "area": "general"
+    },
+    {
+      "id": "SOS-PDF-FEE-COMP",
+      "status": "PASS",
+      "msg": "SoS preview HTML builder includes fee comparison",
+      "area": "pdfCompliance"
+    },
+    {
+      "id": "SOS-PDF-MARN-HEADER",
+      "status": "PASS",
+      "msg": "SoS preview has running header + DB compliance param",
+      "area": "pdfCompliance"
+    },
+    {
+      "id": "SOS-PDF-WORDING",
+      "status": "PASS",
+      "msg": "SoS PDF uses template-stored compliance wording param",
+      "area": "general"
+    },
+    {
+      "id": "AGR-PDF-MARN-HEADER",
+      "status": "PASS",
+      "msg": "Agreement preview has running MARN header",
+      "area": "pdfCompliance"
+    },
+    {
+      "id": "DOC-NAMING-SOS",
+      "status": "PASS",
+      "msg": "SoS filename: SoS_AGR-2026-0001_Smith_2026-06-14.pdf",
+      "area": "general"
+    },
+    {
+      "id": "DOC-NAMING-NOTES",
+      "status": "PASS",
+      "msg": "FileNotes filename: FileNotes_AGR-2026-0001_2026-06-14.txt",
+      "area": "general"
+    },
+    {
+      "id": "TS-UTC-STORE",
+      "status": "PASS",
+      "msg": "UTC ISO validation helper works",
+      "area": "general"
+    },
+    {
+      "id": "TS-DB-UTC",
+      "status": "PASS",
+      "msg": "DB stores UTC: 2026-06-09 18:01:03.455055+00",
+      "area": "timestampIntegrity"
+    },
+    {
+      "id": "TS-UI-SYDNEY",
+      "status": "PASS",
+      "msg": "Sydney display: 14 June 2026, 6:15 pm AEST",
+      "area": "timestampIntegrity"
+    },
+    {
+      "id": "SIG-BLOCK-MANUAL",
+      "status": "PASS",
+      "msg": "Manual acknowledged_at edit rejected",
+      "area": "signatureAudit"
+    },
+    {
+      "id": "EVENT-NOTE-ADDED",
+      "status": "PASS",
+      "msg": "note_added compliance event recorded",
+      "area": "eventLogging"
+    },
+    {
+      "id": "WIRE-SOS_CREATED",
+      "status": "PASS",
+      "msg": "sos_created wired in services",
+      "area": "eventLogging"
+    },
+    {
+      "id": "WIRE-SOS_SENT",
+      "status": "PASS",
+      "msg": "sos_sent wired in services",
+      "area": "eventLogging"
+    },
+    {
+      "id": "WIRE-SOS_ACKNOWLEDGED",
+      "status": "PASS",
+      "msg": "sos_acknowledged wired in services",
+      "area": "eventLogging"
+    },
+    {
+      "id": "WIRE-NOTE_ADDED",
+      "status": "PASS",
+      "msg": "note_added wired in services",
+      "area": "eventLogging"
+    },
+    {
+      "id": "WIRE-NOTES_EXPORTED",
+      "status": "PASS",
+      "msg": "notes_exported wired in services",
+      "area": "eventLogging"
+    },
+    {
+      "id": "WIRE-AGREEMENT_CREATED",
+      "status": "PASS",
+      "msg": "agreement_created wired in services",
+      "area": "eventLogging"
+    },
+    {
+      "id": "WIRE-AGREEMENT_SENT",
+      "status": "PASS",
+      "msg": "agreement_sent wired in services",
+      "area": "eventLogging"
+    },
+    {
+      "id": "WIRE-AGREEMENT_SIGNED",
+      "status": "PASS",
+      "msg": "agreement_signed wired in services",
+      "area": "eventLogging"
+    },
+    {
+      "id": "WIRE-APPROVAL_CREATED",
+      "status": "PASS",
+      "msg": "approval_created wired in services",
+      "area": "eventLogging"
+    },
+    {
+      "id": "WIRE-APPROVAL_SENT",
+      "status": "PASS",
+      "msg": "approval_sent wired in services",
+      "area": "eventLogging"
+    },
+    {
+      "id": "WIRE-APPROVAL_SIGNED",
+      "status": "PASS",
+      "msg": "approval_signed wired in services",
+      "area": "eventLogging"
+    },
+    {
+      "id": "WIRE-LODGEMENT_RECORDED",
+      "status": "PASS",
+      "msg": "lodgement_recorded wired in services",
+      "area": "eventLogging"
+    },
+    {
+      "id": "WIRE-MATTER_COMPLETED",
+      "status": "PASS",
+      "msg": "matter_completed wired in services",
+      "area": "eventLogging"
+    },
+    {
+      "id": "EVENT-DB-ROWS",
+      "status": "PASS",
+      "msg": "1 event type(s) in compliance_events",
+      "area": "eventLogging"
+    },
+    {
+      "id": "MOBILE-IPHONE14",
+      "status": "PASS",
+      "msg": "File Notes — no horizontal scroll (390px)",
+      "area": "mobileCompatibility"
+    },
+    {
+      "id": "MOBILE-IPHONESE",
+      "status": "PASS",
+      "msg": "File Notes — no horizontal scroll (375px)",
+      "area": "mobileCompatibility"
+    },
+    {
+      "id": "MOBILE-PIXEL7",
+      "status": "PASS",
+      "msg": "File Notes — no horizontal scroll (412px)",
+      "area": "mobileCompatibility"
+    },
+    {
+      "id": "MOBILE-IPAD",
+      "status": "PASS",
+      "msg": "File Notes — no horizontal scroll (820px)",
+      "area": "mobileCompatibility"
+    },
+    {
+      "id": "BROWSER-CTRL-ENTER",
+      "status": "PASS",
+      "msg": "Ctrl+Enter submits file note",
+      "area": "general"
+    },
+    {
+      "id": "BROWSER-NO-DUP",
+      "status": "PASS",
+      "msg": "No duplicate note on Ctrl+Enter",
+      "area": "general"
+    },
+    {
+      "id": "BROWSER-MATTER-PANEL",
+      "status": "PASS",
+      "msg": "Matter Details panel shows required fields (no File Number)",
+      "area": "general"
+    },
+    {
+      "id": "BROWSER-MATTER-VALUES",
+      "status": "PASS",
+      "msg": "No em-dash/null/undefined in matter panel",
+      "area": "general"
+    },
+    {
+      "id": "MOBILE-ONBOARDING",
+      "status": "PASS",
+      "msg": "Onboarding wizard fits iPhone 14",
+      "area": "mobileCompatibility"
+    }
+  ],
+  "reports": {
+    "complianceGap": [],
+    "pdfCompliance": [
+      {
+        "id": "SOS-PDF-FEE-COMP",
+        "status": "PASS",
+        "msg": "SoS preview HTML builder includes fee comparison"
+      },
+      {
+        "id": "SOS-PDF-MARN-HEADER",
+        "status": "PASS",
+        "msg": "SoS preview has running header + DB compliance param"
+      },
+      {
+        "id": "AGR-PDF-MARN-HEADER",
+        "status": "PASS",
+        "msg": "Agreement preview has running MARN header"
+      }
+    ],
+    "mobileCompatibility": [
+      {
+        "id": "MOBILE-IPHONE14",
+        "status": "PASS",
+        "msg": "File Notes — no horizontal scroll (390px)"
+      },
+      {
+        "id": "MOBILE-IPHONESE",
+        "status": "PASS",
+        "msg": "File Notes — no horizontal scroll (375px)"
+      },
+      {
+        "id": "MOBILE-PIXEL7",
+        "status": "PASS",
+        "msg": "File Notes — no horizontal scroll (412px)"
+      },
+      {
+        "id": "MOBILE-IPAD",
+        "status": "PASS",
+        "msg": "File Notes — no horizontal scroll (820px)"
+      },
+      {
+        "id": "MOBILE-ONBOARDING",
+        "status": "PASS",
+        "msg": "Onboarding wizard fits iPhone 14"
+      }
+    ],
+    "signatureAudit": [
+      {
+        "id": "SIG-BLOCK-MANUAL",
+        "status": "PASS",
+        "msg": "Manual acknowledged_at edit rejected"
+      }
+    ],
+    "eventLogging": [
+      {
+        "id": "DB-COMPLIANCE-EVENTS",
+        "status": "PASS",
+        "msg": "compliance_events table exists with RLS"
+      },
+      {
+        "id": "EVENT-NOTE-ADDED",
+        "status": "PASS",
+        "msg": "note_added compliance event recorded"
+      },
+      {
+        "id": "WIRE-SOS_CREATED",
+        "status": "PASS",
+        "msg": "sos_created wired in services"
+      },
+      {
+        "id": "WIRE-SOS_SENT",
+        "status": "PASS",
+        "msg": "sos_sent wired in services"
+      },
+      {
+        "id": "WIRE-SOS_ACKNOWLEDGED",
+        "status": "PASS",
+        "msg": "sos_acknowledged wired in services"
+      },
+      {
+        "id": "WIRE-NOTE_ADDED",
+        "status": "PASS",
+        "msg": "note_added wired in services"
+      },
+      {
+        "id": "WIRE-NOTES_EXPORTED",
+        "status": "PASS",
+        "msg": "notes_exported wired in services"
+      },
+      {
+        "id": "WIRE-AGREEMENT_CREATED",
+        "status": "PASS",
+        "msg": "agreement_created wired in services"
+      },
+      {
+        "id": "WIRE-AGREEMENT_SENT",
+        "status": "PASS",
+        "msg": "agreement_sent wired in services"
+      },
+      {
+        "id": "WIRE-AGREEMENT_SIGNED",
+        "status": "PASS",
+        "msg": "agreement_signed wired in services"
+      },
+      {
+        "id": "WIRE-APPROVAL_CREATED",
+        "status": "PASS",
+        "msg": "approval_created wired in services"
+      },
+      {
+        "id": "WIRE-APPROVAL_SENT",
+        "status": "PASS",
+        "msg": "approval_sent wired in services"
+      },
+      {
+        "id": "WIRE-APPROVAL_SIGNED",
+        "status": "PASS",
+        "msg": "approval_signed wired in services"
+      },
+      {
+        "id": "WIRE-LODGEMENT_RECORDED",
+        "status": "PASS",
+        "msg": "lodgement_recorded wired in services"
+      },
+      {
+        "id": "WIRE-MATTER_COMPLETED",
+        "status": "PASS",
+        "msg": "matter_completed wired in services"
+      },
+      {
+        "id": "EVENT-DB-ROWS",
+        "status": "PASS",
+        "msg": "1 event type(s) in compliance_events"
+      }
+    ],
+    "betaTesterRisk": [],
+    "timestampIntegrity": [
+      {
+        "id": "TS-DB-UTC",
+        "status": "PASS",
+        "msg": "DB stores UTC: 2026-06-09 18:01:03.455055+00"
+      },
+      {
+        "id": "TS-UI-SYDNEY",
+        "status": "PASS",
+        "msg": "Sydney display: 14 June 2026, 6:15 pm AEST"
+      },
+      {
+        "db": "2026-06-14T08:15:00.000Z",
+        "ui": "14 June 2026, 6:15 pm AEST"
+      }
+    ]
+  }
+}

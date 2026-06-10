@@ -48,7 +48,7 @@ export default function SignupPage() {
   const appHost =
     typeof window !== "undefined"
       ? window.location.host
-      : "app.immisign.com.au"
+      : "app.immimate.com"
 
   React.useEffect(() => {
     if (!agencyName.trim()) return
@@ -146,7 +146,7 @@ export default function SignupPage() {
         teamSize,
         specialty,
         invitedStaff: [],
-        primaryColor: "#0D9F8C",
+        primaryColor: "#111111",
         logoText: agencyName
           .split(" ")
           .map((w) => w[0])
@@ -187,11 +187,11 @@ export default function SignupPage() {
   return (
     <div className="animate-in fade-in-50 duration-300">
       <div className="mb-6">
-        <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-[#0D9F8C]">
+        <div className="inline-flex items-center gap-2 rounded-full bg-[#FAFAFA] px-3 py-1 text-xs font-black text-[#111111]">
           <Sparkles className="h-3.5 w-3.5" />
           14-day free trial · Isolated agency workspace
         </div>
-        <h1 className="mt-5 text-4xl font-black tracking-tight text-[#081B2E]">
+        <h1 className="mt-5 text-4xl font-black tracking-tight text-[#111111]">
           Create your agency workspace
         </h1>
         <p className="mt-3 text-sm leading-6 text-slate-600">
@@ -248,7 +248,7 @@ export default function SignupPage() {
           <Label htmlFor="workspace-slug" className="font-bold text-slate-700">
             Workspace URL
           </Label>
-          <div className="flex overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm focus-within:ring-2 focus-within:ring-[#0D9F8C]/30">
+          <div className="flex overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm focus-within:ring-2 focus-within:ring-[#111111]/30">
             <span className="flex items-center gap-1.5 border-r border-slate-100 bg-slate-50 px-3 text-xs font-semibold text-slate-500">
               <Globe className="h-3.5 w-3.5 shrink-0" />
               {appHost}/workspace/
@@ -271,7 +271,7 @@ export default function SignupPage() {
                 <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
               )}
               {slugCheck === "available" && (
-                <CheckCircle2 className="h-4 w-4 text-emerald-600" aria-hidden />
+                <CheckCircle2 className="h-4 w-4 text-[#5C5C5C]" aria-hidden />
               )}
               {(slugCheck === "taken" || slugCheck === "invalid") && (
                 <XCircle className="h-4 w-4 text-red-500" aria-hidden />
@@ -280,7 +280,7 @@ export default function SignupPage() {
           </div>
           <p id="workspace-slug-hint" className="text-xs text-slate-500">
             {slugCheck === "available" && (
-              <span className="font-semibold text-emerald-700">
+              <span className="font-semibold text-[#111111]">
                 This URL is available.
               </span>
             )}
@@ -306,7 +306,7 @@ export default function SignupPage() {
                   key={s}
                   type="button"
                   onClick={() => applySuggestion(s)}
-                  className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-[#0A5B52] hover:bg-emerald-100"
+                  className="rounded-lg border border-[#E7E7E7] bg-[#FAFAFA] px-3 py-1.5 text-xs font-bold text-[#222222] hover:bg-[#FAFAFA]"
                 >
                   {s}
                 </button>
@@ -350,7 +350,7 @@ export default function SignupPage() {
             <select
               value={teamSize}
               onChange={(e) => setTeamSize(e.target.value)}
-              className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]"
+              className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#111111]"
             >
               <option value="1">Solo RMA</option>
               <option value="2-5">2–5 practitioners</option>
@@ -365,7 +365,7 @@ export default function SignupPage() {
             <select
               value={specialty}
               onChange={(e) => setSpecialty(e.target.value)}
-              className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]"
+              className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#111111]"
             >
               <option value="skilled">Skilled SC 189/190</option>
               <option value="partner">Partner SC 820/309</option>
@@ -402,7 +402,7 @@ export default function SignupPage() {
         <Button
           type="submit"
           disabled={isLoading || !canSubmit}
-          className="group mt-2 flex h-12 items-center justify-center gap-2 rounded-xl bg-[#0D9F8C] text-base font-black shadow-sm hover:bg-[#0A5B52] disabled:opacity-60"
+          className="group mt-2 flex h-12 items-center justify-center gap-2 rounded-xl bg-[#111111] text-base font-black shadow-sm hover:bg-[#222222] disabled:opacity-60"
         >
           {isLoading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -415,14 +415,14 @@ export default function SignupPage() {
         </Button>
       </form>
 
-      <div className="mt-5 grid gap-2.5 rounded-xl border border-emerald-100 bg-[#F7FAF8] p-4 text-xs font-bold text-slate-700">
+      <div className="mt-5 grid gap-2.5 rounded-xl border border-[#E7E7E7] bg-[#FAFAFA] p-4 text-xs font-bold text-slate-700">
         {[
           "Dedicated workspace URL for your agency",
           "Client agreements and document signing in one place",
           "Team invites and role-based access",
         ].map((benefit) => (
           <div key={benefit} className="flex items-center gap-2.5">
-            <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-[#0D9F8C]" />
+            <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-[#111111]" />
             <span>{benefit}</span>
           </div>
         ))}
@@ -430,7 +430,7 @@ export default function SignupPage() {
 
       <p className="mt-5 text-center text-sm text-slate-500">
         Already have an account?{" "}
-        <Link href="/login" className="font-black text-[#0D9F8C] hover:underline">
+        <Link href="/login" className="font-black text-[#111111] hover:underline">
           Sign in
         </Link>
       </p>

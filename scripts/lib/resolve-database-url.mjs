@@ -34,9 +34,10 @@ export function resolveDatabaseUrlCandidates(env) {
   const enc = encodeURIComponent(password);
 
   return [
-    `postgresql://postgres:${enc}@db.${ref}.supabase.co:5432/postgres`,
+    `postgresql://postgres.${ref}:${enc}@aws-1-${region}.pooler.supabase.com:5432/postgres`,
     `postgresql://postgres.${ref}:${enc}@aws-0-${region}.pooler.supabase.com:5432/postgres`,
     `postgresql://postgres.${ref}:${enc}@aws-0-${region}.pooler.supabase.com:6543/postgres`,
+    `postgresql://postgres:${enc}@db.${ref}.supabase.co:5432/postgres`,
   ];
 }
 

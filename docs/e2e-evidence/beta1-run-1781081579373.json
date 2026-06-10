@@ -1,0 +1,3886 @@
+{
+  "stamp": 1781081579373,
+  "agencyA": {
+    "id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+    "slug": "ritiklabs",
+    "name": "Ritiklabs"
+  },
+  "agencyB": {
+    "id": "1cd4007e-bbe1-4205-9481-233e2fe90ee7",
+    "slug": "avc-migration-live",
+    "name": "AVC Migration"
+  },
+  "evidence": {
+    "users": [
+      {
+        "id": "2cab360f-fd21-461a-8a57-67573dee0530",
+        "email": "nayramalik1018@gmail.com",
+        "role": "owner",
+        "uiRole": "Owner",
+        "label": "Owner"
+      },
+      {
+        "id": "2ee31701-bec7-4413-a50f-db6a3b82f4ab",
+        "email": "beta1.admin.1781080071368@immimate.au",
+        "role": "admin",
+        "uiRole": "Admin",
+        "label": "Admin"
+      },
+      {
+        "id": "438ea7eb-0cb0-4988-ac46-721f82dd3f2f",
+        "email": "beta1.agent.1781080071368@immimate.au",
+        "role": "agent",
+        "uiRole": "Migration Agent",
+        "label": "Migration Agent"
+      },
+      {
+        "id": "78c33e3f-e0b7-4cf7-8e91-c63d29a08c8c",
+        "email": "beta1.manager.1781080071368@immimate.au",
+        "role": "manager",
+        "uiRole": "Case Manager",
+        "label": "Case Manager"
+      },
+      {
+        "id": "8d025fe3-0b9c-4130-b602-56cbdf4a342e",
+        "email": "beta1.support.1781080071368@immimate.au",
+        "role": "support",
+        "uiRole": "Assistant",
+        "label": "Assistant"
+      },
+      {
+        "id": "b71bac60-495f-4f13-b6c9-419e09b5ab4a",
+        "email": "beta1.viewer.1781080071368@immimate.au",
+        "role": "viewer",
+        "uiRole": "Read-only staff",
+        "label": "Read Only"
+      }
+    ],
+    "sidebar": [
+      {
+        "role": "owner",
+        "uiRole": "Owner",
+        "navResults": [
+          {
+            "key": "dashboard",
+            "title": "Dashboard",
+            "path": "dashboard",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          },
+          {
+            "key": "clients",
+            "title": "Clients",
+            "path": "clients",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/clients"
+          },
+          {
+            "key": "agreements",
+            "title": "Agreements",
+            "path": "agreements",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/agreements"
+          },
+          {
+            "key": "approvals",
+            "title": "Approvals",
+            "path": "approvals",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/approvals"
+          },
+          {
+            "key": "documents-send",
+            "title": "Documents",
+            "path": "documents/send",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/documents/send"
+          },
+          {
+            "key": "documents-library",
+            "title": "Documents",
+            "path": "documents/library",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/documents/library"
+          },
+          {
+            "key": "file-notes",
+            "title": "File Notes",
+            "path": "file-notes",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/file-notes"
+          },
+          {
+            "key": "sos",
+            "state": "n/a",
+            "note": "Client profile tab — not top-level sidebar"
+          },
+          {
+            "key": "templates",
+            "title": "Templates",
+            "path": "templates",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/templates"
+          },
+          {
+            "key": "notifications",
+            "title": "Notifications",
+            "path": "notifications",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/notifications"
+          },
+          {
+            "key": "settings",
+            "title": "Settings",
+            "path": "settings",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/settings"
+          },
+          {
+            "key": "billing",
+            "title": "Billing",
+            "path": "billing",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/billing"
+          },
+          {
+            "key": "reports",
+            "title": "Reports",
+            "path": "reports",
+            "state": "redirect",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          },
+          {
+            "key": "analytics",
+            "title": "Analytics",
+            "path": "analytics",
+            "state": "redirect",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          }
+        ],
+        "screenshot": "docs\\beta1-screenshots\\owner-sidebar.png"
+      },
+      {
+        "role": "admin",
+        "uiRole": "Admin",
+        "navResults": [
+          {
+            "key": "dashboard",
+            "title": "Dashboard",
+            "path": "dashboard",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          },
+          {
+            "key": "clients",
+            "title": "Clients",
+            "path": "clients",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/clients"
+          },
+          {
+            "key": "agreements",
+            "title": "Agreements",
+            "path": "agreements",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/agreements"
+          },
+          {
+            "key": "approvals",
+            "title": "Approvals",
+            "path": "approvals",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/approvals"
+          },
+          {
+            "key": "documents-send",
+            "title": "Documents",
+            "path": "documents/send",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/documents/send"
+          },
+          {
+            "key": "documents-library",
+            "title": "Documents",
+            "path": "documents/library",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/documents/library"
+          },
+          {
+            "key": "file-notes",
+            "title": "File Notes",
+            "path": "file-notes",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/file-notes"
+          },
+          {
+            "key": "sos",
+            "state": "n/a",
+            "note": "Client profile tab — not top-level sidebar"
+          },
+          {
+            "key": "templates",
+            "title": "Templates",
+            "path": "templates",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/templates"
+          },
+          {
+            "key": "notifications",
+            "title": "Notifications",
+            "path": "notifications",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/notifications"
+          },
+          {
+            "key": "settings",
+            "title": "Settings",
+            "path": "settings",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/settings"
+          },
+          {
+            "key": "billing",
+            "title": "Billing",
+            "path": "billing",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/billing"
+          },
+          {
+            "key": "reports",
+            "title": "Reports",
+            "path": "reports",
+            "state": "redirect",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          },
+          {
+            "key": "analytics",
+            "title": "Analytics",
+            "path": "analytics",
+            "state": "redirect",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          }
+        ],
+        "screenshot": "docs\\beta1-screenshots\\admin-sidebar.png"
+      },
+      {
+        "role": "agent",
+        "uiRole": "Migration Agent",
+        "navResults": [
+          {
+            "key": "dashboard",
+            "title": "Dashboard",
+            "path": "dashboard",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          },
+          {
+            "key": "clients",
+            "title": "Clients",
+            "path": "clients",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/clients"
+          },
+          {
+            "key": "agreements",
+            "title": "Agreements",
+            "path": "agreements",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/agreements"
+          },
+          {
+            "key": "approvals",
+            "title": "Approvals",
+            "path": "approvals",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/approvals"
+          },
+          {
+            "key": "documents-send",
+            "title": "Documents",
+            "path": "documents/send",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/documents/send"
+          },
+          {
+            "key": "documents-library",
+            "title": "Documents",
+            "path": "documents/library",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/documents/library"
+          },
+          {
+            "key": "file-notes",
+            "title": "File Notes",
+            "path": "file-notes",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/file-notes"
+          },
+          {
+            "key": "sos",
+            "state": "n/a",
+            "note": "Client profile tab — not top-level sidebar"
+          },
+          {
+            "key": "templates",
+            "title": "Templates",
+            "path": "templates",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/templates"
+          },
+          {
+            "key": "notifications",
+            "title": "Notifications",
+            "path": "notifications",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/notifications"
+          },
+          {
+            "key": "settings",
+            "title": "Settings",
+            "path": "settings",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/settings"
+          },
+          {
+            "key": "billing",
+            "title": "Billing",
+            "path": "billing",
+            "state": "blocked",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard?access=denied"
+          },
+          {
+            "key": "reports",
+            "title": "Reports",
+            "path": "reports",
+            "state": "redirect",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          },
+          {
+            "key": "analytics",
+            "title": "Analytics",
+            "path": "analytics",
+            "state": "redirect",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          }
+        ],
+        "screenshot": "docs\\beta1-screenshots\\agent-sidebar.png"
+      },
+      {
+        "role": "manager",
+        "uiRole": "Case Manager",
+        "navResults": [
+          {
+            "key": "dashboard",
+            "title": "Dashboard",
+            "path": "dashboard",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          },
+          {
+            "key": "clients",
+            "title": "Clients",
+            "path": "clients",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/clients"
+          },
+          {
+            "key": "agreements",
+            "title": "Agreements",
+            "path": "agreements",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/agreements"
+          },
+          {
+            "key": "approvals",
+            "title": "Approvals",
+            "path": "approvals",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/approvals"
+          },
+          {
+            "key": "documents-send",
+            "title": "Documents",
+            "path": "documents/send",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/documents/send"
+          },
+          {
+            "key": "documents-library",
+            "title": "Documents",
+            "path": "documents/library",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/documents/library"
+          },
+          {
+            "key": "file-notes",
+            "title": "File Notes",
+            "path": "file-notes",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/file-notes"
+          },
+          {
+            "key": "sos",
+            "state": "n/a",
+            "note": "Client profile tab — not top-level sidebar"
+          },
+          {
+            "key": "templates",
+            "title": "Templates",
+            "path": "templates",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/templates"
+          },
+          {
+            "key": "notifications",
+            "title": "Notifications",
+            "path": "notifications",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/notifications"
+          },
+          {
+            "key": "settings",
+            "title": "Settings",
+            "path": "settings",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/settings"
+          },
+          {
+            "key": "billing",
+            "title": "Billing",
+            "path": "billing",
+            "state": "blocked",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard?access=denied"
+          },
+          {
+            "key": "reports",
+            "title": "Reports",
+            "path": "reports",
+            "state": "redirect",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          },
+          {
+            "key": "analytics",
+            "title": "Analytics",
+            "path": "analytics",
+            "state": "redirect",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          }
+        ],
+        "screenshot": "docs\\beta1-screenshots\\manager-sidebar.png"
+      },
+      {
+        "role": "assistant",
+        "uiRole": "Assistant",
+        "navResults": [
+          {
+            "key": "dashboard",
+            "title": "Dashboard",
+            "path": "dashboard",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          },
+          {
+            "key": "clients",
+            "title": "Clients",
+            "path": "clients",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/clients"
+          },
+          {
+            "key": "agreements",
+            "title": "Agreements",
+            "path": "agreements",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/agreements"
+          },
+          {
+            "key": "approvals",
+            "title": "Approvals",
+            "path": "approvals",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/approvals"
+          },
+          {
+            "key": "documents-send",
+            "title": "Documents",
+            "path": "documents/send",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/documents/send"
+          },
+          {
+            "key": "documents-library",
+            "title": "Documents",
+            "path": "documents/library",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/documents/library"
+          },
+          {
+            "key": "file-notes",
+            "title": "File Notes",
+            "path": "file-notes",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/file-notes"
+          },
+          {
+            "key": "sos",
+            "state": "n/a",
+            "note": "Client profile tab — not top-level sidebar"
+          },
+          {
+            "key": "templates",
+            "title": "Templates",
+            "path": "templates",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/templates"
+          },
+          {
+            "key": "notifications",
+            "title": "Notifications",
+            "path": "notifications",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/notifications"
+          },
+          {
+            "key": "settings",
+            "title": "Settings",
+            "path": "settings",
+            "state": "blocked",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard?access=denied"
+          },
+          {
+            "key": "billing",
+            "title": "Billing",
+            "path": "billing",
+            "state": "blocked",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard?access=denied"
+          },
+          {
+            "key": "reports",
+            "title": "Reports",
+            "path": "reports",
+            "state": "redirect",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          },
+          {
+            "key": "analytics",
+            "title": "Analytics",
+            "path": "analytics",
+            "state": "redirect",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          }
+        ],
+        "screenshot": "docs\\beta1-screenshots\\assistant-sidebar.png"
+      },
+      {
+        "role": "viewer",
+        "uiRole": "Read-only staff",
+        "navResults": [
+          {
+            "key": "dashboard",
+            "title": "Dashboard",
+            "path": "dashboard",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          },
+          {
+            "key": "clients",
+            "title": "Clients",
+            "path": "clients",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/clients"
+          },
+          {
+            "key": "agreements",
+            "title": "Agreements",
+            "path": "agreements",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/agreements"
+          },
+          {
+            "key": "approvals",
+            "title": "Approvals",
+            "path": "approvals",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/approvals"
+          },
+          {
+            "key": "documents-send",
+            "title": "Documents",
+            "path": "documents/send",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/documents/send"
+          },
+          {
+            "key": "documents-library",
+            "title": "Documents",
+            "path": "documents/library",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/documents/library"
+          },
+          {
+            "key": "file-notes",
+            "title": "File Notes",
+            "path": "file-notes",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/file-notes"
+          },
+          {
+            "key": "sos",
+            "state": "n/a",
+            "note": "Client profile tab — not top-level sidebar"
+          },
+          {
+            "key": "templates",
+            "title": "Templates",
+            "path": "templates",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/templates"
+          },
+          {
+            "key": "notifications",
+            "title": "Notifications",
+            "path": "notifications",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/notifications"
+          },
+          {
+            "key": "settings",
+            "title": "Settings",
+            "path": "settings",
+            "state": "blocked",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard?access=denied"
+          },
+          {
+            "key": "billing",
+            "title": "Billing",
+            "path": "billing",
+            "state": "blocked",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard?access=denied"
+          },
+          {
+            "key": "reports",
+            "title": "Reports",
+            "path": "reports",
+            "state": "redirect",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          },
+          {
+            "key": "analytics",
+            "title": "Analytics",
+            "path": "analytics",
+            "state": "redirect",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          }
+        ],
+        "screenshot": "docs\\beta1-screenshots\\viewer-sidebar.png"
+      }
+    ],
+    "routes": [
+      {
+        "role": "owner",
+        "path": "settings",
+        "shouldDeny": false,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/settings"
+      },
+      {
+        "role": "owner",
+        "path": "billing",
+        "shouldDeny": false,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/billing"
+      },
+      {
+        "role": "owner",
+        "path": "admin/system-health",
+        "shouldDeny": false,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/admin/system-health"
+      },
+      {
+        "role": "owner",
+        "path": "reports",
+        "shouldDeny": false,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/reports"
+      },
+      {
+        "role": "owner",
+        "path": "analytics",
+        "shouldDeny": false,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+      },
+      {
+        "role": "admin",
+        "path": "settings",
+        "shouldDeny": false,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/settings"
+      },
+      {
+        "role": "admin",
+        "path": "billing",
+        "shouldDeny": false,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/billing"
+      },
+      {
+        "role": "admin",
+        "path": "admin/system-health",
+        "shouldDeny": false,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/admin/system-health"
+      },
+      {
+        "role": "admin",
+        "path": "reports",
+        "shouldDeny": false,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+      },
+      {
+        "role": "admin",
+        "path": "analytics",
+        "shouldDeny": false,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+      },
+      {
+        "role": "agent",
+        "path": "settings",
+        "shouldDeny": false,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/settings"
+      },
+      {
+        "role": "agent",
+        "path": "billing",
+        "shouldDeny": true,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard?access=denied"
+      },
+      {
+        "role": "agent",
+        "path": "admin/system-health",
+        "shouldDeny": true,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard?access=denied"
+      },
+      {
+        "role": "agent",
+        "path": "reports",
+        "shouldDeny": false,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+      },
+      {
+        "role": "agent",
+        "path": "analytics",
+        "shouldDeny": false,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+      },
+      {
+        "role": "manager",
+        "path": "settings",
+        "shouldDeny": false,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/settings"
+      },
+      {
+        "role": "manager",
+        "path": "billing",
+        "shouldDeny": true,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard?access=denied"
+      },
+      {
+        "role": "manager",
+        "path": "admin/system-health",
+        "shouldDeny": true,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard?access=denied"
+      },
+      {
+        "role": "manager",
+        "path": "reports",
+        "shouldDeny": false,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+      },
+      {
+        "role": "manager",
+        "path": "analytics",
+        "shouldDeny": false,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+      },
+      {
+        "role": "assistant",
+        "path": "settings",
+        "shouldDeny": true,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard?access=denied"
+      },
+      {
+        "role": "assistant",
+        "path": "billing",
+        "shouldDeny": true,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard?access=denied"
+      },
+      {
+        "role": "assistant",
+        "path": "admin/system-health",
+        "shouldDeny": true,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard?access=denied"
+      },
+      {
+        "role": "assistant",
+        "path": "reports",
+        "shouldDeny": false,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+      },
+      {
+        "role": "assistant",
+        "path": "analytics",
+        "shouldDeny": false,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+      },
+      {
+        "role": "viewer",
+        "path": "settings",
+        "shouldDeny": true,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard?access=denied"
+      },
+      {
+        "role": "viewer",
+        "path": "billing",
+        "shouldDeny": true,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard?access=denied"
+      },
+      {
+        "role": "viewer",
+        "path": "admin/system-health",
+        "shouldDeny": true,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard?access=denied"
+      },
+      {
+        "role": "viewer",
+        "path": "reports",
+        "shouldDeny": false,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+      },
+      {
+        "role": "viewer",
+        "path": "analytics",
+        "shouldDeny": false,
+        "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+      }
+    ],
+    "api": [
+      {
+        "method": "PATCH",
+        "path": "/api/settings/branding",
+        "status": 200,
+        "json": {
+          "success": true,
+          "branding": {
+            "id": "35db8cb3-6d91-4810-be6d-7c62faa7c4e9",
+            "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+            "logo_url": "https://wnohcmgmyhamsbmkiybc.supabase.co/storage/v1/object/public/agency_logos/3cd3a307-b7e5-4984-82d4-bf757e834afd/logo.jpeg",
+            "favicon_url": null,
+            "primary_color": "#111111",
+            "secondary_color": "#3b82f6",
+            "font_family": "Inter",
+            "custom_css": null,
+            "email_header": null,
+            "email_footer": null,
+            "created_at": "2026-06-04T12:55:44.454642+00:00",
+            "updated_at": "2026-06-10T08:58:34.188002+00:00",
+            "agreement_ref_prefix": "AGR",
+            "agreement_ref_start": 1000,
+            "agreement_header_title": "Migration Agent Service Agreement",
+            "agreement_footer_text": "This document was prepared by a Registered Migration Agent bound by the MARA Code of Conduct."
+          }
+        }
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/settings/branding",
+        "status": 403,
+        "json": {
+          "success": false,
+          "error": "Only owners and admins can update branding"
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/api/approvals",
+        "status": 500,
+        "json": {
+          "success": false,
+          "error": "Unauthorized to create approvals",
+          "code": "INTERNAL_ERROR"
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/api/agreements/send",
+        "status": 403,
+        "json": {
+          "success": false,
+          "error": "Permission denied"
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/api/onboarding/complete",
+        "status": 400,
+        "json": {
+          "error": "Invalid input Invalid input"
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/api/agreements/send",
+        "status": 500,
+        "json": {
+          "success": false,
+          "error": "Invalid agreement state transition: Cannot transition from signed to sent.",
+          "code": "INTERNAL_ERROR"
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/api/clients/aba4adf4-7e5a-4148-9289-e13e84932f38/file-notes",
+        "status": 201,
+        "json": {
+          "success": true,
+          "note": {
+            "id": "de1558db-1d7d-4510-923d-76736eaf7c82",
+            "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+            "client_id": "aba4adf4-7e5a-4148-9289-e13e84932f38",
+            "created_by": "8d025fe3-0b9c-4130-b602-56cbdf4a342e",
+            "note_type": "phone",
+            "body": "BETA1 assistant note 1781081579373",
+            "recorded_at": "2026-06-10T08:58:41.696563+00:00",
+            "is_system_note": false,
+            "reference_type": null,
+            "reference_id": null,
+            "metadata": {},
+            "created_at": "2026-06-10T08:58:41.696563+00:00",
+            "file_source": "agreement",
+            "file_id": "ee089978-45d0-418d-8621-bbc20d6e0844",
+            "users": {
+              "full_name": "BETA1 Assistant"
+            },
+            "author_name": "BETA1 Assistant"
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/api/clients/e4fb3dd3-a656-48e2-b22d-3982484ac709",
+        "status": 404,
+        "json": {}
+      },
+      {
+        "method": "GET",
+        "path": "/api/clients/search?q=E2E",
+        "status": 200,
+        "json": {
+          "success": true,
+          "matters": [],
+          "clients": []
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/api/approvals",
+        "status": 200,
+        "json": {
+          "success": true,
+          "data": [],
+          "count": 0
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/api/approvals",
+        "status": 200,
+        "json": {
+          "success": true,
+          "data": [
+            {
+              "id": "7c5b877e-f7e0-48e3-b080-7d3d49485cd7",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "client_id": "aba4adf4-7e5a-4148-9289-e13e84932f38",
+              "created_by": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "title": "visa - E2E-31 Hardening Client",
+              "visa_subclass": "190",
+              "status": "draft",
+              "review_token": null,
+              "document_path": null,
+              "version_number": 1,
+              "revision_count": 0,
+              "lodgement_deadline": null,
+              "approved_at": null,
+              "created_at": "2026-06-10T08:12:11.79553+00:00",
+              "updated_at": "2026-06-10T08:12:11.79553+00:00",
+              "deleted_at": null,
+              "approval_number": "AGR-2026-0014",
+              "matter_type_id": "444b6670-a844-4c50-9c74-41dfe32c905a",
+              "matter_reference": null,
+              "assigned_reviewer_id": null,
+              "assigned_rma_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "priority": "normal",
+              "notes": null,
+              "internal_notes": null,
+              "submitted_at": null,
+              "ready_to_lodge_at": null,
+              "lodged_at": null,
+              "closed_at": null,
+              "rejected_at": null,
+              "reminder_at": null,
+              "escalation_at": null,
+              "reminders_sent": {},
+              "signed_document_path": null,
+              "signwell_document_id": null,
+              "client_sent_at": null,
+              "client_signed_at": null,
+              "client_viewed_at": null,
+              "certificate_storage_path": null,
+              "certificate_generated_at": null,
+              "visa_stream": "Skilled Nominated",
+              "matter_completed_at": null,
+              "matter_completed_by": null,
+              "matter_completion_reason": null,
+              "on_hold_at": null,
+              "signed_by": null,
+              "signed_ip": null,
+              "signature_provider": null,
+              "document_version": null,
+              "matter_id": "17fc716d-612f-42da-8e21-5384f6f029a5",
+              "clients": {
+                "name": "E2E-31 Hardening Client",
+                "email": "e2e31.1781079121174@example.com"
+              },
+              "matter_types": {
+                "name": "visa"
+              }
+            },
+            {
+              "id": "1104c2d7-110f-4ac3-976e-31c7ff591635",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "client_id": "85fb5e06-3c48-4e3f-8c62-ba30dcb765c0",
+              "created_by": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "title": "visa - E2E-3 Production Client",
+              "visa_subclass": "190",
+              "status": "lodged",
+              "review_token": null,
+              "document_path": "3cd3a307-b7e5-4984-82d4-bf757e834afd/approvals/1104c2d7-110f-4ac3-976e-31c7ff591635/application-approval.pdf",
+              "version_number": 1,
+              "revision_count": 0,
+              "lodgement_deadline": null,
+              "approved_at": "2026-06-10T08:02:51.415+00:00",
+              "created_at": "2026-06-10T08:01:57.744195+00:00",
+              "updated_at": "2026-06-10T08:03:11.194+00:00",
+              "deleted_at": null,
+              "approval_number": "AGR-2026-0013",
+              "matter_type_id": "444b6670-a844-4c50-9c74-41dfe32c905a",
+              "matter_reference": null,
+              "assigned_reviewer_id": null,
+              "assigned_rma_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "priority": "normal",
+              "notes": null,
+              "internal_notes": null,
+              "submitted_at": null,
+              "ready_to_lodge_at": "2026-06-10T08:03:08.156+00:00",
+              "lodged_at": "2026-06-10T08:03:11.194+00:00",
+              "closed_at": null,
+              "rejected_at": null,
+              "reminder_at": null,
+              "escalation_at": null,
+              "reminders_sent": {},
+              "signed_document_path": null,
+              "signwell_document_id": "6f6adef7-de78-4389-b3a3-3883f7a4d5d1",
+              "client_sent_at": "2026-06-10T08:02:45.861+00:00",
+              "client_signed_at": "2026-06-10T08:02:51.415+00:00",
+              "client_viewed_at": "2026-06-10T08:02:49.837+00:00",
+              "certificate_storage_path": "3cd3a307-b7e5-4984-82d4-bf757e834afd/approvals/1104c2d7-110f-4ac3-976e-31c7ff591635/certificate-of-approval.pdf",
+              "certificate_generated_at": "2026-06-10T08:02:54.664+00:00",
+              "visa_stream": "Skilled Nominated",
+              "matter_completed_at": "2026-06-10T08:03:31.812+00:00",
+              "matter_completed_by": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "matter_completion_reason": "all_gates_satisfied",
+              "on_hold_at": null,
+              "signed_by": "E2E-3 Production Client",
+              "signed_ip": null,
+              "signature_provider": "signwell",
+              "document_version": "6f6adef7-de78-4389-b3a3-3883f7a4d5d1",
+              "matter_id": "cf13b973-1532-4f94-b7e2-139a797f708d",
+              "clients": {
+                "name": "E2E-3 Production Client",
+                "email": "e2e3.prod.1781078508626@example.com"
+              },
+              "matter_types": {
+                "name": "visa"
+              }
+            },
+            {
+              "id": "933ec291-c98a-4137-b574-60ce0a648f43",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "client_id": "99e6f959-aa91-474e-9f9d-2af5fd3223f3",
+              "created_by": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "title": "visa - E2E-3 Production Client",
+              "visa_subclass": "190",
+              "status": "lodged",
+              "review_token": null,
+              "document_path": "3cd3a307-b7e5-4984-82d4-bf757e834afd/approvals/933ec291-c98a-4137-b574-60ce0a648f43/application-approval.pdf",
+              "version_number": 1,
+              "revision_count": 0,
+              "lodgement_deadline": null,
+              "approved_at": "2026-06-10T07:58:12.501+00:00",
+              "created_at": "2026-06-10T07:57:10.63343+00:00",
+              "updated_at": "2026-06-10T07:58:41.948+00:00",
+              "deleted_at": null,
+              "approval_number": "AGR-2026-0012",
+              "matter_type_id": "444b6670-a844-4c50-9c74-41dfe32c905a",
+              "matter_reference": null,
+              "assigned_reviewer_id": null,
+              "assigned_rma_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "priority": "normal",
+              "notes": null,
+              "internal_notes": null,
+              "submitted_at": null,
+              "ready_to_lodge_at": "2026-06-10T07:58:37.041+00:00",
+              "lodged_at": "2026-06-10T07:58:41.948+00:00",
+              "closed_at": null,
+              "rejected_at": null,
+              "reminder_at": null,
+              "escalation_at": null,
+              "reminders_sent": {},
+              "signed_document_path": null,
+              "signwell_document_id": "9460c63e-29b8-491e-b3e1-b3784c7fbe55",
+              "client_sent_at": "2026-06-10T07:58:02.091+00:00",
+              "client_signed_at": "2026-06-10T07:58:12.501+00:00",
+              "client_viewed_at": "2026-06-10T07:58:09.673+00:00",
+              "certificate_storage_path": "3cd3a307-b7e5-4984-82d4-bf757e834afd/approvals/933ec291-c98a-4137-b574-60ce0a648f43/certificate-of-approval.pdf",
+              "certificate_generated_at": "2026-06-10T07:58:16.327+00:00",
+              "visa_stream": "Skilled Nominated",
+              "matter_completed_at": null,
+              "matter_completed_by": null,
+              "matter_completion_reason": null,
+              "on_hold_at": null,
+              "signed_by": "E2E-3 Production Client",
+              "signed_ip": null,
+              "signature_provider": "signwell",
+              "document_version": "9460c63e-29b8-491e-b3e1-b3784c7fbe55",
+              "matter_id": "c93dc55d-abf4-4ced-a164-341b7231d2ca",
+              "clients": {
+                "name": "E2E-3 Production Client",
+                "email": "e2e3.prod.1781078216357@example.com"
+              },
+              "matter_types": {
+                "name": "visa"
+              }
+            },
+            {
+              "id": "4b1db870-74ee-46e4-a9dd-881e140aad79",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "client_id": "763c7ef3-a4ca-4495-b495-cbffad638c41",
+              "created_by": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "title": "visa - E2E Test Client",
+              "visa_subclass": "190",
+              "status": "draft",
+              "review_token": null,
+              "document_path": null,
+              "version_number": 1,
+              "revision_count": 0,
+              "lodgement_deadline": null,
+              "approved_at": null,
+              "created_at": "2026-06-10T06:54:43.160488+00:00",
+              "updated_at": "2026-06-10T06:54:43.160488+00:00",
+              "deleted_at": null,
+              "approval_number": "AGR-2026-0011",
+              "matter_type_id": "444b6670-a844-4c50-9c74-41dfe32c905a",
+              "matter_reference": null,
+              "assigned_reviewer_id": null,
+              "assigned_rma_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "priority": "normal",
+              "notes": null,
+              "internal_notes": null,
+              "submitted_at": null,
+              "ready_to_lodge_at": null,
+              "lodged_at": null,
+              "closed_at": null,
+              "rejected_at": null,
+              "reminder_at": null,
+              "escalation_at": null,
+              "reminders_sent": {},
+              "signed_document_path": null,
+              "signwell_document_id": null,
+              "client_sent_at": null,
+              "client_signed_at": null,
+              "client_viewed_at": null,
+              "certificate_storage_path": null,
+              "certificate_generated_at": null,
+              "visa_stream": "Skilled Nominated",
+              "matter_completed_at": null,
+              "matter_completed_by": null,
+              "matter_completion_reason": null,
+              "on_hold_at": null,
+              "signed_by": null,
+              "signed_ip": null,
+              "signature_provider": null,
+              "document_version": null,
+              "matter_id": "326e1d1c-5dcc-40fe-ace7-b92b447a710d",
+              "clients": {
+                "name": "E2E Test Client",
+                "email": "e2e.test.1781074472633@example.com"
+              },
+              "matter_types": {
+                "name": "visa"
+              }
+            },
+            {
+              "id": "3557f901-060a-4bc7-858c-be8ff7d0175a",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "client_id": "c9d445c2-c0d6-4fd1-9a58-4876827ac60e",
+              "created_by": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "title": "visa - kartik singh",
+              "visa_subclass": "2422",
+              "status": "draft",
+              "review_token": null,
+              "document_path": null,
+              "version_number": 1,
+              "revision_count": 0,
+              "lodgement_deadline": null,
+              "approved_at": null,
+              "created_at": "2026-06-09T18:19:15.589812+00:00",
+              "updated_at": "2026-06-09T18:19:15.589812+00:00",
+              "deleted_at": null,
+              "approval_number": "AGR-2026-0010",
+              "matter_type_id": "444b6670-a844-4c50-9c74-41dfe32c905a",
+              "matter_reference": null,
+              "assigned_reviewer_id": null,
+              "assigned_rma_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "priority": "urgent",
+              "notes": null,
+              "internal_notes": null,
+              "submitted_at": null,
+              "ready_to_lodge_at": null,
+              "lodged_at": null,
+              "closed_at": null,
+              "rejected_at": null,
+              "reminder_at": null,
+              "escalation_at": null,
+              "reminders_sent": {},
+              "signed_document_path": null,
+              "signwell_document_id": null,
+              "client_sent_at": null,
+              "client_signed_at": null,
+              "client_viewed_at": null,
+              "certificate_storage_path": null,
+              "certificate_generated_at": null,
+              "visa_stream": "nmbvn",
+              "matter_completed_at": null,
+              "matter_completed_by": null,
+              "matter_completion_reason": null,
+              "on_hold_at": null,
+              "signed_by": null,
+              "signed_ip": null,
+              "signature_provider": null,
+              "document_version": null,
+              "matter_id": "aa65995a-f9ba-4ac0-b361-62240ff9625a",
+              "clients": {
+                "name": "kartik singh",
+                "email": "kartiksingh3337@gmail.com"
+              },
+              "matter_types": {
+                "name": "visa"
+              }
+            },
+            {
+              "id": "3296ec89-0721-4b5f-8831-90a5b8f51b45",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "client_id": "0268a274-ca78-4042-be51-18aef66fc789",
+              "created_by": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "title": "visa - Onb Test1781026534801",
+              "visa_subclass": "ONBTEST",
+              "status": "draft",
+              "review_token": null,
+              "document_path": null,
+              "version_number": 1,
+              "revision_count": 0,
+              "lodgement_deadline": null,
+              "approved_at": null,
+              "created_at": "2026-06-09T17:35:41.284478+00:00",
+              "updated_at": "2026-06-09T17:35:41.284478+00:00",
+              "deleted_at": null,
+              "approval_number": "AGR-2026-0007",
+              "matter_type_id": "444b6670-a844-4c50-9c74-41dfe32c905a",
+              "matter_reference": null,
+              "assigned_reviewer_id": null,
+              "assigned_rma_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "priority": "normal",
+              "notes": null,
+              "internal_notes": null,
+              "submitted_at": null,
+              "ready_to_lodge_at": null,
+              "lodged_at": null,
+              "closed_at": null,
+              "rejected_at": null,
+              "reminder_at": null,
+              "escalation_at": null,
+              "reminders_sent": {},
+              "signed_document_path": null,
+              "signwell_document_id": null,
+              "client_sent_at": null,
+              "client_signed_at": null,
+              "client_viewed_at": null,
+              "certificate_storage_path": null,
+              "certificate_generated_at": null,
+              "visa_stream": "Test Stream",
+              "matter_completed_at": null,
+              "matter_completed_by": null,
+              "matter_completion_reason": null,
+              "on_hold_at": null,
+              "signed_by": null,
+              "signed_ip": null,
+              "signature_provider": null,
+              "document_version": null,
+              "matter_id": "c1fc1e7a-b3a1-4538-98cf-3d842ecf1c23",
+              "clients": {
+                "name": "Onb Test1781026534801",
+                "email": "onb.test.1781026534801@example.com"
+              },
+              "matter_types": {
+                "name": "visa"
+              }
+            },
+            {
+              "id": "920d3aff-89dd-4f1a-bbfc-b27b8ab18bba",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "client_id": "bad84fbf-d49b-44eb-888a-254503bfc1fa",
+              "created_by": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "title": "Audit Approval C",
+              "visa_subclass": "AAT",
+              "status": "draft",
+              "review_token": null,
+              "document_path": null,
+              "version_number": 1,
+              "revision_count": 0,
+              "lodgement_deadline": null,
+              "approved_at": null,
+              "created_at": "2026-06-09T11:21:32.200774+00:00",
+              "updated_at": "2026-06-09T11:21:32.200774+00:00",
+              "deleted_at": null,
+              "approval_number": "AUD-MATTER-C-AAT",
+              "matter_type_id": null,
+              "matter_reference": null,
+              "assigned_reviewer_id": null,
+              "assigned_rma_id": null,
+              "priority": "normal",
+              "notes": null,
+              "internal_notes": null,
+              "submitted_at": null,
+              "ready_to_lodge_at": null,
+              "lodged_at": null,
+              "closed_at": null,
+              "rejected_at": null,
+              "reminder_at": null,
+              "escalation_at": null,
+              "reminders_sent": {},
+              "signed_document_path": null,
+              "signwell_document_id": null,
+              "client_sent_at": null,
+              "client_signed_at": null,
+              "client_viewed_at": null,
+              "certificate_storage_path": null,
+              "certificate_generated_at": null,
+              "visa_stream": "Appeal",
+              "matter_completed_at": null,
+              "matter_completed_by": null,
+              "matter_completion_reason": null,
+              "on_hold_at": null,
+              "signed_by": null,
+              "signed_ip": null,
+              "signature_provider": null,
+              "document_version": null,
+              "matter_id": null,
+              "clients": {
+                "name": "Rajwant sir",
+                "email": "rajwant.aus@gmail.com"
+              },
+              "matter_types": null
+            },
+            {
+              "id": "3be6b8fb-ffea-46e5-b7be-82f4d346cff8",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "client_id": "bad84fbf-d49b-44eb-888a-254503bfc1fa",
+              "created_by": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "title": "Audit Approval B",
+              "visa_subclass": "820",
+              "status": "ready_to_lodge",
+              "review_token": null,
+              "document_path": null,
+              "version_number": 1,
+              "revision_count": 0,
+              "lodgement_deadline": null,
+              "approved_at": null,
+              "created_at": "2026-06-09T11:21:31.530717+00:00",
+              "updated_at": "2026-06-09T11:21:31.530717+00:00",
+              "deleted_at": null,
+              "approval_number": "AUD-MATTER-B-820",
+              "matter_type_id": null,
+              "matter_reference": null,
+              "assigned_reviewer_id": null,
+              "assigned_rma_id": null,
+              "priority": "normal",
+              "notes": null,
+              "internal_notes": null,
+              "submitted_at": null,
+              "ready_to_lodge_at": null,
+              "lodged_at": null,
+              "closed_at": null,
+              "rejected_at": null,
+              "reminder_at": null,
+              "escalation_at": null,
+              "reminders_sent": {},
+              "signed_document_path": null,
+              "signwell_document_id": null,
+              "client_sent_at": "2026-06-09T16:38:41.207922+00:00",
+              "client_signed_at": "2026-06-09T16:38:41.207922+00:00",
+              "client_viewed_at": null,
+              "certificate_storage_path": null,
+              "certificate_generated_at": null,
+              "visa_stream": "Partner",
+              "matter_completed_at": null,
+              "matter_completed_by": null,
+              "matter_completion_reason": null,
+              "on_hold_at": null,
+              "signed_by": null,
+              "signed_ip": null,
+              "signature_provider": null,
+              "document_version": null,
+              "matter_id": null,
+              "clients": {
+                "name": "Rajwant sir",
+                "email": "rajwant.aus@gmail.com"
+              },
+              "matter_types": null
+            },
+            {
+              "id": "a5d314cf-b7a9-4593-a917-a9288bdf9d7d",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "client_id": "bad84fbf-d49b-44eb-888a-254503bfc1fa",
+              "created_by": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "title": "Audit Approval A",
+              "visa_subclass": "190",
+              "status": "lodged",
+              "review_token": null,
+              "document_path": null,
+              "version_number": 1,
+              "revision_count": 0,
+              "lodgement_deadline": null,
+              "approved_at": null,
+              "created_at": "2026-06-09T11:21:30.200642+00:00",
+              "updated_at": "2026-06-09T11:21:30.200642+00:00",
+              "deleted_at": null,
+              "approval_number": "AUD-MATTER-A-190",
+              "matter_type_id": null,
+              "matter_reference": null,
+              "assigned_reviewer_id": null,
+              "assigned_rma_id": null,
+              "priority": "normal",
+              "notes": null,
+              "internal_notes": null,
+              "submitted_at": null,
+              "ready_to_lodge_at": null,
+              "lodged_at": "2026-06-09T16:38:41.012419+00:00",
+              "closed_at": null,
+              "rejected_at": null,
+              "reminder_at": null,
+              "escalation_at": null,
+              "reminders_sent": {},
+              "signed_document_path": null,
+              "signwell_document_id": null,
+              "client_sent_at": "2026-06-09T16:38:41.012419+00:00",
+              "client_signed_at": "2026-06-09T16:38:41.012419+00:00",
+              "client_viewed_at": null,
+              "certificate_storage_path": null,
+              "certificate_generated_at": null,
+              "visa_stream": "Skilled Nominated",
+              "matter_completed_at": null,
+              "matter_completed_by": null,
+              "matter_completion_reason": null,
+              "on_hold_at": null,
+              "signed_by": null,
+              "signed_ip": null,
+              "signature_provider": null,
+              "document_version": null,
+              "matter_id": null,
+              "clients": {
+                "name": "Rajwant sir",
+                "email": "rajwant.aus@gmail.com"
+              },
+              "matter_types": null
+            },
+            {
+              "id": "b819eb06-374c-456d-8d24-66e46140252b",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "client_id": "3463132e-212b-46a8-b175-7d46dcf47617",
+              "created_by": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "title": "visa -kartik",
+              "visa_subclass": "23",
+              "status": "submitted",
+              "review_token": "2a5662e9-ebc6-497e-9d9a-aa0a127d7ed1",
+              "document_path": "3cd3a307-b7e5-4984-82d4-bf757e834afd/approvals/b819eb06-374c-456d-8d24-66e46140252b/screencapture-ntaco-our-story-2026-06-04-12_25_44.pdf",
+              "version_number": 1,
+              "revision_count": 0,
+              "lodgement_deadline": "20225-04-25T00:00:00+00:00",
+              "approved_at": null,
+              "created_at": "2026-06-04T11:47:42.365373+00:00",
+              "updated_at": "2026-06-04T13:39:40.354+00:00",
+              "deleted_at": null,
+              "approval_number": "APP-2026-0001",
+              "matter_type_id": "444b6670-a844-4c50-9c74-41dfe32c905a",
+              "matter_reference": "visa ref",
+              "assigned_reviewer_id": null,
+              "assigned_rma_id": null,
+              "priority": "high",
+              "notes": "kjnjbhjk",
+              "internal_notes": "nb vj",
+              "submitted_at": "2026-06-04T11:48:45.653+00:00",
+              "ready_to_lodge_at": null,
+              "lodged_at": null,
+              "closed_at": null,
+              "rejected_at": null,
+              "reminder_at": null,
+              "escalation_at": null,
+              "reminders_sent": {},
+              "signed_document_path": null,
+              "signwell_document_id": null,
+              "client_sent_at": null,
+              "client_signed_at": null,
+              "client_viewed_at": null,
+              "certificate_storage_path": null,
+              "certificate_generated_at": null,
+              "visa_stream": null,
+              "matter_completed_at": null,
+              "matter_completed_by": null,
+              "matter_completion_reason": null,
+              "on_hold_at": null,
+              "signed_by": null,
+              "signed_ip": null,
+              "signature_provider": null,
+              "document_version": null,
+              "matter_id": null,
+              "clients": {
+                "name": "kartik singh",
+                "email": "kartiksingh37193@gmail.com"
+              },
+              "matter_types": {
+                "name": "visa"
+              }
+            }
+          ],
+          "count": 10
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/api/clients/aba4adf4-7e5a-4148-9289-e13e84932f38/matter-context?file_source=agreement&file_id=ee089978-45d0-418d-8621-bbc20d6e0844",
+        "status": 200,
+        "json": {
+          "success": true,
+          "context": {
+            "matters": [
+              {
+                "id": "7c5b877e-f7e0-48e3-b080-7d3d49485cd7",
+                "source": "application_approval",
+                "file_number": "AGR-2026-0014",
+                "visa_subclass": "SC 190",
+                "matter_label": "visa",
+                "display_label": "AGR-2026-0014 — SC 190 — visa",
+                "short_label": "SC 190 visa",
+                "status": "draft",
+                "is_active": true,
+                "created_at": "2026-06-10T08:12:11.79553+00:00"
+              }
+            ],
+            "selectedMatter": {
+              "id": "7c5b877e-f7e0-48e3-b080-7d3d49485cd7",
+              "source": "application_approval",
+              "file_number": "AGR-2026-0014",
+              "visa_subclass": "SC 190",
+              "matter_label": "visa",
+              "display_label": "AGR-2026-0014 — SC 190 — visa",
+              "short_label": "SC 190 visa",
+              "status": "draft",
+              "is_active": true,
+              "created_at": "2026-06-10T08:12:11.79553+00:00"
+            },
+            "fileNumber": "AGR-2026-0014",
+            "clientNumber": "AGR-2026-1006",
+            "matterType": "visa",
+            "visaSubclass": "190",
+            "visaStream": "Skilled Nominated",
+            "assignedAgent": {
+              "id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "name": "ritik singh"
+            },
+            "currentStage": "Application Preparation",
+            "matterStatus": "Open",
+            "priority": "normal",
+            "compliance": {
+              "completed": 1,
+              "total": 4,
+              "scorePercent": 25,
+              "items": [
+                {
+                  "id": "service_agreement",
+                  "label": "Signed Service Agreement",
+                  "status": "complete"
+                },
+                {
+                  "id": "approval_signed",
+                  "label": "Application approval signed",
+                  "status": "action"
+                },
+                {
+                  "id": "lodgement",
+                  "label": "Application lodged",
+                  "status": "action"
+                },
+                {
+                  "id": "statement_of_service",
+                  "label": "Statement of Service acknowledged",
+                  "status": "action"
+                }
+              ]
+            },
+            "workflowTimeline": [
+              {
+                "id": "service_agreement",
+                "label": "Service Agreement",
+                "complete": true
+              },
+              {
+                "id": "file_notes",
+                "label": "File Notes",
+                "complete": false,
+                "current": true
+              },
+              {
+                "id": "preparation",
+                "label": "Preparation",
+                "complete": true
+              },
+              {
+                "id": "approval",
+                "label": "Approval",
+                "complete": false
+              },
+              {
+                "id": "lodgement",
+                "label": "Lodgement",
+                "complete": false
+              },
+              {
+                "id": "sos",
+                "label": "Statement of Service",
+                "complete": false
+              },
+              {
+                "id": "completion",
+                "label": "Completion",
+                "complete": false
+              }
+            ],
+            "nextAction": {
+              "label": "Continue Application Preparation",
+              "description": "Complete the draft application approval for this matter.",
+              "href": "/workspace/ritiklabs/approvals/7c5b877e-f7e0-48e3-b080-7d3d49485cd7",
+              "tone": "primary"
+            },
+            "isComplete": false,
+            "allMattersComplete": false,
+            "matterCompletion": null
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/api/notifications?limit=10",
+        "status": 200,
+        "json": {
+          "success": true,
+          "data": [
+            {
+              "id": "c32dfed6-ba6f-4cad-9dab-05a3d0e8b265",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "agreement",
+              "title": "Agreement signed",
+              "message": "E2E-31 Hardening Client completed signing via SignWell.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/agreements/ee089978-45d0-418d-8621-bbc20d6e0844",
+              "created_at": "2026-06-10T08:12:35.889846+00:00",
+              "entity_type": "agreement",
+              "entity_id": "ee089978-45d0-418d-8621-bbc20d6e0844",
+              "actor_id": null,
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "agreements",
+              "metadata": {}
+            },
+            {
+              "id": "beafc957-8f38-4746-a84f-31e44acc36f3",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "document",
+              "title": "Statement of Service acknowledged",
+              "message": "SOS-2026-0001 · AGR-2026-0013 acknowledged by E2E-3 Production Client.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/85fb5e06-3c48-4e3f-8c62-ba30dcb765c0?file_source=application_approval&file_id=1104c2d7-110f-4ac3-976e-31c7ff591635&tab=statement_of_service",
+              "created_at": "2026-06-10T08:03:38.094422+00:00",
+              "entity_type": "service_statement",
+              "entity_id": "b48f7875-df09-4aba-8d91-1944b2cd5122",
+              "actor_id": null,
+              "priority": "high",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "sos",
+              "metadata": {
+                "actions": [
+                  {
+                    "id": "open_matter",
+                    "href": "/workspace/ritiklabs/clients/85fb5e06-3c48-4e3f-8c62-ba30dcb765c0?file_source=application_approval&file_id=1104c2d7-110f-4ac3-976e-31c7ff591635&tab=statement_of_service",
+                    "label": "Open Matter",
+                    "variant": "primary"
+                  }
+                ],
+                "file_id": "1104c2d7-110f-4ac3-976e-31c7ff591635",
+                "client_id": "85fb5e06-3c48-4e3f-8c62-ba30dcb765c0",
+                "file_source": "application_approval"
+              }
+            },
+            {
+              "id": "e0e24f07-cb9a-4dc5-8933-04dcf9f85cc6",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "system",
+              "title": "Matter completed",
+              "message": "AGR-2026-0013 · E2E-3 Production Client — all workflow gates satisfied.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/85fb5e06-3c48-4e3f-8c62-ba30dcb765c0?file_source=application_approval&file_id=1104c2d7-110f-4ac3-976e-31c7ff591635&tab=completion",
+              "created_at": "2026-06-10T08:03:35.105676+00:00",
+              "entity_type": "application_approval",
+              "entity_id": "1104c2d7-110f-4ac3-976e-31c7ff591635",
+              "actor_id": null,
+              "priority": "low",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "system",
+              "metadata": {}
+            },
+            {
+              "id": "241db7e6-8cae-4755-aa21-98a6a76ed468",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "document",
+              "title": "Statement of Service sent",
+              "message": "SOS-2026-0001 · AGR-2026-0013 sent to E2E-3 Production Client.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/85fb5e06-3c48-4e3f-8c62-ba30dcb765c0?file_source=application_approval&file_id=1104c2d7-110f-4ac3-976e-31c7ff591635&tab=statement_of_service",
+              "created_at": "2026-06-10T08:03:28.473285+00:00",
+              "entity_type": "service_statement",
+              "entity_id": "b48f7875-df09-4aba-8d91-1944b2cd5122",
+              "actor_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "sos",
+              "metadata": {
+                "actions": [
+                  {
+                    "id": "open_matter",
+                    "href": "/workspace/ritiklabs/clients/85fb5e06-3c48-4e3f-8c62-ba30dcb765c0?file_source=application_approval&file_id=1104c2d7-110f-4ac3-976e-31c7ff591635&tab=statement_of_service",
+                    "label": "Open Matter",
+                    "variant": "primary"
+                  }
+                ],
+                "file_id": "1104c2d7-110f-4ac3-976e-31c7ff591635",
+                "client_id": "85fb5e06-3c48-4e3f-8c62-ba30dcb765c0",
+                "file_source": "application_approval"
+              }
+            },
+            {
+              "id": "f6f02743-c791-44cb-87e3-c600791407f7",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "approval",
+              "title": "Application lodged",
+              "message": "visa - E2E-3 Production Client",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/approvals/1104c2d7-110f-4ac3-976e-31c7ff591635",
+              "created_at": "2026-06-10T08:03:14.295233+00:00",
+              "entity_type": "application_approval",
+              "entity_id": "1104c2d7-110f-4ac3-976e-31c7ff591635",
+              "actor_id": null,
+              "priority": "high",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "approvals",
+              "metadata": {
+                "actions": [
+                  {
+                    "id": "review",
+                    "href": "/workspace/ritiklabs/approvals/1104c2d7-110f-4ac3-976e-31c7ff591635",
+                    "label": "Review Approval",
+                    "variant": "primary"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "069c9eb8-1fd9-46f4-9565-61a86d284e08",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "approval",
+              "title": "Ready to lodge",
+              "message": "visa - E2E-3 Production Client",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/approvals/1104c2d7-110f-4ac3-976e-31c7ff591635",
+              "created_at": "2026-06-10T08:03:11.236698+00:00",
+              "entity_type": "application_approval",
+              "entity_id": "1104c2d7-110f-4ac3-976e-31c7ff591635",
+              "actor_id": null,
+              "priority": "high",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "approvals",
+              "metadata": {
+                "actions": [
+                  {
+                    "id": "review",
+                    "href": "/workspace/ritiklabs/approvals/1104c2d7-110f-4ac3-976e-31c7ff591635",
+                    "label": "Review Approval",
+                    "variant": "primary"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "c4a16fdb-84b1-4e79-92ac-12871f267906",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "approval",
+              "title": "Application approval completed",
+              "message": "AGR-2026-0013 is signed and ready for lodgement.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/approvals/1104c2d7-110f-4ac3-976e-31c7ff591635",
+              "created_at": "2026-06-10T08:03:01.889387+00:00",
+              "entity_type": "application_approval",
+              "entity_id": "1104c2d7-110f-4ac3-976e-31c7ff591635",
+              "actor_id": null,
+              "priority": "high",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "approvals",
+              "metadata": {
+                "actions": [
+                  {
+                    "id": "review",
+                    "href": "/workspace/ritiklabs/approvals/1104c2d7-110f-4ac3-976e-31c7ff591635",
+                    "label": "Review Approval",
+                    "variant": "primary"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "76c9bf70-c4a4-48dd-8fd3-6e46dce1e761",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "approval",
+              "title": "Client signed application",
+              "message": "AGR-2026-0013 was signed via SignWell.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/approvals/1104c2d7-110f-4ac3-976e-31c7ff591635",
+              "created_at": "2026-06-10T08:02:59.895047+00:00",
+              "entity_type": "application_approval",
+              "entity_id": "1104c2d7-110f-4ac3-976e-31c7ff591635",
+              "actor_id": null,
+              "priority": "high",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "approvals",
+              "metadata": {
+                "actions": [
+                  {
+                    "id": "review",
+                    "href": "/workspace/ritiklabs/approvals/1104c2d7-110f-4ac3-976e-31c7ff591635",
+                    "label": "Review Approval",
+                    "variant": "primary"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "2e9b464b-b2d5-499c-9ca1-9bea19f75ca1",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "approval",
+              "title": "Certificate of Approval generated",
+              "message": "Certificate ready for AGR-2026-0013.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/approvals/1104c2d7-110f-4ac3-976e-31c7ff591635",
+              "created_at": "2026-06-10T08:02:57.848888+00:00",
+              "entity_type": "application_approval",
+              "entity_id": "1104c2d7-110f-4ac3-976e-31c7ff591635",
+              "actor_id": null,
+              "priority": "high",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "approvals",
+              "metadata": {
+                "actions": [
+                  {
+                    "id": "review",
+                    "href": "/workspace/ritiklabs/approvals/1104c2d7-110f-4ac3-976e-31c7ff591635",
+                    "label": "Review Approval",
+                    "variant": "primary"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "398a2b0d-76f6-4726-9038-dd1de7cbac22",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "approval",
+              "title": "Application sent for client approval",
+              "message": "AGR-2026-0013 sent to client via SignWell.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/approvals/1104c2d7-110f-4ac3-976e-31c7ff591635",
+              "created_at": "2026-06-10T08:02:49.243249+00:00",
+              "entity_type": "application_approval",
+              "entity_id": "1104c2d7-110f-4ac3-976e-31c7ff591635",
+              "actor_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "priority": "high",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "approvals",
+              "metadata": {
+                "actions": [
+                  {
+                    "id": "review",
+                    "href": "/workspace/ritiklabs/approvals/1104c2d7-110f-4ac3-976e-31c7ff591635",
+                    "label": "Review Approval",
+                    "variant": "primary"
+                  }
+                ]
+              }
+            }
+          ],
+          "count": 49,
+          "page": 1,
+          "limit": 10
+        }
+      }
+    ],
+    "rls": [
+      {
+        "test": "supabase-clients-select",
+        "agencyAUser": "nayramalik1018@gmail.com",
+        "agencyBClientId": "e4fb3dd3-a656-48e2-b22d-3982484ac709",
+        "crossClient": null
+      },
+      {
+        "test": "api-clients-get",
+        "status": 404
+      },
+      {
+        "policies": [
+          {
+            "tablename": "agreements",
+            "policyname": "tenant_agreements_delete"
+          },
+          {
+            "tablename": "agreements",
+            "policyname": "tenant_agreements_insert"
+          },
+          {
+            "tablename": "agreements",
+            "policyname": "tenant_agreements_select"
+          },
+          {
+            "tablename": "agreements",
+            "policyname": "tenant_agreements_update"
+          },
+          {
+            "tablename": "application_approvals",
+            "policyname": "tenant_application_approvals_delete"
+          },
+          {
+            "tablename": "application_approvals",
+            "policyname": "tenant_application_approvals_insert"
+          },
+          {
+            "tablename": "application_approvals",
+            "policyname": "tenant_application_approvals_select"
+          },
+          {
+            "tablename": "application_approvals",
+            "policyname": "tenant_application_approvals_update"
+          },
+          {
+            "tablename": "clients",
+            "policyname": "tenant_clients_delete"
+          },
+          {
+            "tablename": "clients",
+            "policyname": "tenant_clients_insert"
+          },
+          {
+            "tablename": "clients",
+            "policyname": "tenant_clients_select"
+          },
+          {
+            "tablename": "clients",
+            "policyname": "tenant_clients_update"
+          },
+          {
+            "tablename": "documents",
+            "policyname": "Users access agency documents"
+          },
+          {
+            "tablename": "documents",
+            "policyname": "Users delete agency documents"
+          },
+          {
+            "tablename": "documents",
+            "policyname": "Users upload agency documents"
+          },
+          {
+            "tablename": "documents",
+            "policyname": "tenant_documents_delete"
+          },
+          {
+            "tablename": "documents",
+            "policyname": "tenant_documents_insert"
+          },
+          {
+            "tablename": "documents",
+            "policyname": "tenant_documents_select"
+          },
+          {
+            "tablename": "documents",
+            "policyname": "tenant_documents_update"
+          }
+        ]
+      }
+    ],
+    "workflows": [],
+    "notifications": [
+      {
+        "dbRows": 0
+      }
+    ],
+    "mobile": [
+      {
+        "viewport": "iphone-14",
+        "page": "dashboard",
+        "metrics": {
+          "scrollWidth": 390,
+          "clientWidth": 390
+        },
+        "screenshot": "docs\\beta1-screenshots\\mobile-iphone-14-dashboard.png"
+      },
+      {
+        "viewport": "iphone-14",
+        "page": "clients",
+        "metrics": {
+          "scrollWidth": 390,
+          "clientWidth": 390
+        },
+        "screenshot": "docs\\beta1-screenshots\\mobile-iphone-14-clients.png"
+      },
+      {
+        "viewport": "iphone-14",
+        "page": "client-profile",
+        "metrics": {
+          "scrollWidth": 390,
+          "clientWidth": 390
+        },
+        "screenshot": "docs\\beta1-screenshots\\mobile-iphone-14-client-profile.png"
+      },
+      {
+        "viewport": "iphone-14",
+        "page": "notifications",
+        "metrics": {
+          "scrollWidth": 390,
+          "clientWidth": 390
+        },
+        "screenshot": "docs\\beta1-screenshots\\mobile-iphone-14-notifications.png"
+      },
+      {
+        "viewport": "iphone-14",
+        "page": "file-notes",
+        "metrics": {
+          "scrollWidth": 390,
+          "clientWidth": 390
+        },
+        "screenshot": "docs\\beta1-screenshots\\mobile-iphone-14-file-notes.png"
+      },
+      {
+        "viewport": "pixel-7",
+        "page": "dashboard",
+        "metrics": {
+          "scrollWidth": 412,
+          "clientWidth": 412
+        },
+        "screenshot": "docs\\beta1-screenshots\\mobile-pixel-7-dashboard.png"
+      },
+      {
+        "viewport": "pixel-7",
+        "page": "clients",
+        "metrics": {
+          "scrollWidth": 412,
+          "clientWidth": 412
+        },
+        "screenshot": "docs\\beta1-screenshots\\mobile-pixel-7-clients.png"
+      },
+      {
+        "viewport": "pixel-7",
+        "page": "client-profile",
+        "metrics": {
+          "scrollWidth": 412,
+          "clientWidth": 412
+        },
+        "screenshot": "docs\\beta1-screenshots\\mobile-pixel-7-client-profile.png"
+      },
+      {
+        "viewport": "pixel-7",
+        "page": "notifications",
+        "metrics": {
+          "scrollWidth": 412,
+          "clientWidth": 412
+        },
+        "screenshot": "docs\\beta1-screenshots\\mobile-pixel-7-notifications.png"
+      },
+      {
+        "viewport": "pixel-7",
+        "page": "file-notes",
+        "metrics": {
+          "scrollWidth": 412,
+          "clientWidth": 412
+        },
+        "screenshot": "docs\\beta1-screenshots\\mobile-pixel-7-file-notes.png"
+      },
+      {
+        "viewport": "ipad",
+        "page": "dashboard",
+        "metrics": {
+          "scrollWidth": 820,
+          "clientWidth": 820
+        },
+        "screenshot": "docs\\beta1-screenshots\\mobile-ipad-dashboard.png"
+      },
+      {
+        "viewport": "ipad",
+        "page": "clients",
+        "metrics": {
+          "scrollWidth": 820,
+          "clientWidth": 820
+        },
+        "screenshot": "docs\\beta1-screenshots\\mobile-ipad-clients.png"
+      },
+      {
+        "viewport": "ipad",
+        "page": "client-profile",
+        "metrics": {
+          "scrollWidth": 820,
+          "clientWidth": 820
+        },
+        "screenshot": "docs\\beta1-screenshots\\mobile-ipad-client-profile.png"
+      },
+      {
+        "viewport": "ipad",
+        "page": "notifications",
+        "metrics": {
+          "scrollWidth": 820,
+          "clientWidth": 820
+        },
+        "screenshot": "docs\\beta1-screenshots\\mobile-ipad-notifications.png"
+      },
+      {
+        "viewport": "ipad",
+        "page": "file-notes",
+        "metrics": {
+          "scrollWidth": 820,
+          "clientWidth": 820
+        },
+        "screenshot": "docs\\beta1-screenshots\\mobile-ipad-file-notes.png"
+      }
+    ],
+    "screenshots": [
+      "docs\\beta1-screenshots\\owner-sidebar.png",
+      "docs\\beta1-screenshots\\admin-sidebar.png",
+      "docs\\beta1-screenshots\\agent-sidebar.png",
+      "docs\\beta1-screenshots\\manager-sidebar.png",
+      "docs\\beta1-screenshots\\assistant-sidebar.png",
+      "docs\\beta1-screenshots\\viewer-sidebar.png",
+      "docs\\beta1-screenshots\\agent-client-profile.png",
+      "docs\\beta1-screenshots\\assistant-file-notes.png",
+      "docs\\beta1-screenshots\\viewer-client-readonly.png",
+      "docs\\beta1-screenshots\\mobile-iphone-14-dashboard.png",
+      "docs\\beta1-screenshots\\mobile-iphone-14-clients.png",
+      "docs\\beta1-screenshots\\mobile-iphone-14-client-profile.png",
+      "docs\\beta1-screenshots\\mobile-iphone-14-notifications.png",
+      "docs\\beta1-screenshots\\mobile-iphone-14-file-notes.png",
+      "docs\\beta1-screenshots\\mobile-pixel-7-dashboard.png",
+      "docs\\beta1-screenshots\\mobile-pixel-7-clients.png",
+      "docs\\beta1-screenshots\\mobile-pixel-7-client-profile.png",
+      "docs\\beta1-screenshots\\mobile-pixel-7-notifications.png",
+      "docs\\beta1-screenshots\\mobile-pixel-7-file-notes.png",
+      "docs\\beta1-screenshots\\mobile-ipad-dashboard.png",
+      "docs\\beta1-screenshots\\mobile-ipad-clients.png",
+      "docs\\beta1-screenshots\\mobile-ipad-client-profile.png",
+      "docs\\beta1-screenshots\\mobile-ipad-notifications.png",
+      "docs\\beta1-screenshots\\mobile-ipad-file-notes.png"
+    ]
+  },
+  "results": [
+    {
+      "area": "SETUP",
+      "check": "DEV-SERVER",
+      "status": "PASS",
+      "msg": "Reachable http://localhost:3000",
+      "detail": {},
+      "ts": "2026-06-10T08:53:01.089Z"
+    },
+    {
+      "area": "SETUP",
+      "check": "AGENCY-A",
+      "status": "PASS",
+      "msg": "Ritiklabs (ritiklabs)",
+      "detail": {
+        "id": "3cd3a307-b7e5-4984-82d4-bf757e834afd"
+      },
+      "ts": "2026-06-10T08:53:01.608Z"
+    },
+    {
+      "area": "PART1",
+      "check": "USER-OWNER",
+      "status": "PASS",
+      "msg": "Owner: nayramalik1018@gmail.com",
+      "detail": {
+        "userId": "2cab360f-fd21-461a-8a57-67573dee0530",
+        "email": "nayramalik1018@gmail.com",
+        "role": "owner"
+      },
+      "ts": "2026-06-10T08:53:02.434Z"
+    },
+    {
+      "area": "PART1",
+      "check": "USER-ADMIN",
+      "status": "PASS",
+      "msg": "Admin: beta1.admin.1781080071368@immimate.au",
+      "detail": {
+        "userId": "2ee31701-bec7-4413-a50f-db6a3b82f4ab",
+        "email": "beta1.admin.1781080071368@immimate.au",
+        "role": "admin"
+      },
+      "ts": "2026-06-10T08:53:03.068Z"
+    },
+    {
+      "area": "PART1",
+      "check": "USER-AGENT",
+      "status": "PASS",
+      "msg": "Migration Agent: beta1.agent.1781080071368@immimate.au",
+      "detail": {
+        "userId": "438ea7eb-0cb0-4988-ac46-721f82dd3f2f",
+        "email": "beta1.agent.1781080071368@immimate.au",
+        "role": "agent"
+      },
+      "ts": "2026-06-10T08:53:03.705Z"
+    },
+    {
+      "area": "PART1",
+      "check": "USER-MANAGER",
+      "status": "PASS",
+      "msg": "Case Manager: beta1.manager.1781080071368@immimate.au",
+      "detail": {
+        "userId": "78c33e3f-e0b7-4cf7-8e91-c63d29a08c8c",
+        "email": "beta1.manager.1781080071368@immimate.au",
+        "role": "manager"
+      },
+      "ts": "2026-06-10T08:53:04.332Z"
+    },
+    {
+      "area": "PART1",
+      "check": "USER-ASSISTANT",
+      "status": "PASS",
+      "msg": "Assistant: beta1.support.1781080071368@immimate.au",
+      "detail": {
+        "userId": "8d025fe3-0b9c-4130-b602-56cbdf4a342e",
+        "email": "beta1.support.1781080071368@immimate.au",
+        "role": "support"
+      },
+      "ts": "2026-06-10T08:53:04.920Z"
+    },
+    {
+      "area": "PART1",
+      "check": "USER-VIEWER",
+      "status": "PASS",
+      "msg": "Read Only: beta1.viewer.1781080071368@immimate.au",
+      "detail": {
+        "userId": "b71bac60-495f-4f13-b6c9-419e09b5ab4a",
+        "email": "beta1.viewer.1781080071368@immimate.au",
+        "role": "viewer"
+      },
+      "ts": "2026-06-10T08:53:05.522Z"
+    },
+    {
+      "area": "SETUP",
+      "check": "REF-CLIENT",
+      "status": "PASS",
+      "msg": "aba4adf4-7e5a-4148-9289-e13e84932f38",
+      "detail": {
+        "clientId": "aba4adf4-7e5a-4148-9289-e13e84932f38"
+      },
+      "ts": "2026-06-10T08:53:05.959Z"
+    },
+    {
+      "area": "SETUP",
+      "check": "AGENCY-B",
+      "status": "PASS",
+      "msg": "AVC Migration (avc-migration-live)",
+      "detail": {
+        "id": "1cd4007e-bbe1-4205-9481-233e2fe90ee7",
+        "clientId": "e4fb3dd3-a656-48e2-b22d-3982484ac709"
+      },
+      "ts": "2026-06-10T08:53:06.353Z"
+    },
+    {
+      "area": "BROWSER",
+      "check": "CHROME",
+      "status": "PASS",
+      "msg": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+      "detail": {},
+      "ts": "2026-06-10T08:53:06.353Z"
+    },
+    {
+      "area": "PART2",
+      "check": "SIDEBAR-BILLING-OWNER",
+      "status": "PASS",
+      "msg": "Billing accessible",
+      "detail": {
+        "billingLocked": false,
+        "expected": false,
+        "screenshot": "docs\\beta1-screenshots\\owner-sidebar.png"
+      },
+      "ts": "2026-06-10T08:53:13.904Z"
+    },
+    {
+      "area": "PART2",
+      "check": "SIDEBAR-SETTINGS-OWNER",
+      "status": "PASS",
+      "msg": "Settings accessible",
+      "detail": {
+        "settingsLocked": false,
+        "expected": false
+      },
+      "ts": "2026-06-10T08:53:13.904Z"
+    },
+    {
+      "area": "PART2",
+      "check": "SIDEBAR-HEALTH-OWNER",
+      "status": "PASS",
+      "msg": "System Health visible",
+      "detail": {
+        "systemHealthVisible": true,
+        "expected": true
+      },
+      "ts": "2026-06-10T08:53:13.904Z"
+    },
+    {
+      "area": "PART2",
+      "check": "SIDEBAR-NAV-OWNER",
+      "status": "PASS",
+      "msg": "Nav audit (14 items)",
+      "detail": {
+        "navResults": [
+          {
+            "key": "dashboard",
+            "title": "Dashboard",
+            "path": "dashboard",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          },
+          {
+            "key": "clients",
+            "title": "Clients",
+            "path": "clients",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/clients"
+          },
+          {
+            "key": "agreements",
+            "title": "Agreements",
+            "path": "agreements",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/agreements"
+          },
+          {
+            "key": "approvals",
+            "title": "Approvals",
+            "path": "approvals",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/approvals"
+          },
+          {
+            "key": "documents-send",
+            "title": "Documents",
+            "path": "documents/send",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/documents/send"
+          },
+          {
+            "key": "documents-library",
+            "title": "Documents",
+            "path": "documents/library",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/documents/library"
+          },
+          {
+            "key": "file-notes",
+            "title": "File Notes",
+            "path": "file-notes",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/file-notes"
+          },
+          {
+            "key": "sos",
+            "state": "n/a",
+            "note": "Client profile tab — not top-level sidebar"
+          },
+          {
+            "key": "templates",
+            "title": "Templates",
+            "path": "templates",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/templates"
+          },
+          {
+            "key": "notifications",
+            "title": "Notifications",
+            "path": "notifications",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/notifications"
+          },
+          {
+            "key": "settings",
+            "title": "Settings",
+            "path": "settings",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/settings"
+          },
+          {
+            "key": "billing",
+            "title": "Billing",
+            "path": "billing",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/billing"
+          },
+          {
+            "key": "reports",
+            "title": "Reports",
+            "path": "reports",
+            "state": "redirect",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          },
+          {
+            "key": "analytics",
+            "title": "Analytics",
+            "path": "analytics",
+            "state": "redirect",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          }
+        ]
+      },
+      "ts": "2026-06-10T08:53:57.862Z"
+    },
+    {
+      "area": "PART2",
+      "check": "SIDEBAR-BILLING-ADMIN",
+      "status": "PASS",
+      "msg": "Billing accessible",
+      "detail": {
+        "billingLocked": false,
+        "expected": false,
+        "screenshot": "docs\\beta1-screenshots\\admin-sidebar.png"
+      },
+      "ts": "2026-06-10T08:54:01.600Z"
+    },
+    {
+      "area": "PART2",
+      "check": "SIDEBAR-SETTINGS-ADMIN",
+      "status": "PASS",
+      "msg": "Settings accessible",
+      "detail": {
+        "settingsLocked": false,
+        "expected": false
+      },
+      "ts": "2026-06-10T08:54:01.600Z"
+    },
+    {
+      "area": "PART2",
+      "check": "SIDEBAR-HEALTH-ADMIN",
+      "status": "PASS",
+      "msg": "System Health visible",
+      "detail": {
+        "systemHealthVisible": true,
+        "expected": true
+      },
+      "ts": "2026-06-10T08:54:01.600Z"
+    },
+    {
+      "area": "PART2",
+      "check": "SIDEBAR-NAV-ADMIN",
+      "status": "PASS",
+      "msg": "Nav audit (14 items)",
+      "detail": {
+        "navResults": [
+          {
+            "key": "dashboard",
+            "title": "Dashboard",
+            "path": "dashboard",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          },
+          {
+            "key": "clients",
+            "title": "Clients",
+            "path": "clients",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/clients"
+          },
+          {
+            "key": "agreements",
+            "title": "Agreements",
+            "path": "agreements",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/agreements"
+          },
+          {
+            "key": "approvals",
+            "title": "Approvals",
+            "path": "approvals",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/approvals"
+          },
+          {
+            "key": "documents-send",
+            "title": "Documents",
+            "path": "documents/send",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/documents/send"
+          },
+          {
+            "key": "documents-library",
+            "title": "Documents",
+            "path": "documents/library",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/documents/library"
+          },
+          {
+            "key": "file-notes",
+            "title": "File Notes",
+            "path": "file-notes",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/file-notes"
+          },
+          {
+            "key": "sos",
+            "state": "n/a",
+            "note": "Client profile tab — not top-level sidebar"
+          },
+          {
+            "key": "templates",
+            "title": "Templates",
+            "path": "templates",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/templates"
+          },
+          {
+            "key": "notifications",
+            "title": "Notifications",
+            "path": "notifications",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/notifications"
+          },
+          {
+            "key": "settings",
+            "title": "Settings",
+            "path": "settings",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/settings"
+          },
+          {
+            "key": "billing",
+            "title": "Billing",
+            "path": "billing",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/billing"
+          },
+          {
+            "key": "reports",
+            "title": "Reports",
+            "path": "reports",
+            "state": "redirect",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          },
+          {
+            "key": "analytics",
+            "title": "Analytics",
+            "path": "analytics",
+            "state": "redirect",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          }
+        ]
+      },
+      "ts": "2026-06-10T08:54:33.852Z"
+    },
+    {
+      "area": "PART2",
+      "check": "SIDEBAR-BILLING-AGENT",
+      "status": "PASS",
+      "msg": "Billing locked",
+      "detail": {
+        "billingLocked": true,
+        "expected": true,
+        "screenshot": "docs\\beta1-screenshots\\agent-sidebar.png"
+      },
+      "ts": "2026-06-10T08:54:36.880Z"
+    },
+    {
+      "area": "PART2",
+      "check": "SIDEBAR-SETTINGS-AGENT",
+      "status": "PASS",
+      "msg": "Settings accessible",
+      "detail": {
+        "settingsLocked": false,
+        "expected": false
+      },
+      "ts": "2026-06-10T08:54:36.880Z"
+    },
+    {
+      "area": "PART2",
+      "check": "SIDEBAR-HEALTH-AGENT",
+      "status": "PASS",
+      "msg": "System Health hidden",
+      "detail": {
+        "systemHealthVisible": false,
+        "expected": false
+      },
+      "ts": "2026-06-10T08:54:36.881Z"
+    },
+    {
+      "area": "PART2",
+      "check": "SIDEBAR-NAV-AGENT",
+      "status": "PASS",
+      "msg": "Nav audit (14 items)",
+      "detail": {
+        "navResults": [
+          {
+            "key": "dashboard",
+            "title": "Dashboard",
+            "path": "dashboard",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          },
+          {
+            "key": "clients",
+            "title": "Clients",
+            "path": "clients",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/clients"
+          },
+          {
+            "key": "agreements",
+            "title": "Agreements",
+            "path": "agreements",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/agreements"
+          },
+          {
+            "key": "approvals",
+            "title": "Approvals",
+            "path": "approvals",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/approvals"
+          },
+          {
+            "key": "documents-send",
+            "title": "Documents",
+            "path": "documents/send",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/documents/send"
+          },
+          {
+            "key": "documents-library",
+            "title": "Documents",
+            "path": "documents/library",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/documents/library"
+          },
+          {
+            "key": "file-notes",
+            "title": "File Notes",
+            "path": "file-notes",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/file-notes"
+          },
+          {
+            "key": "sos",
+            "state": "n/a",
+            "note": "Client profile tab — not top-level sidebar"
+          },
+          {
+            "key": "templates",
+            "title": "Templates",
+            "path": "templates",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/templates"
+          },
+          {
+            "key": "notifications",
+            "title": "Notifications",
+            "path": "notifications",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/notifications"
+          },
+          {
+            "key": "settings",
+            "title": "Settings",
+            "path": "settings",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/settings"
+          },
+          {
+            "key": "billing",
+            "title": "Billing",
+            "path": "billing",
+            "state": "blocked",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard?access=denied"
+          },
+          {
+            "key": "reports",
+            "title": "Reports",
+            "path": "reports",
+            "state": "redirect",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          },
+          {
+            "key": "analytics",
+            "title": "Analytics",
+            "path": "analytics",
+            "state": "redirect",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          }
+        ]
+      },
+      "ts": "2026-06-10T08:55:11.504Z"
+    },
+    {
+      "area": "PART2",
+      "check": "SIDEBAR-BILLING-MANAGER",
+      "status": "PASS",
+      "msg": "Billing locked",
+      "detail": {
+        "billingLocked": true,
+        "expected": true,
+        "screenshot": "docs\\beta1-screenshots\\manager-sidebar.png"
+      },
+      "ts": "2026-06-10T08:55:14.796Z"
+    },
+    {
+      "area": "PART2",
+      "check": "SIDEBAR-SETTINGS-MANAGER",
+      "status": "PASS",
+      "msg": "Settings accessible",
+      "detail": {
+        "settingsLocked": false,
+        "expected": false
+      },
+      "ts": "2026-06-10T08:55:14.796Z"
+    },
+    {
+      "area": "PART2",
+      "check": "SIDEBAR-HEALTH-MANAGER",
+      "status": "PASS",
+      "msg": "System Health hidden",
+      "detail": {
+        "systemHealthVisible": false,
+        "expected": false
+      },
+      "ts": "2026-06-10T08:55:14.796Z"
+    },
+    {
+      "area": "PART2",
+      "check": "SIDEBAR-NAV-MANAGER",
+      "status": "PASS",
+      "msg": "Nav audit (14 items)",
+      "detail": {
+        "navResults": [
+          {
+            "key": "dashboard",
+            "title": "Dashboard",
+            "path": "dashboard",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          },
+          {
+            "key": "clients",
+            "title": "Clients",
+            "path": "clients",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/clients"
+          },
+          {
+            "key": "agreements",
+            "title": "Agreements",
+            "path": "agreements",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/agreements"
+          },
+          {
+            "key": "approvals",
+            "title": "Approvals",
+            "path": "approvals",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/approvals"
+          },
+          {
+            "key": "documents-send",
+            "title": "Documents",
+            "path": "documents/send",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/documents/send"
+          },
+          {
+            "key": "documents-library",
+            "title": "Documents",
+            "path": "documents/library",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/documents/library"
+          },
+          {
+            "key": "file-notes",
+            "title": "File Notes",
+            "path": "file-notes",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/file-notes"
+          },
+          {
+            "key": "sos",
+            "state": "n/a",
+            "note": "Client profile tab — not top-level sidebar"
+          },
+          {
+            "key": "templates",
+            "title": "Templates",
+            "path": "templates",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/templates"
+          },
+          {
+            "key": "notifications",
+            "title": "Notifications",
+            "path": "notifications",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/notifications"
+          },
+          {
+            "key": "settings",
+            "title": "Settings",
+            "path": "settings",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/settings"
+          },
+          {
+            "key": "billing",
+            "title": "Billing",
+            "path": "billing",
+            "state": "blocked",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard?access=denied"
+          },
+          {
+            "key": "reports",
+            "title": "Reports",
+            "path": "reports",
+            "state": "redirect",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          },
+          {
+            "key": "analytics",
+            "title": "Analytics",
+            "path": "analytics",
+            "state": "redirect",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          }
+        ]
+      },
+      "ts": "2026-06-10T08:55:46.121Z"
+    },
+    {
+      "area": "PART2",
+      "check": "SIDEBAR-BILLING-ASSISTANT",
+      "status": "PASS",
+      "msg": "Billing locked",
+      "detail": {
+        "billingLocked": true,
+        "expected": true,
+        "screenshot": "docs\\beta1-screenshots\\assistant-sidebar.png"
+      },
+      "ts": "2026-06-10T08:55:49.434Z"
+    },
+    {
+      "area": "PART2",
+      "check": "SIDEBAR-SETTINGS-ASSISTANT",
+      "status": "PASS",
+      "msg": "Settings locked",
+      "detail": {
+        "settingsLocked": true,
+        "expected": true
+      },
+      "ts": "2026-06-10T08:55:49.435Z"
+    },
+    {
+      "area": "PART2",
+      "check": "SIDEBAR-HEALTH-ASSISTANT",
+      "status": "PASS",
+      "msg": "System Health hidden",
+      "detail": {
+        "systemHealthVisible": false,
+        "expected": false
+      },
+      "ts": "2026-06-10T08:55:49.435Z"
+    },
+    {
+      "area": "PART2",
+      "check": "SIDEBAR-NAV-ASSISTANT",
+      "status": "PASS",
+      "msg": "Nav audit (14 items)",
+      "detail": {
+        "navResults": [
+          {
+            "key": "dashboard",
+            "title": "Dashboard",
+            "path": "dashboard",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          },
+          {
+            "key": "clients",
+            "title": "Clients",
+            "path": "clients",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/clients"
+          },
+          {
+            "key": "agreements",
+            "title": "Agreements",
+            "path": "agreements",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/agreements"
+          },
+          {
+            "key": "approvals",
+            "title": "Approvals",
+            "path": "approvals",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/approvals"
+          },
+          {
+            "key": "documents-send",
+            "title": "Documents",
+            "path": "documents/send",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/documents/send"
+          },
+          {
+            "key": "documents-library",
+            "title": "Documents",
+            "path": "documents/library",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/documents/library"
+          },
+          {
+            "key": "file-notes",
+            "title": "File Notes",
+            "path": "file-notes",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/file-notes"
+          },
+          {
+            "key": "sos",
+            "state": "n/a",
+            "note": "Client profile tab — not top-level sidebar"
+          },
+          {
+            "key": "templates",
+            "title": "Templates",
+            "path": "templates",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/templates"
+          },
+          {
+            "key": "notifications",
+            "title": "Notifications",
+            "path": "notifications",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/notifications"
+          },
+          {
+            "key": "settings",
+            "title": "Settings",
+            "path": "settings",
+            "state": "blocked",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard?access=denied"
+          },
+          {
+            "key": "billing",
+            "title": "Billing",
+            "path": "billing",
+            "state": "blocked",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard?access=denied"
+          },
+          {
+            "key": "reports",
+            "title": "Reports",
+            "path": "reports",
+            "state": "redirect",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          },
+          {
+            "key": "analytics",
+            "title": "Analytics",
+            "path": "analytics",
+            "state": "redirect",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          }
+        ]
+      },
+      "ts": "2026-06-10T08:56:22.213Z"
+    },
+    {
+      "area": "PART2",
+      "check": "SIDEBAR-BILLING-VIEWER",
+      "status": "PASS",
+      "msg": "Billing locked",
+      "detail": {
+        "billingLocked": true,
+        "expected": true,
+        "screenshot": "docs\\beta1-screenshots\\viewer-sidebar.png"
+      },
+      "ts": "2026-06-10T08:56:25.536Z"
+    },
+    {
+      "area": "PART2",
+      "check": "SIDEBAR-SETTINGS-VIEWER",
+      "status": "PASS",
+      "msg": "Settings locked",
+      "detail": {
+        "settingsLocked": true,
+        "expected": true
+      },
+      "ts": "2026-06-10T08:56:25.536Z"
+    },
+    {
+      "area": "PART2",
+      "check": "SIDEBAR-HEALTH-VIEWER",
+      "status": "PASS",
+      "msg": "System Health hidden",
+      "detail": {
+        "systemHealthVisible": false,
+        "expected": false
+      },
+      "ts": "2026-06-10T08:56:25.536Z"
+    },
+    {
+      "area": "PART2",
+      "check": "SIDEBAR-NAV-VIEWER",
+      "status": "PASS",
+      "msg": "Nav audit (14 items)",
+      "detail": {
+        "navResults": [
+          {
+            "key": "dashboard",
+            "title": "Dashboard",
+            "path": "dashboard",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          },
+          {
+            "key": "clients",
+            "title": "Clients",
+            "path": "clients",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/clients"
+          },
+          {
+            "key": "agreements",
+            "title": "Agreements",
+            "path": "agreements",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/agreements"
+          },
+          {
+            "key": "approvals",
+            "title": "Approvals",
+            "path": "approvals",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/approvals"
+          },
+          {
+            "key": "documents-send",
+            "title": "Documents",
+            "path": "documents/send",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/documents/send"
+          },
+          {
+            "key": "documents-library",
+            "title": "Documents",
+            "path": "documents/library",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/documents/library"
+          },
+          {
+            "key": "file-notes",
+            "title": "File Notes",
+            "path": "file-notes",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/file-notes"
+          },
+          {
+            "key": "sos",
+            "state": "n/a",
+            "note": "Client profile tab — not top-level sidebar"
+          },
+          {
+            "key": "templates",
+            "title": "Templates",
+            "path": "templates",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/templates"
+          },
+          {
+            "key": "notifications",
+            "title": "Notifications",
+            "path": "notifications",
+            "state": "accessible",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/notifications"
+          },
+          {
+            "key": "settings",
+            "title": "Settings",
+            "path": "settings",
+            "state": "blocked",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard?access=denied"
+          },
+          {
+            "key": "billing",
+            "title": "Billing",
+            "path": "billing",
+            "state": "blocked",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard?access=denied"
+          },
+          {
+            "key": "reports",
+            "title": "Reports",
+            "path": "reports",
+            "state": "redirect",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          },
+          {
+            "key": "analytics",
+            "title": "Analytics",
+            "path": "analytics",
+            "state": "redirect",
+            "finalUrl": "http://localhost:3000/workspace/ritiklabs/dashboard"
+          }
+        ]
+      },
+      "ts": "2026-06-10T08:57:00.450Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-OWNER-settings",
+      "status": "PASS",
+      "msg": "Allowed → http://localhost:3000/workspace/ritiklabs/settings",
+      "detail": {},
+      "ts": "2026-06-10T08:57:03.309Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-OWNER-billing",
+      "status": "PASS",
+      "msg": "Allowed → http://localhost:3000/workspace/ritiklabs/billing",
+      "detail": {},
+      "ts": "2026-06-10T08:57:06.227Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-OWNER-admin-system-health",
+      "status": "PASS",
+      "msg": "Allowed → http://localhost:3000/workspace/ritiklabs/admin/system-health",
+      "detail": {},
+      "ts": "2026-06-10T08:57:09.011Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-OWNER-reports",
+      "status": "PASS",
+      "msg": "Allowed → http://localhost:3000/workspace/ritiklabs/reports",
+      "detail": {},
+      "ts": "2026-06-10T08:57:14.682Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-OWNER-analytics",
+      "status": "PASS",
+      "msg": "Allowed → http://localhost:3000/workspace/ritiklabs/dashboard",
+      "detail": {},
+      "ts": "2026-06-10T08:57:18.109Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-ADMIN-settings",
+      "status": "PASS",
+      "msg": "Allowed → http://localhost:3000/workspace/ritiklabs/settings",
+      "detail": {},
+      "ts": "2026-06-10T08:57:20.940Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-ADMIN-billing",
+      "status": "PASS",
+      "msg": "Allowed → http://localhost:3000/workspace/ritiklabs/billing",
+      "detail": {},
+      "ts": "2026-06-10T08:57:23.628Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-ADMIN-admin-system-health",
+      "status": "PASS",
+      "msg": "Allowed → http://localhost:3000/workspace/ritiklabs/admin/system-health",
+      "detail": {},
+      "ts": "2026-06-10T08:57:26.406Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-ADMIN-reports",
+      "status": "PASS",
+      "msg": "Allowed → http://localhost:3000/workspace/ritiklabs/dashboard",
+      "detail": {},
+      "ts": "2026-06-10T08:57:29.242Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-ADMIN-analytics",
+      "status": "PASS",
+      "msg": "Allowed → http://localhost:3000/workspace/ritiklabs/dashboard",
+      "detail": {},
+      "ts": "2026-06-10T08:57:32.076Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-AGENT-settings",
+      "status": "PASS",
+      "msg": "Allowed → http://localhost:3000/workspace/ritiklabs/settings",
+      "detail": {},
+      "ts": "2026-06-10T08:57:35.423Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-AGENT-billing",
+      "status": "PASS",
+      "msg": "Denied as expected → http://localhost:3000/workspace/ritiklabs/dashboard?access=denied",
+      "detail": {},
+      "ts": "2026-06-10T08:57:38.147Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-AGENT-admin-system-health",
+      "status": "PASS",
+      "msg": "Denied as expected → http://localhost:3000/workspace/ritiklabs/dashboard?access=denied",
+      "detail": {},
+      "ts": "2026-06-10T08:57:41.098Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-AGENT-reports",
+      "status": "PASS",
+      "msg": "Allowed → http://localhost:3000/workspace/ritiklabs/dashboard",
+      "detail": {},
+      "ts": "2026-06-10T08:57:43.952Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-AGENT-analytics",
+      "status": "PASS",
+      "msg": "Allowed → http://localhost:3000/workspace/ritiklabs/dashboard",
+      "detail": {},
+      "ts": "2026-06-10T08:57:46.812Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-MANAGER-settings",
+      "status": "PASS",
+      "msg": "Allowed → http://localhost:3000/workspace/ritiklabs/settings",
+      "detail": {},
+      "ts": "2026-06-10T08:57:49.653Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-MANAGER-billing",
+      "status": "PASS",
+      "msg": "Denied as expected → http://localhost:3000/workspace/ritiklabs/dashboard?access=denied",
+      "detail": {},
+      "ts": "2026-06-10T08:57:52.305Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-MANAGER-admin-system-health",
+      "status": "PASS",
+      "msg": "Denied as expected → http://localhost:3000/workspace/ritiklabs/dashboard?access=denied",
+      "detail": {},
+      "ts": "2026-06-10T08:57:55.290Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-MANAGER-reports",
+      "status": "PASS",
+      "msg": "Allowed → http://localhost:3000/workspace/ritiklabs/dashboard",
+      "detail": {},
+      "ts": "2026-06-10T08:57:58.432Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-MANAGER-analytics",
+      "status": "PASS",
+      "msg": "Allowed → http://localhost:3000/workspace/ritiklabs/dashboard",
+      "detail": {},
+      "ts": "2026-06-10T08:58:01.277Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-ASSISTANT-settings",
+      "status": "PASS",
+      "msg": "Denied as expected → http://localhost:3000/workspace/ritiklabs/dashboard?access=denied",
+      "detail": {},
+      "ts": "2026-06-10T08:58:04.072Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-ASSISTANT-billing",
+      "status": "PASS",
+      "msg": "Denied as expected → http://localhost:3000/workspace/ritiklabs/dashboard?access=denied",
+      "detail": {},
+      "ts": "2026-06-10T08:58:06.726Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-ASSISTANT-admin-system-health",
+      "status": "PASS",
+      "msg": "Denied as expected → http://localhost:3000/workspace/ritiklabs/dashboard?access=denied",
+      "detail": {},
+      "ts": "2026-06-10T08:58:09.603Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-ASSISTANT-reports",
+      "status": "PASS",
+      "msg": "Allowed → http://localhost:3000/workspace/ritiklabs/dashboard",
+      "detail": {},
+      "ts": "2026-06-10T08:58:12.461Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-ASSISTANT-analytics",
+      "status": "PASS",
+      "msg": "Allowed → http://localhost:3000/workspace/ritiklabs/dashboard",
+      "detail": {},
+      "ts": "2026-06-10T08:58:15.344Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-VIEWER-settings",
+      "status": "PASS",
+      "msg": "Denied as expected → http://localhost:3000/workspace/ritiklabs/dashboard?access=denied",
+      "detail": {},
+      "ts": "2026-06-10T08:58:18.830Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-VIEWER-billing",
+      "status": "PASS",
+      "msg": "Denied as expected → http://localhost:3000/workspace/ritiklabs/dashboard?access=denied",
+      "detail": {},
+      "ts": "2026-06-10T08:58:21.612Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-VIEWER-admin-system-health",
+      "status": "PASS",
+      "msg": "Denied as expected → http://localhost:3000/workspace/ritiklabs/dashboard?access=denied",
+      "detail": {},
+      "ts": "2026-06-10T08:58:24.480Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-VIEWER-reports",
+      "status": "PASS",
+      "msg": "Allowed → http://localhost:3000/workspace/ritiklabs/dashboard",
+      "detail": {},
+      "ts": "2026-06-10T08:58:27.442Z"
+    },
+    {
+      "area": "PART4",
+      "check": "ROUTE-VIEWER-analytics",
+      "status": "PASS",
+      "msg": "Allowed → http://localhost:3000/workspace/ritiklabs/dashboard",
+      "detail": {},
+      "ts": "2026-06-10T08:58:30.370Z"
+    },
+    {
+      "area": "PART5",
+      "check": "API-OWNER-BRANDING",
+      "status": "PASS",
+      "msg": "status 200",
+      "detail": {},
+      "ts": "2026-06-10T08:58:32.143Z"
+    },
+    {
+      "area": "PART5",
+      "check": "API-VIEWER-BRANDING",
+      "status": "PASS",
+      "msg": "status 403",
+      "detail": {},
+      "ts": "2026-06-10T08:58:32.696Z"
+    },
+    {
+      "area": "PART5",
+      "check": "API-VIEWER-APPROVAL",
+      "status": "PASS",
+      "msg": "status 500 Unauthorized to create approvals",
+      "detail": {},
+      "ts": "2026-06-10T08:58:33.628Z"
+    },
+    {
+      "area": "PART5",
+      "check": "API-VIEWER-AGREEMENT-SEND",
+      "status": "PASS",
+      "msg": "status 403",
+      "detail": {},
+      "ts": "2026-06-10T08:58:35.312Z"
+    },
+    {
+      "area": "PART3",
+      "check": "API-VIEWER-ONBOARD",
+      "status": "PASS",
+      "msg": "Read-only create client: status 400",
+      "detail": {
+        "error": "Invalid input Invalid input"
+      },
+      "ts": "2026-06-10T08:58:36.584Z"
+    },
+    {
+      "area": "PART3",
+      "check": "API-AGENT-AGREEMENT",
+      "status": "PASS",
+      "msg": "Agent send attempt status 500 (roleDenied=false)",
+      "detail": {},
+      "ts": "2026-06-10T08:58:37.411Z"
+    },
+    {
+      "area": "PART3",
+      "check": "API-ASSISTANT-FILENOTE",
+      "status": "PASS",
+      "msg": "status 201",
+      "detail": {},
+      "ts": "2026-06-10T08:58:39.843Z"
+    },
+    {
+      "area": "PART3",
+      "check": "API-OWNER-INVITE",
+      "status": "PASS",
+      "msg": "status 200",
+      "detail": {},
+      "ts": "2026-06-10T08:58:44.907Z"
+    },
+    {
+      "area": "PART5",
+      "check": "API-VIEWER-INVITE",
+      "status": "PASS",
+      "msg": "status 403",
+      "detail": {},
+      "ts": "2026-06-10T08:58:47.748Z"
+    },
+    {
+      "area": "PART5",
+      "check": "API-VIEWER-TEMPLATE",
+      "status": "PASS",
+      "msg": "status 403",
+      "detail": {},
+      "ts": "2026-06-10T08:58:50.031Z"
+    },
+    {
+      "area": "PART3",
+      "check": "MATRIX-OWNER",
+      "status": "PASS",
+      "msg": "Expected permissions recorded",
+      "detail": {
+        "client": true,
+        "agreement": true,
+        "approval": true,
+        "sos": true,
+        "document": true,
+        "template": true,
+        "userInvite": true
+      },
+      "ts": "2026-06-10T08:58:50.039Z"
+    },
+    {
+      "area": "PART3",
+      "check": "MATRIX-ADMIN",
+      "status": "PASS",
+      "msg": "Expected permissions recorded",
+      "detail": {
+        "client": true,
+        "agreement": true,
+        "approval": true,
+        "sos": true,
+        "document": true,
+        "template": true,
+        "userInvite": true
+      },
+      "ts": "2026-06-10T08:58:50.039Z"
+    },
+    {
+      "area": "PART3",
+      "check": "MATRIX-AGENT",
+      "status": "PASS",
+      "msg": "Expected permissions recorded",
+      "detail": {
+        "client": true,
+        "agreement": true,
+        "approval": true,
+        "sos": true,
+        "document": true,
+        "template": true,
+        "userInvite": false
+      },
+      "ts": "2026-06-10T08:58:50.039Z"
+    },
+    {
+      "area": "PART3",
+      "check": "MATRIX-MANAGER",
+      "status": "PASS",
+      "msg": "Expected permissions recorded",
+      "detail": {
+        "client": true,
+        "agreement": true,
+        "approval": true,
+        "sos": true,
+        "document": true,
+        "template": true,
+        "userInvite": false
+      },
+      "ts": "2026-06-10T08:58:50.039Z"
+    },
+    {
+      "area": "PART3",
+      "check": "MATRIX-ASSISTANT",
+      "status": "PASS",
+      "msg": "Expected permissions recorded",
+      "detail": {
+        "client": true,
+        "agreement": false,
+        "approval": false,
+        "sos": true,
+        "document": true,
+        "template": false,
+        "userInvite": false
+      },
+      "ts": "2026-06-10T08:58:50.039Z"
+    },
+    {
+      "area": "PART3",
+      "check": "MATRIX-VIEWER",
+      "status": "PASS",
+      "msg": "Expected permissions recorded",
+      "detail": {
+        "client": false,
+        "agreement": false,
+        "approval": false,
+        "sos": false,
+        "document": false,
+        "template": false,
+        "userInvite": false
+      },
+      "ts": "2026-06-10T08:58:50.039Z"
+    },
+    {
+      "area": "PART6",
+      "check": "RLS-CLIENT-CROSS",
+      "status": "PASS",
+      "msg": "Agency A user cannot read Agency B client",
+      "detail": {
+        "crossClient": null
+      },
+      "ts": "2026-06-10T08:58:50.251Z"
+    },
+    {
+      "area": "PART6",
+      "check": "RLS-API-CLIENT",
+      "status": "PASS",
+      "msg": "Cross-agency GET status 404",
+      "detail": {},
+      "ts": "2026-06-10T08:58:51.453Z"
+    },
+    {
+      "area": "PART6",
+      "check": "RLS-POLICIES",
+      "status": "PASS",
+      "msg": "19 RLS policies on core tables",
+      "detail": {},
+      "ts": "2026-06-10T08:58:52.921Z"
+    },
+    {
+      "area": "PART7",
+      "check": "WF-AGENT-CLIENTS",
+      "status": "PASS",
+      "msg": "Agent search clients status 200",
+      "detail": {},
+      "ts": "2026-06-10T08:58:56.121Z"
+    },
+    {
+      "area": "PART7",
+      "check": "WF-AGENT-APPROVALS",
+      "status": "PASS",
+      "msg": "Agent list approvals status 200",
+      "detail": {},
+      "ts": "2026-06-10T08:58:56.736Z"
+    },
+    {
+      "area": "PART7",
+      "check": "WF-MANAGER-APPROVALS",
+      "status": "PASS",
+      "msg": "Manager list approvals status 200",
+      "detail": {},
+      "ts": "2026-06-10T08:58:57.349Z"
+    },
+    {
+      "area": "PART7",
+      "check": "WF-VIEWER-READ",
+      "status": "PASS",
+      "msg": "Viewer read matter context status 200",
+      "detail": {},
+      "ts": "2026-06-10T08:59:00.218Z"
+    },
+    {
+      "area": "PART7",
+      "check": "WF-BROWSER-AGENT",
+      "status": "PASS",
+      "msg": "Screenshot agent-client-profile.png",
+      "detail": {
+        "screenshot": "docs\\beta1-screenshots\\agent-client-profile.png"
+      },
+      "ts": "2026-06-10T08:59:03.359Z"
+    },
+    {
+      "area": "PART7",
+      "check": "WF-BROWSER-ASSISTANT",
+      "status": "PASS",
+      "msg": "Screenshot assistant-file-notes.png",
+      "detail": {
+        "screenshot": "docs\\beta1-screenshots\\assistant-file-notes.png"
+      },
+      "ts": "2026-06-10T08:59:08.472Z"
+    },
+    {
+      "area": "PART7",
+      "check": "WF-BROWSER-VIEWER",
+      "status": "PASS",
+      "msg": "Screenshot viewer-client-readonly.png",
+      "detail": {
+        "screenshot": "docs\\beta1-screenshots\\viewer-client-readonly.png"
+      },
+      "ts": "2026-06-10T08:59:11.703Z"
+    },
+    {
+      "area": "PART8",
+      "check": "NOTIF-AGREEMENT",
+      "status": "WARN",
+      "msg": "0 notifications in last 7d",
+      "detail": {},
+      "ts": "2026-06-10T08:59:12.135Z"
+    },
+    {
+      "area": "PART8",
+      "check": "NOTIF-APPROVAL",
+      "status": "WARN",
+      "msg": "0 notifications in last 7d",
+      "detail": {},
+      "ts": "2026-06-10T08:59:12.135Z"
+    },
+    {
+      "area": "PART8",
+      "check": "NOTIF-SOS",
+      "status": "WARN",
+      "msg": "0 notifications in last 7d",
+      "detail": {},
+      "ts": "2026-06-10T08:59:12.135Z"
+    },
+    {
+      "area": "PART8",
+      "check": "NOTIF-MATTER",
+      "status": "WARN",
+      "msg": "0 notifications in last 7d",
+      "detail": {},
+      "ts": "2026-06-10T08:59:12.135Z"
+    },
+    {
+      "area": "PART8",
+      "check": "NOTIF-API-OWNER",
+      "status": "WARN",
+      "msg": "GET notifications status 200, count 0",
+      "detail": {},
+      "ts": "2026-06-10T08:59:13.369Z"
+    },
+    {
+      "area": "PART9",
+      "check": "MOBILE-IPHONE-14",
+      "status": "WARN",
+      "msg": "horizontalScroll=ok search=false",
+      "detail": {},
+      "ts": "2026-06-10T08:59:27.230Z"
+    },
+    {
+      "area": "PART9",
+      "check": "MOBILE-PIXEL-7",
+      "status": "WARN",
+      "msg": "horizontalScroll=ok search=false",
+      "detail": {},
+      "ts": "2026-06-10T08:59:40.914Z"
+    },
+    {
+      "area": "PART9",
+      "check": "MOBILE-IPAD",
+      "status": "WARN",
+      "msg": "horizontalScroll=ok search=false",
+      "detail": {},
+      "ts": "2026-06-10T08:59:54.446Z"
+    }
+  ],
+  "matrix": [
+    {
+      "area": "owner",
+      "pass": true,
+      "fail": false,
+      "evidence": "docs\\beta1-screenshots\\owner-sidebar.png"
+    },
+    {
+      "area": "admin",
+      "pass": true,
+      "fail": false,
+      "evidence": "docs\\beta1-screenshots\\admin-sidebar.png"
+    },
+    {
+      "area": "agent",
+      "pass": true,
+      "fail": false,
+      "evidence": "docs\\beta1-screenshots\\agent-sidebar.png, docs\\beta1-screenshots\\agent-client-profile.png"
+    },
+    {
+      "area": "manager",
+      "pass": true,
+      "fail": false,
+      "evidence": "docs\\beta1-screenshots\\manager-sidebar.png"
+    },
+    {
+      "area": "assistant",
+      "pass": true,
+      "fail": false,
+      "evidence": "docs\\beta1-screenshots\\assistant-sidebar.png, docs\\beta1-screenshots\\assistant-file-notes.png"
+    },
+    {
+      "area": "viewer",
+      "pass": true,
+      "fail": false,
+      "evidence": "docs\\beta1-screenshots\\viewer-sidebar.png, docs\\beta1-screenshots\\viewer-client-readonly.png"
+    },
+    {
+      "area": "Sidebar",
+      "pass": true,
+      "fail": false,
+      "evidence": "24/24 pass"
+    },
+    {
+      "area": "RBAC",
+      "pass": true,
+      "fail": false,
+      "evidence": "10/10 pass"
+    },
+    {
+      "area": "API Guards",
+      "pass": true,
+      "fail": false,
+      "evidence": "6/6 pass"
+    },
+    {
+      "area": "Route Guards",
+      "pass": true,
+      "fail": false,
+      "evidence": "30/30 pass"
+    },
+    {
+      "area": "RLS",
+      "pass": true,
+      "fail": false,
+      "evidence": "3/3 pass"
+    },
+    {
+      "area": "Notifications",
+      "pass": true,
+      "fail": false,
+      "evidence": "0/5 pass"
+    },
+    {
+      "area": "Mobile",
+      "pass": true,
+      "fail": false,
+      "evidence": "0/3 pass"
+    }
+  ],
+  "verdict": "PASS"
+}

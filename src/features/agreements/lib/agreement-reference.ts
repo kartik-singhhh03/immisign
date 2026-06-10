@@ -1,3 +1,4 @@
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { createAdminClient } from '@/lib/supabase/admin';
 
 export type AgreementNumberingConfig = {
@@ -9,9 +10,12 @@ function formatRef(prefix: string, year: number, seq: number): string {
   return `${prefix}-${year}-${String(seq).padStart(4, '0')}`;
 }
 
-export async function loadAgreementNumbering(agencyId: string): Promise<AgreementNumberingConfig> {
-  const admin = createAdminClient();
-  const { data } = await admin
+export async function loadAgreementNumbering(
+  agencyId: string,
+  supabase?: SupabaseClient,
+): Promise<AgreementNumberingConfig> {
+  const db = supabase ?? createAdminClient();
+  const { data } = await db
     .from('branding_settings')
     .select('agreement_ref_prefix, agreement_ref_start')
     .eq('agency_id', agencyId)

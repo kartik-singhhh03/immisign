@@ -5,20 +5,20 @@ import { cva, type VariantProps } from "@/lib/cva"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[0.8rem] text-sm font-bold tracking-[-0.01em] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.985] [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-semibold tracking-[-0.01em] transition-[background-color,border-color,color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111111]/20 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
         default:
-          "premium-button bg-primary text-primary-foreground hover:bg-[#0A5B52] hover:shadow-elevated",
+          "bg-[#111111] text-white shadow-[0_1px_2px_rgba(17,17,17,0.08)] hover:bg-[#1B1B1B]",
         destructive:
-          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+          "bg-[#B91C1C] text-white shadow-sm hover:bg-[#991B1B]",
         outline:
-          "border border-input bg-white/[0.82] shadow-sm hover:border-primary/30 hover:bg-emerald-50/60 hover:text-foreground",
+          "border border-[#E7E7E7] bg-white text-[#1B1B1B] shadow-sm hover:border-[#111111]/20 hover:bg-[#FAFAFA]",
         secondary:
-          "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
-        ghost: "hover:bg-muted/80 hover:text-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+          "bg-[#FAFAFA] text-[#1B1B1B] border border-[#E7E7E7] shadow-sm hover:bg-white",
+        ghost: "hover:bg-[#111111]/5 hover:text-[#111111]",
+        link: "text-[#111111] underline-offset-4 hover:underline",
       },
       size: {
         default: "h-10 px-5 py-2",

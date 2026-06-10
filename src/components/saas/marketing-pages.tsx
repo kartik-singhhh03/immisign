@@ -16,61 +16,190 @@ import {
   Scale,
   Search,
   ShieldCheck,
-  Sparkles,
   Users,
   Workflow,
   FileText,
-  TrendingUp,
-  Fingerprint,
-  Globe,
 } from "lucide-react"
 
+import { ComplianceStatsBar } from "@/components/marketing/ComplianceStatsBar"
+import {
+  PrimaryMarketingButton,
+  SecondaryMarketingButton,
+} from "@/components/marketing/MarketingButtons"
+import { WorkflowTimeline } from "@/components/marketing/WorkflowTimeline"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { APP_POSITIONING, APP_TAGLINE } from "@/lib/brand"
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-mate-accent">
+      {children}
+    </p>
+  )
+}
+
+function EditorialHeadline({
+  lines,
+  className = "",
+}: {
+  lines: React.ReactNode[]
+  className?: string
+}) {
+  return (
+    <h2
+      className={`font-display text-[2.35rem] font-normal leading-[1.12] tracking-[-0.03em] text-mate-primary md:text-5xl lg:text-[3.25rem] ${className}`}
+    >
+      {lines.map((line, i) => (
+        <span key={i} className="block">
+          {line}
+        </span>
+      ))}
+    </h2>
+  )
+}
+
+function PageHero({
+  eyebrow,
+  headline,
+  subhead,
+  children,
+}: {
+  eyebrow?: string
+  headline: React.ReactNode
+  subhead: string
+  children?: React.ReactNode
+}) {
+  return (
+    <section className="border-b border-mate-border bg-white pt-32 pb-20 md:pt-36 md:pb-24">
+      <div className="container mx-auto max-w-[1400px] px-6">
+        <div className="max-w-3xl">
+          {eyebrow && <SectionLabel>{eyebrow}</SectionLabel>}
+          <h1 className="mt-6 font-display text-[2.75rem] font-normal leading-[1.08] tracking-[-0.035em] text-mate-primary md:text-6xl lg:text-[4rem]">
+            {headline}
+          </h1>
+          <p className="mt-6 max-w-2xl text-lg leading-8 text-mate-muted">{subhead}</p>
+          {children && <div className="mt-10">{children}</div>}
+        </div>
+      </div>
+    </section>
+  )
+}
 
 function SectionHeader({
   eyebrow,
   title,
   text,
+  align = "center",
 }: {
   eyebrow?: string
   title: string
   text?: string
+  align?: "center" | "left"
 }) {
   return (
-    <div className="mx-auto max-w-3xl text-center mb-16">
-      {eyebrow && (
-        <div className="text-xs font-bold uppercase tracking-[0.18em] text-[#0D9F8C] mb-4">
-          {eyebrow}
-        </div>
-      )}
-      <h2 className="font-serif text-3xl font-normal leading-tight tracking-[-0.025em] text-[#081a36] md:text-4xl lg:text-5xl">
+    <div
+      className={`mb-16 max-w-3xl ${align === "center" ? "mx-auto text-center" : ""}`}
+    >
+      {eyebrow && <SectionLabel>{eyebrow}</SectionLabel>}
+      <h2 className="mt-4 font-display text-3xl font-normal leading-tight tracking-[-0.03em] text-mate-primary md:text-4xl lg:text-5xl">
         {title}
       </h2>
-      {text && <p className="mt-4 text-base leading-7 text-slate-500 font-semibold">{text}</p>}
+      {text && (
+        <p className="mt-4 text-base font-normal leading-7 text-mate-muted">{text}</p>
+      )}
     </div>
   )
 }
 
 function CTA() {
   return (
-    <section className="bg-white pb-24 md:pb-32">
-      <div className="container mx-auto max-w-[1400px] px-6">
-        <div className="flex flex-col items-start justify-between gap-8 rounded-2xl border border-emerald-100 bg-[radial-gradient(circle_at_12%_0%,rgba(51,196,141,0.12),transparent_28%),linear-gradient(90deg,#e9fbf5_0%,#f7fffd_100%)] px-8 py-12 shadow-[0_18px_50px_rgba(13,159,140,0.08)] md:flex-row md:items-center md:px-14">
-          <div>
-            <h2 className="font-serif text-2xl font-normal text-[#081b36] md:text-3xl">Ready to simplify your migration practice?</h2>
-            <p className="mt-2 text-sm md:text-base text-slate-500 font-semibold">Launch a calmer, more compliant agreement workflow this week.</p>
+    <section className="bg-[#F9F9F9] px-6 pb-24 md:pb-32">
+      <div className="container mx-auto max-w-[1400px]">
+        <div className="flex flex-col items-start justify-between gap-10 rounded-[2rem] bg-[#1a1a1a] px-8 py-12 text-white md:flex-row md:items-center md:px-14 md:py-14">
+          <div className="max-w-lg">
+            <h2 className="font-display text-[2rem] font-normal leading-[1.1] tracking-[-0.03em] md:text-[2.5rem]">
+              Ready for audit-ready compliance?
+            </h2>
+            <p className="mt-4 text-sm leading-relaxed text-white/55">
+              See how ImmiMate connects every workflow to the client.
+            </p>
           </div>
-          <Button asChild className="h-12 rounded-xl bg-[#0D9F8C] px-8 font-bold hover:bg-[#0A5B52] shadow-sm">
-            <Link href="/signup">
-              Start Free Trial
-              <ArrowRight className="h-4 w-4 ml-1" />
-            </Link>
-          </Button>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+            <PrimaryMarketingButton href="/contact">Book a Demo</PrimaryMarketingButton>
+            <SecondaryMarketingButton href="/pricing" variant="dark">
+              View Pricing
+            </SecondaryMarketingButton>
+          </div>
         </div>
       </div>
     </section>
+  )
+}
+
+function CapabilityRow({
+  id,
+  label,
+  title,
+  description,
+  points,
+}: {
+  id?: string
+  label: string
+  title: string
+  description: string
+  points: string[]
+}) {
+  return (
+    <div
+      id={id}
+      className="scroll-mt-28 grid gap-10 border-b border-mate-border py-14 last:border-b-0 md:grid-cols-[0.35fr_0.65fr]"
+    >
+      <div>
+        <SectionLabel>{label}</SectionLabel>
+        <h3 className="mt-3 font-display text-2xl font-normal tracking-[-0.02em] text-mate-primary md:text-3xl">
+          {title}
+        </h3>
+      </div>
+      <div>
+        <p className="text-base leading-7 text-mate-muted">{description}</p>
+        <ul className="mt-6 space-y-3">
+          {points.map((point) => (
+            <li key={point} className="flex items-start gap-3 text-sm text-mate-secondary">
+              <Check className="mt-0.5 h-4 w-4 shrink-0 text-mate-accent" />
+              {point}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )
+}
+
+function TimelineStep({
+  index,
+  title,
+  description,
+  isLast = false,
+}: {
+  index: number
+  title: string
+  description: string
+  isLast?: boolean
+}) {
+  return (
+    <div className="relative flex gap-6 pb-10 last:pb-0">
+      {!isLast && (
+        <div className="absolute left-[11px] top-6 h-[calc(100%-8px)] w-px bg-mate-border" />
+      )}
+      <div className="relative z-10 flex h-6 w-6 shrink-0 items-center justify-center border border-mate-border bg-white">
+        <span className="text-[10px] font-semibold text-mate-muted">{index}</span>
+      </div>
+      <div className="pt-0.5">
+        <h4 className="text-base font-medium text-mate-primary">{title}</h4>
+        <p className="mt-1 text-sm leading-6 text-mate-muted">{description}</p>
+      </div>
+    </div>
   )
 }
 
@@ -79,290 +208,114 @@ function CTA() {
 // ----------------------------------------------------
 export function FeaturesPage() {
   return (
-    <div className="bg-white text-[#081B2E] antialiased">
-      {/* Centered Editorial Hero */}
-      <section className="relative overflow-hidden border-b border-emerald-900/5 bg-[radial-gradient(circle_at_top,rgba(13,159,140,0.12),transparent_55%),linear-gradient(180deg,#f3fcf9_0%,#ffffff_95%)] pt-32 pb-20 text-center">
-        <div className="container mx-auto max-w-[1200px] px-6">
-          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white px-4 py-2 text-xs font-bold text-[#0A5B52] shadow-sm mb-6">
-            <Sparkles className="h-4 w-4 text-[#0D9F8C]" />
-            Platform Capabilities
-          </div>
-          <h1 className="font-sans text-5xl font-extrabold leading-[1.08] tracking-[-0.04em] text-[#081b36] md:text-7xl max-w-4xl mx-auto">
-            Everything your migration practice needs.<br />
-            <span className="font-serif font-normal text-[#0D9F8C] italic tracking-[-0.025em] text-[0.92em]">In one intelligent workspace.</span>
-          </h1>
-          <p className="mt-6 max-w-2xl mx-auto text-base md:text-lg leading-relaxed text-slate-600 font-medium">
-            ImmiSign brings agreements, documents, signatures, audit trails and analytics together in one purpose-built workspace for Australian migration professionals.
-          </p>
-          <div className="mt-8 flex flex-col gap-4 sm:flex-row justify-center items-center">
-            <Button asChild className="h-12 rounded-xl bg-[#0D9F8C] px-8 font-bold shadow-[0_12px_24px_rgba(13,159,140,0.15)] transition-all duration-300 hover:bg-[#0A5B52]">
-              <Link href="/signup">Start 14-Day Free Trial</Link>
-            </Button>
-            <Button asChild variant="outline" className="h-12 rounded-xl border-slate-200 bg-white px-8 font-bold text-[#0A5B52] shadow-sm transition-all duration-300 hover:bg-slate-50">
-              <Link href="/contact">Book a Demo</Link>
-            </Button>
-          </div>
+    <div className="bg-mate-offwhite text-mate-primary antialiased">
+      <PageHero
+        eyebrow={APP_POSITIONING}
+        headline={
+          <>
+            <span className="block">Compliance capabilities</span>
+            <span className="block italic text-mate-secondary">built for your practice.</span>
+          </>
+        }
+        subhead="Service Agreements, File Notes, Application Approvals, and Statements of Service — connected to every client record. Not document signing software. A compliance operating system."
+      >
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+          <PrimaryMarketingButton href="/contact" className="bg-mate-primary text-white hover:bg-mate-charcoal">
+            Book a Demo
+          </PrimaryMarketingButton>
+          <SecondaryMarketingButton href="/pricing" variant="light">
+            View Pricing
+          </SecondaryMarketingButton>
         </div>
-      </section>
+      </PageHero>
 
-      {/* Bento Grid Visuals Section */}
-      <section className="py-24 bg-white relative border-b border-slate-100/60">
+      <section className="border-b border-mate-border bg-[#F9F9F9] py-20 md:py-28">
         <div className="container mx-auto max-w-[1400px] px-6">
+          <div className="text-center">
+            <SectionLabel>The ImmiMate workflow</SectionLabel>
+            <h2 className="mt-4 font-display text-3xl font-normal tracking-[-0.03em] text-mate-primary md:text-4xl lg:text-5xl">
+              A complete compliance journey.
+            </h2>
+          </div>
+          <WorkflowTimeline />
+        </div>
+      </section>
+
+      <section className="border-b border-mate-border bg-white py-20 md:py-28">
+        <div className="container mx-auto max-w-[1100px] px-6">
           <SectionHeader
-            eyebrow="Interactive Workspace"
-            title="A visual operating system for regulated practices"
+            align="left"
+            eyebrow="Platform capabilities"
+            title="Every compliance step, in one client-centric workspace."
+            text="Designed for migration practices that need audit-ready records — not another generic e-sign tool."
           />
-          
-          {/* Bento Grid */}
-          <div className="grid gap-6 md:grid-cols-12 auto-rows-[200px] mt-12">
-            
-            {/* Card 1: E-Sign Status Widget (Large 7 cols, 2 rows) */}
-            <div className="md:col-span-7 md:row-span-2 rounded-2xl border border-slate-200/60 bg-[#fbfdfc] p-8 shadow-sm flex flex-col justify-between hover:shadow-elevated hover:border-[#0D9F8C]/20 transition-all duration-300">
-              <div>
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-xs font-black uppercase text-[#0D9F8C] tracking-wider">Live Transaction Tracker</span>
-                  <span className="px-3 py-1 rounded-full bg-emerald-50 text-[#0D9F8C] text-[9px] font-black uppercase">Verified Signed</span>
-                </div>
-                <h3 className="text-xl font-extrabold text-[#081b36]">Biometric Document Hash Log</h3>
-                <p className="text-xs text-slate-400 font-semibold mt-1">Real-time cryptographic audit trails proving signer authenticity.</p>
-              </div>
-              <div className="mt-6 rounded-xl border border-slate-200/40 bg-white p-4 space-y-3 shadow-inner">
-                <div className="flex justify-between items-center text-xs font-bold text-slate-500">
-                  <span>Applicant</span>
-                  <span className="text-[#081b36] font-semibold">Simran Kaur (Subclass 820)</span>
-                </div>
-                <div className="flex justify-between items-center text-xs font-bold text-slate-500">
-                  <span>Practitioner Auth</span>
-                  <span className="text-[#081b36] font-semibold">Registered Migration Agent (MARN)</span>
-                </div>
-                <div className="flex justify-between items-center text-xs font-bold text-slate-500">
-                  <span>SMS Token IP</span>
-                  <span className="text-emerald-600 font-mono font-semibold">203.0.113.82 (ap-southeast-2)</span>
-                </div>
-                <div className="flex justify-between items-center text-[9px] font-mono text-slate-400 bg-slate-50 p-2 rounded border border-slate-100 overflow-hidden text-ellipsis whitespace-nowrap">
-                  <span>SHA-256: 8a4c10f8b9e69c2d1b7a5e9f4c3a2b10f9e8d7c6b5a4f3e2d1c0</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Card 2: Compliance Checklist (5 cols, 2 rows) */}
-            <div className="md:col-span-5 md:row-span-2 rounded-2xl border border-slate-200/60 bg-[#fbfdfc] p-8 shadow-sm flex flex-col justify-between hover:shadow-elevated hover:border-[#0D9F8C]/20 transition-all duration-300">
-              <div>
-                <span className="text-xs font-black uppercase text-teal-600 tracking-wider">Regulatory Shield</span>
-                <h3 className="text-lg font-extrabold text-[#081b36] mt-2">OMARA Compliance Guard</h3>
-                <p className="text-xs text-slate-400 font-semibold mt-1">Automated template locking matching mandatory disclosure rules.</p>
-              </div>
-              <div className="space-y-3 mt-4">
-                {[
-                  "Client MARN details verified",
-                  "Consumer Guide documentation attached",
-                  "Itemized Professional Fee Schedules set",
-                  "Refund terms & disbursements logs ready"
-                ].map((rule) => (
-                  <div key={rule} className="flex gap-3 items-center">
-                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-50 text-[#0D9F8C] shrink-0">
-                      <Check className="h-3 w-3 stroke-[3]" />
-                    </div>
-                    <span className="text-xs font-bold text-slate-600">{rule}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Card 3: Uptime and Data Hosting (4 cols, 1 row) */}
-            <div className="md:col-span-4 rounded-2xl border border-slate-200/60 bg-[#fbfdfc] p-6 shadow-sm flex flex-col justify-between hover:shadow-elevated hover:border-[#0D9F8C]/20 transition-all duration-300">
-              <div className="flex justify-between items-start">
-                <div className="h-8 w-8 rounded-lg bg-cyan-50 text-cyan-600 flex items-center justify-center shadow-sm">
-                  <Globe className="h-4 w-4" />
-                </div>
-                <span className="px-2 py-0.5 rounded bg-emerald-100/50 text-[#0D9F8C] text-[9px] font-black">99.9% Uptime</span>
-              </div>
-              <div>
-                <h4 className="text-xs font-extrabold text-[#081b36]">Sydney Hosting</h4>
-                <p className="text-xs text-slate-400 font-semibold">100% on-shore database backups.</p>
-              </div>
-            </div>
-
-            {/* Card 4: Metrics (4 cols, 1 row) */}
-            <div className="md:col-span-4 rounded-2xl border border-slate-200/60 bg-[#fbfdfc] p-6 shadow-sm flex flex-col justify-between hover:shadow-elevated hover:border-[#0D9F8C]/20 transition-all duration-300">
-              <div className="flex justify-between items-start">
-                <div className="h-8 w-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center shadow-sm">
-                  <TrendingUp className="h-4 w-4" />
-                </div>
-                <span className="text-xs font-black text-purple-600">85% Faster</span>
-              </div>
-              <div>
-                <h4 className="text-xs font-extrabold text-[#081b36]">45-Minute Turnaround</h4>
-                <p className="text-xs text-slate-400 font-semibold">Average agreement turnaround speed.</p>
-              </div>
-            </div>
-
-            {/* Card 5: Team Workspace (4 cols, 1 row) */}
-            <div className="md:col-span-4 rounded-2xl border border-slate-200/60 bg-[#fbfdfc] p-6 shadow-sm flex flex-col justify-between hover:shadow-elevated hover:border-[#0D9F8C]/20 transition-all duration-300">
-              <div className="flex justify-between items-start">
-                <div className="h-8 w-8 rounded-lg bg-pink-50 text-pink-600 flex items-center justify-center shadow-sm">
-                  <Users className="h-4 w-4" />
-                </div>
-                <span className="px-2 py-0.5 rounded bg-pink-50 text-pink-600 text-[9px] font-black">Admin + RMA</span>
-              </div>
-              <div>
-                <h4 className="text-xs font-extrabold text-[#081b36]">Granular Workspace Isolation</h4>
-                <p className="text-xs text-slate-400 font-semibold">Role restrictions based on assignee portfolios.</p>
-              </div>
-            </div>
-
-          </div>
+          <CapabilityRow
+            id="service-agreements"
+            label="Service Agreements"
+            title="OMARA-ready retainers"
+            description="Standardised service agreement structures with itemised fees, disbursements, and refund terms — locked to your agency templates."
+            points={[
+              "Subclass-aware matter configuration",
+              "Milestone payment schedules",
+              "Signed agreements stored against the client",
+            ]}
+          />
+          <CapabilityRow
+            id="file-notes"
+            label="File Notes"
+            title="Append-only audit trail"
+            description="Every client interaction recorded with server timestamps and agent identification. Exportable for compliance review."
+            points={[
+              "Append-only — never editable, never deletable",
+              "Server timestamped and agent identified",
+              "Organised by client and note type",
+            ]}
+          />
+          <CapabilityRow
+            id="application-approval"
+            label="Application Approval"
+            title="Review, sign, certify"
+            description="Application approvals follow a compliance chain: review, client sign-off, certificate generation, permanent storage."
+            points={[
+              "Structured approval workflow",
+              "Certificate generated on completion",
+              "Stored permanently against the client",
+            ]}
+          />
+          <CapabilityRow
+            id="statement-of-service"
+            label="Statement of Service"
+            title="Work performed, fees confirmed"
+            description="Track work performed, confirm fees, and record client acknowledgement — all linked to the client matter."
+            points={[
+              "Work performed documentation",
+              "Fee confirmation tracking",
+              "Acknowledgement status visible",
+            ]}
+          />
         </div>
       </section>
 
-      {/* Detailed Alternating Capability Segments */}
-      <section className="py-24 bg-[#f9fbf9] border-b border-slate-100/60">
-        <div className="container mx-auto max-w-[1200px] px-6 space-y-32">
-          
-          {/* Section 1: Workflow Automation */}
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <span className="text-xs font-extrabold uppercase tracking-widest text-[#0D9F8C]">Workflow Automation</span>
-              <h3 className="font-serif text-3xl font-normal leading-tight text-[#081b36] mt-4 md:text-4xl">
-                Automated Service Retainers
-              </h3>
-              <p className="mt-4 text-slate-500 font-semibold leading-relaxed text-sm md:text-base">
-                Ditch the copy-paste errors. Build customized visa structures with standardized retainers, itemized disbursements, and refund policy locks across all matter subclasses.
-              </p>
-              <ul className="space-y-3 mt-6">
-                {["Flexible client milestones mapping", "Custom itemized disbursement lists", "Department fee variables automatic inclusions"].map((li) => (
-                  <li key={li} className="flex gap-2 items-center text-xs font-bold text-slate-600">
-                    <Check className="h-4 w-4 text-[#0D9F8C]" />
-                    {li}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="rounded-xl border border-slate-200/60 bg-white p-6 shadow-sm">
-              <div className="flex justify-between items-center border-b border-slate-100 pb-3 mb-4 text-xs font-bold text-[#081b36]">
-                <span>Retainer Settings</span>
-                <span className="text-xs font-extrabold text-[#0D9F8C]">Subclass 189 Retainer</span>
-              </div>
-              <div className="space-y-3">
-                <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                  <span className="text-[9px] text-slate-400 font-black uppercase">Milestone 1: Intake Draft</span>
-                  <div className="flex justify-between items-center mt-1">
-                    <span className="text-xs font-bold text-[#081b36]">50% Upfront Retainer</span>
-                    <span className="text-xs font-black text-[#0D9F8C]">$2,250.00</span>
-                  </div>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                  <span className="text-[9px] text-slate-400 font-black uppercase">Milestone 2: DHA Lodgement</span>
-                  <div className="flex justify-between items-center mt-1">
-                    <span className="text-xs font-bold text-[#081b36]">50% Milestone Settlement</span>
-                    <span className="text-xs font-black text-[#0D9F8C]">$2,250.00</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+      <section
+        id="compliance-dashboard"
+        className="scroll-mt-28 border-b border-mate-border bg-[#F9F9F9] py-20 md:py-28"
+      >
+        <div className="container mx-auto max-w-[1400px] px-6">
+          <div className="mb-12 max-w-2xl">
+            <SectionLabel>Compliance Dashboard</SectionLabel>
+            <EditorialHeadline
+              className="mt-5"
+              lines={[
+                <>Know what is missing</>,
+                <span className="italic text-mate-accent">before an audit does.</span>,
+              ]}
+            />
+            <p className="mt-6 text-base leading-7 text-mate-muted">
+              ImmiMate surfaces compliance gaps across your practice — missing agreements,
+              pending approvals, outstanding documents, and unacknowledged statements of service.
+            </p>
           </div>
-
-          {/* Section 2: Document Generation */}
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="order-last md:order-first rounded-xl border border-slate-200/60 bg-white p-6 shadow-sm space-y-4">
-              <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
-                <div className="h-8 w-8 rounded bg-emerald-50 text-[#0D9F8C] flex items-center justify-center font-bold">A</div>
-                <div>
-                  <h4 className="text-xs font-extrabold text-[#081b36]">Client Vault Archive</h4>
-                  <p className="text-[9px] text-slate-400 font-bold">2 active files, 1 verified signed</p>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between items-center p-2 rounded bg-slate-50 border border-slate-100 text-xs">
-                  <span className="font-bold text-slate-600">signed_retainer_820.pdf</span>
-                  <span className="px-2 py-0.5 rounded bg-emerald-100/50 text-[#0D9F8C] font-black text-[9px]">SIGNED</span>
-                </div>
-                <div className="flex justify-between items-center p-2 rounded bg-slate-50 border border-slate-100 text-xs">
-                  <span className="font-bold text-slate-600">passport_identity_verif.pdf</span>
-                  <span className="px-2 py-0.5 rounded bg-amber-100/50 text-amber-700 font-black text-[9px]">AWAITING</span>
-                </div>
-              </div>
-            </div>
-            <div>
-              <span className="text-xs font-extrabold uppercase tracking-widest text-teal-600">Document Generation</span>
-              <h3 className="font-serif text-3xl font-normal leading-tight text-[#081b36] mt-4 md:text-4xl">
-                Centralized Secure File Vault
-              </h3>
-              <p className="mt-4 text-slate-500 font-semibold leading-relaxed text-sm md:text-base">
-                Consolidate all client passport proofs, evidence records, and signed agreements within a single secure legal-grade portal folder.
-              </p>
-              <ul className="space-y-3 mt-6">
-                {["Secure 256-bit client-facing intake links", "Organized matter subclasses directories", "Audit compliance document storage records"].map((li) => (
-                  <li key={li} className="flex gap-2 items-center text-xs font-bold text-slate-600">
-                    <Check className="h-4 w-4 text-[#0D9F8C]" />
-                    {li}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* Section 3: E-Signatures & Security */}
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <span className="text-xs font-extrabold uppercase tracking-widest text-purple-600">E-Signatures & Audit Trails</span>
-              <h3 className="font-serif text-3xl font-normal leading-tight text-[#081b36] mt-4 md:text-4xl">
-                Biometric Identity Stamp
-              </h3>
-              <p className="mt-4 text-slate-500 font-semibold leading-relaxed text-sm md:text-base">
-                Every signature turnaround records full transactional histories. Confirmed client IP details, timestamp audits, and SMS identity tokens provide legally robust audit compliance documents.
-              </p>
-              <ul className="space-y-3 mt-6">
-                {["Tamper-evident hash validation certifications", "SMS biometric authentication layers", "Sovereign Australian data custody guidelines"].map((li) => (
-                  <li key={li} className="flex gap-2 items-center text-xs font-bold text-slate-600">
-                    <Check className="h-4 w-4 text-[#0D9F8C]" />
-                    {li}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="rounded-xl border border-slate-200/60 bg-white p-6 shadow-sm">
-              <div className="flex justify-between items-center text-xs font-bold text-slate-400 mb-4">
-                <span>Sign Verification Certificate</span>
-                <span className="text-emerald-600 font-black">Passed</span>
-              </div>
-              <div className="p-4 bg-emerald-50/50 rounded-xl border border-emerald-100 flex gap-4 items-center">
-                <Fingerprint className="h-8 w-8 text-[#0D9F8C]" />
-                <div>
-                  <h4 className="text-xs font-extrabold text-[#081b36]">SHA-256 Integrity Verification</h4>
-                  <p className="text-xs text-slate-500 font-semibold">Document timestamp sealed on ap-southeast-2 Sydney server</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* Integrations Grid Showcase */}
-      <section className="bg-white py-24 border-b border-slate-100/60">
-        <div className="container mx-auto max-w-[1200px] px-6 text-center">
-          <span className="text-xs font-extrabold uppercase tracking-widest text-[#0D9F8C]">Ecosystem Connections</span>
-          <h2 className="mt-4 font-serif text-3xl font-normal leading-tight text-[#081b36] md:text-4xl lg:text-5xl">
-            Integrates with your existing workflow
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-slate-500 font-semibold leading-relaxed text-sm md:text-base">
-            Keep your legal systems connected. ImmiSign syncs with standard practice management, database, and invoicing protocols.
-          </p>
-
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 md:grid-cols-4">
-            {[
-              { name: "Xero Syncing", desc: "Instantly create client invoices and match milestones." },
-              { name: "Stripe Billing", desc: "Receive immediate upfront deposits directly via credit cards." },
-              { name: "Google Drive Backup", desc: "Automatically export finalized signed PDF retainers." },
-              { name: "Email Portals", desc: "Dispatch OMARA forms via your custom agency domain." }
-            ].map((item) => (
-              <div key={item.name} className="rounded-xl border border-emerald-100 bg-white p-6 shadow-sm text-left">
-                <h4 className="text-sm font-extrabold text-[#0A5B52]">{item.name}</h4>
-                <p className="mt-2 text-xs text-slate-500 font-semibold leading-relaxed">{item.desc}</p>
-              </div>
-            ))}
-          </div>
+          <ComplianceStatsBar />
         </div>
       </section>
 
@@ -371,142 +324,148 @@ export function FeaturesPage() {
   )
 }
 
+// ----------------------------------------------------
+// 2. MIGRATION AGENTS PAGE
+// ----------------------------------------------------
 export function MigrationAgentsPage() {
-  const problems = [
-    { title: "Manual Retainers Slow Growth", text: "Drafting OMARA-ready agreements for every Subclass 820 or 189 manually drains hours that could be spent advising." },
-    { title: "Generic E-Sign Lacks Context", text: "Standard tools don't understand migration billing. They don't support itemized disbursement schedules or legal variables." },
-    { title: "Scattered Compliance Evidences", text: "If files are divided across drives and emails, audit preparations become a stressful, unorganized race." },
-    { title: "Lack of Internal Team Lockout", text: "Without permissions, administrative assistants can accidentally edit legal clause language before sending." }
-  ]
-
-  const timelineSteps = [
-    {
-      phase: "01",
-      title: "Client Intake",
-      desc: "Collect passport details, personal files, and history parameters securely upfront.",
-      icon: Users
-    },
-    {
-      phase: "02",
-      title: "Retainer Compilation",
-      desc: "Generate OMARA-vetted service structures, milestone payments, and subclass schedules.",
-      icon: FileText
-    },
-    {
-      phase: "03",
-      title: "Biometric Signing",
-      desc: "Authenticate applicant identity via dual-factor email and secure SMS verification.",
-      icon: Fingerprint
-    },
-    {
-      phase: "04",
-      title: "Visa Submission",
-      desc: "Lodge with the Department of Home Affairs, archiving standard OMARA notices.",
-      icon: FileCheck2
-    },
-    {
-      phase: "05",
-      title: "Practice Compliance",
-      desc: "Retain legally binding, tamper-evident audit records on-shore for 7 years.",
-      icon: ShieldCheck
-    }
+  const workflowSteps = [
+    { title: "Client", desc: "Every workflow begins with the client record." },
+    { title: "Service Agreement", desc: "OMARA-compliant retainers with locked templates." },
+    { title: "File Notes", desc: "Append-only notes with server timestamps." },
+    { title: "Application Preparation", desc: "Documents and evidence organised per matter." },
+    { title: "Application Approval", desc: "Review, sign, certificate, permanent storage." },
+    { title: "Lodgement", desc: "Lodgement tracked against the client matter." },
+    { title: "Statement of Service", desc: "Work performed, fees confirmed, acknowledged." },
+    { title: "Completion", desc: "Full compliance record retained for audit." },
   ]
 
   return (
-    <div className="bg-white text-[#081B2E] antialiased">
-      {/* Editorial Storytelling Hero */}
-      <section className="relative overflow-hidden border-b border-emerald-900/5 bg-[radial-gradient(circle_at_top_right,rgba(13,159,140,0.12),transparent_38%),linear-gradient(180deg,#f3fcf9_0%,#ffffff_92%)] pt-32 pb-24">
-        <div className="container mx-auto max-w-[1400px] px-6 grid gap-12 lg:grid-cols-[1.1fr_0.9fr] items-center">
-          <div className="animate-enter max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white px-4 py-2 text-xs font-bold text-[#0A5B52] shadow-sm mb-6">
-              <Scale className="h-4 w-4 text-[#0D9F8C]" />
-              RMA Operational Software
-            </div>
-            <h1 className="font-sans text-5xl font-extrabold leading-[1.05] tracking-[-0.04em] text-[#081b36] md:text-6xl lg:text-[4rem]">
-              Designed for the real pressure <br />
-              <span className="font-serif font-normal text-[#0D9F8C] italic">of Australian migration work.</span>
-            </h1>
-            <p className="mt-6 text-base md:text-lg leading-relaxed text-slate-600 font-medium">
-              Managing strict lodgement deadlines, applicant anxieties, and compliance reviews is stressful enough. Compiling and sending your client service agreements should not be.
-            </p>
-            <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-              <Button asChild className="h-12 rounded-xl bg-[#0D9F8C] px-8 font-bold shadow-[0_12px_24px_rgba(13,159,140,0.15)] transition-all duration-300 hover:bg-[#0A5B52]">
-                <Link href="/signup">Start Solo RMA Trial</Link>
-              </Button>
-              <Button asChild variant="outline" className="h-12 rounded-xl border-slate-200 bg-white px-8 font-bold text-[#0A5B52] shadow-sm transition-all duration-300 hover:bg-slate-50">
-                <Link href="/contact">Connect With Onboarding</Link>
-              </Button>
-            </div>
+    <div className="bg-mate-offwhite text-mate-primary antialiased">
+      <PageHero
+        eyebrow="For migration agents"
+        headline={
+          <>
+            <span className="block">Built for the pressure</span>
+            <span className="block italic text-mate-secondary">of regulated practice.</span>
+          </>
+        }
+        subhead="Managing lodgement deadlines, client anxieties, and compliance reviews is demanding enough. Your compliance infrastructure should not add to the burden."
+      >
+        <PrimaryMarketingButton href="/contact" className="bg-mate-primary text-white hover:bg-mate-charcoal">
+          Book a Demo
+        </PrimaryMarketingButton>
+      </PageHero>
+
+      <section className="border-b border-mate-border bg-[#F9F9F9] py-20 md:py-28">
+        <div className="container mx-auto max-w-[1400px] px-6">
+          <div className="text-center">
+            <SectionLabel>The ImmiMate workflow</SectionLabel>
+            <h2 className="mt-4 font-display text-3xl font-normal tracking-[-0.03em] text-mate-primary md:text-4xl">
+              Eight steps. One client record.
+            </h2>
           </div>
-          
-          {/* Right visual: Client Lifecycle Timeline diagram */}
-          <div className="relative rounded-2xl border border-slate-200/50 bg-white/60 p-8 shadow-sm backdrop-blur-md">
-            <h3 className="text-sm font-black text-[#081b36] uppercase tracking-wider mb-6">Client Lifecycle Pipeline</h3>
-            <div className="space-y-6 relative">
-              <div className="absolute left-4 top-2 bottom-2 w-0.5 bg-gradient-to-b from-[#33C48D] via-[#0D9F8C] to-slate-200" />
-              {timelineSteps.map((step) => (
-                <div key={step.phase} className="flex gap-4 items-start relative z-10">
-                  <div className="h-9 w-9 rounded-full bg-white border-2 border-[#0D9F8C] text-[#0D9F8C] flex items-center justify-center text-xs font-black shadow-sm shrink-0">
-                    {step.phase}
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-extrabold text-[#081b36]">{step.title}</h4>
-                    <p className="text-xs text-slate-500 font-semibold leading-relaxed mt-0.5">{step.desc}</p>
-                  </div>
-                </div>
+          <WorkflowTimeline />
+        </div>
+      </section>
+
+      <section className="border-b border-mate-border bg-white py-20 md:py-28">
+        <div className="container mx-auto max-w-[1400px] px-6">
+          <div className="grid gap-16 lg:grid-cols-[0.9fr_1.1fr]">
+            <div>
+              <SectionLabel>Client-centric workflow</SectionLabel>
+              <EditorialHeadline
+                className="mt-5"
+                lines={[
+                  <>Everything connected</>,
+                  <span className="italic text-mate-secondary">to the client.</span>,
+                ]}
+              />
+              <p className="mt-6 text-base leading-7 text-mate-muted">
+                {APP_TAGLINE}. One client record. Every compliance step in sequence.
+              </p>
+            </div>
+            <div className="border border-mate-border bg-mate-offwhite p-8 md:p-10">
+              {workflowSteps.map((step, i) => (
+                <TimelineStep
+                  key={step.title}
+                  index={i + 1}
+                  title={step.title}
+                  description={step.desc}
+                  isLast={i === workflowSteps.length - 1}
+                />
               ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Problem Matrix */}
-      <section className="py-24 bg-white">
-        <div className="container mx-auto max-w-[1400px] px-6">
+      <section className="border-b border-mate-border bg-mate-offwhite py-20 md:py-28">
+        <div className="container mx-auto max-w-[1100px] px-6">
           <SectionHeader
-            eyebrow="The Practice Dilemma"
+            eyebrow="The practice dilemma"
             title="Migration practices need more than generic e-signature."
-            text="They require standardized legal structures, on-shore database backups, and repeatable compliance records."
+            text="They require standardised legal structures, on-shore data custody, and repeatable compliance records."
           />
-
-          <div className="grid gap-6 md:grid-cols-2 mt-12">
-            {problems.map((prob) => (
-              <div key={prob.title} className="rounded-2xl border border-slate-200 bg-[#fbfdfc] p-8 shadow-sm hover:shadow-md transition-all duration-300">
-                <Scale className="h-6 w-6 text-[#0D9F8C]" />
-                <h4 className="mt-4 text-base font-extrabold text-[#081b36]">{prob.title}</h4>
-                <p className="mt-2 text-sm text-slate-500 font-semibold leading-relaxed">{prob.text}</p>
+          <div className="space-y-0 border border-mate-border bg-white">
+            {[
+              {
+                title: "Manual retainers slow growth",
+                text: "Drafting OMARA-ready agreements for every subclass manually drains hours that could be spent advising.",
+              },
+              {
+                title: "Generic e-sign lacks context",
+                text: "Standard tools do not understand migration billing, disbursement schedules, or legal variables.",
+              },
+              {
+                title: "Scattered compliance evidence",
+                text: "Files divided across drives and emails make audit preparation stressful and disorganised.",
+              },
+              {
+                title: "No internal access controls",
+                text: "Without permissions, administrative staff can accidentally edit legal clause language before sending.",
+              },
+            ].map((prob, i) => (
+              <div
+                key={prob.title}
+                className={`flex gap-6 p-8 ${i > 0 ? "border-t border-mate-border" : ""}`}
+              >
+                <Scale className="mt-1 h-5 w-5 shrink-0 text-mate-accent" />
+                <div>
+                  <h4 className="text-base font-medium text-mate-primary">{prob.title}</h4>
+                  <p className="mt-2 text-sm leading-6 text-mate-muted">{prob.text}</p>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Comparative Risk Check Table */}
-      <section className="bg-[#f9fbf9] py-24 border-y border-slate-100">
-        <div className="container mx-auto max-w-[1000px] px-6">
+      <section className="border-b border-mate-border bg-white py-20 md:py-28">
+        <div className="container mx-auto max-w-[900px] px-6">
           <SectionHeader
-            eyebrow="Compliance Audit Analysis"
-            title="Generic tools vs. ImmiSign Legal-Tech"
-            text="Understand the structural compliance advantages built specifically for migration firms."
+            eyebrow="Compliance comparison"
+            title="Generic tools vs. ImmiMate"
           />
-
-          <div className="mt-12 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div className="grid grid-cols-3 bg-[#fbfdfc] border-b border-slate-200/80 p-5 text-xs font-black text-[#081b36] uppercase tracking-wider">
-              <div>Compliance Feature</div>
-              <div className="text-center text-slate-400">Generic E-Sign (DocuSign/Adobe)</div>
-              <div className="text-center text-[#0D9F8C]">ImmiSign Legal-Tech</div>
+          <div className="overflow-hidden border border-mate-border">
+            <div className="grid grid-cols-3 border-b border-mate-border bg-mate-grey p-5 text-[11px] font-semibold uppercase tracking-wider text-mate-muted">
+              <div>Feature</div>
+              <div className="text-center">Generic E-Sign</div>
+              <div className="text-center text-mate-primary">ImmiMate</div>
             </div>
             {[
-              { f: "OMARA Template Lockout", g: "Static blank PDFs / Manual drafts", i: "Dynamic locked subclass templates" },
-              { f: "Sovereign Data Residency", g: "Stored offshore in global servers", i: "100% Hosted on-shore in Sydney, NSW" },
-              { f: "Identity Audits", g: "Simple email confirmation link", i: "Biometric SMS + Email double verification" },
-              { f: "Compliance Logs Retention", g: "Standard variable logs", i: "Immutable logs sealed for 7 years" },
-              { f: "Workspace Portfolios Access", g: "Shared generic storage folders", i: "Granular assignee role separations" }
-            ].map((row, idx) => (
-              <div key={idx} className="grid grid-cols-3 border-b border-slate-100 p-5 text-xs sm:text-sm last:border-b-0">
-                <div className="font-extrabold text-[#081b36]">{row.f}</div>
-                <div className="text-center font-semibold text-slate-400">{row.g}</div>
-                <div className="text-center font-bold text-[#0D9F8C]">{row.i}</div>
+              { f: "OMARA template structure", g: "Blank PDFs / manual drafts", i: "Locked subclass templates" },
+              { f: "Data residency", g: "Offshore global servers", i: "Hosted on-shore in Sydney" },
+              { f: "Identity verification", g: "Email link only", i: "Multi-factor verification" },
+              { f: "Compliance log retention", g: "Variable retention", i: "Immutable records" },
+              { f: "Workspace access", g: "Shared folders", i: "Role-based separation" },
+            ].map((row) => (
+              <div
+                key={row.f}
+                className="grid grid-cols-3 border-b border-mate-border p-5 text-sm last:border-b-0"
+              >
+                <div className="font-medium text-mate-primary">{row.f}</div>
+                <div className="text-center text-mate-muted">{row.g}</div>
+                <div className="text-center text-mate-secondary">{row.i}</div>
               </div>
             ))}
           </div>
@@ -522,19 +481,20 @@ export function MigrationAgentsPage() {
 // 3. PRICING PAGE
 // ----------------------------------------------------
 export function PricingPage() {
-  const immisignPlan = {
-    name: "ImmiSign Plan",
+  const immimatePlan = {
+    name: "ImmiMate Plan",
     monthlyPrice: 49,
     seatPrice: 10,
     includedSeats: 3,
-    desc: "One subscription per agency. Everything you need to run agreements and approvals.",
+    desc: "One subscription per agency. Everything you need to run a compliant migration practice.",
     features: [
       "One agency workspace & business profile",
       "Up to 3 agents/RMAs included",
       "Unlimited agreements",
       "Application approval module",
-      "Document signing & templates",
-      "Branding & audit trail",
+      "File Notes audit trail",
+      "Statement of Service tracking",
+      "Branding & compliance visibility",
       "$10/month per additional active seat",
     ],
   }
@@ -544,79 +504,85 @@ export function PricingPage() {
     { feature: "Included seats (owner excluded)", value: "3" },
     { feature: "Unlimited agreements", value: "Included" },
     { feature: "Application approvals", value: "Included" },
-    { feature: "Document signing", value: "Included" },
+    { feature: "File Notes", value: "Included" },
     { feature: "Additional seat", value: "$10/mo each" },
   ]
 
   return (
-    <div className="bg-white text-[#081B2E] antialiased">
-      {/* Hero Header */}
-      <section className="relative overflow-hidden border-b border-emerald-900/5 bg-[radial-gradient(circle_at_top_right,rgba(13,159,140,0.12),transparent_38%),linear-gradient(180deg,#f3fcf9_0%,#ffffff_92%)] pt-28 pb-14 text-center">
-        <div className="container mx-auto max-w-[1200px] px-6">
-          <h1 className="font-sans text-5xl font-extrabold leading-[1.05] tracking-[-0.04em] text-[#081b36] md:text-6xl lg:text-7xl">
-            Simple pricing for <br />
-            <span className="font-serif font-normal text-[#0D9F8C] italic">every agency.</span>
-          </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-base font-medium leading-relaxed text-slate-600 md:text-lg">
-            One ImmiSign Plan per agency — ${immisignPlan.monthlyPrice}/month with {immisignPlan.includedSeats} seats included.
-            Add team members beyond that for ${immisignPlan.seatPrice}/month per active seat.
-          </p>
-        </div>
-      </section>
+    <div className="bg-mate-offwhite text-mate-primary antialiased">
+      <PageHero
+        eyebrow="Pricing"
+        headline={
+          <>
+            <span className="block">Simple pricing</span>
+            <span className="block italic text-mate-secondary">for every agency.</span>
+          </>
+        }
+        subhead={`One ImmiMate Plan per agency — $${immimatePlan.monthlyPrice}/month with ${immimatePlan.includedSeats} seats included. Add team members beyond that for $${immimatePlan.seatPrice}/month per active seat.`}
+      />
 
-      <section className="py-24">
-        <div className="container mx-auto max-w-lg px-6">
-          <Card className="flex flex-col justify-between rounded-2xl border border-[#0D9F8C] bg-white p-8 shadow-elevated">
-            <div>
-              <span className="mb-5 inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-black uppercase tracking-wider text-[#0D9F8C]">
-                ImmiSign Plan
-              </span>
-              <h3 className="text-2xl font-extrabold text-[#081b36]">{immisignPlan.name}</h3>
-              <p className="mt-1 text-xs font-semibold text-slate-400">{immisignPlan.desc}</p>
-
-              <div className="mt-6 flex items-end gap-1">
-                <span className="text-5xl font-black text-[#081b36]">${immisignPlan.monthlyPrice}</span>
-                <span className="pb-1.5 text-sm font-bold text-slate-400">/mo</span>
+      <section className="border-b border-mate-border bg-white py-20 md:py-28">
+        <div className="container mx-auto max-w-[520px] px-6">
+          <div className="overflow-hidden rounded-2xl border border-mate-border bg-white shadow-[0_20px_50px_rgba(17,17,17,0.08)]">
+            <div className="border-b border-mate-border bg-[#0A0A0A] px-8 py-6 text-white">
+              <SectionLabel>ImmiMate Plan</SectionLabel>
+              <h3 className="mt-3 font-display text-2xl font-normal">{immimatePlan.name}</h3>
+              <p className="mt-2 text-sm text-white/55">{immimatePlan.desc}</p>
+            </div>
+            <div className="p-8 md:p-10">
+              <div className="flex items-end gap-1">
+                <span className="font-display text-5xl font-normal tracking-[-0.03em] text-mate-primary">
+                  ${immimatePlan.monthlyPrice}
+                </span>
+                <span className="pb-1.5 text-sm text-mate-muted">/month</span>
               </div>
-              <p className="mt-1 text-xs font-bold text-[#0D9F8C]">
-                + ${immisignPlan.seatPrice}/mo per seat above {immisignPlan.includedSeats}
+              <p className="mt-3 text-sm text-mate-muted">
+                Includes {immimatePlan.includedSeats} seats · +${immimatePlan.seatPrice}/mo per
+                additional active seat
               </p>
 
-              <div className="mt-8 space-y-4 border-t border-slate-100 pt-6">
-                {immisignPlan.features.map((feature) => (
-                  <div key={feature} className="flex items-center gap-3 text-xs font-bold text-slate-600">
-                    <Check className="h-4 w-4 shrink-0 text-[#0D9F8C]" />
+              <ul className="mt-8 space-y-4">
+                {immimatePlan.features.map((feature) => (
+                  <li key={feature} className="flex items-start gap-3 text-sm text-mate-secondary">
+                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-mate-accent/30 bg-mate-accent/[0.08]">
+                      <Check className="h-3 w-3 text-mate-accent" strokeWidth={2.5} />
+                    </span>
                     {feature}
-                  </div>
+                  </li>
                 ))}
+              </ul>
+
+              <div className="mt-10 flex flex-col gap-3">
+                <PrimaryMarketingButton
+                  href="/signup"
+                  className="w-full justify-center bg-mate-primary text-white hover:bg-mate-charcoal"
+                >
+                  Get started
+                </PrimaryMarketingButton>
+                <SecondaryMarketingButton href="/contact" variant="light" className="justify-center">
+                  Talk to sales
+                </SecondaryMarketingButton>
               </div>
             </div>
-
-            <div className="mt-8">
-              <Button asChild className="h-11 w-full rounded-xl bg-[#0D9F8C] font-bold shadow-sm hover:bg-[#0A5B52]">
-                <Link href="/signup">Get started</Link>
-              </Button>
-            </div>
-          </Card>
+          </div>
         </div>
       </section>
 
-      <section className="border-y border-slate-100 bg-[#f9fbf9] py-24">
+      <section className="border-b border-mate-border bg-mate-offwhite py-20 md:py-28">
         <div className="container mx-auto max-w-[700px] px-6">
           <SectionHeader title="What's included" />
-
-          <div className="mt-12 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div className="grid grid-cols-2 border-b border-slate-200/80 bg-[#fbfdfc] p-5 text-xs font-extrabold uppercase tracking-wider text-[#081b36]">
+          <div className="overflow-hidden border border-mate-border bg-white">
+            <div className="grid grid-cols-2 border-b border-mate-border bg-mate-grey p-5 text-[11px] font-semibold uppercase tracking-wider text-mate-muted">
               <div>Capability</div>
-              <div className="text-center">ImmiSign Plan</div>
+              <div className="text-center">ImmiMate Plan</div>
             </div>
             {comparisonRows.map((row) => (
               <div
                 key={row.feature}
-                className="grid grid-cols-2 border-b border-slate-100 p-5 text-sm last:border-b-0"
+                className="grid grid-cols-2 border-b border-mate-border p-5 text-sm last:border-b-0"
               >
-                <div className="font-extrabold text-[#081b36]">{row.feature}</div>
-                <div className="text-center font-bold text-[#0D9F8C]">{row.value}</div>
+                <div className="font-medium text-mate-primary">{row.feature}</div>
+                <div className="text-center text-mate-secondary">{row.value}</div>
               </div>
             ))}
           </div>
@@ -631,108 +597,107 @@ export function PricingPage() {
 // ----------------------------------------------------
 // 4. RESOURCES PAGE
 // ----------------------------------------------------
+export const RESOURCE_ITEMS = [
+  {
+    slug: "omara-service-agreements",
+    type: "Guide",
+    title: "How to structure compliant OMARA service agreements",
+    category: "Compliance",
+    desc: "Mandatory disclosure items, disbursements scheduling rules, and OMARA Code guidelines.",
+    time: "8 min read",
+  },
+  {
+    slug: "partner-visa-retainer-checklist",
+    type: "Template",
+    title: "Subclass 820 Partner Visa retainer checklist",
+    category: "Templates",
+    desc: "Variables structure and fee payment breakdown matching Australian guidelines.",
+    time: "Download (PDF)",
+  },
+  {
+    slug: "file-notes-workflow",
+    type: "Article",
+    title: "Building an audit-ready File Notes workflow",
+    category: "Compliance",
+    desc: "Append-only records, server timestamps, and export procedures for compliance review.",
+    time: "10 min read",
+  },
+  {
+    slug: "application-approval-chain",
+    type: "Guide",
+    title: "Application Approval compliance chain",
+    category: "Operations",
+    desc: "Review, sign, certificate generation, and permanent storage — step by step.",
+    time: "6 min read",
+  },
+  {
+    slug: "client-onboarding-email-pack",
+    type: "Template",
+    title: "Standard client onboarding email pack",
+    category: "Templates",
+    desc: "Professional templates for intake emails, review sequences, and OMARA guide links.",
+    time: "Download (TXT)",
+  },
+  {
+    slug: "statement-of-service",
+    type: "Article",
+    title: "Statement of Service best practices",
+    category: "Operations",
+    desc: "Work performed documentation, fee confirmation, and acknowledgement tracking.",
+    time: "5 min read",
+  },
+] as const
+
 export function ResourcesPage() {
   const [searchQuery, setSearchQuery] = React.useState("")
   const [selectedCategory, setSelectedCategory] = React.useState("All")
 
-  const allResources = [
-    {
-      type: "Guide",
-      title: "How to structure compliant OMARA service agreements",
-      category: "Compliance",
-      desc: "An outline of mandatory disclosure items, disbursements scheduling rules, and the OMARA Code guidelines.",
-      time: "8 min read",
-    },
-    {
-      type: "Template",
-      title: "Subclass 820 Partner Visa retainer checklist",
-      category: "Templates",
-      desc: "Ready-to-use variables structure and fee payment breakdown guide matching Australian guidelines.",
-      time: "Download (PDF)",
-    },
-    {
-      type: "Article",
-      title: "Reducing signature delays in migration practices",
-      category: "Operations",
-      desc: "Operational tips on deploying client onboarding sequences and SMS notifications to cut turnaround times.",
-      time: "6 min read",
-    },
-    {
-      type: "Guide",
-      title: "Building an audit-ready document custody workflow",
-      category: "Security",
-      desc: "A security check detailing ISO-27001 parameters, Australian data hosting sovereignty, and audit logs.",
-      time: "10 min read",
-    },
-    {
-      type: "Template",
-      title: "Standard client onboarding retainer email pack",
-      category: "Templates",
-      desc: "Professional templates package containing intake emails, review sequences, and OMARA guides links.",
-      time: "Download (TXT)",
-    },
-    {
-      type: "Article",
-      title: "Key metric systems high-performing RMAs track",
-      category: "Analytics",
-      desc: "How leading practitioners calculate client throughput speeds, signature rates, and matter revenue.",
-      time: "5 min read",
-    },
-  ]
+  const allResources = RESOURCE_ITEMS
 
-  // Dynamic filter logic
   const filteredResources = allResources.filter((item) => {
-    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          item.desc.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesSearch =
+      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.desc.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesCategory = selectedCategory === "All" || item.category === selectedCategory
     return matchesSearch && matchesCategory
   })
 
   return (
-    <div className="bg-white text-[#081B2E] antialiased">
-      {/* Hero Header */}
-      <section className="bg-[#f8fcfb] py-28 border-b border-slate-100">
-        <div className="container mx-auto max-w-[1200px] px-6">
-          <div className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-end mb-12">
-            <div>
-              <span className="text-xs font-extrabold uppercase tracking-widest text-[#0D9F8C]">Resource Library</span>
-              <h1 className="mt-4 font-sans text-5xl font-extrabold leading-[1.05] tracking-[-0.04em] text-[#081b36] md:text-6xl">
-                A practical library for <br />
-                <span className="font-serif font-normal text-[#0D9F8C] italic">modern migration practices.</span>
-              </h1>
-              <p className="mt-6 text-base md:text-lg leading-relaxed text-slate-600 font-medium">
-                Guides, templates and operating resources to help teams move faster with absolute compliance.
-              </p>
-            </div>
-            
-            {/* Featured guide card */}
-            <div className="rounded-2xl border border-emerald-100 bg-white p-8 shadow-sm">
-              <span className="text-xs font-extrabold uppercase text-[#0D9F8C]">Featured Guide</span>
-              <h3 className="mt-3 text-xl font-extrabold text-[#081b36]">The OMARA Agreement Preparation Handbook</h3>
-              <p className="mt-2 text-sm leading-relaxed text-slate-500 font-semibold">
-                An end-to-end regulatory guide to compiling compliant professional fee agreements, retainers, and disclosures safely.
-              </p>
-            </div>
-          </div>
+    <div className="bg-mate-offwhite text-mate-primary antialiased">
+      <PageHero
+        eyebrow="Resource library"
+        headline={
+          <>
+            <span className="block">Practical resources</span>
+            <span className="block italic text-mate-secondary">for compliant practices.</span>
+          </>
+        }
+        subhead="Guides, templates, and operating resources to help migration teams maintain audit-ready compliance."
+      />
 
-          {/* Interactive filter search controls */}
-          <div className="flex flex-col gap-4 md:flex-row mt-12">
+      <section className="border-b border-mate-border bg-white py-12">
+        <div className="container mx-auto max-w-[1100px] px-6">
+          <div className="flex flex-col gap-6 md:flex-row">
             <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-mate-muted" />
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-12 rounded-xl border-slate-200 bg-white pl-11 shadow-sm font-semibold"
-                placeholder="Search resources, templates, and compliance guides..."
+                className="h-12 rounded-none border-mate-border bg-white pl-11"
+                placeholder="Search resources..."
               />
             </div>
-            
             <div className="flex flex-wrap gap-2">
-              {["All", "Compliance", "Templates", "Operations", "Analytics", "Security"].map((cat) => (
+              {["All", "Compliance", "Templates", "Operations"].map((cat) => (
                 <button
                   key={cat}
+                  type="button"
                   onClick={() => setSelectedCategory(cat)}
-                  className={`rounded-xl px-4 py-2 text-xs font-bold transition-all duration-300 ${selectedCategory === cat ? "bg-[#0D9F8C] text-white shadow-sm" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
+                  className={`px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors ${
+                    selectedCategory === cat
+                      ? "bg-mate-primary text-white"
+                      : "border border-mate-border bg-white text-mate-muted hover:text-mate-primary"
+                  }`}
                 >
                   {cat}
                 </button>
@@ -742,36 +707,256 @@ export function ResourcesPage() {
         </div>
       </section>
 
-      {/* Grid of Results */}
-      <section className="py-24">
-        <div className="container mx-auto max-w-[1200px] px-6">
+      <section className="py-20 md:py-28">
+        <div className="container mx-auto max-w-[1100px] px-6">
           {filteredResources.length === 0 ? (
-            <div className="text-center py-20 rounded-2xl border border-dashed border-slate-200 bg-[#fbfdfc]">
-              <Info className="mx-auto h-8 w-8 text-[#0D9F8C]" />
-              <h3 className="mt-4 text-lg font-bold text-[#081b36]">No Resources Found</h3>
-              <p className="text-xs text-slate-400 font-semibold mt-1">Try refining your search text or select another category above.</p>
+            <div className="border border-dashed border-mate-border py-20 text-center">
+              <Info className="mx-auto h-8 w-8 text-mate-muted" />
+              <h3 className="mt-4 text-lg font-medium text-mate-primary">No resources found</h3>
+              <p className="mt-1 text-sm text-mate-muted">
+                Try refining your search or select another category.
+              </p>
             </div>
           ) : (
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <div className="divide-y divide-mate-border border border-mate-border bg-white">
               {filteredResources.map((item) => (
-                <Card key={item.title} className="rounded-xl border-slate-200/80 bg-white p-7 shadow-sm flex flex-col justify-between hover:shadow-elevated transition-all duration-300">
-                  <div>
-                    <div className="flex justify-between items-center text-xs font-black uppercase tracking-wider text-[#0D9F8C] mb-4">
+                <Link
+                  key={item.title}
+                  href={`/blog/${item.slug}`}
+                  className="group flex flex-col gap-4 p-8 transition-colors hover:bg-mate-offwhite md:flex-row md:items-center md:justify-between"
+                >
+                  <div className="max-w-2xl">
+                    <div className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-wider text-mate-muted">
                       <span>{item.type}</span>
-                      <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">{item.category}</span>
+                      <span>·</span>
+                      <span>{item.category}</span>
                     </div>
-                    <h4 className="text-base font-extrabold text-[#081b36] min-h-[48px] leading-snug">{item.title}</h4>
-                    <p className="mt-2 text-xs text-slate-500 font-semibold leading-relaxed min-h-[64px]">{item.desc}</p>
+                    <h4 className="mt-2 text-base font-medium text-mate-primary group-hover:text-mate-accent">
+                      {item.title}
+                    </h4>
+                    <p className="mt-1 text-sm leading-6 text-mate-muted">{item.desc}</p>
                   </div>
-                  
-                  <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#0A5B52]">
+                  <div className="flex shrink-0 items-center gap-3 text-sm text-mate-muted">
                     <span>{item.time}</span>
-                    <ArrowRight className="h-4 w-4 text-[#0D9F8C]" />
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </div>
-                </Card>
+                </Link>
               ))}
             </div>
           )}
+        </div>
+      </section>
+
+      <CTA />
+    </div>
+  )
+}
+
+// ----------------------------------------------------
+// 4b. BLOG PAGE
+// ----------------------------------------------------
+export function BlogPage() {
+  return (
+    <div className="bg-mate-offwhite text-mate-primary antialiased">
+      <PageHero
+        eyebrow="Blog"
+        headline={
+          <>
+            <span className="block">Insights for</span>
+            <span className="block italic text-mate-accent">compliant practices.</span>
+          </>
+        }
+        subhead="Articles, guides, and operating notes for registered migration agents building audit-ready workflows."
+      />
+
+      <section className="py-20 md:py-28">
+        <div className="container mx-auto max-w-[1100px] px-6">
+          <div className="divide-y divide-mate-border border border-mate-border bg-white">
+            {RESOURCE_ITEMS.map((item) => (
+              <Link
+                key={item.slug}
+                href={`/blog/${item.slug}`}
+                className="group flex flex-col gap-4 p-8 transition-colors hover:bg-mate-offwhite md:flex-row md:items-center md:justify-between"
+              >
+                <div className="max-w-2xl">
+                  <div className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-wider text-mate-muted">
+                    <span>{item.type}</span>
+                    <span>·</span>
+                    <span>{item.category}</span>
+                  </div>
+                  <h4 className="mt-2 text-lg font-medium text-mate-primary group-hover:text-mate-accent">
+                    {item.title}
+                  </h4>
+                  <p className="mt-2 text-sm leading-6 text-mate-muted">{item.desc}</p>
+                </div>
+                <div className="flex shrink-0 items-center gap-3 text-sm text-mate-muted">
+                  <span>{item.time}</span>
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <CTA />
+    </div>
+  )
+}
+
+export const BLOG_POSTS: Record<
+  string,
+  { title: string; category: string; readTime: string; paragraphs: string[] }
+> = {
+  "omara-service-agreements": {
+    title: "How to structure compliant OMARA service agreements",
+    category: "Compliance",
+    readTime: "8 min read",
+    paragraphs: [
+      "Service agreements are the foundation of every migration matter. Under the OMARA Code of Conduct, agents must provide clear written disclosure of services, fees, and refund terms before work begins.",
+      "ImmiMate standardises agreement structures with subclass-aware variables, itemised fee schedules, and disbursement breakdowns — so every retainer meets disclosure requirements without manual drafting.",
+      "Signed agreements are stored permanently against the client record, creating an audit-ready trail that links directly to File Notes, Application Approvals, and Statements of Service.",
+    ],
+  },
+  "partner-visa-retainer-checklist": {
+    title: "Subclass 820 Partner Visa retainer checklist",
+    category: "Templates",
+    readTime: "Template",
+    paragraphs: [
+      "Partner visa matters require careful fee disclosure across multiple stages — from relationship evidence preparation through to permanent residency pathways.",
+      "This checklist covers the standard variables, disbursement categories, and payment milestone structures recommended for Subclass 820 retainers under Australian guidelines.",
+      "Use ImmiMate agency templates to lock clause language and ensure consistent disclosure across your practice.",
+    ],
+  },
+  "file-notes-workflow": {
+    title: "Building an audit-ready File Notes workflow",
+    category: "Compliance",
+    readTime: "10 min read",
+    paragraphs: [
+      "File Notes are the backbone of compliance evidence. Every phone call, email, attendance, and piece of advice should be recorded with server timestamps and agent identification.",
+      "ImmiMate File Notes are append-only — never editable, never deletable. Notes are organised by client and note type, and can be exported for audit at any time.",
+      "A consistent File Notes discipline protects your practice during OMARA reviews and gives clients confidence that their matter is professionally documented.",
+    ],
+  },
+  "application-approval-chain": {
+    title: "Application Approval compliance chain",
+    category: "Operations",
+    readTime: "6 min read",
+    paragraphs: [
+      "Before lodgement, clients must review and approve their application. ImmiMate structures this as a formal compliance chain: review, client sign-off, certificate generation, and permanent storage.",
+      "Each approval is linked to the client matter with a timestamped record. Certificates are generated automatically on completion and retained for audit.",
+      "This replaces informal email confirmations with a defensible, repeatable process.",
+    ],
+  },
+  "client-onboarding-email-pack": {
+    title: "Standard client onboarding email pack",
+    category: "Templates",
+    readTime: "Template",
+    paragraphs: [
+      "Professional onboarding sets the tone for the client relationship. This pack includes intake emails, document request sequences, and OMARA guide references.",
+      "Templates are designed to align with ImmiMate workflow stages — from Service Agreement through to Application Preparation.",
+      "Consistent onboarding reduces back-and-forth and ensures clients understand their obligations from day one.",
+    ],
+  },
+  "statement-of-service": {
+    title: "Statement of Service best practices",
+    category: "Operations",
+    readTime: "5 min read",
+    paragraphs: [
+      "Statements of Service document work performed and confirm fees charged. Under OMARA obligations, clients must be able to understand what services were delivered and what they paid for.",
+      "ImmiMate tracks work performed, fee confirmation, and client acknowledgement status — all visible from the compliance dashboard.",
+      "Unacknowledged Statements of Service surface automatically so nothing slips through before an audit.",
+    ],
+  },
+}
+
+export function BlogPostPage({ slug }: { slug: string }) {
+  const post = BLOG_POSTS[slug]
+
+  if (!post) {
+    return (
+      <div className="bg-mate-offwhite py-32 text-center">
+        <h1 className="font-display text-3xl text-mate-primary">Article not found</h1>
+        <Link href="/blog" className="mt-6 inline-block text-sm font-semibold text-mate-accent">
+          Back to blog
+        </Link>
+      </div>
+    )
+  }
+
+  return (
+    <div className="bg-mate-offwhite text-mate-primary antialiased">
+      <section className="border-b border-mate-border bg-white pt-32 pb-16 md:pt-36">
+        <div className="container mx-auto max-w-[760px] px-6">
+          <Link href="/blog" className="text-sm font-semibold text-mate-accent hover:underline">
+            ← Back to blog
+          </Link>
+          <div className="mt-8 flex items-center gap-3 text-[11px] font-semibold uppercase tracking-wider text-mate-muted">
+            <span>{post.category}</span>
+            <span>·</span>
+            <span>{post.readTime}</span>
+          </div>
+          <h1 className="mt-4 font-display text-[2.5rem] font-normal leading-[1.1] tracking-[-0.03em] md:text-5xl">
+            {post.title}
+          </h1>
+        </div>
+      </section>
+
+      <section className="py-16 md:py-20">
+        <div className="container mx-auto max-w-[760px] space-y-6 px-6">
+          {post.paragraphs.map((p) => (
+            <p key={p.slice(0, 40)} className="text-base leading-8 text-mate-secondary">
+              {p}
+            </p>
+          ))}
+        </div>
+      </section>
+
+      <CTA />
+    </div>
+  )
+}
+
+function LegalSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="border-b border-mate-border py-10 last:border-b-0">
+      <h2 className="font-display text-xl font-normal text-mate-primary">{title}</h2>
+      <div className="mt-4 space-y-4 text-sm leading-7 text-mate-muted">{children}</div>
+    </div>
+  )
+}
+
+export function LegalPage({
+  title,
+  updated,
+  intro,
+  sections,
+}: {
+  title: string
+  updated: string
+  intro: string
+  sections: { heading: string; body: React.ReactNode }[]
+}) {
+  return (
+    <div className="bg-mate-offwhite text-mate-primary antialiased">
+      <section className="border-b border-mate-border bg-white pt-32 pb-12 md:pt-36">
+        <div className="container mx-auto max-w-[760px] px-6">
+          <SectionLabel>Legal</SectionLabel>
+          <h1 className="mt-4 font-display text-4xl font-normal tracking-[-0.03em] md:text-5xl">
+            {title}
+          </h1>
+          <p className="mt-4 text-sm text-mate-muted">Last updated {updated}</p>
+          <p className="mt-6 text-base leading-8 text-mate-secondary">{intro}</p>
+        </div>
+      </section>
+
+      <section className="py-12 md:py-16">
+        <div className="container mx-auto max-w-[760px] px-6">
+          {sections.map((s) => (
+            <LegalSection key={s.heading} title={s.heading}>
+              {s.body}
+            </LegalSection>
+          ))}
         </div>
       </section>
     </div>
@@ -783,43 +968,72 @@ export function ResourcesPage() {
 // ----------------------------------------------------
 export function AboutPage() {
   return (
-    <div className="bg-white text-[#081B2E]">
-      <section className="bg-[#f9fbf9] py-28 border-b border-slate-100">
-        <div className="container mx-auto grid max-w-[1200px] gap-12 px-6 lg:grid-cols-2 lg:items-center">
-          <div>
-            <span className="text-xs font-extrabold uppercase tracking-widest text-[#0D9F8C]">Our Origin</span>
-            <h1 className="mt-4 font-sans text-5xl font-extrabold tracking-tight text-[#081b36] md:text-6xl">
-              Built by people who understand <span className="font-serif font-normal text-[#0D9F8C] italic">regulated legal tech.</span>
-            </h1>
-            <p className="mt-6 text-base md:text-lg leading-relaxed text-slate-600 font-medium">
-              We built ImmiSign because Australian migration professionals manage high stakes personal details and deserve software designed around absolute security, compliance, and on-shore custody.
-            </p>
-          </div>
-          <div className="rounded-2xl bg-gradient-to-br from-[#021815] to-[#000504] p-8 text-white shadow-elevated border border-emerald-950">
-            <Building2 className="h-10 w-10 text-[#33C48D]" />
-            <h3 className="mt-8 font-serif text-3xl font-normal text-white">Our mission</h3>
-            <p className="mt-4 text-sm leading-relaxed text-emerald-100/80 font-semibold">
-              Empower regulated migration agents to eliminate administration friction, standardize compliant retains, and secure client records securely.
-            </p>
+    <div className="bg-mate-offwhite text-mate-primary">
+      <PageHero
+        eyebrow="Our origin"
+        headline={
+          <>
+            <span className="block">Built for people who understand</span>
+            <span className="block italic text-mate-secondary">regulated practice.</span>
+          </>
+        }
+        subhead="We built ImmiMate because Australian migration professionals manage high-stakes personal details and deserve software designed around compliance, security, and on-shore data custody."
+      />
+
+      <section className="border-b border-mate-border bg-white py-20 md:py-28">
+        <div className="container mx-auto max-w-[1100px] px-6">
+          <div className="grid gap-16 lg:grid-cols-2">
+            <div>
+              <SectionLabel>Our mission</SectionLabel>
+              <EditorialHeadline
+                className="mt-5"
+                lines={[
+                  <>Compliance proof</>,
+                  <span className="italic text-mate-secondary">your practice.</span>,
+                ]}
+              />
+              <p className="mt-6 text-base leading-7 text-mate-muted">
+                Empower migration agents to eliminate administration friction, standardise
+                compliant retainers, and secure client records — with every workflow connected
+                to the client.
+              </p>
+            </div>
+            <div className="border border-mate-border bg-mate-primary p-8 text-white md:p-10">
+              <Building2 className="h-8 w-8 text-mate-accent" />
+              <p className="mt-6 font-display text-2xl font-normal leading-snug">
+                {APP_POSITIONING}
+              </p>
+              <p className="mt-4 text-sm leading-6 text-white/60">
+                Not document signing software. A compliance operating system for migration
+                practices.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Core Values */}
-      <section className="py-24">
-        <div className="container mx-auto max-w-[1200px] px-6">
+      <section className="border-b border-mate-border bg-mate-offwhite py-20 md:py-28">
+        <div className="container mx-auto max-w-[1100px] px-6">
           <SectionHeader title="Our structural values" />
-
-          <div className="grid gap-8 md:grid-cols-3 mt-12">
+          <div className="divide-y divide-mate-border border border-mate-border bg-white">
             {[
-              { title: "Absolute Compliance", text: "We trace domestic legal frameworks, ensuring agreements never breach OMARA Code guidelines." },
-              { title: "Sovereign Custody", desc: "No offshore compromises. All operational records reside completely inside Australia." },
-              { title: "Uncompromising Reliability", text: "High-performance systems built for legal pipelines, backed by responsive domestic support teams." }
+              {
+                title: "Absolute compliance",
+                text: "We trace domestic legal frameworks, ensuring agreements never breach OMARA Code guidelines.",
+              },
+              {
+                title: "Sovereign custody",
+                text: "No offshore compromises. All operational records reside completely inside Australia.",
+              },
+              {
+                title: "Uncompromising reliability",
+                text: "High-performance systems built for legal pipelines, backed by responsive domestic support.",
+              },
             ].map((val) => (
-              <Card key={val.title} className="rounded-xl border border-slate-200 bg-white p-7 shadow-sm">
-                <h4 className="text-lg font-extrabold text-[#081b36]">{val.title}</h4>
-                <p className="mt-2 text-sm text-slate-500 font-semibold leading-relaxed">{val.text || val.desc}</p>
-              </Card>
+              <div key={val.title} className="p-8">
+                <h4 className="text-base font-medium text-mate-primary">{val.title}</h4>
+                <p className="mt-2 text-sm leading-6 text-mate-muted">{val.text}</p>
+              </div>
             ))}
           </div>
         </div>
@@ -832,14 +1046,17 @@ export function AboutPage() {
 
 export function PlaceholderMarketingPage({ title }: { title: string }) {
   return (
-    <div className="bg-white py-24 text-[#081B2E]">
+    <div className="bg-mate-offwhite py-24 text-mate-primary">
       <div className="container mx-auto max-w-[900px] px-6 text-center">
-        <BookOpen className="mx-auto h-10 w-10 text-[#0D9F8C]" />
-        <h1 className="mt-6 text-5xl font-black tracking-tight">{title}</h1>
-        <p className="mt-5 text-lg leading-8 text-slate-600">
-          This page is part of the ImmiSign resource library and follows the same premium product system.
+        <BookOpen className="mx-auto h-10 w-10 text-mate-accent" />
+        <h1 className="mt-6 font-display text-4xl font-normal tracking-tight">{title}</h1>
+        <p className="mt-5 text-base leading-7 text-mate-muted">
+          This page is part of the ImmiMate resource library.
         </p>
-        <Button asChild className="mt-8 h-12 rounded-lg bg-[#0D9F8C] px-8 font-bold hover:bg-[#0A5B52]">
+        <Button
+          asChild
+          className="mt-8 h-12 rounded-none bg-mate-primary px-8 font-semibold hover:bg-mate-charcoal"
+        >
           <Link href="/resources">Browse resources</Link>
         </Button>
       </div>
@@ -854,86 +1071,79 @@ export function SecurityPage() {
   const pillars = [
     {
       icon: ShieldCheck,
-      title: "Sovereign Sydney Hosting",
-      desc: "All personal identities, passports, and signed legal agreements are stored entirely on active AWS clusters in Sydney, Australia under domestic jurisdiction."
+      title: "Sovereign Sydney hosting",
+      desc: "Personal identities, passports, and signed agreements stored on AWS clusters in Sydney, Australia.",
     },
     {
       icon: LockKeyhole,
-      title: "AES-256 State Encryption",
-      desc: "Data layers are encrypted utilizing industry-standard AES-256 at rest and secure TLS 1.3 encryption protocols in transit."
+      title: "AES-256 encryption",
+      desc: "Data encrypted at rest with AES-256 and in transit with TLS 1.3.",
     },
     {
       icon: Clock,
-      title: "Immutable Digital Audits",
-      desc: "Every send, review, and signature creates an encrypted digital certificate, compiling legally robust transaction stamps."
+      title: "Immutable digital audits",
+      desc: "Every send, review, and signature creates a digital certificate with transaction stamps.",
     },
     {
       icon: Users,
       title: "Practitioner isolation",
-      desc: "Granular multi-tenant workspaces ensure RMAs are restricted strictly to clients matching their portfolio profiles."
+      desc: "Multi-tenant workspaces ensure RMAs access only their assigned client portfolios.",
     },
     {
       icon: FileCheck2,
-      title: "SOC-2 & ISO Aligned",
-      desc: "Internal development, network failovers, and backup cycles map precisely to SOC-2 and ISO-27001 security standards."
+      title: "SOC-2 & ISO aligned",
+      desc: "Development, network failovers, and backup cycles map to SOC-2 and ISO-27001 standards.",
     },
     {
       icon: Workflow,
-      title: "High Availability Backups",
-      desc: "Real-time replica clusters guarantee a 99.9% uptime metric, securing practice continuous delivery."
-    }
+      title: "High availability backups",
+      desc: "Real-time replica clusters with 99.9% uptime for continuous practice delivery.",
+    },
   ]
 
   return (
-    <div className="bg-white text-[#081B2E] antialiased">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden border-b border-emerald-900/5 bg-[radial-gradient(circle_at_top_right,rgba(13,159,140,0.12),transparent_38%),linear-gradient(180deg,#f3fcf9_0%,#ffffff_92%)] pt-28 pb-14 text-center">
-        <div className="container mx-auto max-w-[1200px] px-6">
-          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white px-4 py-2 text-xs font-bold text-[#0A5B52] shadow-sm mb-6">
-            <ShieldCheck className="h-4 w-4 text-[#0D9F8C]" />
-            Enterprise Protection Posture
-          </div>
-          <h1 className="font-sans text-5xl font-extrabold leading-[1.05] tracking-[-0.04em] text-[#081b36] md:text-6xl lg:text-7xl">
-            Sovereign Australian data. <br />
-            <span className="font-serif font-normal text-[#0D9F8C] italic">Uncompromising compliance.</span>
-          </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-base md:text-lg leading-relaxed text-slate-600 font-medium">
-            ImmiSign delivers the bank-grade infrastructure needed to secure migration client matters and protect sensitive identity documents.
-          </p>
-        </div>
-      </section>
+    <div className="bg-mate-offwhite text-mate-primary antialiased">
+      <PageHero
+        eyebrow="Security"
+        headline={
+          <>
+            <span className="block">Sovereign Australian data.</span>
+            <span className="block italic text-mate-secondary">Uncompromising compliance.</span>
+          </>
+        }
+        subhead="ImmiMate delivers the infrastructure needed to secure migration client matters and protect sensitive identity documents."
+      />
 
-      {/* Grid of Security Pillars */}
-      <section className="py-24">
-        <div className="container mx-auto max-w-[1200px] px-6">
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+      <section className="border-b border-mate-border bg-white py-20 md:py-28">
+        <div className="container mx-auto max-w-[1100px] px-6">
+          <div className="divide-y divide-mate-border border border-mate-border bg-white">
             {pillars.map((pil) => (
-              <Card key={pil.title} className="rounded-2xl border border-slate-200/80 bg-white p-8 shadow-sm">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-[#0D9F8C] shadow-sm mb-6">
-                  <pil.icon className="h-5 w-5" />
+              <div key={pil.title} className="flex gap-6 p-8">
+                <pil.icon className="mt-1 h-5 w-5 shrink-0 text-mate-accent" />
+                <div>
+                  <h3 className="text-base font-medium text-mate-primary">{pil.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-mate-muted">{pil.desc}</p>
                 </div>
-                <h3 className="text-lg font-extrabold text-[#081b36]">{pil.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-500 font-semibold">{pil.desc}</p>
-              </Card>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Compliance / Privacy Section */}
-      <section className="bg-[#f9fbf9] py-24 border-y border-slate-100">
-        <div className="container mx-auto max-w-[1000px] px-6 text-center">
-          <h2 className="font-serif text-3xl font-normal tracking-tight text-[#081b36] md:text-4xl">
-            Strictly aligned with the <span className="italic text-[#0D9F8C]">Privacy Act 1988.</span>
-          </h2>
-          <p className="mt-4 max-w-2xl mx-auto text-slate-500 font-semibold leading-relaxed text-sm md:text-base">
-            Migration agents manage critical applicant histories, passport records, family structures, and finances. ImmiSign provides OMARA-level data preservation records out of the box.
-          </p>
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
-            {["Sovereign Hosted", "Strict TLS 1.3", "MFA Mandatory", "Hourly Backups"].map((tag) => (
-              <div key={tag} className="rounded-xl border border-emerald-100 bg-white p-4 font-bold text-[#0A5B52] shadow-sm text-xs uppercase tracking-wider">
+      <section className="border-b border-mate-border bg-mate-offwhite py-20 md:py-28">
+        <div className="container mx-auto max-w-[900px] px-6 text-center">
+          <SectionHeader
+            title="Aligned with the Privacy Act 1988."
+            text="Migration agents manage critical applicant histories, passport records, and finances. ImmiMate provides compliance-level data preservation out of the box."
+          />
+          <div className="mt-10 flex flex-wrap justify-center gap-3">
+            {["Sovereign hosted", "TLS 1.3", "MFA mandatory", "Hourly backups"].map((tag) => (
+              <span
+                key={tag}
+                className="border border-mate-border bg-white px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-mate-muted"
+              >
                 {tag}
-              </div>
+              </span>
             ))}
           </div>
         </div>
@@ -965,7 +1175,6 @@ export function ContactPage() {
     if (!formData.name || !formData.email) return
 
     setIsSubmitting(true)
-    // Simulate API Intake lookup
     setTimeout(() => {
       setIsSubmitting(false)
       setIsSubmitted(true)
@@ -973,37 +1182,30 @@ export function ContactPage() {
   }
 
   return (
-    <div className="bg-white text-[#081B2E] antialiased">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden border-b border-emerald-900/5 bg-[radial-gradient(circle_at_top_right,rgba(13,159,140,0.12),transparent_38%),linear-gradient(180deg,#f3fcf9_0%,#ffffff_92%)] pt-28 pb-14 text-center">
-        <div className="container mx-auto max-w-[1200px] px-6">
-          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white px-4 py-2 text-xs font-bold text-[#0A5B52] shadow-sm mb-6">
-            <MessageSquare className="h-4 w-4 text-[#0D9F8C]" />
-            Connect with Legal-Tech Advisors
-          </div>
-          <h1 className="font-sans text-5xl font-extrabold leading-[1.05] tracking-[-0.04em] text-[#081b36] md:text-6xl lg:text-7xl">
-            We are here to support <br />
-            <span className="font-serif font-normal text-[#0D9F8C] italic">your practice.</span>
-          </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-base md:text-lg leading-relaxed text-slate-600 font-medium">
-            Have structural OMARA questions, custom document library integrations, or need dedicated agency onboarding? Connect with our Sydney-based specialist team.
-          </p>
-        </div>
-      </section>
+    <div className="bg-mate-offwhite text-mate-primary antialiased">
+      <PageHero
+        eyebrow="Contact"
+        headline={
+          <>
+            <span className="block">We are here to support</span>
+            <span className="block italic text-mate-secondary">your practice.</span>
+          </>
+        }
+        subhead="Have compliance questions, integration needs, or want dedicated agency onboarding? Connect with our Sydney-based team."
+      />
 
-      {/* Main Form and Location Side panel */}
-      <section className="py-24">
-        <div className="container mx-auto max-w-[1200px] px-6 grid gap-12 lg:grid-cols-[1.1fr_0.9fr]">
-          {/* Intake Card */}
-          <Card className="rounded-2xl border border-slate-200/80 bg-white p-8 shadow-sm">
+      <section className="py-20 md:py-28">
+        <div className="container mx-auto grid max-w-[1200px] gap-16 px-6 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="border border-mate-border bg-white p-8 md:p-10">
             {isSubmitted ? (
-              <div className="text-center py-12 animate-enter">
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-[#0D9F8C] mb-6">
-                  <CheckCircle2 className="h-8 w-8" />
-                </div>
-                <h3 className="text-2xl font-extrabold text-[#081b36]">Request Submitted Successfully</h3>
-                <p className="mt-3 text-sm text-slate-500 font-semibold max-w-md mx-auto leading-relaxed">
-                  Thanks for reaching out, {formData.name}! A Sydney-based onboarding advisor has received your agency profile request and will contact you within the next 2 business hours.
+              <div className="py-12 text-center">
+                <CheckCircle2 className="mx-auto h-10 w-10 text-mate-accent" />
+                <h3 className="mt-6 font-display text-2xl font-normal text-mate-primary">
+                  Request submitted
+                </h3>
+                <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-mate-muted">
+                  Thanks, {formData.name}. A Sydney-based advisor will contact you within two
+                  business hours.
                 </p>
                 <Button
                   onClick={() => {
@@ -1018,7 +1220,7 @@ export function ContactPage() {
                       message: "",
                     })
                   }}
-                  className="mt-8 bg-[#0D9F8C] hover:bg-[#0A5B52] rounded-xl font-bold"
+                  className="mt-8 rounded-none bg-mate-primary font-semibold hover:bg-mate-charcoal"
                 >
                   Submit another inquiry
                 </Button>
@@ -1026,76 +1228,98 @@ export function ContactPage() {
             ) : (
               <form onSubmit={handleFormSubmit} className="space-y-6">
                 <div>
-                  <h3 className="text-xl font-extrabold text-[#081b36]">Intake Contact Form</h3>
-                  <p className="text-xs text-slate-400 font-semibold mt-1">Please provide operational details to route your inquiry to the correct domestic advisor.</p>
+                  <h3 className="font-display text-xl font-normal text-mate-primary">
+                    Practice inquiry
+                  </h3>
+                  <p className="mt-1 text-sm text-mate-muted">
+                    Provide operational details to route your inquiry to the right advisor.
+                  </p>
                 </div>
 
                 <div className="grid gap-6 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <label className="text-xs font-black uppercase tracking-wider text-slate-500">Full Name</label>
+                    <label className="text-[11px] font-semibold uppercase tracking-wider text-mate-muted">
+                      Full name
+                    </label>
                     <Input
                       required
-                      placeholder="e.g. Jane Smith"
+                      placeholder="Jane Smith"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="h-11 rounded-xl border-slate-200/80"
+                      className="h-11 rounded-none border-mate-border"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-black uppercase tracking-wider text-slate-500">Email Address</label>
+                    <label className="text-[11px] font-semibold uppercase tracking-wider text-mate-muted">
+                      Email
+                    </label>
                     <Input
                       required
                       type="email"
-                      placeholder="e.g. rajwant@australisvisa.com.au"
+                      placeholder="jane@agency.com.au"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="h-11 rounded-xl border-slate-200/80"
+                      className="h-11 rounded-none border-mate-border"
                     />
                   </div>
                 </div>
 
                 <div className="grid gap-6 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <label className="text-xs font-black uppercase tracking-wider text-slate-500">Agency Name</label>
+                    <label className="text-[11px] font-semibold uppercase tracking-wider text-mate-muted">
+                      Agency name
+                    </label>
                     <Input
                       required
-                      placeholder="e.g. Australis Visa Partners"
+                      placeholder="Agency name"
                       value={formData.agency}
                       onChange={(e) => setFormData({ ...formData, agency: e.target.value })}
-                      className="h-11 rounded-xl border-slate-200/80"
+                      className="h-11 rounded-none border-mate-border"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-black uppercase tracking-wider text-slate-500">MARN (Registered Agents Only)</label>
+                    <label className="text-[11px] font-semibold uppercase tracking-wider text-mate-muted">
+                      MARN
+                    </label>
                     <Input
-                      placeholder="7-digit MARN identifier"
+                      placeholder="7-digit MARN"
                       value={formData.marn}
                       onChange={(e) => setFormData({ ...formData, marn: e.target.value })}
-                      className="h-11 rounded-xl border-slate-200/80"
+                      className="h-11 rounded-none border-mate-border"
                     />
                   </div>
                 </div>
 
                 <div className="grid gap-6 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <label className="text-xs font-black uppercase tracking-wider text-slate-500">Practitioner Count</label>
+                    <label className="text-[11px] font-semibold uppercase tracking-wider text-mate-muted">
+                      Practitioner count
+                    </label>
                     <select
+                      aria-label="Practitioner count"
                       value={formData.practitioners}
-                      onChange={(e) => setFormData({ ...formData, practitioners: e.target.value })}
-                      className="flex h-11 w-full rounded-xl border border-slate-200/80 bg-white px-3 py-2 text-sm font-semibold text-[#081b36] focus:outline-none focus:ring-2 focus:ring-[#0D9F8C]"
+                      onChange={(e) =>
+                        setFormData({ ...formData, practitioners: e.target.value })
+                      }
+                      className="flex h-11 w-full rounded-none border border-mate-border bg-white px-3 text-sm text-mate-primary focus:outline-none focus:ring-1 focus:ring-mate-accent"
                     >
-                      <option value="1">Solo Practitioner (1 RMA)</option>
-                      <option value="2-5">2 to 5 Practitioners</option>
-                      <option value="6-15">6 to 15 Practitioners</option>
-                      <option value="16+">16+ Practitioners / Enterprise</option>
+                      <option value="1">Solo practitioner (1 RMA)</option>
+                      <option value="2-5">2 to 5 practitioners</option>
+                      <option value="6-15">6 to 15 practitioners</option>
+                      <option value="16+">16+ practitioners</option>
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-black uppercase tracking-wider text-slate-500">Milestone Volume</label>
+                    <label className="text-[11px] font-semibold uppercase tracking-wider text-mate-muted">
+                      Agreement volume
+                    </label>
                     <select
+                      aria-label="Agreement volume"
                       value={formData.throughput}
-                      onChange={(e) => setFormData({ ...formData, throughput: e.target.value })}
-                      className="flex h-11 w-full rounded-xl border border-slate-200/80 bg-white px-3 py-2 text-sm font-semibold text-[#081b36] focus:outline-none focus:ring-2 focus:ring-[#0D9F8C]"
+                      onChange={(e) =>
+                        setFormData({ ...formData, throughput: e.target.value })
+                      }
+                      className="flex h-11 w-full rounded-none border border-mate-border bg-white px-3 text-sm text-mate-primary focus:outline-none focus:ring-1 focus:ring-mate-accent"
                     >
                       <option value="under-50">Under 50 agreements/month</option>
                       <option value="50-150">50 to 150 agreements/month</option>
@@ -1105,68 +1329,78 @@ export function ContactPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-black uppercase tracking-wider text-slate-500">Inquiry details</label>
+                  <label className="text-[11px] font-semibold uppercase tracking-wider text-mate-muted">
+                    Inquiry details
+                  </label>
                   <textarea
                     required
-                    placeholder="Describe your practice onboarding, data migration, or compliance needs..."
+                    placeholder="Describe your practice needs..."
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="flex min-h-[120px] w-full rounded-xl border border-slate-200/80 bg-white px-3 py-2 text-sm font-semibold text-[#081b36] focus:outline-none focus:ring-2 focus:ring-[#0D9F8C]"
+                    className="flex min-h-[120px] w-full rounded-none border border-mate-border bg-white px-3 py-2 text-sm text-mate-primary focus:outline-none focus:ring-1 focus:ring-mate-accent"
                   />
                 </div>
 
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="h-12 w-full rounded-xl bg-[#0D9F8C] hover:bg-[#0A5B52] font-bold shadow-[0_12px_24px_rgba(13,159,140,0.15)] transition-all duration-300"
+                  className="h-12 w-full rounded-none bg-mate-primary font-semibold hover:bg-mate-charcoal"
                 >
-                  {isSubmitting ? "Submitting Inquiry..." : "Submit Practice Request"}
-                  {!isSubmitting && <ArrowRight className="h-4 w-4 ml-1" />}
+                  {isSubmitting ? "Submitting..." : "Submit practice request"}
+                  {!isSubmitting && <ArrowRight className="ml-2 h-4 w-4" />}
                 </Button>
               </form>
             )}
-          </Card>
+          </div>
 
-          {/* Location Sidepanel */}
-          <div className="flex flex-col justify-between py-2">
-            <div className="space-y-8">
+          <div className="flex flex-col justify-between">
+            <div className="space-y-10">
               <div>
-                <span className="text-xs font-extrabold uppercase tracking-widest text-[#0D9F8C]">Our Office</span>
-                <h4 className="font-serif text-3xl text-[#081b36] mt-2">Sydney HQ</h4>
-                <p className="mt-2 text-sm text-slate-500 font-semibold leading-relaxed">
-                  Level 14, 175 Pitt Street <br />
+                <SectionLabel>Our office</SectionLabel>
+                <h4 className="mt-3 font-display text-2xl font-normal text-mate-primary">
+                  Sydney HQ
+                </h4>
+                <p className="mt-2 text-sm leading-6 text-mate-muted">
+                  Level 14, 175 Pitt Street
+                  <br />
                   Sydney NSW 2000, Australia
                 </p>
               </div>
 
               <div>
-                <span className="text-xs font-extrabold uppercase tracking-widest text-[#0D9F8C]">Advising Hours</span>
-                <p className="mt-2 text-sm text-slate-500 font-semibold leading-relaxed">
-                  <strong>Monday – Friday:</strong> 8:30 AM – 6:00 PM AEST <br />
-                  <strong>Weekend:</strong> Emergency backup operations support.
+                <SectionLabel>Advising hours</SectionLabel>
+                <p className="mt-3 text-sm leading-6 text-mate-muted">
+                  Monday – Friday: 8:30 AM – 6:00 PM AEST
+                  <br />
+                  Weekend: Emergency support available.
                 </p>
               </div>
 
               <div>
-                <span className="text-xs font-extrabold uppercase tracking-widest text-[#0D9F8C]">Direct Contacts</span>
-                <p className="mt-2 text-sm text-slate-500 font-semibold leading-relaxed">
-                  <strong>Sales Inquiry:</strong> hello@immisign.com.au <br />
-                  <strong>Practice Support:</strong> support@immisign.com.au <br />
-                  <strong>Call center:</strong> +61 (02) 8005 7416
+                <SectionLabel>Direct contacts</SectionLabel>
+                <p className="mt-3 text-sm leading-6 text-mate-muted">
+                  Sales: hello@immimate.app
+                  <br />
+                  Support: support@immimate.app
+                  <br />
+                  Phone: +61 (02) 8005 7416
                 </p>
               </div>
             </div>
 
-            <div className="mt-12 rounded-2xl bg-gradient-to-br from-[#021815] to-[#000504] p-6 text-white shadow-sm border border-emerald-950">
-              <ShieldCheck className="h-8 w-8 text-[#33C48D]" />
-              <h4 className="text-lg font-bold mt-4">100% On-shore Delivery</h4>
-              <p className="text-xs text-emerald-100/70 leading-relaxed font-semibold mt-2">
-                All client databases, document attachments, development iterations, and operational support are kept fully within Australia for absolute structural privacy.
+            <div className="mt-12 border border-mate-border bg-mate-primary p-8 text-white">
+              <ShieldCheck className="h-6 w-6 text-mate-accent" />
+              <h4 className="mt-4 font-medium">100% on-shore delivery</h4>
+              <p className="mt-2 text-sm leading-6 text-white/60">
+                All client databases, document attachments, and operational support are kept
+                within Australia.
               </p>
             </div>
           </div>
         </div>
       </section>
+
+      <CTA />
     </div>
   )
 }

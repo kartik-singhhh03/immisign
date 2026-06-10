@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { Instrument_Serif } from "next/font/google";
+import { Instrument_Serif, Playfair_Display } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { APP_NAME, APP_TAGLINE } from "@/lib/brand";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -18,9 +19,18 @@ const instrumentSerif = Instrument_Serif({
   display: "swap",
 });
 
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+  variable: "--font-playfair",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "ImmiSign | Premium SaaS Foundation",
-  description: "Next-gen legal-tech platform",
+  title: `${APP_NAME} | ${APP_TAGLINE}`,
+  description:
+    "Compliance Operating System for Migration Practices. Service Agreements, File Notes, Application Approvals, and Statements of Service — connected to every client.",
 };
 
 import { AuthProvider } from "@/components/providers/AuthProvider";
@@ -34,8 +44,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${instrumentSerif.variable} font-sans antialiased bg-background text-foreground min-h-screen flex flex-col overflow-x-hidden`}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+      <body className={`${geistSans.variable} ${instrumentSerif.variable} ${playfair.variable} font-sans antialiased bg-background text-foreground min-h-screen flex flex-col overflow-x-hidden`}>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
           <AuthProvider>
             <GlobalUxProvider>
               {children}

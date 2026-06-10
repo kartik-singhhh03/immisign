@@ -1,7 +1,7 @@
 import { ApprovalList } from "@/components/approvals/ApprovalList"
 
 export const metadata = {
-  title: "Application Approvals - ImmiSign",
+  title: "Application Approvals - ImmiMate",
   description: "Manage client application reviews securely."
 }
 

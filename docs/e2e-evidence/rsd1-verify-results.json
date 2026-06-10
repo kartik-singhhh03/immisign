@@ -1,0 +1,63 @@
+{
+  "timestamp": "2026-06-10T07:36:00.651Z",
+  "fromEmail": "notifications@immimate.au",
+  "domain": "immimate.au",
+  "results": [
+    {
+      "id": "MIGRATION",
+      "status": "WARN",
+      "msg": "(ENOTFOUND) tenant/user postgres.wnohcmgmyhamsbmkiybc not found",
+      "detail": {}
+    },
+    {
+      "id": "RESEND-API",
+      "status": "PASS",
+      "msg": "HTTP 200",
+      "detail": {}
+    },
+    {
+      "id": "DOMAIN-VERIFIED",
+      "status": "PASS",
+      "msg": "immimate.au → verified",
+      "detail": {}
+    },
+    {
+      "id": "RECIPIENT",
+      "status": "PASS",
+      "msg": "nayramalik1018@gmail.com",
+      "detail": {}
+    },
+    {
+      "id": "SEND-TEST",
+      "status": "PASS",
+      "msg": "Resend accepted — id=353af68a-dcc5-4076-bb67-917bfdea4fb8",
+      "detail": {}
+    },
+    {
+      "id": "AUDIT-INSERT",
+      "status": "FAIL",
+      "msg": "Could not find the table 'public.email_delivery_audit' in the schema cache",
+      "detail": {}
+    },
+    {
+      "id": "RESEND-STATUS",
+      "status": "PASS",
+      "msg": "last_event=delivered",
+      "detail": {}
+    },
+    {
+      "id": "AUDIT-DELIVERED",
+      "status": "PASS",
+      "msg": "Row updated to delivered",
+      "detail": {}
+    },
+    {
+      "id": "AUDIT-TABLE",
+      "status": "FAIL",
+      "msg": "Could not find the table 'public.email_delivery_audit' in the schema cache",
+      "detail": {
+        "rows": null
+      }
+    }
+  ]
+}

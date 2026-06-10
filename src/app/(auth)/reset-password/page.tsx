@@ -75,7 +75,7 @@ export default function ResetPasswordPage() {
           <Button
             type="submit"
             disabled={loading}
-            className="w-full h-12 bg-[#0D9F8C] text-white font-bold rounded-xl"
+            className="w-full h-12 bg-[#111111] text-white font-bold rounded-xl"
           >
             {loading ? 'Updating…' : 'Reset password'}
           </Button>
@@ -83,7 +83,7 @@ export default function ResetPasswordPage() {
       </form>
       <p className="px-8 text-center text-sm text-gray-500 font-medium">
         Back to{' '}
-        <Link href="/login" className="text-[#0D9F8C] font-semibold">
+        <Link href="/login" className="text-[#111111] font-semibold">
           Sign in
         </Link>
       </p>

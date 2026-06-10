@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-06-10T07:49:33.803Z",
+  "verdict": "PASS",
+  "blockers": [],
+  "applyResult": {
+    "attempted": false,
+    "success": false,
+    "error": null
+  },
+  "needs": {
+    "notification_priority_enum": false,
+    "notification_scope_enum": false,
+    "email_digest_enum": false,
+    "notifications_priority": false,
+    "notifications_scope": false,
+    "notifications_deleted_at": false,
+    "notifications_metadata": false,
+    "activity_events": false,
+    "webhook_events": false,
+    "email_delivery_audit": false,
+    "integration_health_logs": false
+  }
+}

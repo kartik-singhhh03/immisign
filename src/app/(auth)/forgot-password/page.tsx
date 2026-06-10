@@ -36,15 +36,15 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="animate-in fade-in-50">
-      <Link href="/login" className="inline-flex items-center gap-2 text-sm font-bold text-[#0D9F8C]">
+      <Link href="/login" className="inline-flex items-center gap-2 text-sm font-bold text-[#111111]">
         <ArrowLeft className="h-4 w-4" />
         Back to login
       </Link>
       <div className="mt-8">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-[#0D9F8C]">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#FAFAFA] text-[#111111]">
           <Mail className="h-6 w-6" />
         </div>
-        <h1 className="mt-6 text-4xl font-black tracking-tight text-[#081B2E]">
+        <h1 className="mt-6 text-4xl font-black tracking-tight text-[#111111]">
           Reset your password
         </h1>
         <p className="mt-3 text-sm leading-6 text-slate-600">
@@ -52,7 +52,7 @@ export default function ForgotPasswordPage() {
         </p>
       </div>
       {sent ? (
-        <p className="mt-8 text-sm font-semibold text-emerald-700">
+        <p className="mt-8 text-sm font-semibold text-[#111111]">
           Check your inbox for a password reset link.
         </p>
       ) : (
@@ -75,7 +75,7 @@ export default function ForgotPasswordPage() {
           <Button
             type="submit"
             disabled={loading}
-            className="h-12 rounded-xl bg-[#0D9F8C] text-base font-black hover:bg-[#0A5B52]"
+            className="h-12 rounded-xl bg-[#111111] text-base font-black hover:bg-[#222222]"
           >
             {loading ? 'Sending…' : 'Send recovery link'}
           </Button>

@@ -56,6 +56,17 @@ export class ApprovalRepository {
     return approval as ApplicationApproval;
   }
 
+  async getByToken(token: string): Promise<ApprovalListRow | null> {
+    const { data, error } = await this.supabase
+      .from('application_approvals')
+      .select(`*, clients(name, email), matter_types(name)`)
+      .eq('review_token', token)
+      .is('deleted_at', null)
+      .maybeSingle();
+    if (error || !data) return null;
+    return data as ApprovalListRow;
+  }
+
   async getById(id: string, agencyId?: string): Promise<ApprovalListRow | null> {
     let query = this.supabase
       .from('application_approvals')

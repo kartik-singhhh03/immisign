@@ -93,3 +93,7 @@ export function canManageApprovalsDb(dbRole: DbRole): boolean {
 export function canDeleteApprovalsDb(dbRole: DbRole): boolean {
   return dbRole === 'owner' || dbRole === 'admin';
 }
+
+export function canAccessSystemHealth(dbRole: DbRole): boolean {
+  return dbRole === 'owner' || dbRole === 'admin';
+}

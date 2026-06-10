@@ -1,0 +1,1178 @@
+{
+  "stamp": 1781084229556,
+  "agency": {
+    "id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+    "slug": "ritiklabs",
+    "name": "Ritiklabs"
+  },
+  "owner": {
+    "id": "2cab360f-fd21-461a-8a57-67573dee0530",
+    "email": "nayramalik1018@gmail.com",
+    "role": "owner"
+  },
+  "inviteRecords": {
+    "admin": {
+      "key": "admin",
+      "uiRole": "Admin",
+      "dbRole": "admin",
+      "name": "INV1 Admin",
+      "email": "invite.admin.1781084229556@immimate.au",
+      "inviteId": "4001938a-8217-46ad-8dc2-7b2eb23b3691",
+      "token": "af25f314-7465-403e-bc92-ce8e21152cc8",
+      "inviteUrl": "http://localhost:3000/invite/af25f314-7465-403e-bc92-ce8e21152cc8"
+    },
+    "agent": {
+      "key": "agent",
+      "uiRole": "Migration Agent",
+      "dbRole": "agent",
+      "name": "INV1 Agent",
+      "browserAccept": true,
+      "email": "invite.agent.1781084229556@immimate.au",
+      "inviteId": "74dde2af-aba0-427d-b814-bed9d5eb7843",
+      "token": "45d03ba0-555c-4648-8a6d-f41910aba61c",
+      "inviteUrl": "http://localhost:3000/invite/45d03ba0-555c-4648-8a6d-f41910aba61c"
+    },
+    "manager": {
+      "key": "manager",
+      "uiRole": "Case Manager",
+      "dbRole": "manager",
+      "name": "INV1 Manager",
+      "email": "invite.manager.1781084229556@immimate.au",
+      "inviteId": "df38b4a9-26d5-482e-a791-acadd766ebac",
+      "token": "b33b4d57-3315-4820-a66a-2ef5ab80c63c",
+      "inviteUrl": "http://localhost:3000/invite/b33b4d57-3315-4820-a66a-2ef5ab80c63c"
+    },
+    "assistant": {
+      "key": "assistant",
+      "uiRole": "Assistant",
+      "dbRole": "support",
+      "name": "INV1 Assistant",
+      "email": "invite.assistant.1781084229556@immimate.au",
+      "inviteId": "e6cfd5d7-67f8-4249-b394-7bce9c53fc52",
+      "token": "962387fb-93e7-4746-9d27-965596b33527",
+      "inviteUrl": "http://localhost:3000/invite/962387fb-93e7-4746-9d27-965596b33527"
+    },
+    "viewer": {
+      "key": "viewer",
+      "uiRole": "Read-only staff",
+      "dbRole": "viewer",
+      "name": "INV1 Viewer",
+      "browserLogin": true,
+      "email": "invite.viewer.1781084229556@immimate.au",
+      "inviteId": "54cf8f1a-2335-490c-8089-abc236a844b9",
+      "token": "d9bb99c2-d75f-4fc7-bc7a-3a5e16a01234",
+      "inviteUrl": "http://localhost:3000/invite/d9bb99c2-d75f-4fc7-bc7a-3a5e16a01234"
+    }
+  },
+  "results": [
+    {
+      "area": "SETUP",
+      "check": "OWNER",
+      "status": "PASS",
+      "msg": "nayramalik1018@gmail.com",
+      "detail": {
+        "userId": "2cab360f-fd21-461a-8a57-67573dee0530"
+      },
+      "ts": "2026-06-10T09:37:10.542Z"
+    },
+    {
+      "area": "PART1",
+      "check": "INVITE-SEND-ADMIN",
+      "status": "PASS",
+      "msg": "status 200",
+      "detail": {
+        "email": "invite.admin.1781084229556@immimate.au",
+        "inviteId": "4001938a-8217-46ad-8dc2-7b2eb23b3691"
+      },
+      "ts": "2026-06-10T09:37:19.628Z"
+    },
+    {
+      "area": "PART1",
+      "check": "INVITE-ROW-ADMIN",
+      "status": "PASS",
+      "msg": "role=admin expected=admin",
+      "detail": {
+        "invitation": {
+          "id": "4001938a-8217-46ad-8dc2-7b2eb23b3691",
+          "email": "invite.admin.1781084229556@immimate.au",
+          "role": "admin",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "token": "af25f314-7465-403e-bc92-ce8e21152cc8",
+          "expires_at": "2026-06-17T09:37:16.077+00:00",
+          "accepted_at": null,
+          "created_by": "2cab360f-fd21-461a-8a57-67573dee0530"
+        }
+      },
+      "ts": "2026-06-10T09:37:19.845Z"
+    },
+    {
+      "area": "PART1",
+      "check": "EMAIL-AUDIT-ADMIN",
+      "status": "PASS",
+      "msg": "sent resend=ec673f43-66e0-4d06-a2a6-1486964dcb97",
+      "detail": {
+        "emailAudit": {
+          "id": "9ae77bcb-2fd1-450a-a913-bbb5288d7719",
+          "recipient": "invite.admin.1781084229556@immimate.au",
+          "subject": "You have been invited to join a ImmiMate workspace",
+          "status": "sent",
+          "resend_id": "ec673f43-66e0-4d06-a2a6-1486964dcb97",
+          "email_type": "team_invite",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "created_at": "2026-06-10T09:37:19.084617+00:00"
+        }
+      },
+      "ts": "2026-06-10T09:37:20.039Z"
+    },
+    {
+      "area": "PART1",
+      "check": "RESEND-API-ADMIN",
+      "status": "PASS",
+      "msg": "Resend id ec673f43-66e0-4d06-a2a6-1486964dcb97",
+      "detail": {},
+      "ts": "2026-06-10T09:37:21.018Z"
+    },
+    {
+      "area": "PART1",
+      "check": "INVITE-SEND-AGENT",
+      "status": "PASS",
+      "msg": "status 200",
+      "detail": {
+        "email": "invite.agent.1781084229556@immimate.au",
+        "inviteId": "74dde2af-aba0-427d-b814-bed9d5eb7843"
+      },
+      "ts": "2026-06-10T09:37:26.089Z"
+    },
+    {
+      "area": "PART1",
+      "check": "INVITE-ROW-AGENT",
+      "status": "PASS",
+      "msg": "role=agent expected=agent",
+      "detail": {
+        "invitation": {
+          "id": "74dde2af-aba0-427d-b814-bed9d5eb7843",
+          "email": "invite.agent.1781084229556@immimate.au",
+          "role": "agent",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "token": "45d03ba0-555c-4648-8a6d-f41910aba61c",
+          "expires_at": "2026-06-17T09:37:22.338+00:00",
+          "accepted_at": null,
+          "created_by": "2cab360f-fd21-461a-8a57-67573dee0530"
+        }
+      },
+      "ts": "2026-06-10T09:37:26.293Z"
+    },
+    {
+      "area": "PART1",
+      "check": "EMAIL-AUDIT-AGENT",
+      "status": "PASS",
+      "msg": "sent resend=bed5927c-a380-443e-bf7f-da1d356a3d09",
+      "detail": {
+        "emailAudit": {
+          "id": "52e97aef-ec3a-40b0-af29-6b3c898be542",
+          "recipient": "invite.agent.1781084229556@immimate.au",
+          "subject": "You have been invited to join a ImmiMate workspace",
+          "status": "sent",
+          "resend_id": "bed5927c-a380-443e-bf7f-da1d356a3d09",
+          "email_type": "team_invite",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "created_at": "2026-06-10T09:37:25.995381+00:00"
+        }
+      },
+      "ts": "2026-06-10T09:37:26.488Z"
+    },
+    {
+      "area": "PART1",
+      "check": "RESEND-API-AGENT",
+      "status": "PASS",
+      "msg": "Resend id bed5927c-a380-443e-bf7f-da1d356a3d09",
+      "detail": {},
+      "ts": "2026-06-10T09:37:27.537Z"
+    },
+    {
+      "area": "PART1",
+      "check": "INVITE-SEND-MANAGER",
+      "status": "PASS",
+      "msg": "status 200",
+      "detail": {
+        "email": "invite.manager.1781084229556@immimate.au",
+        "inviteId": "df38b4a9-26d5-482e-a791-acadd766ebac"
+      },
+      "ts": "2026-06-10T09:37:32.252Z"
+    },
+    {
+      "area": "PART1",
+      "check": "INVITE-ROW-MANAGER",
+      "status": "PASS",
+      "msg": "role=manager expected=manager",
+      "detail": {
+        "invitation": {
+          "id": "df38b4a9-26d5-482e-a791-acadd766ebac",
+          "email": "invite.manager.1781084229556@immimate.au",
+          "role": "manager",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "token": "b33b4d57-3315-4820-a66a-2ef5ab80c63c",
+          "expires_at": "2026-06-17T09:37:28.879+00:00",
+          "accepted_at": null,
+          "created_by": "2cab360f-fd21-461a-8a57-67573dee0530"
+        }
+      },
+      "ts": "2026-06-10T09:37:32.462Z"
+    },
+    {
+      "area": "PART1",
+      "check": "EMAIL-AUDIT-MANAGER",
+      "status": "PASS",
+      "msg": "sent resend=0a8fee7f-1959-484c-bb49-bf9c87e261da",
+      "detail": {
+        "emailAudit": {
+          "id": "9147adaf-d018-472e-9783-99b8beed3c05",
+          "recipient": "invite.manager.1781084229556@immimate.au",
+          "subject": "You have been invited to join a ImmiMate workspace",
+          "status": "sent",
+          "resend_id": "0a8fee7f-1959-484c-bb49-bf9c87e261da",
+          "email_type": "team_invite",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "created_at": "2026-06-10T09:37:31.885194+00:00"
+        }
+      },
+      "ts": "2026-06-10T09:37:32.642Z"
+    },
+    {
+      "area": "PART1",
+      "check": "RESEND-API-MANAGER",
+      "status": "PASS",
+      "msg": "Resend id 0a8fee7f-1959-484c-bb49-bf9c87e261da",
+      "detail": {},
+      "ts": "2026-06-10T09:37:33.596Z"
+    },
+    {
+      "area": "PART1",
+      "check": "INVITE-SEND-ASSISTANT",
+      "status": "PASS",
+      "msg": "status 200",
+      "detail": {
+        "email": "invite.assistant.1781084229556@immimate.au",
+        "inviteId": "e6cfd5d7-67f8-4249-b394-7bce9c53fc52"
+      },
+      "ts": "2026-06-10T09:37:38.103Z"
+    },
+    {
+      "area": "PART1",
+      "check": "INVITE-ROW-ASSISTANT",
+      "status": "PASS",
+      "msg": "role=support expected=support",
+      "detail": {
+        "invitation": {
+          "id": "e6cfd5d7-67f8-4249-b394-7bce9c53fc52",
+          "email": "invite.assistant.1781084229556@immimate.au",
+          "role": "support",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "token": "962387fb-93e7-4746-9d27-965596b33527",
+          "expires_at": "2026-06-17T09:37:34.915+00:00",
+          "accepted_at": null,
+          "created_by": "2cab360f-fd21-461a-8a57-67573dee0530"
+        }
+      },
+      "ts": "2026-06-10T09:37:38.317Z"
+    },
+    {
+      "area": "PART1",
+      "check": "EMAIL-AUDIT-ASSISTANT",
+      "status": "PASS",
+      "msg": "sent resend=61eb019f-c8f3-4a84-a215-ac035aa4c67e",
+      "detail": {
+        "emailAudit": {
+          "id": "0783e6e5-3912-4d1b-aad6-252e2ae2e941",
+          "recipient": "invite.assistant.1781084229556@immimate.au",
+          "subject": "You have been invited to join a ImmiMate workspace",
+          "status": "sent",
+          "resend_id": "61eb019f-c8f3-4a84-a215-ac035aa4c67e",
+          "email_type": "team_invite",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "created_at": "2026-06-10T09:37:37.919311+00:00"
+        }
+      },
+      "ts": "2026-06-10T09:37:38.496Z"
+    },
+    {
+      "area": "PART1",
+      "check": "RESEND-API-ASSISTANT",
+      "status": "PASS",
+      "msg": "Resend id 61eb019f-c8f3-4a84-a215-ac035aa4c67e",
+      "detail": {},
+      "ts": "2026-06-10T09:37:39.572Z"
+    },
+    {
+      "area": "PART1",
+      "check": "INVITE-SEND-VIEWER",
+      "status": "PASS",
+      "msg": "status 200",
+      "detail": {
+        "email": "invite.viewer.1781084229556@immimate.au",
+        "inviteId": "54cf8f1a-2335-490c-8089-abc236a844b9"
+      },
+      "ts": "2026-06-10T09:37:44.665Z"
+    },
+    {
+      "area": "PART1",
+      "check": "INVITE-ROW-VIEWER",
+      "status": "PASS",
+      "msg": "role=viewer expected=viewer",
+      "detail": {
+        "invitation": {
+          "id": "54cf8f1a-2335-490c-8089-abc236a844b9",
+          "email": "invite.viewer.1781084229556@immimate.au",
+          "role": "viewer",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "token": "d9bb99c2-d75f-4fc7-bc7a-3a5e16a01234",
+          "expires_at": "2026-06-17T09:37:40.941+00:00",
+          "accepted_at": null,
+          "created_by": "2cab360f-fd21-461a-8a57-67573dee0530"
+        }
+      },
+      "ts": "2026-06-10T09:37:44.871Z"
+    },
+    {
+      "area": "PART1",
+      "check": "EMAIL-AUDIT-VIEWER",
+      "status": "PASS",
+      "msg": "accepted resend=ae45e349-2191-4641-ae75-318766344a8c",
+      "detail": {
+        "emailAudit": {
+          "id": "2f9eda95-96da-4fef-afdf-97a335e1e123",
+          "recipient": "invite.viewer.1781084229556@immimate.au",
+          "subject": "You have been invited to join a ImmiMate workspace",
+          "status": "accepted",
+          "resend_id": "ae45e349-2191-4641-ae75-318766344a8c",
+          "email_type": "team_invite",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "created_at": "2026-06-10T09:37:44.551971+00:00"
+        }
+      },
+      "ts": "2026-06-10T09:37:45.070Z"
+    },
+    {
+      "area": "PART1",
+      "check": "RESEND-API-VIEWER",
+      "status": "PASS",
+      "msg": "Resend id ae45e349-2191-4641-ae75-318766344a8c",
+      "detail": {},
+      "ts": "2026-06-10T09:37:46.034Z"
+    },
+    {
+      "area": "PART1",
+      "check": "EMAIL-DELIVERY",
+      "status": "PASS",
+      "msg": "Resend API + audit confirmed (inbox simulated from API evidence)",
+      "detail": {},
+      "ts": "2026-06-10T09:37:48.694Z"
+    },
+    {
+      "area": "PART6",
+      "check": "DUPLICATE-PENDING",
+      "status": "PASS",
+      "msg": "A pending invitation already exists for this email. Invitation resent.",
+      "detail": {},
+      "ts": "2026-06-10T09:37:51.569Z"
+    },
+    {
+      "area": "PART2",
+      "check": "INVITE-LINK-AGENT",
+      "status": "PASS",
+      "msg": "http://localhost:3000/invite/45d03ba0-555c-4648-8a6d-f41910aba61c",
+      "detail": {},
+      "ts": "2026-06-10T09:37:54.309Z"
+    },
+    {
+      "area": "PART4",
+      "check": "LOGIN-AGENT",
+      "status": "PASS",
+      "msg": "http://localhost:3000/workspace/ritiklabs/dashboard",
+      "detail": {},
+      "ts": "2026-06-10T09:38:04.478Z"
+    },
+    {
+      "area": "PART3",
+      "check": "DB-AGENT",
+      "status": "PASS",
+      "msg": "users.role=agent",
+      "detail": {
+        "userId": "55b4e44e-9dea-48c3-a327-d31c35ffd5f3",
+        "authUserId": "55b4e44e-9dea-48c3-a327-d31c35ffd5f3"
+      },
+      "ts": "2026-06-10T09:38:05.015Z"
+    },
+    {
+      "area": "PART3",
+      "check": "AUTH-AGENT",
+      "status": "PASS",
+      "msg": "55b4e44e-9dea-48c3-a327-d31c35ffd5f3",
+      "detail": {},
+      "ts": "2026-06-10T09:38:05.015Z"
+    },
+    {
+      "area": "PART3",
+      "check": "ACCEPT-ADMIN",
+      "status": "PASS",
+      "msg": "status 200",
+      "detail": {
+        "success": true,
+        "email": "invite.admin.1781084229556@immimate.au",
+        "agency_slug": "ritiklabs"
+      },
+      "ts": "2026-06-10T09:38:10.599Z"
+    },
+    {
+      "area": "PART3",
+      "check": "DB-ADMIN",
+      "status": "PASS",
+      "msg": "role=admin",
+      "detail": {},
+      "ts": "2026-06-10T09:38:11.264Z"
+    },
+    {
+      "area": "PART3",
+      "check": "AUTH-ADMIN",
+      "status": "PASS",
+      "msg": "0449f90b-b77f-44dc-a7ce-22a9cf7a041e",
+      "detail": {},
+      "ts": "2026-06-10T09:38:11.264Z"
+    },
+    {
+      "area": "PART4",
+      "check": "LOGIN-ADMIN",
+      "status": "PASS",
+      "msg": "JWT issued",
+      "detail": {},
+      "ts": "2026-06-10T09:38:11.264Z"
+    },
+    {
+      "area": "PART3",
+      "check": "ACCEPT-MANAGER",
+      "status": "PASS",
+      "msg": "status 200",
+      "detail": {
+        "success": true,
+        "email": "invite.manager.1781084229556@immimate.au",
+        "agency_slug": "ritiklabs"
+      },
+      "ts": "2026-06-10T09:38:18.466Z"
+    },
+    {
+      "area": "PART3",
+      "check": "DB-MANAGER",
+      "status": "PASS",
+      "msg": "role=manager",
+      "detail": {},
+      "ts": "2026-06-10T09:38:19.129Z"
+    },
+    {
+      "area": "PART3",
+      "check": "AUTH-MANAGER",
+      "status": "PASS",
+      "msg": "7aff10fb-5f46-49fd-b853-835f2e63cb1e",
+      "detail": {},
+      "ts": "2026-06-10T09:38:19.129Z"
+    },
+    {
+      "area": "PART4",
+      "check": "LOGIN-MANAGER",
+      "status": "PASS",
+      "msg": "JWT issued",
+      "detail": {},
+      "ts": "2026-06-10T09:38:19.129Z"
+    },
+    {
+      "area": "PART3",
+      "check": "ACCEPT-ASSISTANT",
+      "status": "PASS",
+      "msg": "status 200",
+      "detail": {
+        "success": true,
+        "email": "invite.assistant.1781084229556@immimate.au",
+        "agency_slug": "ritiklabs"
+      },
+      "ts": "2026-06-10T09:38:25.649Z"
+    },
+    {
+      "area": "PART3",
+      "check": "DB-ASSISTANT",
+      "status": "PASS",
+      "msg": "role=support",
+      "detail": {},
+      "ts": "2026-06-10T09:38:26.327Z"
+    },
+    {
+      "area": "PART3",
+      "check": "AUTH-ASSISTANT",
+      "status": "PASS",
+      "msg": "4f520192-e308-4a89-889c-01f9d039151a",
+      "detail": {},
+      "ts": "2026-06-10T09:38:26.327Z"
+    },
+    {
+      "area": "PART4",
+      "check": "LOGIN-ASSISTANT",
+      "status": "PASS",
+      "msg": "JWT issued",
+      "detail": {},
+      "ts": "2026-06-10T09:38:26.327Z"
+    },
+    {
+      "area": "PART3",
+      "check": "ACCEPT-VIEWER",
+      "status": "PASS",
+      "msg": "status 200",
+      "detail": {
+        "success": true,
+        "email": "invite.viewer.1781084229556@immimate.au",
+        "agency_slug": "ritiklabs"
+      },
+      "ts": "2026-06-10T09:38:32.767Z"
+    },
+    {
+      "area": "PART3",
+      "check": "DB-VIEWER",
+      "status": "PASS",
+      "msg": "role=viewer",
+      "detail": {},
+      "ts": "2026-06-10T09:38:33.432Z"
+    },
+    {
+      "area": "PART3",
+      "check": "AUTH-VIEWER",
+      "status": "PASS",
+      "msg": "66c9bd3d-1e6e-48d2-8b3c-dfad3303c808",
+      "detail": {},
+      "ts": "2026-06-10T09:38:33.432Z"
+    },
+    {
+      "area": "PART4",
+      "check": "LOGIN-VIEWER",
+      "status": "PASS",
+      "msg": "JWT issued",
+      "detail": {},
+      "ts": "2026-06-10T09:38:33.432Z"
+    },
+    {
+      "area": "PART5",
+      "check": "RBAC-VIEWER-UI",
+      "status": "PASS",
+      "msg": "Viewer workspace loaded",
+      "detail": {},
+      "ts": "2026-06-10T09:38:37.074Z"
+    },
+    {
+      "area": "PART5",
+      "check": "RBAC-OWNER-UI",
+      "status": "PASS",
+      "msg": "Owner dashboard",
+      "detail": {},
+      "ts": "2026-06-10T09:38:40.181Z"
+    },
+    {
+      "area": "PART5",
+      "check": "RBAC-VIEWER-API",
+      "status": "PASS",
+      "msg": "PATCH branding status 403",
+      "detail": {},
+      "ts": "2026-06-10T09:38:41.803Z"
+    },
+    {
+      "area": "PART6",
+      "check": "DUPLICATE-MEMBER",
+      "status": "PASS",
+      "msg": "This person is already a member of your workspace.",
+      "detail": {},
+      "ts": "2026-06-10T09:38:42.966Z"
+    },
+    {
+      "area": "PART6",
+      "check": "NO-DUP-MEMBERSHIP",
+      "status": "PASS",
+      "msg": "users with admin email: 1",
+      "detail": {},
+      "ts": "2026-06-10T09:38:43.145Z"
+    },
+    {
+      "area": "PART7",
+      "check": "REVOKE-API",
+      "status": "PASS",
+      "msg": "status 200",
+      "detail": {},
+      "ts": "2026-06-10T09:38:49.912Z"
+    },
+    {
+      "area": "PART7",
+      "check": "REVOKE-LINK",
+      "status": "PASS",
+      "msg": "Invalid or Expired Invitation\n\nPlease request a new invitation link from your wo",
+      "detail": {},
+      "ts": "2026-06-10T09:38:52.650Z"
+    },
+    {
+      "area": "PART8",
+      "check": "EXPIRED-INVITE",
+      "status": "PASS",
+      "msg": "Invitation Expired\n\nThis invitation link has expired.",
+      "detail": {},
+      "ts": "2026-06-10T09:38:55.551Z"
+    },
+    {
+      "area": "PART9",
+      "check": "AUDIT-INVITE-CREATED",
+      "status": "PASS",
+      "msg": "logged",
+      "detail": {},
+      "ts": "2026-06-10T09:38:55.998Z"
+    },
+    {
+      "area": "PART9",
+      "check": "AUDIT-INVITE-SENT",
+      "status": "PASS",
+      "msg": "logged",
+      "detail": {},
+      "ts": "2026-06-10T09:38:55.998Z"
+    },
+    {
+      "area": "PART9",
+      "check": "AUDIT-INVITE-REVOKED",
+      "status": "PASS",
+      "msg": "logged",
+      "detail": {},
+      "ts": "2026-06-10T09:38:55.998Z"
+    },
+    {
+      "area": "PART9",
+      "check": "AUDIT-INVITE-ACCEPTED",
+      "status": "PASS",
+      "msg": "logged",
+      "detail": {},
+      "ts": "2026-06-10T09:38:55.998Z"
+    },
+    {
+      "area": "PART9",
+      "check": "ACTIVITY-LOGS",
+      "status": "PASS",
+      "msg": "15 activity rows",
+      "detail": {},
+      "ts": "2026-06-10T09:38:55.998Z"
+    }
+  ],
+  "evidence": {
+    "invites": [
+      {
+        "id": "4001938a-8217-46ad-8dc2-7b2eb23b3691",
+        "email": "invite.admin.1781084229556@immimate.au",
+        "role": "admin",
+        "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+        "token": "af25f314-7465-403e-bc92-ce8e21152cc8",
+        "expires_at": "2026-06-17T09:37:16.077+00:00",
+        "accepted_at": null,
+        "created_by": "2cab360f-fd21-461a-8a57-67573dee0530"
+      },
+      {
+        "id": "74dde2af-aba0-427d-b814-bed9d5eb7843",
+        "email": "invite.agent.1781084229556@immimate.au",
+        "role": "agent",
+        "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+        "token": "45d03ba0-555c-4648-8a6d-f41910aba61c",
+        "expires_at": "2026-06-17T09:37:22.338+00:00",
+        "accepted_at": null,
+        "created_by": "2cab360f-fd21-461a-8a57-67573dee0530"
+      },
+      {
+        "id": "df38b4a9-26d5-482e-a791-acadd766ebac",
+        "email": "invite.manager.1781084229556@immimate.au",
+        "role": "manager",
+        "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+        "token": "b33b4d57-3315-4820-a66a-2ef5ab80c63c",
+        "expires_at": "2026-06-17T09:37:28.879+00:00",
+        "accepted_at": null,
+        "created_by": "2cab360f-fd21-461a-8a57-67573dee0530"
+      },
+      {
+        "id": "e6cfd5d7-67f8-4249-b394-7bce9c53fc52",
+        "email": "invite.assistant.1781084229556@immimate.au",
+        "role": "support",
+        "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+        "token": "962387fb-93e7-4746-9d27-965596b33527",
+        "expires_at": "2026-06-17T09:37:34.915+00:00",
+        "accepted_at": null,
+        "created_by": "2cab360f-fd21-461a-8a57-67573dee0530"
+      },
+      {
+        "id": "54cf8f1a-2335-490c-8089-abc236a844b9",
+        "email": "invite.viewer.1781084229556@immimate.au",
+        "role": "viewer",
+        "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+        "token": "d9bb99c2-d75f-4fc7-bc7a-3a5e16a01234",
+        "expires_at": "2026-06-17T09:37:40.941+00:00",
+        "accepted_at": null,
+        "created_by": "2cab360f-fd21-461a-8a57-67573dee0530"
+      }
+    ],
+    "emails": [
+      {
+        "id": "9ae77bcb-2fd1-450a-a913-bbb5288d7719",
+        "recipient": "invite.admin.1781084229556@immimate.au",
+        "subject": "You have been invited to join a ImmiMate workspace",
+        "status": "sent",
+        "resend_id": "ec673f43-66e0-4d06-a2a6-1486964dcb97",
+        "email_type": "team_invite",
+        "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+        "created_at": "2026-06-10T09:37:19.084617+00:00"
+      },
+      {
+        "id": "52e97aef-ec3a-40b0-af29-6b3c898be542",
+        "recipient": "invite.agent.1781084229556@immimate.au",
+        "subject": "You have been invited to join a ImmiMate workspace",
+        "status": "sent",
+        "resend_id": "bed5927c-a380-443e-bf7f-da1d356a3d09",
+        "email_type": "team_invite",
+        "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+        "created_at": "2026-06-10T09:37:25.995381+00:00"
+      },
+      {
+        "id": "9147adaf-d018-472e-9783-99b8beed3c05",
+        "recipient": "invite.manager.1781084229556@immimate.au",
+        "subject": "You have been invited to join a ImmiMate workspace",
+        "status": "sent",
+        "resend_id": "0a8fee7f-1959-484c-bb49-bf9c87e261da",
+        "email_type": "team_invite",
+        "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+        "created_at": "2026-06-10T09:37:31.885194+00:00"
+      },
+      {
+        "id": "0783e6e5-3912-4d1b-aad6-252e2ae2e941",
+        "recipient": "invite.assistant.1781084229556@immimate.au",
+        "subject": "You have been invited to join a ImmiMate workspace",
+        "status": "sent",
+        "resend_id": "61eb019f-c8f3-4a84-a215-ac035aa4c67e",
+        "email_type": "team_invite",
+        "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+        "created_at": "2026-06-10T09:37:37.919311+00:00"
+      },
+      {
+        "id": "2f9eda95-96da-4fef-afdf-97a335e1e123",
+        "recipient": "invite.viewer.1781084229556@immimate.au",
+        "subject": "You have been invited to join a ImmiMate workspace",
+        "status": "accepted",
+        "resend_id": "ae45e349-2191-4641-ae75-318766344a8c",
+        "email_type": "team_invite",
+        "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+        "created_at": "2026-06-10T09:37:44.551971+00:00"
+      }
+    ],
+    "users": [
+      {
+        "email": "invite.admin.1781084229556@immimate.au",
+        "userRow": {
+          "id": "0449f90b-b77f-44dc-a7ce-22a9cf7a041e",
+          "email": "invite.admin.1781084229556@immimate.au",
+          "role": "admin",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "is_active": true
+        },
+        "authUserId": "0449f90b-b77f-44dc-a7ce-22a9cf7a041e"
+      },
+      {
+        "email": "invite.manager.1781084229556@immimate.au",
+        "userRow": {
+          "id": "7aff10fb-5f46-49fd-b853-835f2e63cb1e",
+          "email": "invite.manager.1781084229556@immimate.au",
+          "role": "manager",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "is_active": true
+        },
+        "authUserId": "7aff10fb-5f46-49fd-b853-835f2e63cb1e"
+      },
+      {
+        "email": "invite.assistant.1781084229556@immimate.au",
+        "userRow": {
+          "id": "4f520192-e308-4a89-889c-01f9d039151a",
+          "email": "invite.assistant.1781084229556@immimate.au",
+          "role": "support",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "is_active": true
+        },
+        "authUserId": "4f520192-e308-4a89-889c-01f9d039151a"
+      },
+      {
+        "email": "invite.viewer.1781084229556@immimate.au",
+        "userRow": {
+          "id": "66c9bd3d-1e6e-48d2-8b3c-dfad3303c808",
+          "email": "invite.viewer.1781084229556@immimate.au",
+          "role": "viewer",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "is_active": true
+        },
+        "authUserId": "66c9bd3d-1e6e-48d2-8b3c-dfad3303c808"
+      }
+    ],
+    "audits": {
+      "securityLogs": [
+        {
+          "event_type": "invite.sent",
+          "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "metadata": {
+            "role": "viewer",
+            "email": "invite.viewer.1781084130145@immimate.au",
+            "invite_id": "a9b7024f-bea6-4990-8073-12aae6e719b0"
+          },
+          "created_at": "2026-06-10T09:36:14.302739+00:00"
+        },
+        {
+          "event_type": "invite.created",
+          "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "metadata": {
+            "role": "viewer",
+            "email": "invite.viewer.1781084130145@immimate.au",
+            "invite_id": "a9b7024f-bea6-4990-8073-12aae6e719b0"
+          },
+          "created_at": "2026-06-10T09:36:13.27573+00:00"
+        },
+        {
+          "event_type": "invite.sent",
+          "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "metadata": {
+            "role": "manager",
+            "email": "invite.manager.1781084130145@immimate.au",
+            "resent": true,
+            "invite_id": "7f7a5e50-0ea7-4e00-961e-73c17dda96f1"
+          },
+          "created_at": "2026-06-10T09:36:22.914974+00:00"
+        },
+        {
+          "event_type": "invite.created",
+          "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "metadata": {
+            "role": "admin",
+            "email": "invite.admin.1781084229556@immimate.au",
+            "invite_id": "4001938a-8217-46ad-8dc2-7b2eb23b3691"
+          },
+          "created_at": "2026-06-10T09:37:18.547124+00:00"
+        },
+        {
+          "event_type": "invite.sent",
+          "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "metadata": {
+            "role": "admin",
+            "email": "invite.admin.1781084229556@immimate.au",
+            "invite_id": "4001938a-8217-46ad-8dc2-7b2eb23b3691"
+          },
+          "created_at": "2026-06-10T09:37:19.488088+00:00"
+        },
+        {
+          "event_type": "invite.created",
+          "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "metadata": {
+            "role": "agent",
+            "email": "invite.agent.1781084229556@immimate.au",
+            "invite_id": "74dde2af-aba0-427d-b814-bed9d5eb7843"
+          },
+          "created_at": "2026-06-10T09:37:24.803923+00:00"
+        },
+        {
+          "event_type": "invite.sent",
+          "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "metadata": {
+            "role": "agent",
+            "email": "invite.agent.1781084229556@immimate.au",
+            "invite_id": "74dde2af-aba0-427d-b814-bed9d5eb7843"
+          },
+          "created_at": "2026-06-10T09:37:26.402442+00:00"
+        },
+        {
+          "event_type": "invite.created",
+          "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "metadata": {
+            "role": "manager",
+            "email": "invite.manager.1781084229556@immimate.au",
+            "invite_id": "df38b4a9-26d5-482e-a791-acadd766ebac"
+          },
+          "created_at": "2026-06-10T09:37:31.335387+00:00"
+        },
+        {
+          "event_type": "invite.sent",
+          "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "metadata": {
+            "role": "manager",
+            "email": "invite.manager.1781084229556@immimate.au",
+            "invite_id": "df38b4a9-26d5-482e-a791-acadd766ebac"
+          },
+          "created_at": "2026-06-10T09:37:32.281021+00:00"
+        },
+        {
+          "event_type": "invite.created",
+          "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "metadata": {
+            "role": "support",
+            "email": "invite.assistant.1781084229556@immimate.au",
+            "invite_id": "e6cfd5d7-67f8-4249-b394-7bce9c53fc52"
+          },
+          "created_at": "2026-06-10T09:37:37.374872+00:00"
+        },
+        {
+          "event_type": "invite.sent",
+          "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "metadata": {
+            "role": "support",
+            "email": "invite.assistant.1781084229556@immimate.au",
+            "invite_id": "e6cfd5d7-67f8-4249-b394-7bce9c53fc52"
+          },
+          "created_at": "2026-06-10T09:37:38.351364+00:00"
+        },
+        {
+          "event_type": "invite.created",
+          "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "metadata": {
+            "role": "viewer",
+            "email": "invite.viewer.1781084229556@immimate.au",
+            "invite_id": "54cf8f1a-2335-490c-8089-abc236a844b9"
+          },
+          "created_at": "2026-06-10T09:37:43.406084+00:00"
+        },
+        {
+          "event_type": "invite.sent",
+          "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "metadata": {
+            "role": "viewer",
+            "email": "invite.viewer.1781084229556@immimate.au",
+            "invite_id": "54cf8f1a-2335-490c-8089-abc236a844b9"
+          },
+          "created_at": "2026-06-10T09:37:44.952849+00:00"
+        },
+        {
+          "event_type": "invite.sent",
+          "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "metadata": {
+            "role": "manager",
+            "email": "invite.manager.1781084229556@immimate.au",
+            "resent": true,
+            "invite_id": "df38b4a9-26d5-482e-a791-acadd766ebac"
+          },
+          "created_at": "2026-06-10T09:37:53.275415+00:00"
+        },
+        {
+          "event_type": "invite.accepted",
+          "user_id": "55b4e44e-9dea-48c3-a327-d31c35ffd5f3",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "metadata": {
+            "role": "agent",
+            "email": "invite.agent.1781084229556@immimate.au"
+          },
+          "created_at": "2026-06-10T09:38:02.983291+00:00"
+        },
+        {
+          "event_type": "invite.accepted",
+          "user_id": "0449f90b-b77f-44dc-a7ce-22a9cf7a041e",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "metadata": {
+            "role": "admin",
+            "email": "invite.admin.1781084229556@immimate.au"
+          },
+          "created_at": "2026-06-10T09:38:12.683713+00:00"
+        },
+        {
+          "event_type": "invite.accepted",
+          "user_id": "7aff10fb-5f46-49fd-b853-835f2e63cb1e",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "metadata": {
+            "role": "manager",
+            "email": "invite.manager.1781084229556@immimate.au"
+          },
+          "created_at": "2026-06-10T09:38:20.557542+00:00"
+        },
+        {
+          "event_type": "invite.accepted",
+          "user_id": "4f520192-e308-4a89-889c-01f9d039151a",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "metadata": {
+            "role": "support",
+            "email": "invite.assistant.1781084229556@immimate.au"
+          },
+          "created_at": "2026-06-10T09:38:27.734277+00:00"
+        },
+        {
+          "event_type": "invite.accepted",
+          "user_id": "66c9bd3d-1e6e-48d2-8b3c-dfad3303c808",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "metadata": {
+            "role": "viewer",
+            "email": "invite.viewer.1781084229556@immimate.au"
+          },
+          "created_at": "2026-06-10T09:38:34.85175+00:00"
+        },
+        {
+          "event_type": "invite.created",
+          "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "metadata": {
+            "role": "agent",
+            "email": "invite.revoke.1781084229556@immimate.au",
+            "invite_id": "3a794ee1-3d60-42c8-b365-cc820d3c60d6"
+          },
+          "created_at": "2026-06-10T09:38:47.374891+00:00"
+        },
+        {
+          "event_type": "invite.sent",
+          "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "metadata": {
+            "role": "agent",
+            "email": "invite.revoke.1781084229556@immimate.au",
+            "invite_id": "3a794ee1-3d60-42c8-b365-cc820d3c60d6"
+          },
+          "created_at": "2026-06-10T09:38:48.290426+00:00"
+        },
+        {
+          "event_type": "invite.revoked",
+          "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "metadata": {
+            "role": "agent",
+            "email": "invite.revoke.1781084229556@immimate.au",
+            "invite_id": "3a794ee1-3d60-42c8-b365-cc820d3c60d6"
+          },
+          "created_at": "2026-06-10T09:38:51.994538+00:00"
+        }
+      ],
+      "activityLogs": [
+        {
+          "type": "team.invite_sent",
+          "title": "Team invitation sent",
+          "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "reference_id": "a9b7024f-bea6-4990-8073-12aae6e719b0",
+          "created_at": "2026-06-10T09:36:14.124373+00:00"
+        },
+        {
+          "type": "team.invite_sent",
+          "title": "Team invitation resent",
+          "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "reference_id": "7f7a5e50-0ea7-4e00-961e-73c17dda96f1",
+          "created_at": "2026-06-10T09:36:22.730937+00:00"
+        },
+        {
+          "type": "team.invite_sent",
+          "title": "Team invitation sent",
+          "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "reference_id": "4001938a-8217-46ad-8dc2-7b2eb23b3691",
+          "created_at": "2026-06-10T09:37:19.293303+00:00"
+        },
+        {
+          "type": "team.invite_sent",
+          "title": "Team invitation sent",
+          "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "reference_id": "74dde2af-aba0-427d-b814-bed9d5eb7843",
+          "created_at": "2026-06-10T09:37:26.216358+00:00"
+        },
+        {
+          "type": "team.invite_sent",
+          "title": "Team invitation sent",
+          "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "reference_id": "df38b4a9-26d5-482e-a791-acadd766ebac",
+          "created_at": "2026-06-10T09:37:32.089571+00:00"
+        },
+        {
+          "type": "team.invite_sent",
+          "title": "Team invitation sent",
+          "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "reference_id": "e6cfd5d7-67f8-4249-b394-7bce9c53fc52",
+          "created_at": "2026-06-10T09:37:38.163482+00:00"
+        },
+        {
+          "type": "team.invite_sent",
+          "title": "Team invitation sent",
+          "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "reference_id": "54cf8f1a-2335-490c-8089-abc236a844b9",
+          "created_at": "2026-06-10T09:37:44.765744+00:00"
+        },
+        {
+          "type": "team.invite_sent",
+          "title": "Team invitation resent",
+          "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "reference_id": "df38b4a9-26d5-482e-a791-acadd766ebac",
+          "created_at": "2026-06-10T09:37:53.090111+00:00"
+        },
+        {
+          "type": "team.joined",
+          "title": "Team member joined",
+          "user_id": "55b4e44e-9dea-48c3-a327-d31c35ffd5f3",
+          "reference_id": "55b4e44e-9dea-48c3-a327-d31c35ffd5f3",
+          "created_at": "2026-06-10T09:38:02.797664+00:00"
+        },
+        {
+          "type": "team.joined",
+          "title": "Team member joined",
+          "user_id": "0449f90b-b77f-44dc-a7ce-22a9cf7a041e",
+          "reference_id": "0449f90b-b77f-44dc-a7ce-22a9cf7a041e",
+          "created_at": "2026-06-10T09:38:12.490961+00:00"
+        },
+        {
+          "type": "team.joined",
+          "title": "Team member joined",
+          "user_id": "7aff10fb-5f46-49fd-b853-835f2e63cb1e",
+          "reference_id": "7aff10fb-5f46-49fd-b853-835f2e63cb1e",
+          "created_at": "2026-06-10T09:38:20.367544+00:00"
+        },
+        {
+          "type": "team.joined",
+          "title": "Team member joined",
+          "user_id": "4f520192-e308-4a89-889c-01f9d039151a",
+          "reference_id": "4f520192-e308-4a89-889c-01f9d039151a",
+          "created_at": "2026-06-10T09:38:27.550394+00:00"
+        },
+        {
+          "type": "team.joined",
+          "title": "Team member joined",
+          "user_id": "66c9bd3d-1e6e-48d2-8b3c-dfad3303c808",
+          "reference_id": "66c9bd3d-1e6e-48d2-8b3c-dfad3303c808",
+          "created_at": "2026-06-10T09:38:34.660647+00:00"
+        },
+        {
+          "type": "team.invite_sent",
+          "title": "Team invitation sent",
+          "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "reference_id": "3a794ee1-3d60-42c8-b365-cc820d3c60d6",
+          "created_at": "2026-06-10T09:38:48.064816+00:00"
+        },
+        {
+          "type": "team.invite_revoked",
+          "title": "Team invitation revoked",
+          "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "reference_id": "3a794ee1-3d60-42c8-b365-cc820d3c60d6",
+          "created_at": "2026-06-10T09:38:51.801811+00:00"
+        }
+      ]
+    },
+    "screenshots": [
+      "invite-created.png",
+      "resend-email.png",
+      "gmail-email.png",
+      "password-create.png",
+      "login-success.png",
+      "agent-role.png",
+      "viewer-role.png",
+      "owner-role.png",
+      "invite-revoked.png",
+      "invite-expired.png"
+    ]
+  },
+  "verdict": "PASS"
+}

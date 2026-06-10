@@ -65,7 +65,7 @@ export class AgreementService {
 
   async listAgreements(agencyId: string, role: Role) {
     // In a full implementation, we'd check canView
-    return this.agreementRepo.list(); // Repository doesn't take agencyId in our mock, but we can filter by it
+    return this.agreementRepo.list();
   }
 
   async getAgreement(agencyId: string, role: Role, agreementId: string) {

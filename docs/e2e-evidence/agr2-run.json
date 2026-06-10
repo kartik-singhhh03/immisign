@@ -1,0 +1,1569 @@
+{
+  "stamp": 1781084968345,
+  "runStart": "2026-06-10T09:49:28.349Z",
+  "agency": {
+    "id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+    "slug": "ritiklabs",
+    "name": "Ritiklabs"
+  },
+  "actor": {
+    "id": "2cab360f-fd21-461a-8a57-67573dee0530",
+    "email": "nayramalik1018@gmail.com",
+    "role": "owner",
+    "full_name": "ritik singh"
+  },
+  "ids": {
+    "clientId": "82ee4ced-bc90-41c3-b1c5-4cf0542d6c1a",
+    "matterId": "7ff1b3ac-64a8-4d27-bf50-dd78a70468f9",
+    "agreementId": "33a454ab-3ec3-4cb3-8788-817bf6dcc93a",
+    "approvalId": "39fcca35-9b56-4807-a9ee-9c26c2d96d79"
+  },
+  "testEmail": "agr2.prod.1781084968345@immimate.au",
+  "signwellDocId": "254bde7c-6d5b-48f5-b84d-a6a71bb70486",
+  "draftProbeId": "6efff59d-4648-4164-a6aa-d6adba5f8bf7",
+  "results": [
+    {
+      "area": "SETUP",
+      "check": "AUTH",
+      "status": "PASS",
+      "msg": "nayramalik1018@gmail.com",
+      "detail": {},
+      "ts": "2026-06-10T09:49:29.541Z"
+    },
+    {
+      "area": "SETUP",
+      "check": "BROWSER",
+      "status": "PASS",
+      "msg": "Chrome ready",
+      "detail": {},
+      "ts": "2026-06-10T09:49:29.958Z"
+    },
+    {
+      "area": "PART1",
+      "check": "ONBOARDING",
+      "status": "PASS",
+      "msg": "Fresh matter created",
+      "detail": {
+        "clientId": "82ee4ced-bc90-41c3-b1c5-4cf0542d6c1a",
+        "matterId": "7ff1b3ac-64a8-4d27-bf50-dd78a70468f9",
+        "agreementId": "33a454ab-3ec3-4cb3-8788-817bf6dcc93a",
+        "approvalId": "39fcca35-9b56-4807-a9ee-9c26c2d96d79"
+      },
+      "ts": "2026-06-10T09:49:40.660Z"
+    },
+    {
+      "area": "PART1",
+      "check": "CLIENT-ROW",
+      "status": "PASS",
+      "msg": "name=AGR-2 Production Client",
+      "detail": {},
+      "ts": "2026-06-10T09:49:40.877Z"
+    },
+    {
+      "area": "PART1",
+      "check": "MATTER-ROW",
+      "status": "PASS",
+      "msg": "id=7ff1b3ac-64a8-4d27-bf50-dd78a70468f9",
+      "detail": {},
+      "ts": "2026-06-10T09:49:41.063Z"
+    },
+    {
+      "area": "PART1",
+      "check": "APPLICANT-ROW",
+      "status": "PASS",
+      "msg": "1 applicant(s)",
+      "detail": {},
+      "ts": "2026-06-10T09:49:41.248Z"
+    },
+    {
+      "area": "PART1",
+      "check": "FINANCIAL-ROW",
+      "status": "PASS",
+      "msg": "professional_fee context ok",
+      "detail": {},
+      "ts": "2026-06-10T09:49:41.465Z"
+    },
+    {
+      "area": "PART2",
+      "check": "AGREEMENT-ROW",
+      "status": "PASS",
+      "msg": "status=pending",
+      "detail": {
+        "id": "33a454ab-3ec3-4cb3-8788-817bf6dcc93a"
+      },
+      "ts": "2026-06-10T09:49:41.684Z"
+    },
+    {
+      "area": "PART2",
+      "check": "GENERATE-API",
+      "status": "PASS",
+      "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/agreements/33a454ab-3ec3-4cb3-8788-817bf6dcc93a/agreement-AGR-2026-0016.pdf",
+      "detail": {
+        "success": true,
+        "storagePath": "3cd3a307-b7e5-4984-82d4-bf757e834afd/agreements/33a454ab-3ec3-4cb3-8788-817bf6dcc93a/agreement-AGR-2026-0016.pdf",
+        "size": 99821,
+        "timeMs": 4700,
+        "status": "pending"
+      },
+      "ts": "2026-06-10T09:49:49.236Z"
+    },
+    {
+      "area": "PART2",
+      "check": "DOCUMENT-ROW",
+      "status": "PASS",
+      "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/agreements/33a454ab-3ec3-4cb3-8788-817bf6dcc93a/agreement-AGR-2026-0016.pdf",
+      "detail": {},
+      "ts": "2026-06-10T09:49:51.646Z"
+    },
+    {
+      "area": "PART2",
+      "check": "AGREEMENT-STATUS",
+      "status": "PASS",
+      "msg": "status=pending",
+      "detail": {},
+      "ts": "2026-06-10T09:49:51.647Z"
+    },
+    {
+      "area": "PART2",
+      "check": "STORAGE-PATH",
+      "status": "PASS",
+      "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/agreements/33a454ab-3ec3-4cb3-8788-817bf6dcc93a/agreement-AGR-2026-0016.pdf",
+      "detail": {},
+      "ts": "2026-06-10T09:49:51.851Z"
+    },
+    {
+      "area": "PART3",
+      "check": "PDF-HEADER",
+      "status": "PASS",
+      "msg": "bytes=99821",
+      "detail": {},
+      "ts": "2026-06-10T09:50:02.547Z"
+    },
+    {
+      "area": "PART3",
+      "check": "PDF-METADATA-XREF",
+      "status": "PASS",
+      "msg": "client=AGR-2 Production Client ref=AGR-2026-0016",
+      "detail": {},
+      "ts": "2026-06-10T09:50:02.547Z"
+    },
+    {
+      "area": "PART3",
+      "check": "PDF-CLIENT-NAME",
+      "status": "PASS",
+      "msg": "client+agency (binary or metadata)",
+      "detail": {},
+      "ts": "2026-06-10T09:50:02.551Z"
+    },
+    {
+      "area": "PART3",
+      "check": "PDF-MATTER-FEE",
+      "status": "PASS",
+      "msg": "ref=AGR-2026-0016",
+      "detail": {},
+      "ts": "2026-06-10T09:50:02.551Z"
+    },
+    {
+      "area": "PART3",
+      "check": "PDF-SIG-PLACEHOLDER",
+      "status": "PASS",
+      "msg": "signature markers",
+      "detail": {},
+      "ts": "2026-06-10T09:50:02.551Z"
+    },
+    {
+      "area": "PART3",
+      "check": "PDF-OPEN",
+      "status": "PASS",
+      "msg": "PDF opened in browser",
+      "detail": {},
+      "ts": "2026-06-10T09:50:06.248Z"
+    },
+    {
+      "area": "PART4",
+      "check": "SIGNWELL-DRAFT-CREATE",
+      "status": "PASS",
+      "msg": "6efff59d-4648-4164-a6aa-d6adba5f8bf7",
+      "detail": {},
+      "ts": "2026-06-10T09:50:11.163Z"
+    },
+    {
+      "area": "PART4",
+      "check": "SIGNWELL-DRAFT-STATUS",
+      "status": "PASS",
+      "msg": "status=Draft",
+      "detail": {},
+      "ts": "2026-06-10T09:50:11.163Z"
+    },
+    {
+      "area": "PART4",
+      "check": "SIGNWELL-DRAFT-VISIBLE",
+      "status": "PASS",
+      "msg": "GET /documents/{id}",
+      "detail": {},
+      "ts": "2026-06-10T09:50:11.163Z"
+    },
+    {
+      "area": "PART5",
+      "check": "SEND-API",
+      "status": "PASS",
+      "msg": "Successfully sent agreement. Agent signature applied automatically; external signers notified via SignWell.",
+      "detail": {
+        "message": "Successfully sent agreement. Agent signature applied automatically; external signers notified via SignWell.",
+        "signwellDocId": "254bde7c-6d5b-48f5-b84d-a6a71bb70486",
+        "status": "Created"
+      },
+      "ts": "2026-06-10T09:50:22.575Z"
+    },
+    {
+      "area": "PART5",
+      "check": "DB-SENT-STATUS",
+      "status": "PASS",
+      "msg": "status=sent",
+      "detail": {},
+      "ts": "2026-06-10T09:50:22.779Z"
+    },
+    {
+      "area": "PART5",
+      "check": "SIGNWELL-DOC-ID",
+      "status": "PASS",
+      "msg": "254bde7c-6d5b-48f5-b84d-a6a71bb70486",
+      "detail": {},
+      "ts": "2026-06-10T09:50:22.779Z"
+    },
+    {
+      "area": "PART5",
+      "check": "SIGNER-RECORDS",
+      "status": "PASS",
+      "msg": "0 signer row(s) + primary via client",
+      "detail": {},
+      "ts": "2026-06-10T09:50:22.977Z"
+    },
+    {
+      "area": "PART5",
+      "check": "SIGNWELL-EMAIL",
+      "status": "PASS",
+      "msg": "recipients=1 test_mode=true",
+      "detail": {},
+      "ts": "2026-06-10T09:50:24.391Z"
+    },
+    {
+      "area": "PART5",
+      "check": "WEBHOOK-READY",
+      "status": "PASS",
+      "msg": "3 webhook_events so far (pipeline ready)",
+      "detail": {},
+      "ts": "2026-06-10T09:50:24.584Z"
+    },
+    {
+      "area": "PART6",
+      "check": "WEBHOOK-VIEWED",
+      "status": "PASS",
+      "msg": "status 200",
+      "detail": {
+        "received": true,
+        "status": "processed",
+        "entity": "agreement"
+      },
+      "ts": "2026-06-10T09:50:29.914Z"
+    },
+    {
+      "area": "PART6",
+      "check": "WEBHOOK-COMPLETED",
+      "status": "PASS",
+      "msg": "status 200",
+      "detail": {
+        "received": true,
+        "status": "processed",
+        "entity": "agreement"
+      },
+      "ts": "2026-06-10T09:50:38.929Z"
+    },
+    {
+      "area": "PART6",
+      "check": "DB-SIGNED",
+      "status": "PASS",
+      "msg": "{\"status\":\"signed\",\"signed_at\":\"2026-06-10T09:50:32.466+00:00\",\"signwell_status\":\"completed\"}",
+      "detail": {},
+      "ts": "2026-06-10T09:50:42.154Z"
+    },
+    {
+      "area": "PART7",
+      "check": "SIGNATURE-ROW",
+      "status": "PASS",
+      "msg": "agr2.prod.1781084968345@immimate.au @ 2026-06-10T09:50:32.466+00:00",
+      "detail": {
+        "id": "6d357c42-dedb-4e7d-a6a9-a4a81d973ab7",
+        "agreement_id": "33a454ab-3ec3-4cb3-8788-817bf6dcc93a",
+        "signer_role": "client",
+        "signwell_signer_id": null,
+        "signing_url": null,
+        "signed_at": "2026-06-10T09:50:32.466+00:00",
+        "ip_address": null,
+        "created_at": "2026-06-10T09:50:38.757856+00:00",
+        "updated_at": "2026-06-10T09:50:38.757856+00:00",
+        "signer_id": null,
+        "signer_email": "agr2.prod.1781084968345@immimate.au",
+        "provider": "signwell",
+        "provider_document_id": "254bde7c-6d5b-48f5-b84d-a6a71bb70486",
+        "webhook_event_id": "a379513e-7b33-44a3-ab50-edef7c357aac"
+      },
+      "ts": "2026-06-10T09:50:45.676Z"
+    },
+    {
+      "area": "PART7",
+      "check": "WEBHOOK-EVENT-ID",
+      "status": "PASS",
+      "msg": "a379513e-7b33-44a3-ab50-edef7c357aac",
+      "detail": {},
+      "ts": "2026-06-10T09:50:45.676Z"
+    },
+    {
+      "area": "PART7",
+      "check": "IDEMPOTENCY",
+      "status": "PASS",
+      "msg": "count 1 → 1",
+      "detail": {},
+      "ts": "2026-06-10T09:50:52.826Z"
+    },
+    {
+      "area": "PART8",
+      "check": "IN-APP-NOTIF",
+      "status": "PASS",
+      "msg": "1 notification(s)",
+      "detail": {},
+      "ts": "2026-06-10T09:50:53.044Z"
+    },
+    {
+      "area": "PART8",
+      "check": "NOTIF-CENTER-API",
+      "status": "PASS",
+      "msg": "api count=20",
+      "detail": {},
+      "ts": "2026-06-10T09:50:54.565Z"
+    },
+    {
+      "area": "PART8",
+      "check": "NOTIF-CENTER-UI",
+      "status": "PASS",
+      "msg": "Ritiklabs\nDashboard\nService Agreements\nApp Approvals\nSend Document\nDocument Library\nTemplates\nClient",
+      "detail": {},
+      "ts": "2026-06-10T09:50:57.759Z"
+    },
+    {
+      "area": "PART8",
+      "check": "ACTIVITY-EVENTS",
+      "status": "PASS",
+      "msg": "1 activity_events",
+      "detail": {},
+      "ts": "2026-06-10T09:50:57.960Z"
+    },
+    {
+      "area": "PART8",
+      "check": "ACTIVITY-LOGS",
+      "status": "PASS",
+      "msg": "3 agreement activity_logs",
+      "detail": {},
+      "ts": "2026-06-10T09:50:58.221Z"
+    },
+    {
+      "area": "PART9",
+      "check": "EMAIL-AUDIT-ROWS",
+      "status": "PASS",
+      "msg": "1 Resend audit row(s)",
+      "detail": {
+        "email_type": "agreement",
+        "recipient": "nayramalik1018@gmail.com",
+        "resend_id": "cf75d35f-6d0c-44df-b172-fa4466c61474",
+        "status": "delivered",
+        "delivered_at": "2026-06-10T09:50:41.947+00:00",
+        "created_at": "2026-06-10T09:50:40.436343+00:00",
+        "subject": "Agreement signed"
+      },
+      "ts": "2026-06-10T09:50:58.439Z"
+    },
+    {
+      "area": "PART9",
+      "check": "EMAIL-AUDIT-FIELDS",
+      "status": "PASS",
+      "msg": "email_type/recipient/resend_id present",
+      "detail": {},
+      "ts": "2026-06-10T09:50:58.439Z"
+    },
+    {
+      "area": "PART10",
+      "check": "STORAGE-EXISTS",
+      "status": "PASS",
+      "msg": "agreement-AGR-2026-0016.pdf",
+      "detail": {},
+      "ts": "2026-06-10T09:50:58.700Z"
+    },
+    {
+      "area": "PART10",
+      "check": "STORAGE-VIEW",
+      "status": "PASS",
+      "msg": "status 200",
+      "detail": {},
+      "ts": "2026-06-10T09:50:59.218Z"
+    },
+    {
+      "area": "PART10",
+      "check": "STORAGE-DOWNLOAD",
+      "status": "PASS",
+      "msg": "96339 bytes",
+      "detail": {},
+      "ts": "2026-06-10T09:50:59.360Z"
+    },
+    {
+      "area": "PART11",
+      "check": "WEBHOOK-EVENTS",
+      "status": "PASS",
+      "msg": "6 received/processed",
+      "detail": {},
+      "ts": "2026-06-10T09:50:59.568Z"
+    },
+    {
+      "area": "PART11",
+      "check": "WEBHOOK-PAYLOAD-HASH",
+      "status": "PASS",
+      "msg": "payload_hash column",
+      "detail": {},
+      "ts": "2026-06-10T09:50:59.568Z"
+    },
+    {
+      "area": "PART11",
+      "check": "WEBHOOK-FAILURES",
+      "status": "PASS",
+      "msg": "0 failed",
+      "detail": {},
+      "ts": "2026-06-10T09:50:59.568Z"
+    }
+  ],
+  "evidence": {
+    "db": [
+      {
+        "table": "clients",
+        "row": {
+          "id": "82ee4ced-bc90-41c3-b1c5-4cf0542d6c1a",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "name": "AGR-2 Production Client",
+          "email": "agr2.prod.1781084968345@immimate.au",
+          "phone": "+61400111222",
+          "created_at": "2026-06-10T09:49:35.972316+00:00",
+          "updated_at": "2026-06-10T09:49:35.972316+00:00",
+          "dob": "1992-03-15",
+          "client_number": "AGR-2026-1008",
+          "first_name": "AGR-2",
+          "last_name": "Production Client",
+          "address": "100 King Street, Melbourne VIC 3000"
+        }
+      },
+      {
+        "table": "matters",
+        "row": {
+          "id": "7ff1b3ac-64a8-4d27-bf50-dd78a70468f9",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "client_id": "82ee4ced-bc90-41c3-b1c5-4cf0542d6c1a",
+          "matter_type_id": "444b6670-a844-4c50-9c74-41dfe32c905a",
+          "visa_subclass": "190",
+          "visa_stream": "Skilled Nominated",
+          "assigned_rma_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "priority": "normal",
+          "agreement_id": "33a454ab-3ec3-4cb3-8788-817bf6dcc93a",
+          "approval_id": "39fcca35-9b56-4807-a9ee-9c26c2d96d79",
+          "status": "active",
+          "created_at": "2026-06-10T09:49:36.16918+00:00",
+          "updated_at": "2026-06-10T09:49:38.121304+00:00"
+        }
+      },
+      {
+        "table": "matter_financials",
+        "row": {
+          "matter_id": "7ff1b3ac-64a8-4d27-bf50-dd78a70468f9",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "professional_fee": 4500,
+          "deposit": 1500,
+          "visa_fees": 4640,
+          "visa_fee_surcharge": 116,
+          "surcharge_percent_applied": 2.5,
+          "created_at": "2026-06-10T09:49:36.553128+00:00",
+          "updated_at": "2026-06-10T09:49:36.553128+00:00"
+        }
+      },
+      {
+        "table": "documents",
+        "row": {
+          "id": "19464a68-efc2-43db-b0b7-034c5a7a7919",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "agreement_id": "33a454ab-3ec3-4cb3-8788-817bf6dcc93a",
+          "uploaded_by": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "file_name": "agreement-AGR-2026-0016.pdf",
+          "original_name": "agreement-AGR-2026-0016.pdf",
+          "file_url": "3cd3a307-b7e5-4984-82d4-bf757e834afd/agreements/33a454ab-3ec3-4cb3-8788-817bf6dcc93a/agreement-AGR-2026-0016.pdf",
+          "file_size": 99821,
+          "mime_type": "application/pdf",
+          "page_count": 3,
+          "checksum": null,
+          "storage_provider": "supabase",
+          "is_encrypted": false,
+          "created_at": "2026-06-10T09:49:50.885454+00:00",
+          "updated_at": "2026-06-10T09:49:50.885454+00:00",
+          "sender_signed_at": null,
+          "sender_signature_url": null,
+          "sender_signature_text": null,
+          "sender_user_id": null,
+          "signwell_document_id": null,
+          "signwell_status": null,
+          "signwell_sent_at": null,
+          "signwell_completed_at": null,
+          "sender_attestation_path": null,
+          "signwell_declined_at": null,
+          "signwell_dispatch_error": null,
+          "signwell_external_signer_count": null,
+          "signwell_signing_links": null
+        }
+      },
+      {
+        "table": "signers",
+        "rows": []
+      },
+      {
+        "table": "agreement_signatures",
+        "rows": [
+          {
+            "id": "6d357c42-dedb-4e7d-a6a9-a4a81d973ab7",
+            "agreement_id": "33a454ab-3ec3-4cb3-8788-817bf6dcc93a",
+            "signer_role": "client",
+            "signwell_signer_id": null,
+            "signing_url": null,
+            "signed_at": "2026-06-10T09:50:32.466+00:00",
+            "ip_address": null,
+            "created_at": "2026-06-10T09:50:38.757856+00:00",
+            "updated_at": "2026-06-10T09:50:38.757856+00:00",
+            "signer_id": null,
+            "signer_email": "agr2.prod.1781084968345@immimate.au",
+            "provider": "signwell",
+            "provider_document_id": "254bde7c-6d5b-48f5-b84d-a6a71bb70486",
+            "webhook_event_id": "a379513e-7b33-44a3-ab50-edef7c357aac"
+          }
+        ]
+      }
+    ],
+    "api": [
+      {
+        "method": "POST",
+        "path": "/api/onboarding/complete",
+        "status": 200,
+        "json": {
+          "success": true,
+          "clientId": "82ee4ced-bc90-41c3-b1c5-4cf0542d6c1a",
+          "clientNumber": "AGR-2026-1008",
+          "matterId": "7ff1b3ac-64a8-4d27-bf50-dd78a70468f9",
+          "agreementId": "33a454ab-3ec3-4cb3-8788-817bf6dcc93a",
+          "approvalId": "39fcca35-9b56-4807-a9ee-9c26c2d96d79",
+          "deepLink": "/workspace/ritiklabs/clients/82ee4ced-bc90-41c3-b1c5-4cf0542d6c1a?file_source=application_approval&file_id=39fcca35-9b56-4807-a9ee-9c26c2d96d79&tab=overview",
+          "agreementPdfGenerated": true
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/api/agreements/33a454ab-3ec3-4cb3-8788-817bf6dcc93a/generate",
+        "status": 200,
+        "json": {
+          "success": true,
+          "storagePath": "3cd3a307-b7e5-4984-82d4-bf757e834afd/agreements/33a454ab-3ec3-4cb3-8788-817bf6dcc93a/agreement-AGR-2026-0016.pdf",
+          "size": 99821,
+          "timeMs": 4700,
+          "status": "pending"
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/api/agreements/send",
+        "status": 200,
+        "json": {
+          "message": "Successfully sent agreement. Agent signature applied automatically; external signers notified via SignWell.",
+          "signwellDocId": "254bde7c-6d5b-48f5-b84d-a6a71bb70486",
+          "status": "Created"
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/api/notifications?limit=20",
+        "status": 200,
+        "json": {
+          "success": true,
+          "data": [
+            {
+              "id": "c0764a69-74d7-448a-b10f-ce3cca9da6e9",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "agreement",
+              "title": "Agreement signed",
+              "message": "AGR-2 Production Client completed signing via SignWell.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/agreements/33a454ab-3ec3-4cb3-8788-817bf6dcc93a",
+              "created_at": "2026-06-10T09:50:39.499365+00:00",
+              "entity_type": "agreement",
+              "entity_id": "33a454ab-3ec3-4cb3-8788-817bf6dcc93a",
+              "actor_id": null,
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "agreements",
+              "metadata": {}
+            },
+            {
+              "id": "519a21b5-be99-4884-85ed-128dda4bf12f",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "agreement",
+              "title": "Agreement signed",
+              "message": "AGR-2 Production Client completed signing via SignWell.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/agreements/e9f72510-ee50-4bdd-9b67-2b915ae62db6",
+              "created_at": "2026-06-10T09:48:07.185567+00:00",
+              "entity_type": "agreement",
+              "entity_id": "e9f72510-ee50-4bdd-9b67-2b915ae62db6",
+              "actor_id": null,
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "agreements",
+              "metadata": {}
+            },
+            {
+              "id": "de7983b3-8919-436d-ba97-3d7b70e45505",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "team",
+              "title": "Team member joined",
+              "message": "INV1 Viewer accepted their invitation and joined the workspace.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/settings?section=RmaTeam",
+              "created_at": "2026-06-10T09:38:31.212818+00:00",
+              "entity_type": "user",
+              "entity_id": "66c9bd3d-1e6e-48d2-8b3c-dfad3303c808",
+              "actor_id": "66c9bd3d-1e6e-48d2-8b3c-dfad3303c808",
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "team",
+              "metadata": {}
+            },
+            {
+              "id": "03178be3-0085-4438-9db1-10d871da87c4",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "team",
+              "title": "Team member joined",
+              "message": "INV1 Assistant accepted their invitation and joined the workspace.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/settings?section=RmaTeam",
+              "created_at": "2026-06-10T09:38:24.022985+00:00",
+              "entity_type": "user",
+              "entity_id": "4f520192-e308-4a89-889c-01f9d039151a",
+              "actor_id": "4f520192-e308-4a89-889c-01f9d039151a",
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "team",
+              "metadata": {}
+            },
+            {
+              "id": "0b50a182-d2ca-4f57-b947-43e18b83d2c4",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "team",
+              "title": "Team member joined",
+              "message": "INV1 Manager accepted their invitation and joined the workspace.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/settings?section=RmaTeam",
+              "created_at": "2026-06-10T09:38:16.818865+00:00",
+              "entity_type": "user",
+              "entity_id": "7aff10fb-5f46-49fd-b853-835f2e63cb1e",
+              "actor_id": "7aff10fb-5f46-49fd-b853-835f2e63cb1e",
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "team",
+              "metadata": {}
+            },
+            {
+              "id": "25c4344f-7cf4-48ef-b2c1-1348b27387c4",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "team",
+              "title": "Team member joined",
+              "message": "INV1 Admin accepted their invitation and joined the workspace.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/settings?section=RmaTeam",
+              "created_at": "2026-06-10T09:38:10.071641+00:00",
+              "entity_type": "user",
+              "entity_id": "0449f90b-b77f-44dc-a7ce-22a9cf7a041e",
+              "actor_id": "0449f90b-b77f-44dc-a7ce-22a9cf7a041e",
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "team",
+              "metadata": {}
+            },
+            {
+              "id": "26a83fe1-37ad-4c30-9e52-1d70e90a8feb",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "team",
+              "title": "Team member joined",
+              "message": "INV1 Agent accepted their invitation and joined the workspace.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/settings?section=RmaTeam",
+              "created_at": "2026-06-10T09:38:00.351761+00:00",
+              "entity_type": "user",
+              "entity_id": "55b4e44e-9dea-48c3-a327-d31c35ffd5f3",
+              "actor_id": "55b4e44e-9dea-48c3-a327-d31c35ffd5f3",
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "team",
+              "metadata": {}
+            },
+            {
+              "id": "c30e36a2-8a8c-4a66-b516-1deca8c8d601",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "team",
+              "title": "Team member joined",
+              "message": "INV1 Viewer accepted their invitation and joined the workspace.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/settings?section=RmaTeam",
+              "created_at": "2026-06-10T09:32:01.691878+00:00",
+              "entity_type": "user",
+              "entity_id": "a0cf9ec2-6213-456f-9964-ebe591e026b0",
+              "actor_id": "a0cf9ec2-6213-456f-9964-ebe591e026b0",
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "team",
+              "metadata": {}
+            },
+            {
+              "id": "a9457c11-7bec-4d50-b320-92431727f8d3",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "team",
+              "title": "Team member joined",
+              "message": "INV1 Assistant accepted their invitation and joined the workspace.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/settings?section=RmaTeam",
+              "created_at": "2026-06-10T09:31:55.387603+00:00",
+              "entity_type": "user",
+              "entity_id": "b6437772-2097-448d-a0af-8c66a18963af",
+              "actor_id": "b6437772-2097-448d-a0af-8c66a18963af",
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "team",
+              "metadata": {}
+            },
+            {
+              "id": "87b9c675-6cac-473c-be3f-8f334146aa10",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "team",
+              "title": "Team member joined",
+              "message": "INV1 Manager accepted their invitation and joined the workspace.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/settings?section=RmaTeam",
+              "created_at": "2026-06-10T09:31:49.551637+00:00",
+              "entity_type": "user",
+              "entity_id": "acb31810-10c1-4c54-9acc-b057839f1411",
+              "actor_id": "acb31810-10c1-4c54-9acc-b057839f1411",
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "team",
+              "metadata": {}
+            },
+            {
+              "id": "d4e1739d-5334-4430-9851-c02bb2e20198",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "team",
+              "title": "Team member joined",
+              "message": "INV1 Admin accepted their invitation and joined the workspace.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/settings?section=RmaTeam",
+              "created_at": "2026-06-10T09:31:42.943635+00:00",
+              "entity_type": "user",
+              "entity_id": "f8b86371-ad01-47e1-871c-4bdce771896a",
+              "actor_id": "f8b86371-ad01-47e1-871c-4bdce771896a",
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "team",
+              "metadata": {}
+            },
+            {
+              "id": "5789c521-a609-49fe-bed0-17b8d8438b41",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "team",
+              "title": "Team member joined",
+              "message": "INV1 Agent accepted their invitation and joined the workspace.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/settings?section=RmaTeam",
+              "created_at": "2026-06-10T09:31:33.719856+00:00",
+              "entity_type": "user",
+              "entity_id": "19feb81a-33d7-4fde-91d0-6b5062b8521d",
+              "actor_id": "19feb81a-33d7-4fde-91d0-6b5062b8521d",
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "team",
+              "metadata": {}
+            },
+            {
+              "id": "c32dfed6-ba6f-4cad-9dab-05a3d0e8b265",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "agreement",
+              "title": "Agreement signed",
+              "message": "E2E-31 Hardening Client completed signing via SignWell.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/agreements/ee089978-45d0-418d-8621-bbc20d6e0844",
+              "created_at": "2026-06-10T08:12:35.889846+00:00",
+              "entity_type": "agreement",
+              "entity_id": "ee089978-45d0-418d-8621-bbc20d6e0844",
+              "actor_id": null,
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "agreements",
+              "metadata": {}
+            },
+            {
+              "id": "beafc957-8f38-4746-a84f-31e44acc36f3",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "document",
+              "title": "Statement of Service acknowledged",
+              "message": "SOS-2026-0001 · AGR-2026-0013 acknowledged by E2E-3 Production Client.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/85fb5e06-3c48-4e3f-8c62-ba30dcb765c0?file_source=application_approval&file_id=1104c2d7-110f-4ac3-976e-31c7ff591635&tab=statement_of_service",
+              "created_at": "2026-06-10T08:03:38.094422+00:00",
+              "entity_type": "service_statement",
+              "entity_id": "b48f7875-df09-4aba-8d91-1944b2cd5122",
+              "actor_id": null,
+              "priority": "high",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "sos",
+              "metadata": {
+                "actions": [
+                  {
+                    "id": "open_matter",
+                    "href": "/workspace/ritiklabs/clients/85fb5e06-3c48-4e3f-8c62-ba30dcb765c0?file_source=application_approval&file_id=1104c2d7-110f-4ac3-976e-31c7ff591635&tab=statement_of_service",
+                    "label": "Open Matter",
+                    "variant": "primary"
+                  }
+                ],
+                "file_id": "1104c2d7-110f-4ac3-976e-31c7ff591635",
+                "client_id": "85fb5e06-3c48-4e3f-8c62-ba30dcb765c0",
+                "file_source": "application_approval"
+              }
+            },
+            {
+              "id": "e0e24f07-cb9a-4dc5-8933-04dcf9f85cc6",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "system",
+              "title": "Matter completed",
+              "message": "AGR-2026-0013 · E2E-3 Production Client — all workflow gates satisfied.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/85fb5e06-3c48-4e3f-8c62-ba30dcb765c0?file_source=application_approval&file_id=1104c2d7-110f-4ac3-976e-31c7ff591635&tab=completion",
+              "created_at": "2026-06-10T08:03:35.105676+00:00",
+              "entity_type": "application_approval",
+              "entity_id": "1104c2d7-110f-4ac3-976e-31c7ff591635",
+              "actor_id": null,
+              "priority": "low",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "system",
+              "metadata": {}
+            },
+            {
+              "id": "241db7e6-8cae-4755-aa21-98a6a76ed468",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "document",
+              "title": "Statement of Service sent",
+              "message": "SOS-2026-0001 · AGR-2026-0013 sent to E2E-3 Production Client.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/85fb5e06-3c48-4e3f-8c62-ba30dcb765c0?file_source=application_approval&file_id=1104c2d7-110f-4ac3-976e-31c7ff591635&tab=statement_of_service",
+              "created_at": "2026-06-10T08:03:28.473285+00:00",
+              "entity_type": "service_statement",
+              "entity_id": "b48f7875-df09-4aba-8d91-1944b2cd5122",
+              "actor_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "sos",
+              "metadata": {
+                "actions": [
+                  {
+                    "id": "open_matter",
+                    "href": "/workspace/ritiklabs/clients/85fb5e06-3c48-4e3f-8c62-ba30dcb765c0?file_source=application_approval&file_id=1104c2d7-110f-4ac3-976e-31c7ff591635&tab=statement_of_service",
+                    "label": "Open Matter",
+                    "variant": "primary"
+                  }
+                ],
+                "file_id": "1104c2d7-110f-4ac3-976e-31c7ff591635",
+                "client_id": "85fb5e06-3c48-4e3f-8c62-ba30dcb765c0",
+                "file_source": "application_approval"
+              }
+            },
+            {
+              "id": "f6f02743-c791-44cb-87e3-c600791407f7",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "approval",
+              "title": "Application lodged",
+              "message": "visa - E2E-3 Production Client",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/approvals/1104c2d7-110f-4ac3-976e-31c7ff591635",
+              "created_at": "2026-06-10T08:03:14.295233+00:00",
+              "entity_type": "application_approval",
+              "entity_id": "1104c2d7-110f-4ac3-976e-31c7ff591635",
+              "actor_id": null,
+              "priority": "high",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "approvals",
+              "metadata": {
+                "actions": [
+                  {
+                    "id": "review",
+                    "href": "/workspace/ritiklabs/approvals/1104c2d7-110f-4ac3-976e-31c7ff591635",
+                    "label": "Review Approval",
+                    "variant": "primary"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "069c9eb8-1fd9-46f4-9565-61a86d284e08",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "approval",
+              "title": "Ready to lodge",
+              "message": "visa - E2E-3 Production Client",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/approvals/1104c2d7-110f-4ac3-976e-31c7ff591635",
+              "created_at": "2026-06-10T08:03:11.236698+00:00",
+              "entity_type": "application_approval",
+              "entity_id": "1104c2d7-110f-4ac3-976e-31c7ff591635",
+              "actor_id": null,
+              "priority": "high",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "approvals",
+              "metadata": {
+                "actions": [
+                  {
+                    "id": "review",
+                    "href": "/workspace/ritiklabs/approvals/1104c2d7-110f-4ac3-976e-31c7ff591635",
+                    "label": "Review Approval",
+                    "variant": "primary"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "c4a16fdb-84b1-4e79-92ac-12871f267906",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "approval",
+              "title": "Application approval completed",
+              "message": "AGR-2026-0013 is signed and ready for lodgement.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/approvals/1104c2d7-110f-4ac3-976e-31c7ff591635",
+              "created_at": "2026-06-10T08:03:01.889387+00:00",
+              "entity_type": "application_approval",
+              "entity_id": "1104c2d7-110f-4ac3-976e-31c7ff591635",
+              "actor_id": null,
+              "priority": "high",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "approvals",
+              "metadata": {
+                "actions": [
+                  {
+                    "id": "review",
+                    "href": "/workspace/ritiklabs/approvals/1104c2d7-110f-4ac3-976e-31c7ff591635",
+                    "label": "Review Approval",
+                    "variant": "primary"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "76c9bf70-c4a4-48dd-8fd3-6e46dce1e761",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "approval",
+              "title": "Client signed application",
+              "message": "AGR-2026-0013 was signed via SignWell.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/approvals/1104c2d7-110f-4ac3-976e-31c7ff591635",
+              "created_at": "2026-06-10T08:02:59.895047+00:00",
+              "entity_type": "application_approval",
+              "entity_id": "1104c2d7-110f-4ac3-976e-31c7ff591635",
+              "actor_id": null,
+              "priority": "high",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "approvals",
+              "metadata": {
+                "actions": [
+                  {
+                    "id": "review",
+                    "href": "/workspace/ritiklabs/approvals/1104c2d7-110f-4ac3-976e-31c7ff591635",
+                    "label": "Review Approval",
+                    "variant": "primary"
+                  }
+                ]
+              }
+            }
+          ],
+          "count": 61,
+          "page": 1,
+          "limit": 20
+        }
+      }
+    ],
+    "signwell": [
+      {
+        "path": "/documents",
+        "ok": true,
+        "status": 201,
+        "body": {
+          "id": "6efff59d-4648-4164-a6aa-d6adba5f8bf7",
+          "archived": false,
+          "created_at": "2026-06-10T09:50:11Z",
+          "decline_message": null,
+          "embedded_edit_url": "https://www.signwell.com/app/edit/document/fd6575fa-6147-4e27-9370-bb6443d849f2/",
+          "error_message": null,
+          "embedded_preview_url": null,
+          "language": "en",
+          "name": "AGR2-draft-probe-1781084968345",
+          "requester_email_address": "kartiksingh2829@gmail.com",
+          "status": "Created",
+          "test_mode": true,
+          "updated_at": "2026-06-10T09:50:11Z",
+          "allow_decline": true,
+          "allow_reassign": true,
+          "api_application_id": null,
+          "custom_requester_email": null,
+          "custom_requester_name": null,
+          "decline_redirect_url": null,
+          "embedded_signing": false,
+          "expires_in": 30,
+          "metadata": {},
+          "redirect_url": null,
+          "reminders": true,
+          "apply_signing_order": false,
+          "message": null,
+          "subject": null,
+          "labels": [],
+          "fields": [],
+          "files": [
+            {
+              "name": "Agreement.pdf",
+              "pages_number": 0
+            }
+          ],
+          "copied_contacts": [],
+          "recipients": [
+            {
+              "email": "agr2.prod.1781084968345@immimate.au",
+              "id": "client_1",
+              "message": null,
+              "name": "AGR-2 Production Client",
+              "passcode": null,
+              "send_email": false,
+              "send_email_delay": 0,
+              "status": "created",
+              "subject": null,
+              "signing_order": 1,
+              "signing_url": "https://www.signwell.com/docs/fe9ce62153/",
+              "bounced": null,
+              "bounced_details": null,
+              "passcode_delivery": {
+                "enabled": false,
+                "methods": null,
+                "expire_after_access": false
+              },
+              "attachment_requests": []
+            }
+          ],
+          "checkbox_groups": []
+        }
+      },
+      {
+        "path": "/documents/6efff59d-4648-4164-a6aa-d6adba5f8bf7",
+        "ok": true,
+        "status": 200,
+        "body": {
+          "id": "6efff59d-4648-4164-a6aa-d6adba5f8bf7",
+          "archived": false,
+          "created_at": "2026-06-10T09:50:11Z",
+          "decline_message": null,
+          "embedded_edit_url": "https://www.signwell.com/app/edit/document/fd6575fa-6147-4e27-9370-bb6443d849f2/",
+          "error_message": null,
+          "embedded_preview_url": null,
+          "language": "en",
+          "name": "AGR2-draft-probe-1781084968345",
+          "requester_email_address": "kartiksingh2829@gmail.com",
+          "status": "Draft",
+          "test_mode": true,
+          "updated_at": "2026-06-10T09:50:12Z",
+          "allow_decline": true,
+          "allow_reassign": true,
+          "api_application_id": null,
+          "custom_requester_email": null,
+          "custom_requester_name": null,
+          "decline_redirect_url": null,
+          "embedded_signing": false,
+          "expires_in": 30,
+          "metadata": {},
+          "redirect_url": null,
+          "reminders": true,
+          "apply_signing_order": false,
+          "message": null,
+          "subject": null,
+          "labels": [],
+          "fields": [],
+          "files": [
+            {
+              "name": "Agreement.pdf",
+              "pages_number": 3
+            }
+          ],
+          "copied_contacts": [],
+          "recipients": [
+            {
+              "email": "agr2.prod.1781084968345@immimate.au",
+              "id": "client_1",
+              "message": null,
+              "name": "AGR-2 Production Client",
+              "passcode": null,
+              "send_email": false,
+              "send_email_delay": 0,
+              "status": "draft",
+              "subject": null,
+              "signing_order": 1,
+              "signing_url": "https://www.signwell.com/docs/fe9ce62153/",
+              "bounced": null,
+              "bounced_details": null,
+              "passcode_delivery": {
+                "enabled": false,
+                "methods": null,
+                "expire_after_access": false
+              },
+              "attachment_requests": []
+            }
+          ],
+          "checkbox_groups": []
+        }
+      },
+      {
+        "path": "/documents/254bde7c-6d5b-48f5-b84d-a6a71bb70486",
+        "ok": true,
+        "status": 200,
+        "body": {
+          "id": "254bde7c-6d5b-48f5-b84d-a6a71bb70486",
+          "archived": false,
+          "created_at": "2026-06-10T09:50:23Z",
+          "decline_message": null,
+          "embedded_edit_url": null,
+          "error_message": null,
+          "embedded_preview_url": "https://www.signwell.com/app/preview/document/254bde7c-6d5b-48f5-b84d-a6a71bb70486/",
+          "language": "en",
+          "name": "Service Agreement - AGR-2 Production Client",
+          "requester_email_address": "nayramalik1018@gmail.com",
+          "status": "Sent",
+          "test_mode": true,
+          "updated_at": "2026-06-10T09:50:25Z",
+          "allow_decline": true,
+          "allow_reassign": true,
+          "api_application_id": null,
+          "custom_requester_email": "nayramalik1018@gmail.com",
+          "custom_requester_name": null,
+          "decline_redirect_url": null,
+          "embedded_signing": false,
+          "expires_in": 30,
+          "metadata": {},
+          "redirect_url": null,
+          "reminders": false,
+          "apply_signing_order": false,
+          "message": "Please review and sign the attached document.",
+          "subject": "Signature required: Service Agreement - AGR-2 Production Client",
+          "labels": [],
+          "fields": [
+            [
+              {
+                "api_id": "signature_primary_applicant",
+                "height": "40.0",
+                "page": 3,
+                "required": true,
+                "type": "signature",
+                "value": null,
+                "width": "220.0",
+                "x": 72,
+                "y": 620,
+                "recipient_id": "primary_applicant"
+              },
+              {
+                "api_id": "date_primary_applicant",
+                "height": "32.0",
+                "page": 3,
+                "required": true,
+                "type": "date",
+                "value": null,
+                "width": "130.0",
+                "x": 310,
+                "y": 624,
+                "date_format": "MM/DD/YYYY",
+                "formula": "",
+                "lock_sign_date": false,
+                "recipient_id": "primary_applicant"
+              }
+            ]
+          ],
+          "files": [
+            {
+              "name": "Agreement.pdf",
+              "pages_number": 3
+            }
+          ],
+          "copied_contacts": [],
+          "recipients": [
+            {
+              "email": "agr2.prod.1781084968345@immimate.au",
+              "id": "primary_applicant",
+              "message": null,
+              "name": "AGR-2 Production Client",
+              "passcode": null,
+              "send_email": false,
+              "send_email_delay": 0,
+              "status": "sent",
+              "subject": null,
+              "signing_order": 1,
+              "signing_url": "https://www.signwell.com/docs/67334cedff/",
+              "bounced": null,
+              "bounced_details": null,
+              "passcode_delivery": {
+                "enabled": false,
+                "methods": null,
+                "expire_after_access": false
+              },
+              "attachment_requests": []
+            }
+          ],
+          "checkbox_groups": []
+        }
+      },
+      {
+        "productionDoc": {
+          "id": "254bde7c-6d5b-48f5-b84d-a6a71bb70486",
+          "archived": false,
+          "created_at": "2026-06-10T09:50:23Z",
+          "decline_message": null,
+          "embedded_edit_url": null,
+          "error_message": null,
+          "embedded_preview_url": "https://www.signwell.com/app/preview/document/254bde7c-6d5b-48f5-b84d-a6a71bb70486/",
+          "language": "en",
+          "name": "Service Agreement - AGR-2 Production Client",
+          "requester_email_address": "nayramalik1018@gmail.com",
+          "status": "Sent",
+          "test_mode": true,
+          "updated_at": "2026-06-10T09:50:25Z",
+          "allow_decline": true,
+          "allow_reassign": true,
+          "api_application_id": null,
+          "custom_requester_email": "nayramalik1018@gmail.com",
+          "custom_requester_name": null,
+          "decline_redirect_url": null,
+          "embedded_signing": false,
+          "expires_in": 30,
+          "metadata": {},
+          "redirect_url": null,
+          "reminders": false,
+          "apply_signing_order": false,
+          "message": "Please review and sign the attached document.",
+          "subject": "Signature required: Service Agreement - AGR-2 Production Client",
+          "labels": [],
+          "fields": [
+            [
+              {
+                "api_id": "signature_primary_applicant",
+                "height": "40.0",
+                "page": 3,
+                "required": true,
+                "type": "signature",
+                "value": null,
+                "width": "220.0",
+                "x": 72,
+                "y": 620,
+                "recipient_id": "primary_applicant"
+              },
+              {
+                "api_id": "date_primary_applicant",
+                "height": "32.0",
+                "page": 3,
+                "required": true,
+                "type": "date",
+                "value": null,
+                "width": "130.0",
+                "x": 310,
+                "y": 624,
+                "date_format": "MM/DD/YYYY",
+                "formula": "",
+                "lock_sign_date": false,
+                "recipient_id": "primary_applicant"
+              }
+            ]
+          ],
+          "files": [
+            {
+              "name": "Agreement.pdf",
+              "pages_number": 3
+            }
+          ],
+          "copied_contacts": [],
+          "recipients": [
+            {
+              "email": "agr2.prod.1781084968345@immimate.au",
+              "id": "primary_applicant",
+              "message": null,
+              "name": "AGR-2 Production Client",
+              "passcode": null,
+              "send_email": false,
+              "send_email_delay": 0,
+              "status": "sent",
+              "subject": null,
+              "signing_order": 1,
+              "signing_url": "https://www.signwell.com/docs/67334cedff/",
+              "bounced": null,
+              "bounced_details": null,
+              "passcode_delivery": {
+                "enabled": false,
+                "methods": null,
+                "expire_after_access": false
+              },
+              "attachment_requests": []
+            }
+          ],
+          "checkbox_groups": []
+        }
+      }
+    ],
+    "webhook": [
+      {
+        "documentId": "254bde7c-6d5b-48f5-b84d-a6a71bb70486",
+        "eventType": "document_viewed",
+        "status": 200,
+        "json": {
+          "received": true,
+          "status": "processed",
+          "entity": "agreement"
+        },
+        "payloadHash": "bea96d96bf4e8b13d075a21b846be9e07ba903bb1625c90a8c687f11139b1fb0"
+      },
+      {
+        "documentId": "254bde7c-6d5b-48f5-b84d-a6a71bb70486",
+        "eventType": "document_completed",
+        "status": 200,
+        "json": {
+          "received": true,
+          "status": "processed",
+          "entity": "agreement"
+        },
+        "payloadHash": "797567193dbf4a70980d76d92b26bfe88660921d7e4f022a84f3ba049fd57cc3"
+      },
+      {
+        "documentId": "254bde7c-6d5b-48f5-b84d-a6a71bb70486",
+        "eventType": "document_completed",
+        "status": 200,
+        "json": {
+          "received": true,
+          "status": "processed",
+          "entity": "agreement"
+        },
+        "payloadHash": "d86459c141a851330140a140f11379c5a8a0df07e0b85841238e659712a1b04f"
+      },
+      {
+        "events": [
+          {
+            "id": "94430927-0ec3-4e7c-926f-60aeac9a33ef",
+            "provider": "signwell",
+            "event_type": "document_completed",
+            "status": "processed",
+            "payload_hash": "d86459c141a851330140a140f11379c5a8a0df07e0b85841238e659712a1b04f",
+            "error": null,
+            "received_at": "2026-06-10T09:50:47.956701+00:00",
+            "processed_at": "2026-06-10T09:50:50.737+00:00",
+            "external_id": "254bde7c-6d5b-48f5-b84d-a6a71bb70486"
+          },
+          {
+            "id": "a379513e-7b33-44a3-ab50-edef7c357aac",
+            "provider": "signwell",
+            "event_type": "document_completed",
+            "status": "processed",
+            "payload_hash": "797567193dbf4a70980d76d92b26bfe88660921d7e4f022a84f3ba049fd57cc3",
+            "error": null,
+            "received_at": "2026-06-10T09:50:33.713991+00:00",
+            "processed_at": "2026-06-10T09:50:38.557+00:00",
+            "external_id": "254bde7c-6d5b-48f5-b84d-a6a71bb70486"
+          },
+          {
+            "id": "2713b502-3e94-451d-861a-92849f8dacbb",
+            "provider": "signwell",
+            "event_type": "document_viewed",
+            "status": "processed",
+            "payload_hash": "bea96d96bf4e8b13d075a21b846be9e07ba903bb1625c90a8c687f11139b1fb0",
+            "error": null,
+            "received_at": "2026-06-10T09:50:30.637818+00:00",
+            "processed_at": "2026-06-10T09:50:29.524+00:00",
+            "external_id": "254bde7c-6d5b-48f5-b84d-a6a71bb70486"
+          },
+          {
+            "id": "f5618407-616b-47f6-84f6-26008a7be499",
+            "provider": "signwell",
+            "event_type": "document_sent",
+            "status": "received",
+            "payload_hash": "3aee7e2a52cfcb225de5ef670e2ee9347c9d45be941513532143780a9f0b75cc",
+            "error": null,
+            "received_at": "2026-06-10T09:50:26.32509+00:00",
+            "processed_at": null,
+            "external_id": "254bde7c-6d5b-48f5-b84d-a6a71bb70486"
+          },
+          {
+            "id": "df06ead1-9243-4993-a33d-fa4be208f2e2",
+            "provider": "signwell",
+            "event_type": "document_created",
+            "status": "received",
+            "payload_hash": "7a51bcd59f027e86110416dcb57ff08a8867ccfa991826e2e20007e7fdeba085",
+            "error": null,
+            "received_at": "2026-06-10T09:50:24.76814+00:00",
+            "processed_at": null,
+            "external_id": "254bde7c-6d5b-48f5-b84d-a6a71bb70486"
+          },
+          {
+            "id": "981dca17-1808-4982-9415-7587e755dd3c",
+            "provider": "signwell",
+            "event_type": "document_created",
+            "status": "received",
+            "payload_hash": "b2f1a483e000b56fab89c2109c76ae618ac061e3a2d9648b7c485e5cddaf0fc3",
+            "error": null,
+            "received_at": "2026-06-10T09:50:13.887415+00:00",
+            "processed_at": null,
+            "external_id": "6efff59d-4648-4164-a6aa-d6adba5f8bf7"
+          }
+        ]
+      }
+    ],
+    "email": [
+      {
+        "rows": [
+          {
+            "email_type": "agreement",
+            "recipient": "nayramalik1018@gmail.com",
+            "resend_id": "cf75d35f-6d0c-44df-b172-fa4466c61474",
+            "status": "delivered",
+            "delivered_at": "2026-06-10T09:50:41.947+00:00",
+            "created_at": "2026-06-10T09:50:40.436343+00:00",
+            "subject": "Agreement signed"
+          }
+        ]
+      }
+    ],
+    "storage": [
+      {
+        "path": "3cd3a307-b7e5-4984-82d4-bf757e834afd/agreements/33a454ab-3ec3-4cb3-8788-817bf6dcc93a/agreement-AGR-2026-0016.pdf",
+        "signedUrl": true
+      },
+      {
+        "view": 200,
+        "downloadBytes": 96339
+      }
+    ],
+    "screenshots": [
+      "agreement-generated.png",
+      "agreement-pdf.png",
+      "agreement-sent.png",
+      "agreement-signed.png"
+    ]
+  },
+  "verdict": "PASS"
+}

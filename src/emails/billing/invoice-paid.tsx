@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Section, Text, Heading } from '@react-email/components';
 import { BaseLayout } from '../layouts/base-layout';
 import { PrimaryCTA } from '../components/button';
+import { APP_NAME } from '@/lib/brand';
 
 interface InvoicePaidEmailProps {
   agencyName: string;
@@ -14,14 +15,14 @@ interface InvoicePaidEmailProps {
 export const InvoicePaidEmail = ({
   agencyName = 'Your Agency',
   amount = '$149.00',
-  invoiceUrl = 'https://app.immisign.com/dashboard/billing',
+  invoiceUrl = 'https://app.immimate.com/dashboard/billing',
   date = new Date().toLocaleDateString(),
   planName = 'Pro Plan',
 }: InvoicePaidEmailProps) => {
   return (
     <BaseLayout 
         previewText={`Your ${agencyName} receipt for ${amount}`}
-        branding={{ name: "ImmiSign Billing" }}
+        branding={{ name: `${APP_NAME} Billing` }}
     >
       <Heading className="text-black text-[22px] font-semibold text-center mb-6">
         Payment Receipt
@@ -32,7 +33,7 @@ export const InvoicePaidEmail = ({
       </Text>
       
       <Text className="text-black text-[15px] leading-[24px]">
-        Thanks for using ImmiSign. This email verifies your recent subscription payment was successful. 
+        Thanks for using {APP_NAME}. This email verifies your recent subscription payment was successful. 
         Your {planName} limits are instantly replenished for the cycle.
       </Text>
       

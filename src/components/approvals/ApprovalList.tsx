@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { format } from "date-fns"
 import { Plus, FileCheck2, Clock } from "lucide-react"
+import { PageHeader } from "@/components/layout/PageHeader"
 
 export function ApprovalList() {
   const router = useRouter()
@@ -24,22 +25,22 @@ export function ApprovalList() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-[#081B2E]">Application Approvals</h1>
-          <p className="text-slate-500 mt-1">Manage and track client application reviews securely.</p>
-        </div>
-
-        {(role === 'Owner' || role === 'Admin' || role === 'Migration Agent') && (
-          <Button
-            onClick={() => router.push(`/workspace/${slug}/application-approvals/new`)}
-            className="bg-[#0D9F8C] hover:bg-[#0A8F7E] text-white"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            New Approval
-          </Button>
-        )}
-      </div>
+      <PageHeader
+        eyebrow="Workflow"
+        title="Application Approvals"
+        description="Manage and track client application reviews securely."
+        action={
+          (role === "Owner" || role === "Admin" || role === "Migration Agent") ? (
+            <Button
+              onClick={() => router.push(`/workspace/${slug}/application-approvals/new`)}
+              className="bg-[#111111] hover:bg-[#222222] text-white"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              New Approval
+            </Button>
+          ) : undefined
+        }
+      />
 
       {loading ? (
         <div className="h-40 flex items-center justify-center text-slate-500">Loading approvals...</div>
@@ -57,7 +58,7 @@ export function ApprovalList() {
             <Card
               key={approval.id}
               onClick={() => router.push(`/workspace/${slug}/application-approvals/${approval.id}`)}
-              className="cursor-pointer hover:border-[#0D9F8C]/50 transition-colors"
+              className="cursor-pointer hover:border-[#111111]/50 transition-colors"
             >
               <CardContent className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>

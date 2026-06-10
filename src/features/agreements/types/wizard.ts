@@ -1,3 +1,13 @@
+export type AgreementFeeItemDraft = {
+  id: string
+  description: string
+  amount: string
+  category: string
+  dueTrigger: string
+  notes: string
+  sortOrder: number
+}
+
 export type ClientPickerOption = {
   id: string
   name: string
@@ -38,7 +48,8 @@ export type AgreementWizardFormData = {
   agreementDate: string
   matterFieldValues: Record<string, string>
 
-  // Step 3 — Fees
+  // Step 3 — Fees (dynamic rows; legacy scalar fields kept for draft migration)
+  feeItems: AgreementFeeItemDraft[]
   professionalFee: string
   estimatedDisbursements: string
   paymentSchedule: string
@@ -147,9 +158,10 @@ export function createInitialWizardForm(
     agreementDate: formatAustralianDate(),
     matterFieldValues: {},
 
+    feeItems: [],
     professionalFee: settings?.defaults?.professionalFee || '',
     estimatedDisbursements: '',
-    paymentSchedule: settings?.defaults?.paymentSchedule || '',
+    paymentSchedule: '',
 
     scopeOfServices: settings?.defaults?.scopeOfServices || '',
     specialTerms: settings?.defaults?.specialTerms || '',

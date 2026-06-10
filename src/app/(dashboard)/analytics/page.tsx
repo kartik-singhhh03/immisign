@@ -1,3 +1,5 @@
-import { AnalyticsPage } from "@/components/saas/dashboard-pages"
+import { redirect } from "next/navigation"
 
-export default AnalyticsPage
+export default function AnalyticsRedirect() {
+  redirect("/dashboard")
+}

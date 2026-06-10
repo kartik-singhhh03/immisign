@@ -65,6 +65,11 @@ export function ApprovalDetailPage({
     created_by: string
     assigned_reviewer_id?: string
     assigned_rma_id?: string
+    review_token?: string
+    client_sent_at?: string
+    client_signed_at?: string
+    certificate_storage_path?: string
+    certificate_generated_at?: string
   }
 
   const refresh = useCallback(async () => {
@@ -72,6 +77,48 @@ export function ApprovalDetailPage({
     const json = await res.json()
     if (json.success) setData(json)
   }, [approval.id])
+
+  const sendToClient = async () => {
+    setBusy("send_client")
+    try {
+      const res = await fetch(`/api/approvals/${approval.id}/send-for-client-approval`, {
+        method: "POST",
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || "Send failed")
+      await refresh()
+      if (json.reviewUrl) {
+        const full = `${window.location.origin}${json.reviewUrl}`
+        navigator.clipboard?.writeText(full)
+        alert(`Sent to client via SignWell. Review portal link copied for reference:\n${full}`)
+      } else {
+        alert('Sent to client via SignWell.')
+      }
+    } catch (e: unknown) {
+      alert(e instanceof Error ? e.message : "Send failed")
+    } finally {
+      setBusy(null)
+    }
+  }
+
+  const downloadCertificate = async () => {
+    setBusy("certificate")
+    try {
+      let res = await fetch(`/api/approvals/${approval.id}/certificate`)
+      let json = await res.json()
+      if (!res.ok && !approval.certificate_storage_path) {
+        res = await fetch(`/api/approvals/${approval.id}/certificate`, { method: "POST" })
+        json = await res.json()
+      }
+      if (!res.ok) throw new Error(json.error || "Certificate unavailable")
+      if (json.signedUrl) window.open(json.signedUrl, "_blank")
+      await refresh()
+    } catch (e: unknown) {
+      alert(e instanceof Error ? e.message : "Certificate failed")
+    } finally {
+      setBusy(null)
+    }
+  }
 
   const runTransition = async (action: ApprovalAction, extra?: Record<string, unknown>) => {
     setBusy(action)
@@ -160,7 +207,7 @@ export function ApprovalDetailPage({
               <Button
                 disabled={!!busy}
                 onClick={() => runTransition("submit")}
-                className="rounded-xl bg-[#0D9F8C] font-bold"
+                className="rounded-xl bg-[#111111] font-bold"
               >
                 <Send className="h-4 w-4 mr-1.5" />
                 Submit for review
@@ -179,7 +226,7 @@ export function ApprovalDetailPage({
                 }}>
                   Request changes
                 </Button>
-                <Button disabled={!!busy} onClick={() => runTransition("approve")} className="rounded-xl bg-emerald-600 font-bold">
+                <Button disabled={!!busy} onClick={() => runTransition("approve")} className="rounded-xl bg-[#111111] font-bold">
                   <CheckCircle2 className="h-4 w-4 mr-1.5" /> Approve
                 </Button>
                 <Button variant="destructive" disabled={!!busy} onClick={() => runTransition("reject")}>
@@ -188,11 +235,40 @@ export function ApprovalDetailPage({
               </>
             )}
             {approval.status === "changes_requested" && (
-              <Button disabled={!!busy} onClick={() => runTransition("resubmit")} className="rounded-xl bg-[#0D9F8C] font-bold">
+              <Button disabled={!!busy} onClick={() => runTransition("resubmit")} className="rounded-xl bg-[#111111] font-bold">
                 Resubmit
               </Button>
             )}
-            {approval.status === "approved" && isOwner && (
+            {(approval.status === "approved" || approval.status === "under_review" || approval.status === "draft") &&
+              !approval.client_sent_at && (
+              <Button
+                disabled={!!busy}
+                onClick={sendToClient}
+                className="rounded-xl bg-[#111111] font-bold"
+              >
+                <Send className="h-4 w-4 mr-1.5" />
+                Send to client for approval
+              </Button>
+            )}
+            {approval.client_sent_at && !approval.client_signed_at && approval.review_token && (
+              <Button
+                variant="outline"
+                disabled={!!busy}
+                onClick={() => {
+                  const url = `${window.location.origin}/review/${approval.review_token}`
+                  navigator.clipboard?.writeText(url)
+                  alert(`Review link copied:\n${url}`)
+                }}
+              >
+                Copy client review link
+              </Button>
+            )}
+            {approval.client_signed_at && (
+              <Button variant="outline" disabled={!!busy} onClick={downloadCertificate}>
+                Download certificate
+              </Button>
+            )}
+            {approval.status === "approved" && approval.client_signed_at && isOwner && (
               <Button disabled={!!busy} onClick={() => runTransition("ready_to_lodge")}>
                 Ready to lodge
               </Button>
@@ -215,7 +291,7 @@ export function ApprovalDetailPage({
         <div className="lg:col-span-3 space-y-4">
           <Card className="rounded-2xl border-slate-200 shadow-sm">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-black text-[#081B2E]">Summary</CardTitle>
+              <CardTitle className="text-sm font-black text-[#111111]">Summary</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-sm">
               <div>
@@ -240,7 +316,7 @@ export function ApprovalDetailPage({
               </div>
               <div>
                 <div className="text-xs font-bold uppercase text-slate-400">Checklist</div>
-                <div className="font-semibold text-[#0D9F8C]">
+                <div className="font-semibold text-[#111111]">
                   {checklistDone}/{checklistTotal} complete
                 </div>
               </div>
@@ -250,7 +326,7 @@ export function ApprovalDetailPage({
           <Card className="rounded-2xl border-slate-200 shadow-sm">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-black flex items-center gap-2">
-                <Shield className="h-4 w-4 text-[#0D9F8C]" /> Checklist
+                <Shield className="h-4 w-4 text-[#111111]" /> Checklist
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 max-h-80 overflow-y-auto">
@@ -315,7 +391,7 @@ export function ApprovalDetailPage({
                       </p>
                     </div>
                     {att.is_current && (
-                      <span className="text-[10px] font-bold uppercase text-emerald-600">Current</span>
+                      <span className="text-[10px] font-bold uppercase text-[#5C5C5C]">Current</span>
                     )}
                   </div>
                 ))
@@ -350,7 +426,7 @@ export function ApprovalDetailPage({
               <Button
                 onClick={postComment}
                 disabled={busy === "comment" || !comment.trim()}
-                className="rounded-xl bg-[#0D9F8C] font-bold w-full"
+                className="rounded-xl bg-[#111111] font-bold w-full"
               >
                 Post comment
               </Button>
@@ -373,9 +449,9 @@ export function ApprovalDetailPage({
                 ) : (
                   data.timeline.map((log) => (
                     <div key={log.id as string} className="flex gap-4 relative">
-                      <div className="h-4 w-4 rounded-full bg-[#0D9F8C] ring-2 ring-white z-10 shrink-0" />
+                      <div className="h-4 w-4 rounded-full bg-[#111111] ring-2 ring-white z-10 shrink-0" />
                       <div>
-                        <p className="text-sm font-bold text-[#081B2E]">{log.title as string}</p>
+                        <p className="text-sm font-bold text-[#111111]">{log.title as string}</p>
                         {log.description && (
                           <p className="text-xs text-slate-500 mt-0.5">{log.description as string}</p>
                         )}

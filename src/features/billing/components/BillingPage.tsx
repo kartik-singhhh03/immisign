@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
+import { PageHeader } from "@/components/layout/PageHeader"
 
 type BillingSummary = {
   plan: {
@@ -53,28 +54,6 @@ type BillingSummary = {
   }>
 }
 
-function PageHeader({
-  title,
-  description,
-}: {
-  title: string
-  description: string
-}) {
-  return (
-    <div className="mb-8">
-      <div className="text-[11px] font-bold uppercase tracking-widest text-[#0D9F8C]">
-        Billing
-      </div>
-      <h1 className="mt-2 text-3xl font-bold tracking-tight text-[#081B2E] md:text-4xl">
-        {title}
-      </h1>
-      <p className="mt-2.5 max-w-2xl text-[14px] font-medium leading-6 text-slate-500">
-        {description}
-      </p>
-    </div>
-  )
-}
-
 function formatMoney(cents: number, currency = "aud") {
   return new Intl.NumberFormat("en-AU", {
     style: "currency",
@@ -100,11 +79,12 @@ export function BillingPage() {
     setTimeout(() => setToastMessage(null), 3500)
   }
 
-  const loadBilling = React.useCallback(async () => {
+  const loadBilling = React.useCallback(async (sessionId?: string | null) => {
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch("/api/stripe/billing")
+      const qs = sessionId ? `?session_id=${encodeURIComponent(sessionId)}` : ""
+      const res = await fetch(`/api/stripe/billing${qs}`)
       const json = await res.json()
       if (!res.ok) throw new Error(json.error || json.message || "Failed to load billing")
       setData(json)
@@ -122,9 +102,10 @@ export function BillingPage() {
   React.useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     if (params.get("success") === "true") {
+      const sessionId = params.get("session_id")
       triggerToast("Subscription updated successfully.")
       window.history.replaceState({}, "", window.location.pathname)
-      void loadBilling()
+      void loadBilling(sessionId)
     }
   }, [loadBilling])
 
@@ -214,15 +195,16 @@ export function BillingPage() {
   return (
     <div className="relative">
       {toastMessage && (
-        <div className="fixed bottom-5 right-5 z-50 flex animate-in items-center gap-2 rounded-xl border border-slate-700/50 bg-[#081B2E] px-4 py-3 text-xs font-bold text-white shadow-2xl">
-          <CheckCircle2 className="h-4 w-4 text-[#0D9F8C]" />
+        <div className="fixed bottom-5 right-5 z-50 flex animate-in items-center gap-2 rounded-xl border border-slate-700/50 bg-[#111111] px-4 py-3 text-xs font-bold text-white shadow-2xl">
+          <CheckCircle2 className="h-4 w-4 text-[#111111]" />
           {toastMessage}
         </div>
       )}
 
       <PageHeader
+        eyebrow="Billing"
         title="Plan, seats and invoices"
-        description="ImmiSign Plan — $49/month base with 3 included seats. Additional active agents, RMAs, admins, and staff are $10/month each."
+        description="ImmiMate Plan — $49/month base with 3 included seats. Additional active agents, RMAs, admins, and staff are $10/month each."
       />
 
       {isBillingRestricted && (
@@ -237,14 +219,14 @@ export function BillingPage() {
       )}
 
       <div className="grid gap-6 lg:grid-cols-[1fr_0.85fr]">
-        <Card className="rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-emerald-50/5 via-white to-emerald-50/10">
+        <Card className="rounded-2xl border border-[#E7E7E7] bg-gradient-to-br from-[#FAFAFA]/5 via-white to-[#FAFAFA]/10">
           <CardContent className="flex min-h-[280px] flex-col justify-between p-7">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <span className="rounded border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#0D9F8C]">
+                <span className="rounded border border-[#E7E7E7] bg-[#FAFAFA] px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#111111]">
                   {subscription.status}
                 </span>
-                <h2 className="mt-3 text-3xl font-black tracking-tight text-[#081B2E]">
+                <h2 className="mt-3 text-3xl font-black tracking-tight text-[#111111]">
                   {plan.name}
                 </h2>
                 <p className="mt-2 max-w-md text-sm font-semibold leading-relaxed text-slate-500">
@@ -257,7 +239,7 @@ export function BillingPage() {
                   {seats.included}.
                 </p>
               </div>
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-emerald-100 bg-emerald-50 text-[#0D9F8C]">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#E7E7E7] bg-[#FAFAFA] text-[#111111]">
                 <CreditCard className="h-5 w-5" />
               </div>
             </div>
@@ -268,7 +250,7 @@ export function BillingPage() {
                   <span className="text-[9px] font-bold uppercase text-slate-400">
                     Monthly total
                   </span>
-                  <div className="mt-1 text-2xl font-black text-[#081B2E]">
+                  <div className="mt-1 text-2xl font-black text-[#111111]">
                     ${seats.monthlyTotalUsd}/mo
                   </div>
                 </div>
@@ -276,7 +258,7 @@ export function BillingPage() {
                   <span className="text-[9px] font-bold uppercase text-slate-400">
                     Next invoice
                   </span>
-                  <div className="mt-1 text-lg font-bold text-[#081B2E]">
+                  <div className="mt-1 text-lg font-bold text-[#111111]">
                     {nextInvoice.amountUsd != null
                       ? `$${nextInvoice.amountUsd}`
                       : subscription.currentPeriodEnd
@@ -286,13 +268,23 @@ export function BillingPage() {
                 </div>
               </div>
 
+              {subscription.cancelAtPeriodEnd && (
+                <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] font-semibold text-amber-900">
+                  Subscription cancels at end of current billing period (
+                  {subscription.currentPeriodEnd
+                    ? new Date(subscription.currentPeriodEnd).toLocaleDateString()
+                    : "see Stripe portal"}
+                  ).
+                </p>
+              )}
+
               {!isBillingRestricted && (
                 <div className="flex flex-wrap gap-2">
                   {!isActive || !subscription.hasStripeSubscription ? (
                     <Button
                       disabled={actionLoading === "checkout"}
                       onClick={() => void startCheckout()}
-                      className="h-10.5 rounded-xl bg-[#0D9F8C] px-5 text-xs font-bold text-white hover:bg-[#0A5B52]"
+                      className="h-10.5 rounded-xl bg-[#111111] px-5 text-xs font-bold text-white hover:bg-[#222222]"
                     >
                       {actionLoading === "checkout" ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -332,7 +324,7 @@ export function BillingPage() {
 
         <Card className="rounded-2xl border border-slate-200/50 bg-white/60">
           <CardContent className="space-y-6 p-7">
-            <h2 className="border-b border-slate-100 pb-3 text-base font-bold text-[#081B2E]">
+            <h2 className="border-b border-slate-100 pb-3 text-base font-bold text-[#111111]">
               Seat usage
             </h2>
 
@@ -341,13 +333,13 @@ export function BillingPage() {
                 <span className="flex items-center gap-1.5">
                   <Users className="h-4 w-4 text-slate-400" /> Active billable seats
                 </span>
-                <span className="font-mono text-[#081B2E]">
+                <span className="font-mono text-[#111111]">
                   {seats.used} used · {seats.included} included
                 </span>
               </div>
               <div className="h-2 overflow-hidden rounded-full bg-slate-100">
                 <div
-                  className="h-full rounded-full bg-[#0D9F8C] transition-all"
+                  className="h-full rounded-full bg-[#111111] transition-all"
                   style={{ width: `${seatUsagePercent}%` }}
                 />
               </div>
@@ -366,7 +358,7 @@ export function BillingPage() {
                   className="flex justify-between border-b border-slate-50 pb-2 font-semibold"
                 >
                   <dt className="text-slate-500">{label}</dt>
-                  <dd className="font-mono text-[#081B2E]">{value}</dd>
+                  <dd className="font-mono text-[#111111]">{value}</dd>
                 </div>
               ))}
             </dl>
@@ -398,7 +390,7 @@ export function BillingPage() {
               className="flex flex-wrap items-center justify-between gap-3 p-4.5 text-xs font-semibold"
             >
               <div>
-                <span className="text-sm font-bold text-[#081B2E]">{invoice.id}</span>
+                <span className="text-sm font-bold text-[#111111]">{invoice.id}</span>
                 <span className="ml-2 font-medium text-slate-400">
                   {invoice.paidAt
                     ? new Date(invoice.paidAt).toLocaleDateString()
@@ -413,7 +405,7 @@ export function BillingPage() {
                   className={cn(
                     "rounded border px-2 py-0.5 text-[9px] font-bold capitalize",
                     invoice.status === "paid"
-                      ? "border-emerald-100 bg-emerald-50 text-emerald-700"
+                      ? "border-[#E7E7E7] bg-[#FAFAFA] text-[#111111]"
                       : "border-slate-200 bg-slate-50 text-slate-600",
                   )}
                 >

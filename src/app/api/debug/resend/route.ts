@@ -1,50 +1,36 @@
 import { NextResponse } from 'next/server';
-import { requireOwnerSession } from '@/lib/auth/owner-only';
-import {
-  getResendConfigSummary,
-  getResendFromEmail,
-  sendEmailWithForensicLogging,
-} from '@/lib/email/resend';
+import { createAdminClient } from '@/lib/supabase/admin';
+import { requireAdminDebugAccess } from '@/lib/integrations/health/admin-guard';
+import { runResendDiagnostics } from '@/lib/integrations/health/resend-diagnostics';
+import { getEmailDeliveryStats } from '@/lib/email/delivery-audit';
 
-export async function POST(req: Request) {
-  const authz = await requireOwnerSession();
-  if (!authz.ok) {
-    return NextResponse.json({ error: authz.error }, { status: authz.status });
+export async function GET() {
+  const ctx = await requireAdminDebugAccess();
+  if ('error' in ctx) {
+    return NextResponse.json({ error: ctx.error }, { status: ctx.status });
   }
 
-  const body = await req.json().catch(() => ({}));
-  const to = String(body?.to || authz.profile.email || '').trim().toLowerCase();
+  const admin = createAdminClient();
+  const diagnostics = await runResendDiagnostics(admin);
+  const deliveryStats = await getEmailDeliveryStats();
 
-  if (!to) {
-    return NextResponse.json({ error: 'Recipient email is required' }, { status: 400 });
-  }
+  const domainPart = diagnostics.fromEmail.split('@')[1] || '';
+  const matchedDomain = diagnostics.domains.find((d) => d.name === domainPart);
 
-  try {
-    const resendResponse = await sendEmailWithForensicLogging({
-      from: getResendFromEmail(),
-      to,
-      subject: 'ImmiSign Resend Test',
-      html: '<p>Resend Working</p>',
-      text: 'Resend Working',
-      tags: [{ name: 'debug', value: 'resend' }],
-    });
+  const healthy =
+    diagnostics.apiKeyPresent &&
+    diagnostics.apiKeyValid &&
+    diagnostics.domainVerified;
 
-    return NextResponse.json({
-      success: true,
-      to,
-      resendResponse,
-      config: getResendConfigSummary(),
-    });
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Failed to send debug email';
-    return NextResponse.json(
-      {
-        success: false,
-        error: message,
-        details: error,
-        config: getResendConfigSummary(),
-      },
-      { status: 502 },
-    );
-  }
+  return NextResponse.json({
+    healthy,
+    domain: matchedDomain?.name || domainPart || null,
+    domainStatus: matchedDomain?.status || null,
+    fromEmail: diagnostics.fromEmail,
+    apiConnected: diagnostics.apiKeyValid,
+    apiKeyPresent: diagnostics.apiKeyPresent,
+    domains: diagnostics.domains,
+    delivery: deliveryStats,
+    timestamp: new Date().toISOString(),
+  });
 }

@@ -61,7 +61,7 @@ export default function LoginPage() {
     setDetectedWorkspace({
       name: `${capitalized} Workspace`,
       slug: domainName.replace(/[^a-z0-9-]/g, "-"),
-      color: "#0D9F8C",
+      color: "#111111",
     })
   }, [email])
 
@@ -111,7 +111,7 @@ export default function LoginPage() {
   return (
     <div className="animate-in fade-in-50 duration-300">
       <div className="mb-6">
-        <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-[#0D9F8C]">
+        <div className="inline-flex items-center gap-2 rounded-full bg-[#FAFAFA] px-3 py-1 text-xs font-black text-[#111111]">
           <ShieldCheck className="h-3.5 w-3.5" />
           Enterprise Multi-Tenant Environment
         </div>
@@ -126,14 +126,14 @@ export default function LoginPage() {
             </div>
             <div>
               <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Identified Tenant</span>
-              <h1 className="text-2xl font-black tracking-tight text-[#081B2E] leading-tight">
+              <h1 className="text-2xl font-black tracking-tight text-[#111111] leading-tight">
                 {detectedWorkspace.name}
               </h1>
             </div>
           </div>
         ) : (
           <div>
-            <h1 className="mt-5 text-4xl font-black tracking-tight text-[#081B2E]">
+            <h1 className="mt-5 text-4xl font-black tracking-tight text-[#111111]">
               Practitioner Access
             </h1>
             <p className="mt-3 text-sm leading-6 text-slate-600">
@@ -155,7 +155,7 @@ export default function LoginPage() {
             placeholder="name@agency.com.au"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="h-12 rounded-xl border-slate-200 bg-white font-medium focus-visible:ring-1 focus-visible:ring-[#0D9F8C]"
+            className="h-12 rounded-xl border-slate-200 bg-white font-medium focus-visible:ring-1 focus-visible:ring-[#111111]"
             disabled={isLoading}
           />
         </div>
@@ -165,7 +165,7 @@ export default function LoginPage() {
             <Label htmlFor="password" className="font-bold text-slate-700">
               Security Password
             </Label>
-            <Link href="/forgot-password" className="text-sm font-bold text-[#0D9F8C] hover:underline">
+            <Link href="/forgot-password" className="text-sm font-bold text-[#111111] hover:underline">
               Forgot?
             </Link>
           </div>
@@ -176,34 +176,34 @@ export default function LoginPage() {
             placeholder="Enter password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="h-12 rounded-xl border-slate-200 bg-white font-medium focus-visible:ring-1 focus-visible:ring-[#0D9F8C]"
+            className="h-12 rounded-xl border-slate-200 bg-white font-medium focus-visible:ring-1 focus-visible:ring-[#111111]"
             disabled={isLoading}
           />
         </div>
 
         {detectedWorkspace && (
-          <div className="rounded-xl border bg-slate-50/50 p-4 text-xs font-semibold text-slate-600 flex items-start gap-3 border-emerald-500/10">
-            <Sparkles className="h-4 w-4 shrink-0 text-[#0D9F8C] mt-0.5" />
+          <div className="rounded-xl border bg-slate-50/50 p-4 text-xs font-semibold text-slate-600 flex items-start gap-3 border-[#E7E7E7]">
+            <Sparkles className="h-4 w-4 shrink-0 text-[#111111] mt-0.5" />
             <div>
               <p className="text-slate-800 font-bold">Dynamic Tenant Resolved</p>
               <p className="mt-0.5 leading-relaxed text-slate-500">
-                After sign-in, ImmiSign routes you to your agency workspace when configured.
+                After sign-in, ImmiMate routes you to your agency workspace when configured.
               </p>
             </div>
           </div>
         )}
 
-        <div className="flex items-center justify-between rounded-xl border border-slate-100 bg-[#F7FAF8] px-4 py-3">
+        <div className="flex items-center justify-between rounded-xl border border-slate-100 bg-[#FAFAFA] px-4 py-3">
           <label htmlFor="remember" className="flex items-center gap-3 text-xs font-bold text-slate-600 cursor-pointer">
             <Checkbox id="remember" />
             Remember practitioner session
           </label>
-          <LockKeyhole className="h-3.5 w-3.5 text-[#0D9F8C]" />
+          <LockKeyhole className="h-3.5 w-3.5 text-[#111111]" />
         </div>
 
         <Button
           type="submit"
-          className="h-12 rounded-xl bg-[#0D9F8C] text-base font-black hover:bg-[#0A5B52] shadow-sm flex items-center justify-center gap-2 group"
+          className="h-12 rounded-xl bg-[#111111] text-base font-black hover:bg-[#222222] shadow-sm flex items-center justify-center gap-2 group"
           disabled={isLoading}
         >
           {isLoading ? (
@@ -249,7 +249,7 @@ export default function LoginPage() {
 
       <p className="mt-6 text-center text-sm text-slate-500">
         New Agency?{" "}
-        <Link href="/signup" className="font-black text-[#0D9F8C] hover:underline">
+        <Link href="/signup" className="font-black text-[#111111] hover:underline">
           Setup dynamic workspace trial
         </Link>
       </p>

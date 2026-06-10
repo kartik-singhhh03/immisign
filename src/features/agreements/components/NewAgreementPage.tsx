@@ -49,35 +49,11 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
+import { PageHeader } from "@/components/layout/PageHeader"
 
 
 
 
-
-
-
-function PageHeader({
-  eyebrow,
-  title,
-  description,
-  action,
-}: {
-  eyebrow?: string
-  title: string
-  description: string
-  action?: React.ReactNode
-}) {
-  return (
-    <div className="animate-enter mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-end">
-      <div>
-        {eyebrow && <div className="text-[11px] font-bold uppercase tracking-widest text-[#0D9F8C]">{eyebrow}</div>}
-        <h1 className="mt-2 text-3xl font-bold tracking-tight text-[#081B2E] md:text-4xl">{title}</h1>
-        <p className="mt-2.5 max-w-2xl text-[14px] leading-6 text-slate-500 font-medium">{description}</p>
-      </div>
-      {action}
-    </div>
-  )
-}
 
 
 
@@ -191,7 +167,7 @@ export function NewAgreementPage() {
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           Client Name (Large Clean Input)
           <Input 
-            className="h-12 rounded-xl border-slate-200 bg-white text-sm font-semibold focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" 
+            className="h-12 rounded-xl border-slate-200 bg-white text-sm font-semibold focus-visible:ring-1 focus-visible:ring-[#111111]" 
             value={formData.clientName} 
             onChange={(e) => handleFieldChange("clientName", e.target.value)}
             placeholder="e.g. Gurpreet Singh" 
@@ -201,7 +177,7 @@ export function NewAgreementPage() {
           Email Address
           <Input 
             type="email"
-            className="h-12 rounded-xl border-slate-200 bg-white text-sm font-semibold focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" 
+            className="h-12 rounded-xl border-slate-200 bg-white text-sm font-semibold focus-visible:ring-1 focus-visible:ring-[#111111]" 
             value={formData.clientEmail} 
             onChange={(e) => handleFieldChange("clientEmail", e.target.value)}
             placeholder="e.g. gurpreet.singh@gmail.com" 
@@ -210,7 +186,7 @@ export function NewAgreementPage() {
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           Phone Number
           <PhoneInput
-            className="h-12 rounded-xl border-slate-200 bg-white text-sm font-semibold focus-visible:ring-1 focus-visible:ring-[#0D9F8C]"
+            className="h-12 rounded-xl border-slate-200 bg-white text-sm font-semibold focus-visible:ring-1 focus-visible:ring-[#111111]"
             value={formData.clientPhone}
             onChange={(v) => handleFieldChange("clientPhone", v)}
             placeholder="e.g. +61 402 984 102"
@@ -219,7 +195,7 @@ export function NewAgreementPage() {
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           Sponsor Full Name (if applicable)
           <Input 
-            className="h-12 rounded-xl border-slate-200 bg-white text-sm font-semibold focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" 
+            className="h-12 rounded-xl border-slate-200 bg-white text-sm font-semibold focus-visible:ring-1 focus-visible:ring-[#111111]" 
             value={formData.sponsorName} 
             onChange={(e) => handleFieldChange("sponsorName", e.target.value)}
             placeholder="e.g. Amandeep Kaur" 
@@ -228,7 +204,7 @@ export function NewAgreementPage() {
         <label className="grid gap-2 text-xs font-bold text-slate-500 md:col-span-2">
           Responsible Migration Agent (Practitioner)
           <select 
-            className="flex h-12 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]"
+            className="flex h-12 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-[#111111]"
             value={formData.responsibleRma}
             onChange={(e) => handleFieldChange("responsibleRma", e.target.value)}
           >
@@ -237,7 +213,7 @@ export function NewAgreementPage() {
         </label>
       </div>
       <div className="mt-7 flex justify-end">
-        <Button onClick={() => setCurrentStep(1)} className="rounded-xl bg-[#0D9F8C] font-bold px-6 shadow-md hover:bg-[#0A5B52]">
+        <Button onClick={() => setCurrentStep(1)} className="rounded-xl bg-[#111111] font-bold px-6 shadow-md hover:bg-[#222222]">
           Continue to Matter Details <ArrowRight className="h-4 w-4 ml-1.5" />
         </Button>
       </div>
@@ -250,7 +226,7 @@ export function NewAgreementPage() {
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           Visa Subclass
           <select 
-            className="flex h-12 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]"
+            className="flex h-12 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-[#111111]"
             value={formData.visaSubclass}
             onChange={(e) => handleFieldChange("visaSubclass", e.target.value)}
           >
@@ -264,7 +240,7 @@ export function NewAgreementPage() {
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           Matter Priority Level
           <select 
-            className="flex h-12 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]"
+            className="flex h-12 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-[#111111]"
             value={formData.matterPriority}
             onChange={(e) => handleFieldChange("matterPriority", e.target.value)}
           >
@@ -277,7 +253,7 @@ export function NewAgreementPage() {
           Target Lodgement Deadline
           <Input 
             type="date"
-            className="h-12 rounded-xl border-slate-200 bg-white text-sm font-semibold focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" 
+            className="h-12 rounded-xl border-slate-200 bg-white text-sm font-semibold focus-visible:ring-1 focus-visible:ring-[#111111]" 
             value={formData.lodgementDeadline} 
             onChange={(e) => handleFieldChange("lodgementDeadline", e.target.value)}
           />
@@ -285,7 +261,7 @@ export function NewAgreementPage() {
         <label className="grid gap-2 text-xs font-bold text-slate-500 md:col-span-2">
           Compliant Scope of Work
           <textarea 
-            className="flex min-h-[120px] w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]"
+            className="flex min-h-[120px] w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-[#111111]"
             value={formData.scopeOfWork}
             onChange={(e) => handleFieldChange("scopeOfWork", e.target.value)}
             placeholder="Describe the exact scope of services to be provided..."
@@ -296,7 +272,7 @@ export function NewAgreementPage() {
         <Button variant="outline" onClick={() => setCurrentStep(0)} className="rounded-xl border-slate-200 bg-white font-bold px-6">
           Back
         </Button>
-        <Button onClick={() => setCurrentStep(2)} className="rounded-xl bg-[#0D9F8C] font-bold px-6 shadow-md hover:bg-[#0A5B52]">
+        <Button onClick={() => setCurrentStep(2)} className="rounded-xl bg-[#111111] font-bold px-6 shadow-md hover:bg-[#222222]">
           Continue to Fees <ArrowRight className="h-4 w-4 ml-1.5" />
         </Button>
       </div>
@@ -312,7 +288,7 @@ export function NewAgreementPage() {
             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">$</span>
             <Input 
               type="number"
-              className="h-12 rounded-xl border-slate-200 bg-white pl-8 text-sm font-semibold focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" 
+              className="h-12 rounded-xl border-slate-200 bg-white pl-8 text-sm font-semibold focus-visible:ring-1 focus-visible:ring-[#111111]" 
               value={formData.professionalFee} 
               onChange={(e) => handleFieldChange("professionalFee", e.target.value)}
               placeholder="e.g. 4500" 
@@ -325,7 +301,7 @@ export function NewAgreementPage() {
             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">$</span>
             <Input 
               type="number"
-              className="h-12 rounded-xl border-slate-200 bg-white pl-8 text-sm font-semibold focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" 
+              className="h-12 rounded-xl border-slate-200 bg-white pl-8 text-sm font-semibold focus-visible:ring-1 focus-visible:ring-[#111111]" 
               value={formData.depositRequired} 
               onChange={(e) => handleFieldChange("depositRequired", e.target.value)}
               placeholder="e.g. 1500" 
@@ -335,7 +311,7 @@ export function NewAgreementPage() {
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           Billing Frequency / Split
           <select 
-            className="flex h-12 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]"
+            className="flex h-12 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-[#111111]"
             value={formData.billingFrequency}
             onChange={(e) => handleFieldChange("billingFrequency", e.target.value)}
           >
@@ -348,7 +324,7 @@ export function NewAgreementPage() {
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           Apply Australian GST (10%)
           <select 
-            className="flex h-12 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]"
+            className="flex h-12 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-[#111111]"
             value={formData.gstRequired}
             onChange={(e) => handleFieldChange("gstRequired", e.target.value)}
           >
@@ -361,7 +337,7 @@ export function NewAgreementPage() {
         <Button variant="outline" onClick={() => setCurrentStep(1)} className="rounded-xl border-slate-200 bg-white font-bold px-6">
           Back
         </Button>
-        <Button onClick={() => setCurrentStep(3)} className="rounded-xl bg-[#0D9F8C] font-bold px-6 shadow-md hover:bg-[#0A5B52]">
+        <Button onClick={() => setCurrentStep(3)} className="rounded-xl bg-[#111111] font-bold px-6 shadow-md hover:bg-[#222222]">
           Continue to Terms <ArrowRight className="h-4 w-4 ml-1.5" />
         </Button>
       </div>
@@ -374,7 +350,7 @@ export function NewAgreementPage() {
         <label className="grid gap-2 text-xs font-bold text-slate-500 md:col-span-2">
           Service Agreement Legal Template
           <select 
-            className="flex h-12 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]"
+            className="flex h-12 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-[#111111]"
             value={formData.termsTemplate}
             onChange={(e) => handleFieldChange("termsTemplate", e.target.value)}
           >
@@ -386,7 +362,7 @@ export function NewAgreementPage() {
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           Governing State Law
           <select 
-            className="flex h-12 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]"
+            className="flex h-12 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-[#111111]"
             value={formData.governingLaw}
             onChange={(e) => handleFieldChange("governingLaw", e.target.value)}
           >
@@ -399,7 +375,7 @@ export function NewAgreementPage() {
         <label className="grid gap-2 text-xs font-bold text-slate-500">
           Additional Clause Codes
           <Input 
-            className="h-12 rounded-xl border-slate-200 bg-white text-sm font-semibold focus-visible:ring-1 focus-visible:ring-[#0D9F8C]" 
+            className="h-12 rounded-xl border-slate-200 bg-white text-sm font-semibold focus-visible:ring-1 focus-visible:ring-[#111111]" 
             value={formData.additionalClauses} 
             onChange={(e) => handleFieldChange("additionalClauses", e.target.value)}
             placeholder="Clause identifiers..." 
@@ -408,7 +384,7 @@ export function NewAgreementPage() {
         <label className="grid gap-2 text-xs font-bold text-slate-500 md:col-span-2">
           Practitioner Custom Notes
           <textarea 
-            className="flex min-h-[100px] w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]"
+            className="flex min-h-[100px] w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-[#111111]"
             value={formData.customNotes}
             onChange={(e) => handleFieldChange("customNotes", e.target.value)}
             placeholder="Any extra instructions, native translation notes or milestones exceptions..."
@@ -419,7 +395,7 @@ export function NewAgreementPage() {
         <Button variant="outline" onClick={() => setCurrentStep(2)} className="rounded-xl border-slate-200 bg-white font-bold px-6">
           Back
         </Button>
-        <Button onClick={() => setCurrentStep(4)} className="rounded-xl bg-[#0D9F8C] font-bold px-6 shadow-md hover:bg-[#0A5B52]">
+        <Button onClick={() => setCurrentStep(4)} className="rounded-xl bg-[#111111] font-bold px-6 shadow-md hover:bg-[#222222]">
           Generate Preview <ArrowRight className="h-4 w-4 ml-1.5" />
         </Button>
       </div>
@@ -440,8 +416,8 @@ export function NewAgreementPage() {
 
     return (
       <div className="space-y-6">
-        <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-md font-sans max-w-full overflow-hidden text-xs text-[#081B2E] space-y-6 relative">
-          <div className="absolute right-6 top-6 rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-[#0D9F8C] border border-emerald-100">
+        <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-md font-sans max-w-full overflow-hidden text-xs text-[#111111] space-y-6 relative">
+          <div className="absolute right-6 top-6 rounded-full bg-[#FAFAFA] px-3 py-1 text-xs font-black text-[#111111] border border-[#E7E7E7]">
             ACTUAL TEMPLATE PREVIEW
           </div>
           <div 
@@ -453,7 +429,7 @@ export function NewAgreementPage() {
           <Button variant="outline" onClick={() => setCurrentStep(3)} className="rounded-xl border-slate-200 bg-white font-bold px-6">
             Back
           </Button>
-          <Button onClick={() => setCurrentStep(5)} className="rounded-xl bg-[#0D9F8C] font-bold px-6 shadow-md hover:bg-[#0A5B52]">
+          <Button onClick={() => setCurrentStep(5)} className="rounded-xl bg-[#111111] font-bold px-6 shadow-md hover:bg-[#222222]">
             Confirm & Send <ArrowRight className="h-4 w-4 ml-1.5" />
           </Button>
         </div>
@@ -464,8 +440,8 @@ export function NewAgreementPage() {
   const renderSendStep = () => (
     <div className="space-y-6">
       {dispatched ? (
-        <Card className="rounded-2xl border border-emerald-100 bg-[#f8fffd]/80 p-8 text-center shadow-[0_12px_40px_rgba(13,159,140,0.08)]">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-[#0D9F8C] border border-emerald-100 shadow-sm mb-6 animate-pulse">
+        <Card className="rounded-2xl border border-[#E7E7E7] bg-[#f8fffd]/80 p-8 text-center shadow-[0_12px_40px_rgba(17,17,17,0.12)]">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#FAFAFA] text-[#111111] border border-[#E7E7E7] shadow-sm mb-6 animate-pulse">
             <CheckCircle2 className="h-10 w-10" />
           </div>
           <h2 className="text-3xl font-black text-[#081b36]">Agreement Dispatched!</h2>
@@ -481,7 +457,7 @@ export function NewAgreementPage() {
             <Button asChild variant="outline" className="rounded-xl border-slate-200 bg-white font-bold">
               <Link href={`/workspace/${currentSlug}/agreements`}>View Agreements List</Link>
             </Button>
-            <Button onClick={() => setDispatched(false)} className="rounded-xl bg-[#0D9F8C] font-bold hover:bg-[#0A5B52]">
+            <Button onClick={() => setDispatched(false)} className="rounded-xl bg-[#111111] font-bold hover:bg-[#222222]">
               Create Another Agreement
             </Button>
           </div>
@@ -489,21 +465,21 @@ export function NewAgreementPage() {
       ) : (
         <div className="space-y-6">
           <div>
-            <h3 className="text-lg font-bold text-[#081B2E]">Dispatch Controls</h3>
+            <h3 className="text-lg font-bold text-[#111111]">Dispatch Controls</h3>
             <p className="text-xs text-slate-400 mt-1 font-semibold">Select delivery paths and secure verification configurations to dispatch this agreement.</p>
           </div>
 
           <div className="grid gap-5 md:grid-cols-2">
             <div className="rounded-xl border border-slate-200/50 bg-white p-5 space-y-4">
-              <div className="font-bold text-sm text-[#081B2E]">Agreement Signers</div>
+              <div className="font-bold text-sm text-[#111111]">Agreement Signers</div>
               
               <div className="space-y-3">
                 <div className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-slate-100">
                   <div className="flex items-center gap-3">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-50 text-xs font-black text-[#0D9F8C]">RMA</span>
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#FAFAFA] text-xs font-black text-[#111111]">RMA</span>
                     <span className="text-xs font-bold text-slate-700">{formData.responsibleRma.split(" (")[0]}</span>
                   </div>
-                  <span className="text-xs font-black text-[#0D9F8C] bg-emerald-100/50 px-2 py-0.5 rounded">RMA SIGNED</span>
+                  <span className="text-xs font-black text-[#111111] bg-[#FAFAFA]/50 px-2 py-0.5 rounded">RMA SIGNED</span>
                 </div>
 
                 <div className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-slate-100">
@@ -517,19 +493,19 @@ export function NewAgreementPage() {
             </div>
 
             <div className="rounded-xl border border-slate-200/50 bg-white p-5 space-y-4">
-              <div className="font-bold text-sm text-[#081B2E]">Audit Trail Channels</div>
+              <div className="font-bold text-sm text-[#111111]">Audit Trail Channels</div>
               
               <div className="space-y-3">
                 <label className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-slate-100 cursor-pointer">
                   <div className="flex items-center gap-3">
-                    <input type="checkbox" defaultChecked className="rounded border-slate-350 text-[#0D9F8C] focus:ring-[#0D9F8C] h-4 w-4" />
+                    <input type="checkbox" defaultChecked className="rounded border-slate-350 text-[#111111] focus:ring-[#111111] h-4 w-4" />
                     <span className="text-xs font-bold text-slate-700">Email Delivery ({formData.clientEmail || "Not Set"})</span>
                   </div>
                 </label>
 
                 <label className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-slate-100 cursor-pointer">
                   <div className="flex items-center gap-3">
-                    <input type="checkbox" defaultChecked className="rounded border-slate-350 text-[#0D9F8C] focus:ring-[#0D9F8C] h-4 w-4" />
+                    <input type="checkbox" defaultChecked className="rounded border-slate-350 text-[#111111] focus:ring-[#111111] h-4 w-4" />
                     <span className="text-xs font-bold text-slate-700">SMS Verification Link ({formData.clientPhone || "Not Set"})</span>
                   </div>
                 </label>
@@ -541,7 +517,7 @@ export function NewAgreementPage() {
             <Button variant="outline" onClick={() => setCurrentStep(4)} className="rounded-xl border-slate-200 bg-white font-bold px-6">
               Back to Preview
             </Button>
-            <Button onClick={handleDispatch} className="rounded-xl bg-[#0D9F8C] font-bold px-8 shadow-md hover:bg-[#0A5B52]">
+            <Button onClick={handleDispatch} className="rounded-xl bg-[#111111] font-bold px-8 shadow-md hover:bg-[#222222]">
               Authorise & Dispatch Agreement <Send className="h-4 w-4 ml-1.5" />
             </Button>
           </div>
@@ -595,9 +571,9 @@ export function NewAgreementPage() {
                     className={cn(
                       "rounded-xl border p-4 flex flex-col items-center justify-center text-center transition-all duration-300",
                       isActive 
-                        ? "border-[#0D9F8C]/30 bg-emerald-50/20 text-[#081B2E] shadow-sm font-bold" 
+                        ? "border-[#111111]/30 bg-[#FAFAFA]/20 text-[#111111] shadow-sm font-bold" 
                         : isCompleted 
-                          ? "border-emerald-100 bg-white text-[#0D9F8C]" 
+                          ? "border-[#E7E7E7] bg-white text-[#111111]" 
                           : "border-slate-100 bg-white/40 text-slate-400"
                     )}
                   >
@@ -605,15 +581,15 @@ export function NewAgreementPage() {
                       className={cn(
                         "flex h-8 w-8 items-center justify-center rounded-lg text-xs font-black transition-all duration-300",
                         isActive 
-                          ? "bg-[#0D9F8C] text-white shadow-[0_8px_20px_rgba(13,159,140,0.22)]" 
+                          ? "bg-[#111111] text-white shadow-[0_8px_20px_rgba(17,17,17,0.12)]" 
                           : isCompleted 
-                            ? "bg-emerald-50 text-[#0D9F8C] border border-emerald-100" 
+                            ? "bg-[#FAFAFA] text-[#111111] border border-[#E7E7E7]" 
                             : "bg-slate-100 text-slate-400"
                       )}
                     >
                       {isCompleted ? "✓" : index + 1}
                     </div>
-                    <div className={cn("mt-3 text-[11px] transition-all font-semibold", isActive ? "text-[#0A5B52] font-bold" : "text-slate-500")}>
+                    <div className={cn("mt-3 text-[11px] transition-all font-semibold", isActive ? "text-[#222222] font-bold" : "text-slate-500")}>
                       {step}
                     </div>
                   </button>
@@ -625,18 +601,18 @@ export function NewAgreementPage() {
           <Card className="rounded-2xl border border-slate-200/50 bg-white/60 shadow-[0_1px_2px_rgba(8,27,46,0.01),0_8px_24px_rgba(8,27,46,0.02)]">
             <CardContent className="p-7">
               <div className="mb-6 flex items-center justify-between">
-                <h2 className="text-xl font-bold tracking-tight text-[#081B2E]">{steps[currentStep]} Details</h2>
+                <h2 className="text-xl font-bold tracking-tight text-[#111111]">{steps[currentStep]} Details</h2>
                 <div className="flex items-center gap-2">
                   {saving ? (
-                    <span className="flex items-center gap-1.5 text-xs font-bold text-[#0D9F8C] bg-emerald-50/50 px-3 py-1 rounded-full border border-emerald-100/30">
-                      <svg className="animate-spin h-3.5 w-3.5 text-[#0D9F8C]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <span className="flex items-center gap-1.5 text-xs font-bold text-[#111111] bg-[#FAFAFA]/50 px-3 py-1 rounded-full border border-[#E7E7E7]/30">
+                      <svg className="animate-spin h-3.5 w-3.5 text-[#111111]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
                       Autosaving...
                     </span>
                   ) : (
-                    <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-[#0D9F8C] border border-emerald-100/50">
+                    <span className="rounded-full bg-[#FAFAFA] px-3 py-1 text-xs font-bold text-[#111111] border border-[#E7E7E7]/50">
                       {lastSaved}
                     </span>
                   )}
@@ -653,30 +629,30 @@ export function NewAgreementPage() {
           <Card className="sticky top-24 h-fit rounded-2xl border border-slate-200/50 bg-white/60 shadow-[0_1px_2px_rgba(8,27,46,0.01),0_8px_24px_rgba(8,27,46,0.02)]">
             <CardContent className="p-6 space-y-6">
               <div>
-                <h2 className="text-lg font-bold tracking-tight text-[#081B2E]">Agreement summary</h2>
+                <h2 className="text-lg font-bold tracking-tight text-[#111111]">Agreement summary</h2>
                 <p className="text-xs text-slate-400 mt-1 font-semibold">Live status of current matter draft.</p>
               </div>
 
               <div className="space-y-3.5 text-xs">
-                <div className="rounded-xl border border-slate-100 bg-[#F7FAF8] p-4 space-y-1">
+                <div className="rounded-xl border border-slate-100 bg-[#FAFAFA] p-4 space-y-1">
                   <span className="text-xs text-slate-400 uppercase tracking-wider font-bold">Client</span>
                   <div className="font-bold text-[#081b36] truncate">{formData.clientName || "Not Selected"}</div>
                   <div className="text-xs text-slate-500 font-semibold">{formData.clientEmail || "Email unassigned"}</div>
                 </div>
 
-                <div className="rounded-xl border border-slate-100 bg-[#F7FAF8] p-4 space-y-1">
+                <div className="rounded-xl border border-slate-100 bg-[#FAFAFA] p-4 space-y-1">
                   <span className="text-xs text-slate-400 uppercase tracking-wider font-bold">Matter & Scope</span>
                   <div className="font-bold text-[#081b36] truncate">{formData.visaSubclass.split(" - ")[0]}</div>
                   <div className="text-xs text-slate-500 font-semibold">Priority: {formData.matterPriority}</div>
                 </div>
 
-                <div className="rounded-xl border border-slate-100 bg-[#F7FAF8] p-4 space-y-1">
+                <div className="rounded-xl border border-slate-100 bg-[#FAFAFA] p-4 space-y-1">
                   <span className="text-xs text-slate-400 uppercase tracking-wider font-bold">Legal Fees & Split</span>
-                  <div className="font-bold text-[#0D9F8C] text-sm">${totalAmount.toLocaleString()} AUD</div>
+                  <div className="font-bold text-[#111111] text-sm">${totalAmount.toLocaleString()} AUD</div>
                   <div className="text-xs text-slate-500 font-semibold">Retainer due: ${parseFloat(formData.depositRequired || "0").toLocaleString()} AUD</div>
                 </div>
 
-                <div className="rounded-xl border border-slate-100 bg-[#F7FAF8] p-4 space-y-1">
+                <div className="rounded-xl border border-slate-100 bg-[#FAFAFA] p-4 space-y-1">
                   <span className="text-xs text-slate-400 uppercase tracking-wider font-bold">Regulatory Terms</span>
                   <div className="font-bold text-slate-600 truncate text-[11px]">{formData.termsTemplate}</div>
                   <div className="text-xs text-slate-400 font-semibold mt-0.5">Jurisdiction: {formData.governingLaw.split(" (")[0]}</div>
@@ -685,7 +661,7 @@ export function NewAgreementPage() {
 
               <div className="border-t border-slate-150 pt-4 flex items-center justify-between text-[11px] font-bold text-slate-400">
                 <span className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full bg-[#0D9F8C]"></span>
+                  <span className="h-2 w-2 rounded-full bg-[#111111]"></span>
                   Draft Autosaved
                 </span>
                 <span>Active Step: {currentStep + 1}/6</span>

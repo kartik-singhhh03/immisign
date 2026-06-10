@@ -22,14 +22,14 @@ export function WizardStepper({ currentStep, hidden }: Props) {
               key={step}
               className={cn(
                 "flex-1 min-w-0 flex items-center justify-center gap-1.5 px-2 py-3 text-[10px] sm:text-xs font-bold uppercase tracking-wide border-r border-slate-100 last:border-r-0 transition-colors",
-                isComplete && "bg-[#d1fae5]/60 text-[#0D9F8C]",
-                isActive && "bg-[#0D9F8C] text-white",
+                isComplete && "bg-[#FAFAFA] text-[#111111]",
+                isActive && "bg-[#111111] text-white",
                 !isComplete && !isActive && "bg-white text-slate-400"
               )}
             >
               <span className={cn(
                 "flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-black",
-                isComplete && "bg-[#0D9F8C] text-white",
+                isComplete && "bg-[#111111] text-white",
                 isActive && "bg-white/20 text-white",
                 !isComplete && !isActive && "bg-slate-100 text-slate-400"
               )}>

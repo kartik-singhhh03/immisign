@@ -1,6 +1,6 @@
 /** Hide seed / QA rows from production UI lists. */
 
-const DEMO_EMAIL_DOMAINS = ['@example.com', '@test.com', '@mailinator.com', '@immisign.test'];
+const DEMO_EMAIL_DOMAINS = ['@example.com', '@test.com', '@mailinator.com', '@immimate.test'];
 const DEMO_PHONE_RE = /^0?4000000000$/;
 const DEMO_NAME_RE = /^(phase\s*\d|phase\d|demo\s|test\s|qa\s|e2e\s)/i;
 

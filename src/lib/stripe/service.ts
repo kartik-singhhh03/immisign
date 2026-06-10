@@ -7,6 +7,7 @@ import {
 } from './seats';
 import { createAdminClient } from '../supabase/admin';
 import { getAppUrl } from '@/lib/app-url';
+import { resolveSubscriptionPeriod } from './subscription-period';
 
 export class StripeService {
   async getOrCreateCustomer(
@@ -196,6 +197,112 @@ export class StripeService {
     } catch {
       return null;
     }
+  }
+
+  /** Pull latest Stripe subscription into DB (checkout fallback / manual sync). */
+  async syncSubscriptionFromStripe(agencyId: string): Promise<{
+    synced: boolean;
+    subscriptionId?: string;
+    status?: string;
+  }> {
+    const plan = getImmisignPlan();
+    const admin = createAdminClient();
+
+    const { data: agency } = (await admin
+      .from('agencies')
+      .select('stripe_customer_id')
+      .eq('id', agencyId)
+      .maybeSingle()) as { data: { stripe_customer_id?: string | null } | null };
+
+    const customerId = agency?.stripe_customer_id;
+    if (!customerId) return { synced: false };
+
+    const list = await stripe.subscriptions.list({
+      customer: customerId,
+      status: 'all',
+      limit: 3,
+    });
+
+    const sub =
+      list.data.find((s) => s.status === 'active' || s.status === 'trialing') ||
+      list.data[0];
+    if (!sub) return { synced: false };
+
+    const baseItem = sub.items.data.find(
+      (item) => item.price.id === plan.baseMonthlyPriceId,
+    );
+    const seatItem = sub.items.data.find(
+      (item) => item.price.id === plan.seatMonthlyPriceId,
+    );
+
+    const billableSeats = await countActiveBillableUsers(admin, agencyId);
+    const additionalSeats =
+      seatItem?.quantity ?? additionalSeatsFromBillableCount(billableSeats);
+    const period = resolveSubscriptionPeriod(sub);
+
+    await admin.from('subscriptions').upsert(
+      {
+        agency_id: agencyId,
+        stripe_customer_id: customerId,
+        stripe_subscription_id: sub.id,
+        stripe_price_id: baseItem?.price.id || sub.items.data[0]?.price.id,
+        stripe_base_price_id: plan.baseMonthlyPriceId,
+        stripe_seat_price_id: plan.seatMonthlyPriceId,
+        stripe_seat_item_id: seatItem?.id ?? null,
+        plan_name: plan.id,
+        status: sub.status,
+        billing_cycle: 'monthly',
+        current_period_start: period.start,
+        current_period_end: period.end,
+        cancel_at_period_end: sub.cancel_at_period_end,
+        included_seats: plan.includedSeats,
+        billable_seats: billableSeats,
+        additional_seats: additionalSeats,
+        seats: plan.includedSeats + additionalSeats,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'agency_id' },
+    );
+
+    await admin
+      .from('agencies')
+      .update({
+        subscription_status: sub.status,
+        plan_type: plan.id,
+        max_users: plan.includedSeats + additionalSeats,
+        max_documents: 999999,
+      })
+      .eq('id', agencyId);
+
+    return { synced: true, subscriptionId: sub.id, status: sub.status };
+  }
+
+  async syncSubscriptionFromCheckoutSession(
+    agencyId: string,
+    checkoutSessionId: string,
+  ): Promise<{ synced: boolean; subscriptionId?: string }> {
+    const session = await stripe.checkout.sessions.retrieve(checkoutSessionId, {
+      expand: ['subscription'],
+    });
+
+    if (session.metadata?.agency_id && session.metadata.agency_id !== agencyId) {
+      throw new Error('Checkout session agency mismatch');
+    }
+
+    const customerId =
+      typeof session.customer === 'string'
+        ? session.customer
+        : session.customer?.id;
+
+    if (customerId) {
+      const admin = createAdminClient();
+      await admin
+        .from('agencies')
+        .update({ stripe_customer_id: customerId })
+        .eq('id', agencyId);
+    }
+
+    return this.syncSubscriptionFromStripe(agencyId);
   }
 }
 

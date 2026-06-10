@@ -1,9 +1,14 @@
 "use client"
 
 import React from "react"
-import Link from "next/link"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+import { Plus } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import {
+  ImmiMateFieldSelect,
+  ImmiMateInput,
+  ImmiMateTextarea,
+} from "@/components/ui/immimate-form"
+import { MatterTypesWorkflowModal } from "@/features/settings/components/MatterTypesWorkflowModal"
 import type { MatterTypeConfig } from "@/lib/settings/types"
 import type { AgreementWizardFormData, RmaOption } from "../../../types/wizard"
 import { WizardNav } from "../WizardNav"
@@ -17,18 +22,13 @@ function FieldLabel({ children, required }: { children: React.ReactNode; require
   )
 }
 
-const selectClass =
-  "flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]"
-
-const inputClass =
-  "h-11 rounded-xl border-slate-200 bg-white text-sm font-medium focus-visible:ring-1 focus-visible:ring-[#0D9F8C]"
-
 type Props = {
   form: AgreementWizardFormData
   rmaOptions: RmaOption[]
   matterTypes: MatterTypeConfig[]
-  agencySlug: string
   onChange: (field: keyof AgreementWizardFormData, value: string | boolean | Record<string, string>) => void
+  onMatterTypesUpdated: (matterTypes: MatterTypeConfig[], selectedId?: string) => void
+  onBlurSave?: () => void
   onBack: () => void
   onContinue: () => void
 }
@@ -55,8 +55,8 @@ function MatterField({
     return (
       <label className={`grid gap-2 ${colSpan}`}>
         <FieldLabel required={def.required}>{def.label}</FieldLabel>
-        <Textarea
-          className="min-h-[88px] rounded-xl border-slate-200 bg-white text-sm font-medium focus-visible:ring-1 focus-visible:ring-[#0D9F8C]"
+        <ImmiMateTextarea
+          className="min-h-[88px]"
           placeholder={def.placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -68,9 +68,8 @@ function MatterField({
   return (
     <label className={`grid gap-2 ${colSpan}`}>
       <FieldLabel required={def.required}>{def.label}</FieldLabel>
-      <Input
+      <ImmiMateInput
         type={def.fieldType === "date" ? "date" : def.fieldType === "email" ? "email" : "text"}
-        className={inputClass}
         placeholder={def.placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -79,7 +78,8 @@ function MatterField({
   )
 }
 
-export function MatterStep({ form, rmaOptions, matterTypes, agencySlug, onChange, onBack, onContinue }: Props) {
+export function MatterStep({ form, rmaOptions, matterTypes, onChange, onMatterTypesUpdated, onBlurSave, onBack, onContinue }: Props) {
+  const [modalOpen, setModalOpen] = React.useState(false)
   const matterConfig = resolveMatterType(matterTypes, form)
   const canContinue = Boolean(form.matterTypeId || form.matterType.trim())
 
@@ -97,75 +97,76 @@ export function MatterStep({ form, rmaOptions, matterTypes, agencySlug, onChange
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-[#081B2E]">Matter Details</h2>
+        <h2 className="text-xl font-bold text-[#111111]">Matter Details</h2>
         <p className="text-sm text-slate-500 mt-1">Configure the visa matter and applicant details.</p>
       </div>
 
       <label className="grid gap-2">
         <FieldLabel>Responsible Agent for this matter</FieldLabel>
-        <select
-          className={selectClass}
+        <ImmiMateFieldSelect
           value={form.responsibleRma}
-          onChange={(e) => onChange("responsibleRma", e.target.value)}
-        >
-          <option value="">Select responsible agent...</option>
-          {rmaOptions.map((rma) => (
-            <option key={rma.id} value={rma.id}>
-              {rma.name}{rma.isDefault ? " (Default)" : ""}
-            </option>
-          ))}
-        </select>
+          onValueChange={(v) => onChange("responsibleRma", v)}
+          placeholder="Select responsible agent..."
+          options={rmaOptions.map((rma) => ({
+            value: rma.id,
+            label: `${rma.name}${rma.isDefault ? " (Default)" : ""}`,
+          }))}
+        />
       </label>
 
       <div className="grid gap-5 md:grid-cols-2">
         <label className="grid gap-2">
           <FieldLabel required>Matter Type</FieldLabel>
-          <select
-            className={selectClass}
+          <ImmiMateFieldSelect
             value={form.matterTypeId || form.matterType}
-            onChange={(e) => handleMatterTypeChange(e.target.value)}
-          >
-            <option value="">Select matter type...</option>
-            {matterTypes.map((opt) => (
-              <option key={opt.id} value={opt.id}>{opt.name}</option>
-            ))}
-          </select>
+            onValueChange={handleMatterTypeChange}
+            placeholder="Select matter type..."
+            options={matterTypes.map((opt) => ({ value: opt.id, label: opt.name }))}
+          />
           {matterTypes.length === 0 && (
-            <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-              No matter types found for this agency.{' '}
-              <Link
-                href={`/workspace/${agencySlug}/settings?section=Matter%20Types`}
-                className="font-bold underline text-[#0D9F8C]"
+            <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <p className="text-xs text-amber-900 font-medium">No matter types configured</p>
+              <Button
+                type="button"
+                size="sm"
+                className="h-9 rounded-xl bg-[#111111] hover:bg-[#222222] shrink-0"
+                onClick={() => setModalOpen(true)}
               >
-                Add matter types in Settings
-              </Link>
-              .
-            </p>
+                <Plus className="h-3.5 w-3.5 mr-1" /> Create Matter Type
+              </Button>
+            </div>
+          )}
+          {matterTypes.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setModalOpen(true)}
+              className="text-xs font-bold text-[#111111] hover:underline text-left"
+            >
+              Manage matter types
+            </button>
           )}
         </label>
         <label className="grid gap-2">
           <FieldLabel>Visa Subclass</FieldLabel>
-          <Input
-            className={inputClass}
+          <ImmiMateInput
             placeholder={matterConfig?.subclassPlaceholder || "e.g. 820, 190, 482, 838"}
             value={form.visaSubclass}
             onChange={(e) => onChange("visaSubclass", e.target.value)}
+            onBlur={onBlurSave}
           />
         </label>
 
         <label className="grid gap-2">
           <FieldLabel>Primary Applicant Name</FieldLabel>
-          <Input
-            className={inputClass}
+          <ImmiMateInput
             value={form.primaryApplicantName}
             onChange={(e) => onChange("primaryApplicantName", e.target.value)}
           />
         </label>
         <label className="grid gap-2">
           <FieldLabel>Primary Applicant Date of Birth</FieldLabel>
-          <Input
+          <ImmiMateInput
             type="date"
-            className={inputClass}
             value={form.primaryApplicantDob}
             onChange={(e) => onChange("primaryApplicantDob", e.target.value)}
           />
@@ -175,26 +176,23 @@ export function MatterStep({ form, rmaOptions, matterTypes, agencySlug, onChange
           <>
             <label className="grid gap-2">
               <FieldLabel>Secondary Applicant Name</FieldLabel>
-              <Input
-                className={inputClass}
+              <ImmiMateInput
                 value={form.secondaryApplicantName}
                 onChange={(e) => onChange("secondaryApplicantName", e.target.value)}
               />
             </label>
             <label className="grid gap-2">
               <FieldLabel>Secondary Applicant Date of Birth</FieldLabel>
-              <Input
+              <ImmiMateInput
                 type="date"
-                className={inputClass}
                 value={form.secondaryApplicantDob}
                 onChange={(e) => onChange("secondaryApplicantDob", e.target.value)}
               />
             </label>
             <label className="grid gap-2 md:col-span-2">
               <FieldLabel>Secondary Applicant Email (for signing)</FieldLabel>
-              <Input
+              <ImmiMateInput
                 type="email"
-                className={inputClass}
                 placeholder="Required if secondary applicant must sign"
                 value={form.secondaryApplicantEmail}
                 onChange={(e) => onChange("secondaryApplicantEmail", e.target.value)}
@@ -207,17 +205,15 @@ export function MatterStep({ form, rmaOptions, matterTypes, agencySlug, onChange
           <>
             <label className="grid gap-2">
               <FieldLabel>Sponsor Name</FieldLabel>
-              <Input
-                className={inputClass}
+              <ImmiMateInput
                 value={form.sponsorName}
                 onChange={(e) => onChange("sponsorName", e.target.value)}
               />
             </label>
             <label className="grid gap-2">
               <FieldLabel>Sponsor Email (for signing)</FieldLabel>
-              <Input
+              <ImmiMateInput
                 type="email"
-                className={inputClass}
                 value={form.sponsorEmail}
                 onChange={(e) => onChange("sponsorEmail", e.target.value)}
               />
@@ -235,26 +231,23 @@ export function MatterStep({ form, rmaOptions, matterTypes, agencySlug, onChange
                 <React.Fragment key={n}>
                   <label className="grid gap-2">
                     <FieldLabel>{`Dependant ${n} — Full Name`}</FieldLabel>
-                    <Input
-                      className={inputClass}
+                    <ImmiMateInput
                       value={form[nameKey] as string}
                       onChange={(e) => onChange(nameKey, e.target.value)}
                     />
                   </label>
                   <label className="grid gap-2">
                     <FieldLabel>{`Dependant ${n} — Date of Birth`}</FieldLabel>
-                    <Input
+                    <ImmiMateInput
                       type="date"
-                      className={inputClass}
                       value={form[dobKey] as string}
                       onChange={(e) => onChange(dobKey, e.target.value)}
                     />
                   </label>
                   <label className="grid gap-2 md:col-span-2">
                     <FieldLabel>{`Dependant ${n} — Email (for signing)`}</FieldLabel>
-                    <Input
+                    <ImmiMateInput
                       type="email"
-                      className={inputClass}
                       value={form[emailKey] as string}
                       onChange={(e) => onChange(emailKey, e.target.value)}
                     />
@@ -276,22 +269,28 @@ export function MatterStep({ form, rmaOptions, matterTypes, agencySlug, onChange
 
         <label className="grid gap-2">
           <FieldLabel>File / Lodgement Ref</FieldLabel>
-          <Input
-            className={inputClass}
+          <ImmiMateInput
             value={form.fileLodgementRef}
             onChange={(e) => onChange("fileLodgementRef", e.target.value)}
           />
         </label>
-        <label className="grid gap-2">
-          <FieldLabel>Agreement Date</FieldLabel>
-          <Input
-            className={`${inputClass} max-w-xs`}
-            placeholder="DD/MM/YYYY"
-            value={form.agreementDate}
-            onChange={(e) => onChange("agreementDate", e.target.value)}
-          />
-        </label>
       </div>
+
+      <MatterTypesWorkflowModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        onSaved={(list, selectedId) => {
+          onMatterTypesUpdated(list, selectedId)
+          if (selectedId) {
+            const picked = list.find((m) => m.id === selectedId)
+            if (picked) {
+              onChange("matterTypeId", picked.id)
+              onChange("matterType", picked.name)
+              onChange("matterFieldValues", {})
+            }
+          }
+        }}
+      />
 
       <WizardNav
         showBack

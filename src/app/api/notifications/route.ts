@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getWorkspaceApiContext } from '@/lib/auth/workspace-api';
 import { apiError, withApiRoute } from '@/lib/api/json-response';
+import { listNotifications } from '@/lib/notifications/notification-query';
 
 export async function GET(req: NextRequest) {
   return withApiRoute('GET /api/notifications', async () => {
@@ -11,21 +12,22 @@ export async function GET(req: NextRequest) {
 
     const sp = req.nextUrl.searchParams;
     const page = Math.max(1, Number(sp.get('page') || 1));
-    const limit = Math.min(50, Number(sp.get('limit') || 20));
+    const limit = Math.min(100, Number(sp.get('limit') || 30));
     const offset = (page - 1) * limit;
-    const type = sp.get('type');
 
-    let query = ctx.supabase
-      .from('notifications')
-      .select('*', { count: 'exact' })
-      .eq('user_id', ctx.userId)
-      .eq('agency_id', ctx.agencyId)
-      .order('created_at', { ascending: false })
-      .range(offset, offset + limit - 1);
+    const { data, error, count } = await listNotifications(ctx.supabase, {
+      userId: ctx.userId,
+      agencyId: ctx.agencyId,
+      sidebar: sp.get('sidebar') || sp.get('filter') || undefined,
+      scope: sp.get('scope') || undefined,
+      priority: sp.get('priority') || undefined,
+      inbox: sp.get('inbox') || undefined,
+      includeArchived: sp.get('include_archived') === 'true',
+      offset,
+      limit,
+      type: sp.get('type'),
+    });
 
-    if (type && type !== 'all') query = query.eq('type', type);
-
-    const { data, error, count } = await query;
     if (error) return apiError(error.message, 400);
 
     return NextResponse.json({

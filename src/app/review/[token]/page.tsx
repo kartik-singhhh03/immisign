@@ -4,30 +4,41 @@ import { ApprovalService } from '@/features/approvals/services/approval.service'
 import { ClientReviewPortal } from '@/features/approvals/components/portal/client-review-portal';
 import { createAdminClient } from '@/lib/supabase/admin';
 
+async function resolveDocumentUrl(
+  supabase: ReturnType<typeof createAdminClient>,
+  approval: { id: string; document_path?: string | null },
+): Promise<string | null> {
+  if (!approval.document_path) return null;
+
+  const { data } = await supabase.storage
+    .from('documents')
+    .createSignedUrl(approval.document_path, 3600);
+
+  return data?.signedUrl ?? null;
+}
+
 export default async function ReviewPage({ params }: { params: { token: string } }) {
   const supabase = createAdminClient();
 
   const repo = new ApprovalRepository(supabase);
   const service = new ApprovalService(supabase);
-  
+
   const approval = await repo.getByToken(params.token);
   if (!approval) return notFound();
 
-  // Automatically mark as viewed if in correct state
   try {
     await service.markViewedByClient(params.token);
-  } catch (e) {
-    // Ignore transition errors if already viewed/approved
+  } catch {
+    // Ignore transition errors if already viewed
   }
 
-  // Refetch to get updated status
   const updatedApproval = await repo.getByToken(params.token);
-  
-  // Mock document URL
-  const documentUrl = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
+  const documentUrl = await resolveDocumentUrl(supabase, updatedApproval!);
+
+  if (!documentUrl) return notFound();
 
   return (
-    <ClientReviewPortal 
+    <ClientReviewPortal
       approval={updatedApproval!}
       token={params.token}
       documentUrl={documentUrl}

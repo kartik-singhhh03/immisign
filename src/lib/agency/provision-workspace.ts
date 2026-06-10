@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { SERVICE_AGREEMENT_TEMPLATE_NAME } from '@/lib/templates/service-agreement-template';
 
 const DEFAULT_SCOPE = `1. Verification of documents (estimated 5 hrs)
 2. Preparation and lodgement of visa application
@@ -33,8 +34,8 @@ export async function provisionAgencyWorkspace(
   const { error: brandingError } = await admin.from('branding_settings').upsert(
     {
       agency_id: agencyId,
-      primary_color: '#0D9F8C',
-      secondary_color: '#081B2E',
+      primary_color: '#3E7C6B',
+      secondary_color: '#111111',
       font_family: 'Inter',
       agreement_ref_prefix: 'AGR',
       agreement_ref_start: 1000,
@@ -102,6 +103,22 @@ export async function provisionAgencyWorkspace(
       })
       .eq('id', agencyId);
     if (agencyError) return { ok: false, error: agencyError.message };
+  }
+
+  const { count: templateCount } = await admin
+    .from('templates')
+    .select('*', { count: 'exact', head: true })
+    .eq('agency_id', agencyId)
+    .eq('is_service_agreement', true);
+
+  if (!templateCount) {
+    const { error: templateError } = await admin.from('templates').insert({
+      agency_id: agencyId,
+      name: SERVICE_AGREEMENT_TEMPLATE_NAME,
+      content: { html: '' },
+      is_service_agreement: true,
+    });
+    if (templateError) return { ok: false, error: templateError.message };
   }
 
   return { ok: true };

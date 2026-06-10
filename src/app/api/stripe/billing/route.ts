@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getWorkspaceApiContext } from '@/lib/auth/workspace-api';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { getImmisignPlan } from '@/lib/stripe/plan';
@@ -6,11 +6,22 @@ import { getAgencySeatSnapshot } from '@/lib/stripe/seats';
 import { stripeService } from '@/lib/stripe/service';
 import { apiError, withApiRoute } from '@/lib/api/json-response';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   return withApiRoute('GET /api/stripe/billing', async () => {
     const ctx = await getWorkspaceApiContext();
     if ('error' in ctx) {
       return apiError(ctx.error, ctx.status);
+    }
+
+    const sessionId = req.nextUrl.searchParams.get('session_id')?.trim();
+    const role = String(ctx.dbRole || '').toLowerCase();
+    if (sessionId && ['owner', 'admin'].includes(role)) {
+      try {
+        await stripeService.syncSubscriptionFromCheckoutSession(ctx.agencyId, sessionId);
+        await stripeService.syncSubscriptionSeats(ctx.agencyId);
+      } catch (e) {
+        console.warn('[billing] checkout session sync:', e);
+      }
     }
 
     let plan;
@@ -43,7 +54,6 @@ export async function GET() {
     const customerId =
       sub?.stripe_customer_id || agencyRow?.stripe_customer_id || null;
 
-    const role = String(ctx.dbRole || '').toLowerCase();
     let nextInvoiceAmountCents: number | null = null;
     if (customerId && ['owner', 'admin'].includes(role)) {
       nextInvoiceAmountCents =

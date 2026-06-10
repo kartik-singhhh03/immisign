@@ -8,6 +8,8 @@ import { DispatchTimeline } from "@/components/ui/standards"
 import type { DispatchStageRecord } from "@/lib/dispatch/stage-tracker"
 import { ProfessionalErrorPanel } from "@/components/errors/professional-error"
 import type { AgencyWizardContext, AgreementWizardFormData, RmaOption } from "../../../types/wizard"
+import { calculateFeeTotals, formatCurrencyAud } from "../../../lib/fee-items"
+import { AgreementLifecycleTimeline } from "../../AgreementLifecycleTimeline"
 
 type Props = {
   form: AgreementWizardFormData
@@ -43,19 +45,20 @@ export function SendStep({
   onSend,
 }: Props) {
   const selectedRma = rmaOptions.find((r) => r.id === form.responsibleRma) || rmaOptions.find((r) => r.isDefault) || rmaOptions[0]
+  const feeTotals = calculateFeeTotals(form.feeItems || [])
 
   if (dispatched && apiResponse?.signwellResult?.id) {
     const { agreementId, signwellResult } = apiResponse
     return (
-      <Card className="rounded-2xl border border-emerald-100 bg-[#f8fffd]/80 p-8 shadow-sm">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-[#0D9F8C] border border-emerald-100 mb-6">
+      <Card className="rounded-2xl border border-[#E7E7E7] bg-[#f8fffd]/80 p-8 shadow-sm">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#FAFAFA] text-[#111111] border border-[#E7E7E7] mb-6">
           <CheckCircle2 className="h-10 w-10" />
         </div>
-        <h2 className="text-2xl font-black text-[#081b36] text-center">Agreement Sent for Signature</h2>
+        <h2 className="section-title text-2xl text-center">Agreement sent for signature</h2>
         <p className="mt-3 text-slate-600 text-sm text-center max-w-md mx-auto">
           The agreement has been generated with the responsible agent signature applied automatically. Only client signers were sent via SignWell.
         </p>
-        <div className="mt-6 text-xs font-semibold text-slate-600 space-y-2 border-y border-emerald-100 py-4">
+        <div className="mt-6 text-xs font-semibold text-slate-600 space-y-2 border-y border-[#E7E7E7] py-4">
           <div className="flex justify-between"><span className="text-slate-400">Agreement Ref</span><span className="font-mono">{agreementRef}</span></div>
           <div className="flex justify-between"><span className="text-slate-400">Agreement ID</span><span className="font-mono">{agreementId}</span></div>
           {signwellResult?.id && (
@@ -99,23 +102,25 @@ export function SendStep({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-[#081B2E]">Send</h2>
-        <p className="text-sm text-slate-500 mt-1">Send secure signing links to all parties.</p>
+        <h2 className="text-xl font-bold text-[#111111]">Send</h2>
+        <p className="text-sm text-slate-500 mt-1">PDF is generated first, then sent via SignWell.</p>
       </div>
+
+      <AgreementLifecycleTimeline status="pending" hasPdf className="py-1" />
 
       <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-5 space-y-3 text-sm">
         <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-          <div><span className="text-slate-400 text-xs font-bold uppercase">Client</span><p className="font-semibold text-[#081B2E]">{form.clientName}</p></div>
-          <div><span className="text-slate-400 text-xs font-bold uppercase">Email</span><p className="font-semibold text-[#081B2E]">{form.clientEmail}</p></div>
-          <div><span className="text-slate-400 text-xs font-bold uppercase">Matter</span><p className="font-semibold text-[#081B2E]">{form.matterType}</p></div>
-          <div><span className="text-slate-400 text-xs font-bold uppercase">Subclass</span><p className="font-semibold text-[#081B2E]">{form.visaSubclass || "—"}</p></div>
-          <div><span className="text-slate-400 text-xs font-bold uppercase">Fee</span><p className="font-semibold text-[#081B2E]">${parseFloat(form.professionalFee || "0").toLocaleString("en-AU")} AUD</p></div>
-          <div><span className="text-slate-400 text-xs font-bold uppercase">Agent</span><p className="font-semibold text-[#081B2E]">{selectedRma?.name || "—"}</p></div>
+          <div><span className="text-slate-400 text-xs font-bold uppercase">Client</span><p className="font-semibold text-[#111111]">{form.clientName}</p></div>
+          <div><span className="text-slate-400 text-xs font-bold uppercase">Email</span><p className="font-semibold text-[#111111]">{form.clientEmail}</p></div>
+          <div><span className="text-slate-400 text-xs font-bold uppercase">Matter</span><p className="font-semibold text-[#111111]">{form.matterType}</p></div>
+          <div><span className="text-slate-400 text-xs font-bold uppercase">Subclass</span><p className="font-semibold text-[#111111]">{form.visaSubclass || "—"}</p></div>
+          <div><span className="text-slate-400 text-xs font-bold uppercase">Grand Total</span><p className="font-semibold text-[#111111]">{formatCurrencyAud(feeTotals.grandTotal)}</p></div>
+          <div><span className="text-slate-400 text-xs font-bold uppercase">Agent</span><p className="font-semibold text-[#111111]">{selectedRma?.name || "—"}</p></div>
         </div>
       </div>
 
-      <div className="flex items-start gap-3 rounded-xl border border-[#0D9F8C]/20 bg-[#ecfdf5]/50 p-4 text-sm text-slate-700">
-        <Lock className="h-5 w-5 shrink-0 text-[#0D9F8C] mt-0.5" />
+      <div className="flex items-start gap-3 rounded-xl border border-[#111111]/20 bg-[#FAFAFA]/50 p-4 text-sm text-slate-700">
+        <Lock className="h-5 w-5 shrink-0 text-[#111111] mt-0.5" />
         <p>
           <strong>{selectedRma?.name || "The responsible agent"}</strong> signature is applied automatically on the PDF.
           SignWell signing links go to <strong>external client signers only</strong> (not the agent).
@@ -125,7 +130,7 @@ export function SendStep({
       <label className="grid gap-2">
         <span className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Email Message</span>
         <textarea
-          className="flex min-h-[140px] w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm font-medium leading-relaxed focus:outline-none focus:ring-1 focus:ring-[#0D9F8C] resize-y"
+          className="flex min-h-[140px] w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm font-medium leading-relaxed focus:outline-none focus:ring-1 focus:ring-[#111111] resize-y"
           value={form.emailMessage}
           onChange={(e) => onChange("emailMessage", e.target.value)}
         />
@@ -142,7 +147,7 @@ export function SendStep({
               type="checkbox"
               checked={form[key]}
               onChange={(e) => onChange(key, e.target.checked)}
-              className="h-4 w-4 rounded border-slate-300 text-[#0D9F8C] focus:ring-[#0D9F8C]"
+              className="h-4 w-4 rounded border-slate-300 text-[#111111] focus:ring-[#111111]"
             />
             {label}
           </label>
@@ -159,7 +164,7 @@ export function SendStep({
         type="button"
         disabled={saving}
         onClick={onSend}
-        className="w-full h-14 rounded-xl bg-[#0D9F8C] font-black text-white hover:bg-[#0A5B52] shadow-md text-base"
+        className="w-full h-14 rounded-xl bg-[#111111] font-black text-white hover:bg-[#222222] shadow-md text-base"
       >
         <PenLine className="h-5 w-5 mr-2" />
         Send Agreement for Signature

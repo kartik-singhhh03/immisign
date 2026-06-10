@@ -91,7 +91,7 @@ export function DashboardCommunications() {
 
   return (
     <div className="mb-8 space-y-6">
-      <h2 className="text-lg font-black text-[#081B2E]">Communications & workload</h2>
+      <h2 className="text-lg font-black text-[#111111]">Communications & workload</h2>
       {loadError && (
         <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
           {loadError}. Showing empty state — other dashboard sections still work.
@@ -101,7 +101,7 @@ export function DashboardCommunications() {
         <Card className="rounded-2xl border-slate-200/60">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-3">
-              <ClipboardList className="h-4 w-4 text-[#0D9F8C]" />
+              <ClipboardList className="h-4 w-4 text-[#111111]" />
               <h3 className="text-sm font-bold">My tasks</h3>
             </div>
             {summary.myTasks.length === 0 ? (
@@ -131,7 +131,7 @@ export function DashboardCommunications() {
               <ul className="space-y-2">
                 {summary.myReviews.map((a) => (
                   <li key={a.id}>
-                    <Link href={`${prefix}/approvals/${a.id}`} className="text-xs font-bold text-[#0D9F8C] hover:underline">
+                    <Link href={`${prefix}/approvals/${a.id}`} className="text-xs font-bold text-[#111111] hover:underline">
                       {a.approval_number || a.title}
                     </Link>
                   </li>
@@ -147,7 +147,7 @@ export function DashboardCommunications() {
               <FileSignature className="h-4 w-4 text-blue-600" />
               <h3 className="text-sm font-bold">Pending signatures</h3>
             </div>
-            <p className="text-2xl font-black text-[#081B2E]">{summary.pendingSignatures.length}</p>
+            <p className="text-2xl font-black text-[#111111]">{summary.pendingSignatures.length}</p>
           </CardContent>
         </Card>
 
@@ -175,7 +175,7 @@ export function DashboardCommunications() {
         <Card className="rounded-2xl border-slate-200/60 md:col-span-2">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-3">
-              <Calendar className="h-4 w-4 text-teal-600" />
+              <Calendar className="h-4 w-4 text-[#5C5C5C]" />
               <h3 className="text-sm font-bold">Upcoming deadlines (7 days)</h3>
             </div>
             {summary.upcomingDeadlines.length === 0 ? (
@@ -184,7 +184,7 @@ export function DashboardCommunications() {
               <ul className="grid sm:grid-cols-2 gap-2">
                 {summary.upcomingDeadlines.map((a) => (
                   <li key={a.id} className="text-xs font-semibold">
-                    <Link href={`${prefix}/approvals/${a.id}`} className="text-[#0D9F8C] font-bold hover:underline">
+                    <Link href={`${prefix}/approvals/${a.id}`} className="text-[#111111] font-bold hover:underline">
                       {a.approval_number || a.title}
                     </Link>
                     <span className="text-slate-500 block">
@@ -234,7 +234,7 @@ export function DashboardCommunications() {
               ))}
             </div>
           )}
-          <Button variant="link" className="mt-2 p-0 h-auto text-xs font-bold text-[#0D9F8C]" asChild>
+          <Button variant="link" className="mt-2 p-0 h-auto text-xs font-bold text-[#111111]" asChild>
             <Link href={`${prefix}/activity`}>View full activity feed</Link>
           </Button>
         </CardContent>

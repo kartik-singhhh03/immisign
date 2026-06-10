@@ -1,0 +1,48 @@
+﻿{
+  "timestamp": "2026-06-10T07:09:36.122Z",
+  "baseUrl": "http://localhost:3000",
+  "vars": {
+    "NEXT_PUBLIC_SUPABASE_URL": "SET",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "sb_pΓÇª6BfW",
+    "SUPABASE_SERVICE_ROLE_KEY": "eyJhΓÇªXmJM",
+    "SUPABASE_DB_PASSWORD": "SET",
+    "DATABASE_URL": "MISSING",
+    "SIGNWELL_API_KEY": "YWNjΓÇªOWE5",
+    "SIGNWELL_WEBHOOK_ID": "MISSING",
+    "SIGNWELL_WEBHOOK_SECRET": "SET",
+    "RESEND_API_KEY": "re_EΓÇªvYkL",
+    "RESEND_FROM_EMAIL": "support@immisign.app",
+    "STRIPE_SECRET_KEY": "SET (user: not configured for billing)",
+    "NEXT_PUBLIC_APP_URL": "http://localhost:3001",
+    "CRON_SECRET": "MISSING"
+  },
+  "checks": {
+    "supabase_rest": {
+      "ok": true,
+      "agencies": 6
+    },
+    "ntf1_migration": {
+      "ok": false,
+      "status": "NOT_APPLIED",
+      "error": "column notifications.priority does not exist"
+    },
+    "activity_events": {
+      "ok": false,
+      "error": "Could not find the table 'public.activity_events' in the schema cache"
+    },
+    "signwell_api": {
+      "ok": false,
+      "status": 401
+    },
+    "resend_api": {
+      "ok": false,
+      "status": 401,
+      "domainCount": null,
+      "note": "Domain verification required for production FROM address; test mode may use onboarding@resend.dev"
+    },
+    "localhost": {
+      "ok": true,
+      "status": 200
+    }
+  }
+}

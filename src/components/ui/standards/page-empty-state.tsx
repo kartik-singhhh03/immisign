@@ -89,11 +89,11 @@ export function PageEmptyState({
   const action =
     p.actionLabel && (href || onAction) ? (
       href ? (
-        <Button asChild className="rounded-xl bg-[#0D9F8C] font-bold">
+        <Button asChild className="rounded-xl bg-[#111111] font-bold">
           <Link href={href}>{p.actionLabel}</Link>
         </Button>
       ) : (
-        <Button type="button" onClick={onAction} className="rounded-xl bg-[#0D9F8C] font-bold">
+        <Button type="button" onClick={onAction} className="rounded-xl bg-[#111111] font-bold">
           {p.actionLabel}
         </Button>
       )

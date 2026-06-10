@@ -32,7 +32,7 @@ export async function generateSenderAttestationPdf(
 <head>
   <meta charset="utf-8" />
   <style>
-    body { font-family: 'Segoe UI', Arial, sans-serif; color: #081b2e; margin: 0; padding: 40px; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; color: #111111; margin: 0; padding: 40px; }
     h1 { font-size: 20px; margin: 0 0 8px; }
     .meta { font-size: 12px; color: #64748b; margin-bottom: 28px; }
     .box { border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; background: #f8fafc; }

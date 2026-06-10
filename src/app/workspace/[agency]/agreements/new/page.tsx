@@ -7,7 +7,13 @@ import type { AgencyWizardContext, RmaOption, UserWizardContext } from '@/featur
 import { loadAgencySettings } from '@/lib/settings/load-agency-settings';
 import type { AgencySettings } from '@/lib/settings/types';
 
-export default async function NewAgreementPage({ params }: { params: { agency: string } }) {
+export default async function NewAgreementPage({
+  params,
+  searchParams,
+}: {
+  params: { agency: string };
+  searchParams?: { clientId?: string };
+}) {
   const adminClient = createAdminClient();
 
   const { data: agency, error } = await (adminClient as any)
@@ -109,6 +115,12 @@ export default async function NewAgreementPage({ params }: { params: { agency: s
     .eq('agency_id', agency.id)
     .order('name');
 
+  const initialClientId =
+    searchParams?.clientId &&
+    (clientRows || []).some((c: { id: string }) => c.id === searchParams.clientId)
+      ? searchParams.clientId
+      : undefined;
+
   return (
     <AgreementWizard
       agencyId={agency.id}
@@ -118,6 +130,7 @@ export default async function NewAgreementPage({ params }: { params: { agency: s
       user={userContext}
       rmaOptions={rmaOptions}
       agencySettings={agencySettings}
+      initialClientId={initialClientId}
       clients={(clientRows || []).map((c: { id: string; name: string; email: string; phone?: string }) => ({
         id: c.id,
         name: c.name,

@@ -1,7 +1,9 @@
 "use client"
 
 import * as React from "react"
+import { useSearchParams } from "next/navigation"
 import { useRequireWorkspace } from "@/lib/hooks/use-workspace"
+import type { ComplianceFilterKey } from "@/features/compliance/types"
 import { useClients } from "@/lib/hooks/useSupabaseData"
 import Link from "next/link"
 import {
@@ -55,36 +57,45 @@ import {
 import { StatusPill } from "@/components/saas/dashboard-pages"
 import { PageEmptyState } from "@/components/ui/standards"
 import { notifyError, notifySuccess } from "@/lib/ux/feedback"
-import { filterProductionClients } from "@/lib/data/production-filters"
-import { Skeleton } from "@/components/ui/skeleton"
+import { PageHeader } from "@/components/ui/page-header"
+import { TableSkeleton } from "@/components/ui/skeletons"
+import { PaginationBar } from "@/components/ui/pagination-bar"
 
-function PageHeader({
-  eyebrow,
-  title,
-  description,
-  action,
-}: {
-  eyebrow?: string
-  title: string
-  description: string
-  action?: React.ReactNode
-}) {
-  return (
-    <div className="animate-enter mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-end">
-      <div>
-        {eyebrow && <div className="text-[11px] font-bold uppercase tracking-widest text-[#0D9F8C]">{eyebrow}</div>}
-        <h1 className="mt-2 text-3xl font-bold tracking-tight text-[#081B2E] md:text-4xl">{title}</h1>
-        <p className="mt-2.5 max-w-2xl text-[14px] leading-6 text-slate-500 font-medium">{description}</p>
-      </div>
-      {action}
-    </div>
-  )
+const COMPLIANCE_FILTER_LABELS: Partial<Record<ComplianceFilterKey, string>> = {
+  missing_sa: "Missing Service Agreements",
+  pending_approval: "Pending Approvals",
+  awaiting_lodge: "Awaiting Lodgement",
+  missing_sos: "Missing SOS",
+  incomplete_matters: "Incomplete Matters",
 }
 
-export function ClientsPage() {
-  const { data: clientsList, loading, addClient } = useClients()
+const LEGACY_COMPLIANCE_REDIRECT: Record<string, ComplianceFilterKey> = {
+  outstanding_docs: "incomplete_matters",
+  unack_sos: "missing_sos",
+  ready_lodge: "awaiting_lodge",
+  completed: "incomplete_matters",
+}
+
+function ClientsPageContent() {
+  const searchParams = useSearchParams()
+  const rawCompliance = searchParams.get("compliance")
+  const complianceFilter = (
+    rawCompliance
+      ? LEGACY_COMPLIANCE_REDIRECT[rawCompliance] || rawCompliance
+      : null
+  ) as ComplianceFilterKey | null
+  const { slug: currentSlug } = useRequireWorkspace()
+  const { addClient } = useClients()
+  const [clientsList, setClientsList] = React.useState<any[]>([])
+  const [loading, setLoading] = React.useState(true)
+  const [totalCount, setTotalCount] = React.useState(0)
+  const [page, setPage] = React.useState(1)
   const [searchQuery, setSearchQuery] = React.useState("")
+  const [debouncedSearch, setDebouncedSearch] = React.useState("")
   const [isOpen, setIsOpen] = React.useState(false)
+  const pageSize = 10
+  const [complianceClientIds, setComplianceClientIds] = React.useState<Set<string> | null>(null)
+  const [complianceLoading, setComplianceLoading] = React.useState(false)
   
   // New Client Form States
   const [clientName, setClientName] = React.useState("")
@@ -117,27 +128,102 @@ export function ClientsPage() {
     }
   }
 
-  const filteredClients = filterProductionClients(clientsList || []).filter(
-    (c: any) =>
-      c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.email.toLowerCase().includes(searchQuery.toLowerCase()),
-  )
+  React.useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(searchQuery), 300)
+    return () => clearTimeout(t)
+  }, [searchQuery])
 
-  const { slug: currentSlug } = useRequireWorkspace()
+  React.useEffect(() => {
+    setPage(1)
+  }, [debouncedSearch])
+
+  React.useEffect(() => {
+    let cancelled = false
+    const load = async () => {
+      setLoading(true)
+      const params = new URLSearchParams({
+        page: String(page),
+        limit: String(pageSize),
+        sort: "created_at",
+        direction: "desc",
+      })
+      if (debouncedSearch) params.set("search", debouncedSearch)
+      const res = await fetch(`/api/clients?${params}`)
+      const json = await res.json()
+      if (!cancelled && json.success) {
+        setClientsList(json.data || [])
+        setTotalCount(json.count || 0)
+      }
+      if (!cancelled) setLoading(false)
+    }
+    void load()
+    return () => {
+      cancelled = true
+    }
+  }, [page, debouncedSearch])
+
+  React.useEffect(() => {
+    if (!complianceFilter) {
+      setComplianceClientIds(null)
+      return
+    }
+    setComplianceLoading(true)
+    fetch("/api/compliance/dashboard")
+      .then((r) => r.json())
+      .then((json) => {
+        const card = json.dashboard?.summary?.find(
+          (c: { id: string }) => c.id === complianceFilter,
+        )
+        const matterClientIds = (card?.matters || []).map((m: { clientId: string }) => m.clientId)
+        setComplianceClientIds(
+          new Set(matterClientIds.length ? matterClientIds : card?.clientIds || []),
+        )
+      })
+      .catch(() => setComplianceClientIds(new Set()))
+      .finally(() => setComplianceLoading(false))
+  }, [complianceFilter])
+
+  const filteredClients = (clientsList || []).filter((c: { id: string }) => {
+    if (!complianceFilter || !complianceClientIds) return true
+    return complianceClientIds.has(c.id)
+  })
+  const totalPages = Math.ceil(totalCount / pageSize) || 0
 
   return (
     <div>
+      {complianceFilter && COMPLIANCE_FILTER_LABELS[complianceFilter] && (
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[#E7E7E7] bg-[#FAFAFA] px-4 py-3">
+          <p className="text-sm text-[#232323]">
+            <span className="font-semibold text-[#111111]">Compliance filter:</span>{" "}
+            {COMPLIANCE_FILTER_LABELS[complianceFilter]}
+            {complianceLoading ? " (loading…)" : ` · ${filteredClients.length} clients`}
+          </p>
+          <Link
+            href={`/workspace/${currentSlug}/clients`}
+            className="text-xs font-semibold text-[#6E6E6E] hover:text-[#111111]"
+          >
+            Clear filter
+          </Link>
+        </div>
+      )}
+
       <PageHeader
+        className="mb-6 animate-enter"
         eyebrow="Clients"
         title="Client relationship workspace"
         description="Premium CRM-style profiles connected to agreements, documents, notes and matter timelines."
         action={
-          <Button
-            onClick={() => setIsOpen(true)}
-            className="rounded-xl bg-[#0D9F8C] font-bold shadow-[0_10px_24px_rgba(13,159,140,0.18)] hover:bg-[#0A5B52]"
-          >
-            <Plus className="h-4 w-4 mr-1.5" />New client
-          </Button>
+          currentSlug ? (
+            <Button asChild>
+              <Link href={`/workspace/${currentSlug}/onboarding/new`}>
+                <Plus className="h-4 w-4 mr-1.5" />New Client & Matter
+              </Link>
+            </Button>
+          ) : (
+            <Button onClick={() => setIsOpen(true)}>
+              <Plus className="h-4 w-4 mr-1.5" />New client
+            </Button>
+          )
         }
       />
 
@@ -149,7 +235,7 @@ export function ClientsPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search clients by name or email address..."
-            className="h-12 rounded-2xl border-slate-200/50 bg-white/70 pl-11 shadow-[0_8px_20px_rgba(8,27,46,0.02)] placeholder:text-slate-400 focus-visible:ring-1 focus-visible:ring-[#0D9F8C]"
+            className="h-12 rounded-2xl border-slate-200/50 bg-white/70 pl-11 shadow-[0_8px_20px_rgba(8,27,46,0.02)] placeholder:text-slate-400 focus-visible:ring-1 focus-visible:ring-[#111111]"
           />
         </div>
         <Button variant="outline" className="h-12 rounded-2xl border-slate-200/60 bg-white/70 px-5 font-bold hover:bg-slate-50 transition-colors">
@@ -160,11 +246,7 @@ export function ClientsPage() {
 
       {/* CLIENTS GRID */}
       {loading ? (
-        <div className="space-y-3">
-          {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-20 w-full rounded-2xl" />
-          ))}
-        </div>
+        <TableSkeleton rows={5} cols={4} />
       ) : clientsList?.length === 0 ? (
         <PageEmptyState module="clients" onAction={() => setIsOpen(true)} />
       ) : filteredClients.length === 0 ? (
@@ -180,7 +262,7 @@ export function ClientsPage() {
               className="grid gap-4 rounded-2xl border border-slate-200/50 bg-white/60 p-5 shadow-[0_1px_2px_rgba(8,27,46,0.01),0_8px_24px_rgba(8,27,46,0.02)] transition-all hover:bg-white/90 md:grid-cols-[1fr_0.8fr_0.6fr_0.6fr_auto] md:items-center"
             >
               <div>
-                <div className="font-bold text-[#081B2E]">{client.name}</div>
+                <div className="font-semibold text-[#111111]">{client.name}</div>
                 <div className="text-[11px] font-semibold text-slate-400 mt-0.5">
                   {client.email}{client.phone ? ` · ${client.phone}` : ""}
                 </div>
@@ -189,18 +271,29 @@ export function ClientsPage() {
               <div className="text-sm font-semibold text-slate-650">
                 {client.matters} {client.matters === 1 ? "matter" : "matters"}
               </div>
-              <div className="text-sm font-bold text-[#081B2E]">{client.value}</div>
+              <div className="text-sm font-semibold text-[#111111]">{client.value}</div>
               <ArrowRight className="h-4 w-4 text-slate-350 shrink-0" />
             </Link>
           ))}
         </div>
       )}
 
+      {!loading && totalCount > 0 && (
+        <PaginationBar
+          page={page}
+          totalPages={totalPages}
+          total={totalCount}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          className="mt-4 rounded-2xl border border-slate-200/50 bg-white/60"
+        />
+      )}
+
       {/* ADD CLIENT DIALOG */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="max-w-md rounded-2xl border-slate-200 p-6 bg-white/95 backdrop-blur-md shadow-2xl">
           <DialogHeader>
-            <DialogTitle className="text-base font-bold text-[#081B2E] tracking-tight">Register New Visa Client</DialogTitle>
+            <DialogTitle className="text-base font-bold text-[#111111] tracking-tight">Register New Visa Client</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleCreateClient} className="space-y-4 mt-3">
             <label className="grid gap-2 text-xs font-bold text-slate-500">
@@ -236,7 +329,7 @@ export function ClientsPage() {
 
             <div className="flex gap-2 justify-end pt-2">
               <Button disabled={isSubmitting} type="button" variant="outline" onClick={() => setIsOpen(false)} className="rounded-xl h-11 text-xs font-bold border-slate-200 bg-white">Cancel</Button>
-              <Button disabled={isSubmitting} type="submit" className="rounded-xl h-11 text-xs font-bold bg-[#0D9F8C] hover:bg-[#0A5B52]">
+              <Button disabled={isSubmitting} type="submit" className="rounded-xl h-11 text-xs font-bold bg-[#111111] hover:bg-[#222222]">
                 {isSubmitting ? "Saving..." : "Save Client Profile"}
               </Button>
             </div>
@@ -244,5 +337,13 @@ export function ClientsPage() {
         </DialogContent>
       </Dialog>
     </div>
+  )
+}
+
+export function ClientsPage() {
+  return (
+    <React.Suspense fallback={<TableSkeleton rows={5} cols={4} />}>
+      <ClientsPageContent />
+    </React.Suspense>
   )
 }

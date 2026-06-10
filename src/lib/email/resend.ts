@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { recordEmailDelivery } from './delivery-audit';
 
 const RESEND_KEY_PREFIX = 're_';
 const TEST_FROM_FALLBACK = 'onboarding@resend.dev';
@@ -36,9 +37,15 @@ export function isLikelyProductionFromAddress(from: string): boolean {
   const normalized = from.toLowerCase();
   return (
     normalized.endsWith('@resend.dev') ||
+    normalized.endsWith('@immimate.com') ||
+    normalized.endsWith('@immimate.com.au') ||
+    normalized.endsWith('@mail.immimate.com') ||
     normalized.endsWith('@immisign.com') ||
     normalized.endsWith('@immisign.com.au') ||
-    normalized.endsWith('@mail.immisign.com')
+    normalized.endsWith('@mail.immisign.com') ||
+    normalized.endsWith('@immimate.app') ||
+    normalized.endsWith('@immimate.au') ||
+    normalized.endsWith('@immimate.com')
   );
 }
 
@@ -61,8 +68,14 @@ export function getResendConfigSummary() {
   };
 }
 
-export async function sendEmailWithForensicLogging(payload: ResendSendPayload) {
+export async function sendEmailWithForensicLogging(
+  payload: ResendSendPayload,
+  auditMeta?: { emailType?: string; agencyId?: string | null },
+) {
   const resend = createResendClient();
+  const recipients = Array.isArray(payload.to) ? payload.to : [payload.to];
+  const primaryRecipient = recipients[0] || '';
+
   console.log('EMAIL_SEND_START', JSON.stringify({
     to: payload.to,
     subject: payload.subject,
@@ -74,11 +87,39 @@ export async function sendEmailWithForensicLogging(payload: ResendSendPayload) {
     console.log('EMAIL_SEND_SUCCESS', JSON.stringify(result, null, 2));
     if (result && typeof result === 'object' && 'error' in result && (result as { error?: { message?: string } }).error) {
       const resendError = (result as { error?: { message?: string } }).error;
+      await recordEmailDelivery({
+        recipient: primaryRecipient,
+        subject: payload.subject,
+        status: 'failed',
+        emailType: auditMeta?.emailType,
+        agencyId: auditMeta?.agencyId,
+        error: resendError?.message || 'Resend returned error payload',
+      });
       throw new Error(resendError?.message || 'Resend returned error payload');
     }
+
+    const resendId = (result as { data?: { id?: string } })?.data?.id ?? null;
+    await recordEmailDelivery({
+      recipient: primaryRecipient,
+      subject: payload.subject,
+      resendId,
+      status: resendId ? 'accepted' : 'sent',
+      emailType: auditMeta?.emailType,
+      agencyId: auditMeta?.agencyId,
+    });
+
     return result;
   } catch (error) {
     console.error('EMAIL_SEND_FAILED', JSON.stringify(error, null, 2));
+    const message = error instanceof Error ? error.message : 'Email send failed';
+    await recordEmailDelivery({
+      recipient: primaryRecipient,
+      subject: payload.subject,
+      status: 'failed',
+      emailType: auditMeta?.emailType,
+      agencyId: auditMeta?.agencyId,
+      error: message,
+    });
     throw error;
   }
 }

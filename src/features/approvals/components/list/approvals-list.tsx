@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { PageHeader } from "@/components/layout/PageHeader"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, Filter, Plus, FileCheck2 } from "lucide-react"
 import { ApprovalStatusBadge } from "../status-badge"
 import { PageEmptyState } from "@/components/ui/standards"
+import { ImmiMateTable } from "@/components/ui/immimate-table"
 import { ApprovalStatus } from "../../types"
 
 type Row = {
@@ -32,6 +34,7 @@ export function ApprovalsList({
   agencyId: string
   userMap: Record<string, string>
 }) {
+  const router = useRouter()
   const [rows, setRows] = useState<Row[]>([])
   const [count, setCount] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -69,7 +72,7 @@ export function ApprovalsList({
         description="Internal migration application review and lodgement workflow."
         action={
           <Link href={`/workspace/${agencySlug}/approvals/new`}>
-            <Button className="rounded-xl bg-[#0D9F8C] font-bold hover:bg-[#0A5B52]">
+            <Button>
               <Plus className="mr-2 h-4 w-4" />
               New Application
             </Button>
@@ -104,65 +107,72 @@ export function ApprovalsList({
         </Select>
       </div>
 
-      <div className="rounded-2xl border border-slate-200/60 bg-white shadow-sm overflow-x-auto immimate-scroll">
-        <div className="min-w-[720px]">
-          <div className="grid grid-cols-[1.2fr_1fr_1fr_0.9fr_0.8fr] border-b border-slate-100 bg-slate-50/50 px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-            <div>Application</div>
-            <div>Client</div>
-            <div>Agent</div>
-            <div>Status</div>
-            <div>Due</div>
-          </div>
-          {loading ? (
-            <div className="p-8 text-center text-slate-500">Loading…</div>
-          ) : rows.length === 0 && !search && statusFilter === "all" ? (
-            <div className="p-4">
-              <PageEmptyState
-                module="approvals"
-                actionHref={`/workspace/${agencySlug}/approvals/new`}
-              />
-            </div>
-          ) : rows.length === 0 ? (
-            <div className="p-12 text-center text-slate-500">
-              <p className="font-medium text-slate-900">No approvals match your filters</p>
-            </div>
-          ) : (
-            <div className="divide-y divide-slate-100">
-              {rows.map((a) => (
-                <Link
-                  key={a.id}
-                  href={`/workspace/${agencySlug}/approvals/${a.id}`}
-                  className="grid grid-cols-[1.2fr_1fr_1fr_0.9fr_0.8fr] items-center px-6 py-4 hover:bg-slate-50"
-                >
-                  <div>
-                    <div className="font-bold text-slate-900">{a.approval_number || a.title}</div>
-                    <div className="text-xs text-slate-500">{a.matter_types?.name || a.visa_subclass || "—"}</div>
-                  </div>
-                  <div className="text-sm font-medium text-slate-700">{a.clients?.name || "—"}</div>
-                  <div className="text-sm text-slate-600">{userMap[a.created_by] || "—"}</div>
-                  <div><ApprovalStatusBadge status={a.status} /></div>
-                  <div className="text-sm text-slate-500">
-                    {a.lodgement_deadline
-                      ? new Date(a.lodgement_deadline).toLocaleDateString()
-                      : "—"}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
-        {count > 20 && (
-          <div className="flex justify-center gap-2 p-4 border-t border-slate-100">
-            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
-              Previous
-            </Button>
-            <span className="text-sm text-slate-500 self-center">Page {page}</span>
-            <Button variant="outline" size="sm" disabled={page * 20 >= count} onClick={() => setPage((p) => p + 1)}>
-              Next
-            </Button>
-          </div>
-        )}
-      </div>
+      {loading ? (
+        <ImmiMateTable
+          columns={[
+            { key: "title", header: "Application" },
+            { key: "client", header: "Client" },
+            { key: "agent", header: "Agent" },
+            { key: "status", header: "Status" },
+            { key: "due", header: "Due" },
+          ]}
+          data={[]}
+          rowKey={() => "loading"}
+          loading
+        />
+      ) : rows.length === 0 && !search && statusFilter === "all" ? (
+        <PageEmptyState
+          module="approvals"
+          actionHref={`/workspace/${agencySlug}/approvals/new`}
+        />
+      ) : (
+        <ImmiMateTable
+          columns={[
+            {
+              key: "title",
+              header: "Application",
+              render: (a: Row) => (
+                <div>
+                  <div className="font-semibold text-[#111111]">{a.approval_number || a.title}</div>
+                  <div className="text-xs text-[#5C5C5C]">{a.matter_types?.name || a.visa_subclass || "—"}</div>
+                </div>
+              ),
+            },
+            {
+              key: "client",
+              header: "Client",
+              render: (a: Row) => a.clients?.name || "—",
+            },
+            {
+              key: "agent",
+              header: "Agent",
+              render: (a: Row) => userMap[a.created_by] || "—",
+            },
+            {
+              key: "status",
+              header: "Status",
+              render: (a: Row) => <ApprovalStatusBadge status={a.status} />,
+            },
+            {
+              key: "due",
+              header: "Due",
+              render: (a: Row) =>
+                a.lodgement_deadline
+                  ? new Date(a.lodgement_deadline).toLocaleDateString()
+                  : "—",
+            },
+          ]}
+          data={rows}
+          rowKey={(a) => a.id}
+          onRowClick={(a) => router.push(`/workspace/${agencySlug}/approvals/${a.id}`)}
+          emptyTitle="No approvals match"
+          emptyDescription="Try adjusting your search or status filter."
+          page={page}
+          pageSize={20}
+          total={count}
+          onPageChange={setPage}
+        />
+      )}
     </div>
   )
 }

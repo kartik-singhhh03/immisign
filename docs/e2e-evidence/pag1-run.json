@@ -1,0 +1,222 @@
+{
+  "agency": {
+    "id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+    "slug": "ritiklabs"
+  },
+  "results": [
+    {
+      "area": "SETUP",
+      "check": "AUTH",
+      "status": "PASS",
+      "msg": "nayramalik1018@gmail.com",
+      "detail": {},
+      "ts": "2026-06-10T10:25:24.745Z"
+    },
+    {
+      "area": "SETUP",
+      "check": "BROWSER",
+      "status": "PASS",
+      "msg": "Chrome ready",
+      "detail": {},
+      "ts": "2026-06-10T10:25:25.095Z"
+    },
+    {
+      "area": "B1",
+      "check": "DB-RANGE",
+      "status": "PASS",
+      "msg": "total=15 p1=10 p2=5",
+      "detail": {},
+      "ts": "2026-06-10T10:25:25.679Z"
+    },
+    {
+      "area": "B1",
+      "check": "UI-PAGINATION",
+      "status": "FAIL",
+      "msg": "No pagination controls on clients page",
+      "detail": {},
+      "ts": "2026-06-10T10:25:29.193Z"
+    },
+    {
+      "area": "B1",
+      "check": "SERVER-SIDE",
+      "status": "FAIL",
+      "msg": "useClients() fetches page=1 limit=10 only; filters client-side",
+      "detail": {},
+      "ts": "2026-06-10T10:25:29.193Z"
+    },
+    {
+      "area": "B2",
+      "check": "DB-RANGE-CAPABLE",
+      "status": "PASS",
+      "msg": "total=20 range works in DB",
+      "detail": {},
+      "ts": "2026-06-10T10:25:29.931Z"
+    },
+    {
+      "area": "B2",
+      "check": "SSR-LOAD-ALL",
+      "status": "FAIL",
+      "msg": "Workspace agreements page SSR loads entire table without .range()",
+      "detail": {},
+      "ts": "2026-06-10T10:25:29.931Z"
+    },
+    {
+      "area": "B2",
+      "check": "UI-PAGINATION",
+      "status": "WARN",
+      "msg": "Client-side slice (5/page) on full dataset — not server-side",
+      "detail": {},
+      "ts": "2026-06-10T10:25:29.931Z"
+    },
+    {
+      "area": "B3",
+      "check": "DB-RANGE",
+      "status": "PASS",
+      "msg": "total=33",
+      "detail": {},
+      "ts": "2026-06-10T10:25:30.541Z"
+    },
+    {
+      "area": "B3",
+      "check": "UI-BULK-FETCH",
+      "status": "FAIL",
+      "msg": "DocumentLibrary uses useDocuments({ limit: 200 }) — single bulk fetch, no page UI",
+      "detail": {},
+      "ts": "2026-06-10T10:25:30.541Z"
+    },
+    {
+      "area": "B4",
+      "check": "REPORTS-PAGE",
+      "status": "PASS",
+      "msg": "status=200",
+      "detail": {},
+      "ts": "2026-06-10T10:25:30.638Z"
+    },
+    {
+      "area": "B4",
+      "check": "PAGINATION",
+      "status": "WARN",
+      "msg": "Reports redirects to dashboard — no paginated list",
+      "detail": {},
+      "ts": "2026-06-10T10:25:30.638Z"
+    },
+    {
+      "area": "B5",
+      "check": "API-LOAD-ALL",
+      "status": "FAIL",
+      "msg": "templates=0",
+      "detail": {},
+      "ts": "2026-06-10T10:25:33.624Z"
+    },
+    {
+      "area": "B5",
+      "check": "PAGINATION",
+      "status": "FAIL",
+      "msg": "GET /api/templates returns full table — no page/limit params",
+      "detail": {},
+      "ts": "2026-06-10T10:25:33.624Z"
+    },
+    {
+      "area": "B6",
+      "check": "API-PAGE1",
+      "status": "PASS",
+      "msg": "rows=5 count=15",
+      "detail": {},
+      "ts": "2026-06-10T10:25:36.028Z"
+    },
+    {
+      "area": "B6",
+      "check": "API-PAGE2",
+      "status": "PASS",
+      "msg": "rows=5",
+      "detail": {},
+      "ts": "2026-06-10T10:25:36.028Z"
+    },
+    {
+      "area": "B6",
+      "check": "NO-OVERLAP",
+      "status": "PASS",
+      "msg": "Pages return distinct rows",
+      "detail": {},
+      "ts": "2026-06-10T10:25:36.028Z"
+    },
+    {
+      "area": "B6",
+      "check": "STATUS-FILTER",
+      "status": "PASS",
+      "msg": "API supports status/search query params",
+      "detail": {},
+      "ts": "2026-06-10T10:25:36.028Z"
+    },
+    {
+      "area": "B7",
+      "check": "ACTIVITY-PAGINATION",
+      "status": "PASS",
+      "msg": "p1=10 p2=10 count=130",
+      "detail": {},
+      "ts": "2026-06-10T10:25:42.473Z"
+    },
+    {
+      "area": "B7",
+      "check": "ACTIVITY-SEARCH",
+      "status": "PASS",
+      "msg": "API supports search/type params",
+      "detail": {},
+      "ts": "2026-06-10T10:25:42.473Z"
+    },
+    {
+      "area": "B7",
+      "check": "SECURITY-AUDIT-LOGS",
+      "status": "PASS",
+      "msg": "rows=40 limit-only",
+      "detail": {},
+      "ts": "2026-06-10T10:25:43.629Z"
+    },
+    {
+      "area": "B8",
+      "check": "PAYLOAD-SIZE",
+      "status": "PASS",
+      "msg": "full=2481b page=1601b total=15",
+      "detail": {},
+      "ts": "2026-06-10T10:25:44.273Z"
+    },
+    {
+      "area": "B8",
+      "check": "UI-LOADS-FULL-TABLE",
+      "status": "FAIL",
+      "msg": "Clients UI loads only first 10 — hidden pagination gap",
+      "detail": {},
+      "ts": "2026-06-10T10:25:44.274Z"
+    }
+  ],
+  "evidence": {
+    "network": [
+      {
+        "path": "/api/approvals",
+        "page1": 5,
+        "page2": 5,
+        "total": 15
+      },
+      {
+        "fullPayloadBytes": 2481,
+        "pagePayloadBytes": 1601,
+        "clientTotal": 15
+      }
+    ],
+    "db": [
+      {
+        "entity": "clients",
+        "total": 15,
+        "p1": 10,
+        "p2": 5,
+        "overlap": false,
+        "count": 15
+      }
+    ],
+    "screenshots": [
+      "pag-clients.png",
+      "pag-approvals.png"
+    ]
+  },
+  "verdict": "WARN"
+}

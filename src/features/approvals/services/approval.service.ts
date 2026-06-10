@@ -6,11 +6,24 @@ import {
   canPerformApprovalAction,
   canViewApproval,
 } from '@/lib/permissions/approval-actions';
-import { logApprovalActivity, notifyApprovalUser } from '../lib/activity-log';
+import {
+  logApprovalActivity,
+  logApprovalCompleted,
+  logCertificateGenerated,
+  notifyApprovalUser,
+} from '../lib/activity-log';
 import { parseMentions, resolveMentionedUserIds } from '@/lib/notifications/mentions';
 import { TaskService } from '@/lib/tasks/task.service';
+import { createAdminClient } from '@/lib/supabase/admin';
+import {
+  maybeRecordClientCompleteNote,
+  recordClientSystemNote,
+} from '@/features/file-notes/services/file-notes.service';
 import { ApprovalRepository } from '../repositories/approvals.repository';
+import { ApprovalCertificateService } from './approval-certificate.service';
+import { ApprovalSignWellService } from './approval-signwell.service';
 import { ApprovalStateMachine } from './state-machine';
+import { recordComplianceEvent } from '@/lib/compliance/compliance-events.service';
 import {
   ApplicationApproval,
   ApprovalAction,
@@ -83,6 +96,16 @@ export class ApprovalService {
       title: 'Application approval created',
       description: approval.approval_number ?? approval.title,
       approval_id: approval.id,
+    });
+
+    await recordComplianceEvent(this.supabase, {
+      agencyId,
+      clientId: data.client_id ?? null,
+      eventType: 'approval_created',
+      fileSource: 'application_approval',
+      fileId: approval.id,
+      actorUserId: userId,
+      metadata: { approval_number: approval.approval_number },
     });
 
     return approval;
@@ -224,6 +247,36 @@ export class ApprovalService {
 
     await this.afterTransition(agencyId, userId, approval, action, updated, payload);
     await this.notifyTransition(agencyId, approval, updated, action, payload);
+
+    if (action === 'lodged' && approval.client_id) {
+      const admin = createAdminClient();
+      await recordClientSystemNote(admin, {
+        agencyId,
+        clientId: approval.client_id,
+        actorUserId: userId,
+        body: `Application ${updated.approval_number || updated.title} marked as lodged.`,
+        referenceType: 'application_approval',
+        referenceId: updated.id,
+        fileSource: 'application_approval',
+        fileId: updated.id,
+      });
+      await recordComplianceEvent(admin, {
+        agencyId,
+        clientId: approval.client_id,
+        eventType: 'lodgement_recorded',
+        fileSource: 'application_approval',
+        fileId: updated.id,
+        actorUserId: userId,
+        metadata: { approval_number: updated.approval_number },
+      });
+      await maybeRecordClientCompleteNote(admin, agencyId, approval.client_id, userId, {
+        agreementId: null,
+        approvalId: updated.id,
+        fileSource: 'application_approval',
+        fileId: updated.id,
+      });
+    }
+
     return updated;
   }
 
@@ -443,6 +496,249 @@ export class ApprovalService {
     });
 
     return attachment;
+  }
+
+  async markViewedByClient(token: string) {
+    const approval = await this.repo.getByToken(token);
+    if (!approval) throw new Error('Not found');
+    if (approval.client_viewed_at) return approval;
+
+    return this.repo.update(approval.id, {
+      client_viewed_at: new Date().toISOString(),
+    });
+  }
+
+  async clientApproveByToken(token: string) {
+    const approval = await this.repo.getByToken(token);
+    if (!approval) throw new Error('Not found');
+    if (approval.signwell_document_id) {
+      throw new Error('This application requires electronic signature via the email link.');
+    }
+    if (approval.client_signed_at) return approval;
+
+    const now = new Date().toISOString();
+    const updated = await this.repo.update(approval.id, {
+      client_signed_at: now,
+      approved_at: approval.approved_at || now,
+      status: ApprovalStatus.APPROVED,
+    });
+
+    const certApproval = await this.ensureCertificate(approval.agency_id, updated.id);
+
+    const slug = await this.getAgencySlug(approval.agency_id);
+    await logApprovalActivity(this.supabase, {
+      agency_id: approval.agency_id,
+      user_id: approval.created_by,
+      type: 'approval.client_approved',
+      title: 'Client approved application',
+      description: approval.approval_number || approval.title,
+      approval_id: approval.id,
+    });
+    await notifyApprovalUser(this.supabase, {
+      agencyId: approval.agency_id,
+      agencySlug: slug,
+      userId: approval.created_by,
+      title: 'Client approved application',
+      message: `${approval.approval_number || approval.title} was approved by the client.`,
+      approvalId: approval.id,
+      category: 'approval',
+    });
+    if (certApproval.certificate_storage_path) {
+      await logApprovalCompleted(this.supabase, {
+        agency_id: approval.agency_id,
+        user_id: approval.created_by,
+        approval_id: approval.id,
+        approval_number: approval.approval_number,
+        title: approval.title,
+        agencySlug: slug,
+        via: 'portal',
+      });
+    }
+
+    return updated;
+  }
+
+  async clientRequestChangesByToken(token: string, content: string) {
+    const approval = await this.repo.getByToken(token);
+    if (!approval) throw new Error('Not found');
+
+    await this.repo.addComment({
+      approval_id: approval.id,
+      author_type: 'client',
+      author_id: null,
+      author_role: 'client',
+      visibility: 'client_visible',
+      content,
+      mentions: [],
+    });
+
+    const updated = await this.repo.update(approval.id, {
+      status: ApprovalStatus.CHANGES_REQUESTED,
+      revision_count: (approval.revision_count || 0) + 1,
+    });
+
+    const slug = await this.getAgencySlug(approval.agency_id);
+    await logApprovalActivity(this.supabase, {
+      agency_id: approval.agency_id,
+      user_id: approval.created_by,
+      type: 'approval.client_changes_requested',
+      title: 'Client requested changes',
+      description: content.slice(0, 200),
+      approval_id: approval.id,
+    });
+    await notifyApprovalUser(this.supabase, {
+      agencyId: approval.agency_id,
+      agencySlug: slug,
+      userId: approval.created_by,
+      title: 'Client requested changes',
+      message: content.slice(0, 120),
+      approvalId: approval.id,
+      category: 'approval',
+    });
+
+    return updated;
+  }
+
+  async sendForClientApproval(
+    agencyId: string,
+    userId: string,
+    dbRole: DbRole,
+    approvalId: string,
+  ) {
+    const approval = await this.repo.getById(approvalId, agencyId);
+    if (!approval) throw new Error('Not found');
+    if (!canViewApproval(dbRole, approval, userId)) throw new Error('Unauthorized');
+    if (!['approved', 'under_review', 'draft'].includes(approval.status)) {
+      throw new Error('Application must be prepared before sending to the client.');
+    }
+    if (!approval.document_path) {
+      throw new Error('Upload the application PDF before sending to the client.');
+    }
+
+    const signService = new ApprovalSignWellService(this.supabase);
+    const swResult = await signService.sendForClientSignature(agencyId, approval);
+
+    const now = new Date().toISOString();
+    const updates: Partial<ApplicationApproval> = {
+      client_sent_at: now,
+      signwell_document_id: swResult.id,
+      status:
+        approval.status === ApprovalStatus.DRAFT
+          ? ApprovalStatus.UNDER_REVIEW
+          : approval.status,
+    };
+
+    const updated = await this.repo.update(approvalId, updates);
+
+    if (approval.client_id) {
+      const admin = createAdminClient();
+      await recordClientSystemNote(admin, {
+        agencyId,
+        clientId: approval.client_id,
+        actorUserId: userId,
+        body: `Application ${approval.approval_number || approval.title} sent to client for approval.`,
+        referenceType: 'application_approval',
+        referenceId: approvalId,
+      });
+    }
+
+    const slug = await this.getAgencySlug(agencyId);
+    await logApprovalActivity(this.supabase, {
+      agency_id: agencyId,
+      user_id: userId,
+      type: 'approval.client_sent',
+      title: 'Sent to client for approval',
+      description: approval.approval_number || approval.title,
+      approval_id: approvalId,
+    });
+    await notifyApprovalUser(this.supabase, {
+      agencyId,
+      agencySlug: slug,
+      userId,
+      title: 'Application sent for client approval',
+      message: `${approval.approval_number || approval.title} sent to client via SignWell.`,
+      approvalId,
+      category: 'approval',
+      actorId: userId,
+    });
+
+    await recordComplianceEvent(this.supabase, {
+      agencyId,
+      clientId: approval.client_id,
+      eventType: 'approval_sent',
+      fileSource: 'application_approval',
+      fileId: approvalId,
+      actorUserId: userId,
+      metadata: { approval_number: approval.approval_number },
+    });
+
+    return { approval: updated, reviewUrl: `/review/${approval.review_token}`, signwellId: swResult.id };
+  }
+
+  async ensureCertificate(agencyId: string, approvalId: string) {
+    const approval = await this.repo.getById(approvalId, agencyId);
+    if (!approval) throw new Error('Not found');
+    if (approval.certificate_storage_path && approval.certificate_generated_at) {
+      return approval;
+    }
+    if (!approval.client_signed_at) {
+      throw new Error('Client must sign before generating a certificate.');
+    }
+
+    const { data: agency } = await this.supabase
+      .from('agencies')
+      .select('name')
+      .eq('id', agencyId)
+      .single();
+
+    const certService = new ApprovalCertificateService(this.supabase);
+    const { storagePath, generatedAt } = await certService.generate(
+      agencyId,
+      approval,
+      agency?.name || 'Agency',
+    );
+
+    const updated = await this.repo.update(approvalId, {
+      certificate_storage_path: storagePath,
+      certificate_generated_at: generatedAt,
+    });
+
+    if (approval.client_id) {
+      const admin = createAdminClient();
+      await recordClientSystemNote(admin, {
+        agencyId,
+        clientId: approval.client_id,
+        body: `Certificate of Approval generated for ${approval.approval_number || approval.title}.`,
+        referenceType: 'application_approval',
+        referenceId: approvalId,
+      });
+    }
+
+    const slug = await this.getAgencySlug(agencyId);
+    await logCertificateGenerated(this.supabase, {
+      agency_id: agencyId,
+      user_id: approval.created_by,
+      approval_id: approvalId,
+      approval_number: approval.approval_number,
+      title: approval.title,
+      agencySlug: slug,
+    });
+
+    return updated;
+  }
+
+  async getCertificateSignedUrl(agencyId: string, approvalId: string, dbRole: DbRole, userId: string) {
+    const approval = await this.repo.getById(approvalId, agencyId);
+    if (!approval) throw new Error('Not found');
+    if (!canViewApproval(dbRole, approval, userId)) throw new Error('Unauthorized');
+    if (!approval.certificate_storage_path) throw new Error('Certificate not generated');
+
+    const { data, error } = await this.supabase.storage
+      .from('documents')
+      .createSignedUrl(approval.certificate_storage_path, 3600);
+
+    if (error || !data?.signedUrl) throw new Error('Could not load certificate');
+    return data.signedUrl;
   }
 
   async getWidgetCounts(agencyId: string, userId: string, dbRole: DbRole) {

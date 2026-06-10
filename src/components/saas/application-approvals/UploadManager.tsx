@@ -55,7 +55,7 @@ export function UploadManager({ approvalId }: UploadManagerProps) {
 
   return (
     <div
-      className={`border-2 border-dashed rounded-2xl p-12 text-center transition-colors cursor-pointer ${isDragging ? "border-[#0D9F8C] bg-[#0D9F8C]/5" : "border-slate-300 bg-slate-50/50 hover:bg-slate-50"}`}
+      className={`border-2 border-dashed rounded-2xl p-12 text-center transition-colors cursor-pointer ${isDragging ? "border-[#111111] bg-[#111111]/5" : "border-slate-300 bg-slate-50/50 hover:bg-slate-50"}`}
       onDragOver={(e) => {
         e.preventDefault()
         setIsDragging(true)
@@ -76,7 +76,7 @@ export function UploadManager({ approvalId }: UploadManagerProps) {
         }}
       />
       <UploadCloud
-        className={`h-10 w-10 mx-auto mb-4 ${isDragging ? "text-[#0D9F8C]" : "text-slate-400"}`}
+        className={`h-10 w-10 mx-auto mb-4 ${isDragging ? "text-[#111111]" : "text-slate-400"}`}
       />
       <h3 className="font-bold text-slate-700 text-lg">Drag & drop application documents</h3>
       <p className="text-sm text-slate-500 mt-2 max-w-sm mx-auto">

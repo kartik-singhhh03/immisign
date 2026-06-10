@@ -1,0 +1,267 @@
+{
+  "A": {
+    "status": "PASS",
+    "clientId": "3875e5bf-e2df-4482-9b55-2e3b5059a181",
+    "client_number": "AML-2026-1008",
+    "hasTabs": true,
+    "foundInSearch": true,
+    "editedName": "Verify Client 17807492023 Edited20",
+    "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 400 ()",
+      "Failed to load resource: the server responded with a status of 400 ()"
+    ]
+  },
+  "C": {
+    "status": "PASS",
+    "noteResults": [
+      {
+        "type": "phone",
+        "status": 201,
+        "ok": true,
+        "id": "297cdf31-61d1-40e2-a26f-be483c1e6336"
+      },
+      {
+        "type": "email",
+        "status": 201,
+        "ok": true,
+        "id": "e9ed715e-20cc-425b-8441-26bf26846129"
+      },
+      {
+        "type": "attendance",
+        "status": 201,
+        "ok": true,
+        "id": "112586ed-3bba-48cf-b627-2750845d48a9"
+      },
+      {
+        "type": "advice",
+        "status": 201,
+        "ok": true,
+        "id": "601ec1a8-efe7-4b36-ac18-7b39e8b4fdb2"
+      },
+      {
+        "type": "internal",
+        "status": 201,
+        "ok": true,
+        "id": "6057e479-d3d6-4d6c-9a27-abd9063bffb4"
+      }
+    ],
+    "noteCount": 5,
+    "newestFirst": true,
+    "appendOnly": {
+      "update": "file_notes are append-only and cannot be modified or deleted",
+      "delete": "file_notes are append-only and cannot be modified or deleted"
+    },
+    "export": {
+      "status": 200,
+      "type": "application/pdf"
+    }
+  },
+  "D": {
+    "status": "PASS",
+    "prepCreate": {
+      "status": 200,
+      "ok": true,
+      "id": "4db08549-02cf-4f66-9d7a-f1802de5caf0",
+      "data": {
+        "success": true,
+        "approval": {
+          "id": "4db08549-02cf-4f66-9d7a-f1802de5caf0",
+          "agency_id": "1cd4007e-bbe1-4205-9481-233e2fe90ee7",
+          "client_id": "3875e5bf-e2df-4482-9b55-2e3b5059a181",
+          "created_by": "35429e46-2966-416d-b8ff-c7e31613b7a6",
+          "title": "E2E Prep 1780749202320",
+          "visa_subclass": "820",
+          "status": "draft",
+          "review_token": "a1c8ae0e-03d4-459d-8243-e44feab22c2d",
+          "document_path": null,
+          "version_number": 1,
+          "revision_count": 0,
+          "lodgement_deadline": null,
+          "approved_at": null,
+          "created_at": "2026-06-06T12:33:52.741924+00:00",
+          "updated_at": "2026-06-06T12:33:52.741924+00:00",
+          "deleted_at": null,
+          "approval_number": "APP-2026-0005",
+          "matter_type_id": null,
+          "matter_reference": null,
+          "assigned_reviewer_id": null,
+          "assigned_rma_id": null,
+          "priority": "normal",
+          "notes": null,
+          "internal_notes": null,
+          "submitted_at": null,
+          "ready_to_lodge_at": null,
+          "lodged_at": null,
+          "closed_at": null,
+          "rejected_at": null,
+          "reminder_at": null,
+          "escalation_at": null,
+          "reminders_sent": {},
+          "signed_document_path": null,
+          "signwell_document_id": null,
+          "client_sent_at": null,
+          "client_signed_at": null,
+          "client_viewed_at": null,
+          "certificate_storage_path": null,
+          "certificate_generated_at": null
+        }
+      }
+    },
+    "uploadRes": {
+      "status": 200,
+      "ok": true,
+      "j": {
+        "success": true,
+        "attachment": {
+          "id": "d57ef454-393d-43ea-90e8-21bac08d2c12",
+          "agency_id": "1cd4007e-bbe1-4205-9481-233e2fe90ee7",
+          "approval_id": "4db08549-02cf-4f66-9d7a-f1802de5caf0",
+          "uploaded_by": "35429e46-2966-416d-b8ff-c7e31613b7a6",
+          "file_name": "sample.pdf",
+          "storage_path": "1cd4007e-bbe1-4205-9481-233e2fe90ee7/approvals/4db08549-02cf-4f66-9d7a-f1802de5caf0/sample.pdf",
+          "mime_type": "application/pdf",
+          "file_size": 440,
+          "version_number": 1,
+          "is_current": true,
+          "created_at": "2026-06-06T12:33:55.72805+00:00"
+        },
+        "signedUrl": "https://wnohcmgmyhamsbmkiybc.supabase.co/storage/v1/object/sign/documents/1cd4007e-bbe1-4205-9481-233e2fe90ee7/approvals/4db08549-02cf-4f66-9d7a-f1802de5caf0/sample.pdf?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8zYTYyNjkwYy04YzkzLTRiNDAtYWM2Ni1jYzU4YmNhODllMTQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJkb2N1bWVudHMvMWNkNDAwN2UtYmJlMS00MjA1LTk0ODEtMjMzZTJmZTkwZWU3L2FwcHJvdmFscy80ZGIwODU0OS0wMmNmLTRmNjYtOWQ3YS1mMTgwMmRlNWNhZjAvc2FtcGxlLnBkZiIsImlhdCI6MTc4MDc0OTIzNiwiZXhwIjoxNzgwNzUyODM2fQ.85HqMVJh7zt4eEt7A3GR8eBSkSWyj21PqYt4NFKPms4"
+      }
+    },
+    "checklistRes": {
+      "status": 200,
+      "ok": true,
+      "j": {
+        "success": true,
+        "item": {
+          "id": "1a078490-efa9-4ed5-bbf8-8fe70df591ee",
+          "agency_id": "1cd4007e-bbe1-4205-9481-233e2fe90ee7",
+          "approval_id": "4db08549-02cf-4f66-9d7a-f1802de5caf0",
+          "item_key": "passport_received",
+          "label": "Passport received",
+          "sort_order": 1,
+          "is_completed": true,
+          "completed_at": "2026-06-06T12:33:59.04+00:00",
+          "completed_by": "35429e46-2966-416d-b8ff-c7e31613b7a6",
+          "created_at": "2026-06-06T12:33:53.010045+00:00"
+        }
+      }
+    },
+    "reloaded": {
+      "document_path": "1cd4007e-bbe1-4205-9481-233e2fe90ee7/approvals/4db08549-02cf-4f66-9d7a-f1802de5caf0/sample.pdf",
+      "status": "draft"
+    },
+    "attachments": 1,
+    "checklistCompleted": 1
+  },
+  "E": {
+    "status": "PASS",
+    "client_sent_at": "2026-06-06T12:34:05.764+00:00",
+    "client_signed_at": "2026-06-06T12:34:35.358+00:00",
+    "signwell_document_id": "72660188-2469-4728-b4f0-8764376aa1b2",
+    "webhook": {
+      "status": 200,
+      "body": "{\"received\":true,\"status\":\"processed\",\"entity\":\"application_approval\"}"
+    }
+  },
+  "B": {
+    "status": "PARTIAL",
+    "agreementApi": {
+      "status": 200,
+      "success": true
+    },
+    "agRow": {
+      "id": "1e91110b-38ec-4dc7-a49e-108c0515b867",
+      "status": "sent",
+      "signwell_document_id": "18bb7469-5fce-4b97-856b-923e74427ab1",
+      "client_id": "3875e5bf-e2df-4482-9b55-2e3b5059a181"
+    },
+    "activityCount": 1,
+    "reason": "dispatched to SignWell; live sign+webhook not verified in this run"
+  },
+  "F": {
+    "status": "PASS",
+    "certificate_storage_path": "1cd4007e-bbe1-4205-9481-233e2fe90ee7/approvals/4db08549-02cf-4f66-9d7a-f1802de5caf0/certificate-of-approval.pdf",
+    "webhook": {
+      "status": 200,
+      "body": "{\"received\":true,\"status\":\"processed\",\"entity\":\"application_approval\"}"
+    }
+  },
+  "G": {
+    "status": "PASS",
+    "lodged_at": "2026-06-06T12:35:08.199+00:00",
+    "chain": {
+      "approvalWebhook": {
+        "status": 200,
+        "body": "{\"received\":true,\"status\":\"processed\",\"entity\":\"application_approval\"}"
+      },
+      "agreementWebhook": {
+        "status": 200,
+        "body": "{\"received\":true,\"status\":\"processed\",\"entity\":\"agreement\"}"
+      },
+      "readyToLodge": {
+        "status": 200,
+        "ok": true
+      },
+      "lodged": {
+        "status": 200,
+        "ok": true
+      },
+      "sosSend": {
+        "status": 200,
+        "ok": true
+      },
+      "sosAck": {
+        "status": 200,
+        "ok": true
+      }
+    }
+  },
+  "H": {
+    "status": "PASS",
+    "sosCreate": {
+      "status": 201,
+      "ok": true,
+      "id": "3a47181e-be77-4cae-b9f5-9e0423d6b271"
+    },
+    "sosCount": 2,
+    "sosAcked": true,
+    "reason": "SOS created, sent, acknowledged"
+  },
+  "I": {
+    "status": "PASS",
+    "completionUi": {
+      "showsIncomplete": false,
+      "showsComplete": true,
+      "gateCount": 4,
+      "onCompletionTab": true,
+      "onOverview": false
+    },
+    "reason": "all four gates met"
+  },
+  "J": {
+    "status": "PARTIAL",
+    "acceptedCount": 1,
+    "recentInvites": 5,
+    "reason": "accepted invites in DB; live Resend inbox not verified (domain may be unverified)"
+  },
+  "K": {
+    "status": "PASS",
+    "dbNotifications": 33,
+    "unreadApi": {
+      "status": 200,
+      "count": 31
+    },
+    "markRead": {
+      "status": 200,
+      "unreadAfter": 30
+    },
+    "reason": "API reachable; deep links not browser-tested per notification type"
+  },
+  "L": {
+    "status": "PARTIAL",
+    "prodLoginStatus": 200,
+    "prodWebhookStatus": 401,
+    "reason": "production reachable; one real live SignWell workflow not executed from this script"
+  }
+}

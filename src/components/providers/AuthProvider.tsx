@@ -71,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           name: agency.name,
           slug: agency.slug,
           initials: agency.name.substring(0, 2).toUpperCase(),
-          color: branding?.primary_color || "#0D9F8C",
+          color: branding?.primary_color || "#111111",
           logoUrl: branding?.logo_url || undefined,
           address: agency.address || "Head Office",
           marn: agency.marn || "1234567",

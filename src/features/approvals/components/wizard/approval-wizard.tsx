@@ -5,10 +5,18 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { ChevronLeft, FileText, CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ImmiMateCard } from "@/components/ui/immimate-card"
+import { PageHeader } from "@/components/layout/PageHeader"
+import {
+  ImmiMateInput,
+  ImmiMateTextarea,
+  ImmiMateDatePicker,
+  ImmiMateSelect,
+  ImmiMateSelectContent,
+  ImmiMateSelectItem,
+  ImmiMateSelectTrigger,
+  ImmiMateSelectValue,
+} from "@/components/ui/immimate-form"
 import { createApprovalAction } from "@/features/approvals/actions/approvals"
 
 export function ApprovalWizard({
@@ -16,17 +24,19 @@ export function ApprovalWizard({
   agencySlug,
   clients,
   matterTypes,
+  initialClientId,
 }: {
   agencyId: string
   agencySlug: string
   clients: { id: string; name: string }[]
   matterTypes: { id: string; name: string }[]
+  initialClientId?: string
 }) {
   const router = useRouter()
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState({
     title: "",
-    client_id: "",
+    client_id: initialClientId || "",
     visa_subclass: "",
     matter_type_id: "",
     matter_reference: "",
@@ -73,60 +83,58 @@ export function ApprovalWizard({
         <ChevronLeft className="mr-1 h-4 w-4" /> Back to Approvals
       </Link>
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-black text-slate-900">New Application Approval</h1>
-        <p className="mt-2 text-slate-500 font-medium">
-          Create an internal review record. Upload documents from the detail page after creation.
-        </p>
-      </div>
+      <PageHeader
+        className="mb-6 border-0 pb-0"
+        eyebrow="Approvals"
+        title="New Application Approval"
+        description="Create an internal review record. Upload documents from the detail page after creation."
+      />
 
-      <Card className="border-slate-200/60 shadow-sm rounded-2xl bg-white p-8">
+      <ImmiMateCard className="p-8">
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
             <label className="text-sm font-bold text-slate-700">Application title *</label>
-            <Input
+            <ImmiMateInput
               required
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
-              className="rounded-xl h-11"
               placeholder="e.g. Partner visa lodgement — Smith"
             />
           </div>
 
           <div className="space-y-2">
             <label className="text-sm font-bold text-slate-700">Client</label>
-            <Select value={form.client_id} onValueChange={(v) => setForm({ ...form, client_id: v })}>
-              <SelectTrigger className="rounded-xl h-11">
-                <SelectValue placeholder="Select client" />
-              </SelectTrigger>
-              <SelectContent>
+            <ImmiMateSelect value={form.client_id} onValueChange={(v) => setForm({ ...form, client_id: v })}>
+              <ImmiMateSelectTrigger>
+                <ImmiMateSelectValue placeholder="Select client" />
+              </ImmiMateSelectTrigger>
+              <ImmiMateSelectContent>
                 {clients.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                  <ImmiMateSelectItem key={c.id} value={c.id}>{c.name}</ImmiMateSelectItem>
                 ))}
-              </SelectContent>
-            </Select>
+              </ImmiMateSelectContent>
+            </ImmiMateSelect>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-bold text-slate-700">Matter type</label>
-              <Select value={form.matter_type_id} onValueChange={(v) => setForm({ ...form, matter_type_id: v })}>
-                <SelectTrigger className="rounded-xl h-11">
-                  <SelectValue placeholder="Matter type" />
-                </SelectTrigger>
-                <SelectContent>
+              <ImmiMateSelect value={form.matter_type_id} onValueChange={(v) => setForm({ ...form, matter_type_id: v })}>
+                <ImmiMateSelectTrigger>
+                  <ImmiMateSelectValue placeholder="Matter type" />
+                </ImmiMateSelectTrigger>
+                <ImmiMateSelectContent>
                   {matterTypes.map((m) => (
-                    <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
+                    <ImmiMateSelectItem key={m.id} value={m.id}>{m.name}</ImmiMateSelectItem>
                   ))}
-                </SelectContent>
-              </Select>
+                </ImmiMateSelectContent>
+              </ImmiMateSelect>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-bold text-slate-700">Visa subclass</label>
-              <Input
+              <ImmiMateInput
                 value={form.visa_subclass}
                 onChange={(e) => setForm({ ...form, visa_subclass: e.target.value })}
-                className="rounded-xl h-11"
                 placeholder="e.g. 820"
               />
             </div>
@@ -134,61 +142,56 @@ export function ApprovalWizard({
 
           <div className="space-y-2">
             <label className="text-sm font-bold text-slate-700">Matter reference</label>
-            <Input
+            <ImmiMateInput
               value={form.matter_reference}
               onChange={(e) => setForm({ ...form, matter_reference: e.target.value })}
-              className="rounded-xl h-11"
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-bold text-slate-700">Priority</label>
-              <Select value={form.priority} onValueChange={(v) => setForm({ ...form, priority: v })}>
-                <SelectTrigger className="rounded-xl h-11">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="normal">Normal</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                  <SelectItem value="urgent">Urgent</SelectItem>
-                </SelectContent>
-              </Select>
+              <ImmiMateSelect value={form.priority} onValueChange={(v) => setForm({ ...form, priority: v })}>
+                <ImmiMateSelectTrigger>
+                  <ImmiMateSelectValue />
+                </ImmiMateSelectTrigger>
+                <ImmiMateSelectContent>
+                  <ImmiMateSelectItem value="low">Low</ImmiMateSelectItem>
+                  <ImmiMateSelectItem value="normal">Normal</ImmiMateSelectItem>
+                  <ImmiMateSelectItem value="high">High</ImmiMateSelectItem>
+                  <ImmiMateSelectItem value="urgent">Urgent</ImmiMateSelectItem>
+                </ImmiMateSelectContent>
+              </ImmiMateSelect>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-bold text-slate-700">Due date</label>
-              <Input
-                type="date"
+              <ImmiMateDatePicker
                 value={form.lodgement_deadline}
                 onChange={(e) => setForm({ ...form, lodgement_deadline: e.target.value })}
-                className="rounded-xl h-11"
               />
             </div>
           </div>
 
           <div className="space-y-2">
             <label className="text-sm font-bold text-slate-700">Notes</label>
-            <Textarea
+            <ImmiMateTextarea
               value={form.notes}
               onChange={(e) => setForm({ ...form, notes: e.target.value })}
-              className="rounded-xl"
             />
           </div>
 
           <div className="space-y-2">
             <label className="text-sm font-bold text-slate-700">Internal notes</label>
-            <Textarea
+            <ImmiMateTextarea
               value={form.internal_notes}
               onChange={(e) => setForm({ ...form, internal_notes: e.target.value })}
-              className="rounded-xl"
             />
           </div>
 
           <Button
             type="submit"
             disabled={saving}
-            className="w-full h-12 rounded-xl bg-[#0D9F8C] font-bold"
+            className="w-full h-12 rounded-xl bg-[#111111] font-bold"
           >
             {saving ? "Creating…" : (
               <>
@@ -197,7 +200,7 @@ export function ApprovalWizard({
             )}
           </Button>
         </form>
-      </Card>
+      </ImmiMateCard>
     </div>
   )
 }

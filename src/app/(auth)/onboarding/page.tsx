@@ -30,7 +30,7 @@ export default function OnboardingPage() {
   const [slug, setSlug] = React.useState(onboardingData.slug || "")
   
   // Step 2: Branding
-  const [primaryColor, setPrimaryColor] = React.useState(onboardingData.primaryColor || "#0D9F8C")
+  const [primaryColor, setPrimaryColor] = React.useState(onboardingData.primaryColor || "#111111")
   const [logoText, setLogoText] = React.useState(onboardingData.logoText || "")
 
   // Step 3: Team
@@ -87,7 +87,7 @@ export default function OnboardingPage() {
   }, [provisionProgress, onboardingStep])
 
   const colors = [
-    { name: "Emerald Green", value: "#0D9F8C", bg: "bg-[#0D9F8C]" },
+    { name: "Emerald Green", value: "#111111", bg: "bg-[#111111]" },
     { name: "Sapphire Blue", value: "#2563EB", bg: "bg-[#2563EB]" },
     { name: "Amber Gold", value: "#D97706", bg: "bg-[#D97706]" },
     { name: "Sovereign Slate", value: "#475569", bg: "bg-[#475569]" },
@@ -161,7 +161,7 @@ export default function OnboardingPage() {
               <div 
                 key={step} 
                 className={`h-full flex-1 rounded-full transition-all duration-300 ${
-                  step <= onboardingStep ? "bg-[#0D9F8C]" : "bg-slate-150"
+                  step <= onboardingStep ? "bg-[#111111]" : "bg-slate-150"
                 }`}
               />
             ))}
@@ -173,10 +173,10 @@ export default function OnboardingPage() {
       {onboardingStep === 1 && (
         <div className="grid gap-5 animate-in fade-in duration-200">
           <div>
-            <div className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-[#0D9F8C] mb-3">
+            <div className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-[#FAFAFA] text-[#111111] mb-3">
               <Building2 className="h-5 w-5" />
             </div>
-            <h2 className="text-2xl font-black text-[#081B2E]">Workspace Profile</h2>
+            <h2 className="text-2xl font-black text-[#111111]">Workspace Profile</h2>
             <p className="text-xs text-slate-500 font-semibold mt-1">Configure your official tenant URL subdomain slug and business name.</p>
           </div>
 
@@ -196,14 +196,14 @@ export default function OnboardingPage() {
             <div className="grid gap-2">
               <Label htmlFor="agency-slug" className="font-bold text-slate-700">Subdomain Slug</Label>
               <div className="flex rounded-xl border border-slate-200 bg-slate-50 overflow-hidden pr-3 items-center">
-                <span className="bg-slate-100 text-slate-500 text-xs font-bold px-3 py-3 select-none">immisign.com.au/workspace/</span>
+                <span className="bg-slate-100 text-slate-500 text-xs font-bold px-3 py-3 select-none">immimate.app/workspace/</span>
                 <Input
                   id="agency-slug"
                   required
                   placeholder="avc-visa"
                   value={slug}
                   onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/\s+/g, "-"))}
-                  className="h-9 border-none bg-transparent font-black text-[#0D9F8C] px-1 focus-visible:ring-0"
+                  className="h-9 border-none bg-transparent font-black text-[#111111] px-1 focus-visible:ring-0"
                 />
               </div>
               <p className="text-xs text-slate-400 font-semibold">Only lowercase letters, numbers, and hyphens allowed.</p>
@@ -214,7 +214,7 @@ export default function OnboardingPage() {
             <Button
               onClick={handleNext}
               disabled={!agencyName || !slug}
-              className="h-11 w-full rounded-xl bg-[#0D9F8C] font-black hover:bg-[#0A5B52] flex items-center justify-center gap-2 group"
+              className="h-11 w-full rounded-xl bg-[#111111] font-black hover:bg-[#222222] flex items-center justify-center gap-2 group"
             >
               <span>Configure Branding & Style</span>
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -227,10 +227,10 @@ export default function OnboardingPage() {
       {onboardingStep === 2 && (
         <div className="grid gap-5 animate-in fade-in duration-200">
           <div>
-            <div className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-[#0D9F8C] mb-3">
+            <div className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-[#FAFAFA] text-[#111111] mb-3">
               <Palette className="h-5 w-5" />
             </div>
-            <h2 className="text-2xl font-black text-[#081B2E]">Workspace Branding</h2>
+            <h2 className="text-2xl font-black text-[#111111]">Workspace Branding</h2>
             <p className="text-xs text-slate-500 font-semibold mt-1">Select your corporate accent palette and configure dynamic sidebar logo credentials.</p>
           </div>
 
@@ -245,13 +245,13 @@ export default function OnboardingPage() {
                     onClick={() => setPrimaryColor(c.value)}
                     className={`flex items-center gap-2.5 rounded-xl border p-3 font-semibold text-xs transition-all ${
                       primaryColor === c.value 
-                        ? "border-[#0D9F8C] bg-emerald-50/20 text-[#0D9F8C] shadow-subtle" 
+                        ? "border-[#111111] bg-[#FAFAFA]/20 text-[#111111] shadow-subtle" 
                         : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
                     }`}
                   >
                     <span className={`h-4.5 w-4.5 rounded-full ${c.bg} border border-white/20 shadow-sm`} />
                     <span>{c.name}</span>
-                    {primaryColor === c.value && <Check className="h-3.5 w-3.5 ml-auto text-[#0D9F8C]" />}
+                    {primaryColor === c.value && <Check className="h-3.5 w-3.5 ml-auto text-[#111111]" />}
                   </button>
                 ))}
               </div>
@@ -271,7 +271,7 @@ export default function OnboardingPage() {
             </div>
 
             {/* LIVE THEME PREVIEW */}
-            <div className="rounded-2xl border border-slate-200/50 bg-[#F7FAF8] p-4">
+            <div className="rounded-2xl border border-slate-200/50 bg-[#FAFAFA] p-4">
               <div className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Live Tenant Preview</div>
               <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-subtle flex items-center gap-3">
                 <div 
@@ -281,8 +281,8 @@ export default function OnboardingPage() {
                   {logoText || "AM"}
                 </div>
                 <div>
-                  <div className="text-xs font-black text-[#081B2E]">{agencyName || "Singh & Associates"}</div>
-                  <div className="text-[9px] font-bold text-slate-400 mt-0.5 mt-0.5">immisign.com.au/workspace/{slug || "avc-visa"}</div>
+                  <div className="text-xs font-black text-[#111111]">{agencyName || "Singh & Associates"}</div>
+                  <div className="text-[9px] font-bold text-slate-400 mt-0.5 mt-0.5">immimate.app/workspace/{slug || "avc-visa"}</div>
                 </div>
                 <span 
                   className="ml-auto text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded"
@@ -305,7 +305,7 @@ export default function OnboardingPage() {
             <Button
               onClick={handleNext}
               disabled={!logoText}
-              className="h-11 flex-1 rounded-xl bg-[#0D9F8C] font-black hover:bg-[#0A5B52] flex items-center justify-center gap-2 group"
+              className="h-11 flex-1 rounded-xl bg-[#111111] font-black hover:bg-[#222222] flex items-center justify-center gap-2 group"
             >
               <span>Practitioners & Team</span>
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -318,10 +318,10 @@ export default function OnboardingPage() {
       {onboardingStep === 3 && (
         <div className="grid gap-5 animate-in fade-in duration-200">
           <div>
-            <div className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-[#0D9F8C] mb-3">
+            <div className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-[#FAFAFA] text-[#111111] mb-3">
               <Users className="h-5 w-5" />
             </div>
-            <h2 className="text-2xl font-black text-[#081B2E]">Agency Team seats</h2>
+            <h2 className="text-2xl font-black text-[#111111]">Agency Team seats</h2>
             <p className="text-xs text-slate-500 font-semibold mt-1">Invite additional migration practitioners and casework staff to your workspace.</p>
           </div>
 
@@ -377,7 +377,7 @@ export default function OnboardingPage() {
               type="button"
               onClick={addStaff}
               disabled={!teamName || !teamEmail}
-              className="h-9 rounded-lg bg-[#0D9F8C] hover:bg-[#0A5B52] text-xs font-black mt-2 flex items-center justify-center gap-1.5"
+              className="h-9 rounded-lg bg-[#111111] hover:bg-[#222222] text-xs font-black mt-2 flex items-center justify-center gap-1.5"
             >
               <Plus className="h-3.5 w-3.5" /> Invite to Workspace
             </Button>
@@ -395,13 +395,13 @@ export default function OnboardingPage() {
                 {invitedList.map((staff, idx) => (
                   <div key={staff.email} className="flex items-center justify-between p-3">
                     <div className="min-w-0">
-                      <div className="text-xs font-bold text-[#081B2E]">{staff.name}</div>
+                      <div className="text-xs font-bold text-[#111111]">{staff.name}</div>
                       <div className="text-xs font-semibold text-slate-400 mt-0.5">
                         {staff.email} • {staff.marn !== "N/A" ? `MARN ${staff.marn}` : "No MARN"}
                       </div>
                     </div>
                     <div className="flex items-center gap-2.5">
-                      <span className="rounded bg-emerald-50 border border-emerald-100 px-2 py-0.5 text-[9px] font-bold text-emerald-700">
+                      <span className="rounded bg-[#FAFAFA] border border-[#E7E7E7] px-2 py-0.5 text-[9px] font-bold text-[#111111]">
                         {staff.role}
                       </span>
                       <Button
@@ -429,7 +429,7 @@ export default function OnboardingPage() {
             </Button>
             <Button
               onClick={handleNext}
-              className="h-11 flex-1 rounded-xl bg-[#0D9F8C] font-black hover:bg-[#0A5B52] flex items-center justify-center gap-2 group"
+              className="h-11 flex-1 rounded-xl bg-[#111111] font-black hover:bg-[#222222] flex items-center justify-center gap-2 group"
             >
               <span>Seed OMARA Templates</span>
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -442,10 +442,10 @@ export default function OnboardingPage() {
       {onboardingStep === 4 && (
         <div className="grid gap-5 animate-in fade-in duration-200">
           <div>
-            <div className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-[#0D9F8C] mb-3">
+            <div className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-[#FAFAFA] text-[#111111] mb-3">
               <FileText className="h-5 w-5" />
             </div>
-            <h2 className="text-2xl font-black text-[#081B2E]">Document Templates</h2>
+            <h2 className="text-2xl font-black text-[#111111]">Document Templates</h2>
             <p className="text-xs text-slate-500 font-semibold mt-1">Pre-seed your new isolated workspace library with compliant OMARA agreement agreements.</p>
           </div>
 
@@ -460,11 +460,11 @@ export default function OnboardingPage() {
                     onClick={() => setSpecialty(spec)}
                     className={`rounded-xl border p-3.5 text-left transition-all ${
                       specialty === spec 
-                        ? "border-[#0D9F8C] bg-emerald-50/20 shadow-subtle" 
+                        ? "border-[#111111] bg-[#FAFAFA]/20 shadow-subtle" 
                         : "border-slate-200 bg-white hover:bg-slate-50"
                     }`}
                   >
-                    <div className="text-xs font-black text-[#081B2E] capitalize">
+                    <div className="text-xs font-black text-[#111111] capitalize">
                       {spec === "skilled" ? "Skilled Migration" : "Family & Partner"}
                     </div>
                     <p className="text-xs text-slate-400 mt-1 font-semibold leading-normal">
@@ -487,18 +487,18 @@ export default function OnboardingPage() {
                       onClick={() => toggleTemplate(tpl.id)}
                       className={`flex items-center justify-between rounded-xl border p-3.5 text-left transition-all ${
                         isChecked 
-                          ? "border-[#0D9F8C] bg-emerald-50/10 shadow-subtle" 
+                          ? "border-[#111111] bg-[#FAFAFA]/10 shadow-subtle" 
                           : "border-slate-200 bg-white hover:bg-slate-50"
                       }`}
                     >
                       <div>
-                        <div className="text-xs font-bold text-[#081B2E]">{tpl.name}</div>
+                        <div className="text-xs font-bold text-[#111111]">{tpl.name}</div>
                         <span className="text-[9px] font-black text-slate-400 bg-slate-100 rounded px-1.5 py-0.5 mt-1 inline-block">
                           {tpl.subclass} Defaults
                         </span>
                       </div>
                       <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-all ${
-                        isChecked ? "bg-[#0D9F8C] border-[#0D9F8C] text-white" : "border-slate-300"
+                        isChecked ? "bg-[#111111] border-[#111111] text-white" : "border-slate-300"
                       }`}>
                         {isChecked && <Check className="h-3.5 w-3.5" />}
                       </div>
@@ -520,7 +520,7 @@ export default function OnboardingPage() {
             <Button
               onClick={handleNext}
               disabled={selectedTemplates.length === 0}
-              className="h-11 flex-1 rounded-xl bg-[#0D9F8C] font-black hover:bg-[#0A5B52] flex items-center justify-center gap-2 group"
+              className="h-11 flex-1 rounded-xl bg-[#111111] font-black hover:bg-[#222222] flex items-center justify-center gap-2 group"
             >
               <span>Initialize Workspace</span>
               <Rocket className="h-4 w-4 transition-transform group-hover:scale-110" />
@@ -533,32 +533,32 @@ export default function OnboardingPage() {
       {onboardingStep === 5 && (
         <div className="grid gap-6 py-6 text-center animate-in scale-in duration-300">
           <div>
-            <div className="relative mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-[#0D9F8C] mb-5 shadow-md">
-              <Server className="h-8 w-8 animate-pulse text-[#0D9F8C]" />
-              <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 font-black text-[9px] text-white ring-2 ring-white">
+            <div className="relative mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#FAFAFA] text-[#111111] mb-5 shadow-md">
+              <Server className="h-8 w-8 animate-pulse text-[#111111]" />
+              <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#FAFAFA]0 font-black text-[9px] text-white ring-2 ring-white">
                 ✓
               </span>
             </div>
-            <h2 className="text-2xl font-black text-[#081B2E]">Initializing Tenant</h2>
+            <h2 className="text-2xl font-black text-[#111111]">Initializing Tenant</h2>
             <p className="text-xs text-slate-500 font-semibold mt-1">Setting up your isolated agency workspace vault on sovereign Australian servers.</p>
           </div>
 
           {/* Progress Percent */}
           <div className="space-y-2">
-            <div className="flex justify-between text-xs font-black text-[#0D9F8C]">
+            <div className="flex justify-between text-xs font-black text-[#111111]">
               <span>Provisioning State</span>
               <span>{Math.round(provisionProgress)}%</span>
             </div>
             <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
               <div 
-                className="h-full bg-gradient-to-r from-[#33C48D] to-[#0D9F8C] rounded-full transition-all duration-300"
+                className="h-full immimate-progress-fill rounded-full transition-all duration-300"
                 style={{ width: `${provisionProgress}%` }}
               />
             </div>
           </div>
 
           {/* Provision Step Checklist */}
-          <div className="rounded-2xl border border-slate-200/50 bg-[#F7FAF8] p-5 text-left space-y-3.5 shadow-subtle">
+          <div className="rounded-2xl border border-slate-200/50 bg-[#FAFAFA] p-5 text-left space-y-3.5 shadow-subtle">
             {[
               "Deploying isolated database container...",
               "Configuring primary accent themes...",
@@ -577,15 +577,15 @@ export default function OnboardingPage() {
                 >
                   <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-all ${
                     isDone 
-                      ? "bg-[#0D9F8C] border-[#0D9F8C] text-white" 
+                      ? "bg-[#111111] border-[#111111] text-white" 
                       : isActive 
-                        ? "border-[#0D9F8C] text-[#0D9F8C] animate-spin border-t-transparent" 
+                        ? "border-[#111111] text-[#111111] animate-spin border-t-transparent" 
                         : "border-slate-350"
                   }`}>
                     {isDone && <Check className="h-3 w-3" />}
                   </div>
                   <span className={`text-xs font-bold ${
-                    isDone ? "text-slate-800" : isActive ? "text-[#0D9F8C]" : "text-slate-400"
+                    isDone ? "text-slate-800" : isActive ? "text-[#111111]" : "text-slate-400"
                   }`}>
                     {stepMsg}
                   </span>
@@ -599,7 +599,7 @@ export default function OnboardingPage() {
             <Button
               onClick={handleLaunch}
               disabled={provisionProgress < 100}
-              className="h-12 w-full rounded-xl bg-[#0D9F8C] text-base font-black hover:bg-[#0A5B52] shadow-sm flex items-center justify-center gap-2 group disabled:opacity-40"
+              className="h-12 w-full rounded-xl bg-[#111111] text-base font-black hover:bg-[#222222] shadow-sm flex items-center justify-center gap-2 group disabled:opacity-40"
             >
               <span>Launch {agencyName || "Your Agency"} Workspace</span>
               <Rocket className="h-5 w-5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />

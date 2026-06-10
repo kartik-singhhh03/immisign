@@ -5,6 +5,7 @@ import {
   Text,
 } from "@react-email/components";
 import { BaseLayout } from "../layouts/base-layout";
+import { APP_NAME } from "@/lib/brand";
 
 interface InvitationEmailProps {
   name: string;
@@ -38,7 +39,7 @@ export const InvitationEmail = ({
           Hi {name},
         </Text>
         <Text className="text-base text-gray-700 leading-6 mb-8 font-sans">
-          {inviterName} has invited you to join their workspace on ImmiSign as a <strong>{role}</strong>. 
+          {inviterName} has invited you to join their workspace on {APP_NAME} as a <strong>{role}</strong>. 
           Get seamless access to your portal by accepting this invitation below.
         </Text>
         <Section className="text-center">

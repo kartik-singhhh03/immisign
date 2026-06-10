@@ -1,0 +1,1388 @@
+{
+  "agency": {
+    "id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+    "slug": "ritiklabs",
+    "name": "Ritiklabs SETTINGS1 1781085718037"
+  },
+  "results": [
+    {
+      "area": "C1",
+      "check": "CODE-11111111-111",
+      "status": "WARN",
+      "msg": "matches=16 prod_src=1",
+      "detail": {},
+      "ts": "2026-06-10T12:04:48.682Z"
+    },
+    {
+      "area": "C1",
+      "check": "CODE-00000000-000",
+      "status": "WARN",
+      "msg": "matches=8 prod_src=1",
+      "detail": {},
+      "ts": "2026-06-10T12:04:48.754Z"
+    },
+    {
+      "area": "C1",
+      "check": "CODE-owner@demoag",
+      "status": "PASS",
+      "msg": "matches=20 prod_src=0",
+      "detail": {},
+      "ts": "2026-06-10T12:04:48.818Z"
+    },
+    {
+      "area": "C1",
+      "check": "CODE-testagency",
+      "status": "PASS",
+      "msg": "matches=4 prod_src=0",
+      "detail": {},
+      "ts": "2026-06-10T12:04:48.893Z"
+    },
+    {
+      "area": "C1",
+      "check": "CODE-demoagency",
+      "status": "PASS",
+      "msg": "matches=26 prod_src=0",
+      "detail": {},
+      "ts": "2026-06-10T12:04:48.976Z"
+    },
+    {
+      "area": "C1",
+      "check": "CODE-example.com",
+      "status": "WARN",
+      "msg": "matches=42 prod_src=2",
+      "detail": {},
+      "ts": "2026-06-10T12:04:49.057Z"
+    },
+    {
+      "area": "C1",
+      "check": "CODE-placeholder",
+      "status": "WARN",
+      "msg": "matches=98 prod_src=51",
+      "detail": {},
+      "ts": "2026-06-10T12:04:49.136Z"
+    },
+    {
+      "area": "C1",
+      "check": "CODE-mock",
+      "status": "PASS",
+      "msg": "matches=25 prod_src=0",
+      "detail": {},
+      "ts": "2026-06-10T12:04:49.213Z"
+    },
+    {
+      "area": "C1",
+      "check": "CODE-fake",
+      "status": "WARN",
+      "msg": "matches=10 prod_src=2",
+      "detail": {},
+      "ts": "2026-06-10T12:04:49.287Z"
+    },
+    {
+      "area": "C1",
+      "check": "CODE-demo",
+      "status": "WARN",
+      "msg": "matches=43 prod_src=3",
+      "detail": {},
+      "ts": "2026-06-10T12:04:49.364Z"
+    },
+    {
+      "area": "C1",
+      "check": "PROD-HIT",
+      "status": "WARN",
+      "msg": "src\\lib\\auth\\session.ts contains \"11111111-1111-1111-1111-111111111111\"",
+      "detail": {},
+      "ts": "2026-06-10T12:04:49.364Z"
+    },
+    {
+      "area": "C1",
+      "check": "PROD-HIT",
+      "status": "WARN",
+      "msg": "src\\lib\\auth\\session.ts contains \"00000000-0000-0000-0000-000000000000\"",
+      "detail": {},
+      "ts": "2026-06-10T12:04:49.364Z"
+    },
+    {
+      "area": "C1",
+      "check": "PROD-HIT",
+      "status": "WARN",
+      "msg": "src\\lib\\data\\production-filters.ts contains \"example.com\"",
+      "detail": {},
+      "ts": "2026-06-10T12:04:49.364Z"
+    },
+    {
+      "area": "C1",
+      "check": "PROD-HIT",
+      "status": "WARN",
+      "msg": "src\\lib\\validations\\fields.ts contains \"example.com\"",
+      "detail": {},
+      "ts": "2026-06-10T12:04:49.364Z"
+    },
+    {
+      "area": "C1",
+      "check": "PROD-HIT",
+      "status": "WARN",
+      "msg": "src\\app\\(auth)\\forgot-password\\page.tsx contains \"placeholder\"",
+      "detail": {},
+      "ts": "2026-06-10T12:04:49.364Z"
+    },
+    {
+      "area": "C1",
+      "check": "PROD-HIT",
+      "status": "WARN",
+      "msg": "src\\app\\(auth)\\login\\page.tsx contains \"placeholder\"",
+      "detail": {},
+      "ts": "2026-06-10T12:04:49.365Z"
+    },
+    {
+      "area": "C1",
+      "check": "PROD-HIT",
+      "status": "WARN",
+      "msg": "src\\app\\(auth)\\onboarding\\page.tsx contains \"placeholder\"",
+      "detail": {},
+      "ts": "2026-06-10T12:04:49.365Z"
+    },
+    {
+      "area": "C1",
+      "check": "PROD-HIT",
+      "status": "WARN",
+      "msg": "src\\app\\(auth)\\signup\\page.tsx contains \"placeholder\"",
+      "detail": {},
+      "ts": "2026-06-10T12:04:49.365Z"
+    },
+    {
+      "area": "C1",
+      "check": "PROD-HIT",
+      "status": "WARN",
+      "msg": "src\\app\\api\\onboarding\\options\\route.ts contains \"placeholder\"",
+      "detail": {},
+      "ts": "2026-06-10T12:04:49.365Z"
+    },
+    {
+      "area": "C1",
+      "check": "PROD-HIT",
+      "status": "WARN",
+      "msg": "src\\app\\api\\settings\\matter-types\\route.ts contains \"placeholder\"",
+      "detail": {},
+      "ts": "2026-06-10T12:04:49.365Z"
+    },
+    {
+      "area": "C2",
+      "check": "PLACEHOLDER-AGENCIES",
+      "status": "PASS",
+      "msg": "count=0",
+      "detail": {},
+      "ts": "2026-06-10T12:04:50.734Z"
+    },
+    {
+      "area": "C2",
+      "check": "DEMO-EMAILS-DB",
+      "status": "PASS",
+      "msg": "ritiklabs_demo_users=0 total_demo=11",
+      "detail": {},
+      "ts": "2026-06-10T12:04:50.952Z"
+    },
+    {
+      "area": "C2",
+      "check": "EXAMPLE-URLS-DB",
+      "status": "PASS",
+      "msg": "agencies_with_example.com=0",
+      "detail": {},
+      "ts": "2026-06-10T12:04:51.155Z"
+    },
+    {
+      "area": "C2",
+      "check": "RITIKLABS-PLACEHOLDER-CLIENTS",
+      "status": "PASS",
+      "msg": "count=0",
+      "detail": {},
+      "ts": "2026-06-10T12:04:51.363Z"
+    },
+    {
+      "area": "C3",
+      "check": "BROWSER-DASHBOARD",
+      "status": "PASS",
+      "msg": "clean",
+      "detail": {},
+      "ts": "2026-06-10T12:04:55.105Z"
+    },
+    {
+      "area": "C3",
+      "check": "BROWSER-CLIENTS",
+      "status": "PASS",
+      "msg": "clean",
+      "detail": {},
+      "ts": "2026-06-10T12:04:58.274Z"
+    },
+    {
+      "area": "C3",
+      "check": "BROWSER-AGREEMENTS",
+      "status": "PASS",
+      "msg": "clean",
+      "detail": {},
+      "ts": "2026-06-10T12:05:01.430Z"
+    },
+    {
+      "area": "C3",
+      "check": "BROWSER-DOCUMENTS",
+      "status": "PASS",
+      "msg": "clean",
+      "detail": {},
+      "ts": "2026-06-10T12:05:04.609Z"
+    },
+    {
+      "area": "C3",
+      "check": "BROWSER-TEMPLATES",
+      "status": "PASS",
+      "msg": "clean",
+      "detail": {},
+      "ts": "2026-06-10T12:05:07.333Z"
+    },
+    {
+      "area": "C3",
+      "check": "BROWSER-SETTINGS",
+      "status": "PASS",
+      "msg": "clean",
+      "detail": {},
+      "ts": "2026-06-10T12:05:10.341Z"
+    },
+    {
+      "area": "C3",
+      "check": "BROWSER-BILLING",
+      "status": "PASS",
+      "msg": "clean",
+      "detail": {},
+      "ts": "2026-06-10T12:05:13.499Z"
+    },
+    {
+      "area": "C3",
+      "check": "BROWSER",
+      "status": "PASS",
+      "msg": "Scanned 7 routes",
+      "detail": {},
+      "ts": "2026-06-10T12:05:13.569Z"
+    },
+    {
+      "area": "C4",
+      "check": "API-/api/compliance/dashboard",
+      "status": "PASS",
+      "msg": "status=200",
+      "detail": {},
+      "ts": "2026-06-10T12:05:19.476Z"
+    },
+    {
+      "area": "C4",
+      "check": "API-/api/clients/search",
+      "status": "PASS",
+      "msg": "status=200",
+      "detail": {},
+      "ts": "2026-06-10T12:05:25.922Z"
+    },
+    {
+      "area": "C4",
+      "check": "API-/api/approvals",
+      "status": "PASS",
+      "msg": "status=200",
+      "detail": {},
+      "ts": "2026-06-10T12:05:27.468Z"
+    },
+    {
+      "area": "C4",
+      "check": "API-/api/templates",
+      "status": "PASS",
+      "msg": "status=200",
+      "detail": {},
+      "ts": "2026-06-10T12:05:29.014Z"
+    },
+    {
+      "area": "C4",
+      "check": "API-/api/notifications",
+      "status": "PASS",
+      "msg": "status=200",
+      "detail": {},
+      "ts": "2026-06-10T12:05:30.312Z"
+    },
+    {
+      "area": "C4",
+      "check": "API-/api/search",
+      "status": "PASS",
+      "msg": "status=200",
+      "detail": {},
+      "ts": "2026-06-10T12:05:33.563Z"
+    },
+    {
+      "area": "C1",
+      "check": "PRODUCTION-FILTERS",
+      "status": "PASS",
+      "msg": "Demo client filter exists for compliance dashboard",
+      "detail": {},
+      "ts": "2026-06-10T12:05:33.563Z"
+    }
+  ],
+  "evidence": {
+    "codeMatches": [
+      {
+        "pattern": "11111111-1111-1111-1111-111111111111",
+        "total": 16,
+        "prodReachable": [
+          "src\\lib\\auth\\session.ts"
+        ],
+        "all": [
+          {
+            "file": "docs\\e2e-evidence\\master-audit-1.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\e2e-evidence\\mock1-run.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\MOCK1_PRODUCTION_DATA_AUDIT.md",
+            "classification": "other"
+          },
+          {
+            "file": "fix_uuids.sql",
+            "classification": "other"
+          },
+          {
+            "file": "scripts\\audit-agency-placeholders.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\cleanup-mock-agreement-data.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\debug-invite.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\mock1-verify.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\phase5-verify.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\phase6b-db-remediation.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "src\\lib\\auth\\session.ts",
+            "classification": "production_reachable"
+          },
+          {
+            "file": "supabase\\seed.sql",
+            "classification": "seed_only"
+          },
+          {
+            "file": "test-zod.js",
+            "classification": "test_only"
+          },
+          {
+            "file": "test_template_do.sql",
+            "classification": "other"
+          },
+          {
+            "file": "test_template_insert.sql",
+            "classification": "other"
+          },
+          {
+            "file": "update_user.sql",
+            "classification": "other"
+          }
+        ]
+      },
+      {
+        "pattern": "00000000-0000-0000-0000-000000000000",
+        "total": 8,
+        "prodReachable": [
+          "src\\lib\\auth\\session.ts"
+        ],
+        "all": [
+          {
+            "file": "docs\\e2e-evidence\\master-audit-1.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\e2e-evidence\\mock1-run.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\MOCK1_PRODUCTION_DATA_AUDIT.md",
+            "classification": "other"
+          },
+          {
+            "file": "scripts\\audit-agency-placeholders.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\mock1-verify.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "src\\lib\\auth\\session.ts",
+            "classification": "production_reachable"
+          },
+          {
+            "file": "supabase\\seed.sql",
+            "classification": "seed_only"
+          },
+          {
+            "file": "ui-functionality-audit.md",
+            "classification": "other"
+          }
+        ]
+      },
+      {
+        "pattern": "owner@demoagency.com",
+        "total": 20,
+        "prodReachable": [],
+        "all": [
+          {
+            "file": "docs\\e2e-evidence\\mock1-run.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\MOCK1_PRODUCTION_DATA_AUDIT.md",
+            "classification": "other"
+          },
+          {
+            "file": "e2e-flow.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "e2e-test.js",
+            "classification": "test_only"
+          },
+          {
+            "file": "fix_uuids.sql",
+            "classification": "other"
+          },
+          {
+            "file": "monolithic-backup-utf8.tsx",
+            "classification": "other"
+          },
+          {
+            "file": "original.tsx",
+            "classification": "other"
+          },
+          {
+            "file": "pre-launch-checklist.md",
+            "classification": "other"
+          },
+          {
+            "file": "README.md",
+            "classification": "other"
+          },
+          {
+            "file": "scripts\\master-audit-1.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\mock1-verify.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\phase5-browser-proof.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\phase5-verify.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\phase6e-owner-migration.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\verify-invite-flow.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "supabase\\seed.sql",
+            "classification": "seed_only"
+          },
+          {
+            "file": "test-agreements-route.js",
+            "classification": "test_only"
+          },
+          {
+            "file": "test-login.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "update_user.sql",
+            "classification": "other"
+          },
+          {
+            "file": "verify_e2e_settings.js",
+            "classification": "other"
+          }
+        ]
+      },
+      {
+        "pattern": "testagency",
+        "total": 4,
+        "prodReachable": [],
+        "all": [
+          {
+            "file": "docs\\e2e-evidence\\master-audit-1.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\e2e-evidence\\mock1-run.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\MOCK1_PRODUCTION_DATA_AUDIT.md",
+            "classification": "other"
+          },
+          {
+            "file": "scripts\\mock1-verify.mjs",
+            "classification": "test_only"
+          }
+        ]
+      },
+      {
+        "pattern": "demoagency",
+        "total": 26,
+        "prodReachable": [],
+        "all": [
+          {
+            "file": "docs\\e2e-evidence\\master-audit-1.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\e2e-evidence\\mock1-run.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\MOCK1_PRODUCTION_DATA_AUDIT.md",
+            "classification": "other"
+          },
+          {
+            "file": "docs\\verification-screenshots\\phase11-4-api-report.json",
+            "classification": "other"
+          },
+          {
+            "file": "e2e-flow.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "e2e-test.js",
+            "classification": "test_only"
+          },
+          {
+            "file": "fix_uuids.sql",
+            "classification": "other"
+          },
+          {
+            "file": "monolithic-backup-utf8.tsx",
+            "classification": "other"
+          },
+          {
+            "file": "original.tsx",
+            "classification": "other"
+          },
+          {
+            "file": "pre-launch-checklist.md",
+            "classification": "other"
+          },
+          {
+            "file": "provision_tenant.js",
+            "classification": "other"
+          },
+          {
+            "file": "README.md",
+            "classification": "other"
+          },
+          {
+            "file": "scripts\\debug-invite.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\master-audit-1.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\mock1-verify.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\phase5-browser-proof.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\phase5-verify.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\phase6e-db-proof.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\phase6e-owner-migration.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\verify-invite-flow.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "supabase\\seed.sql",
+            "classification": "seed_only"
+          },
+          {
+            "file": "test-agreements-route.js",
+            "classification": "test_only"
+          },
+          {
+            "file": "test-insert-client.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "test-login.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "update_user.sql",
+            "classification": "other"
+          },
+          {
+            "file": "verify_e2e_settings.js",
+            "classification": "other"
+          }
+        ]
+      },
+      {
+        "pattern": "example.com",
+        "total": 42,
+        "prodReachable": [
+          "src\\lib\\data\\production-filters.ts",
+          "src\\lib\\validations\\fields.ts"
+        ],
+        "all": [
+          {
+            "file": "docs\\e2e-evidence\\beta1-run-1781080594756.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\e2e-evidence\\beta1-run-1781081102036.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\e2e-evidence\\beta1-run-1781081579373.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\e2e-evidence\\e2e3-run-1781078216357.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\e2e-evidence\\e2e3-run-1781078508626.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\e2e-evidence\\e2e31-run-1781079121174.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\e2e-evidence\\master-audit-1.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\e2e-evidence\\mock1-run.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\E2E3_FULL_LIFECYCLE_REPORT.md",
+            "classification": "other"
+          },
+          {
+            "file": "docs\\MOCK1_PRODUCTION_DATA_AUDIT.md",
+            "classification": "other"
+          },
+          {
+            "file": "docs\\PAGINATION_REMEDIATION_REPORT.md",
+            "classification": "other"
+          },
+          {
+            "file": "docs\\PRODUCTION_STATUS.md",
+            "classification": "other"
+          },
+          {
+            "file": "docs\\verification-screenshots\\phase16-6\\invite-e2e.json",
+            "classification": "other"
+          },
+          {
+            "file": "e2e-flow.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "e2e-test.js",
+            "classification": "test_only"
+          },
+          {
+            "file": "monolithic-backup-utf8.tsx",
+            "classification": "other"
+          },
+          {
+            "file": "original.tsx",
+            "classification": "other"
+          },
+          {
+            "file": "scripts\\beta1-verify.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\cleanup-example-clients.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\cleanup-mock-agreement-data.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\doc1-verify.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\e2e1-onboarding-quick.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\e2e3-full-lifecycle.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\e2e31-verify.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\master-audit-1.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\mock1-verify.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\pagination-demo-cleanup.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\phase11-4-api-send-document.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\phase11-4-browser-verify.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\phase16-6-invite-e2e.mjs",
+            "classification": "test_only"
+          }
+        ]
+      },
+      {
+        "pattern": "placeholder",
+        "total": 98,
+        "prodReachable": [
+          "src\\app\\(auth)\\forgot-password\\page.tsx",
+          "src\\app\\(auth)\\login\\page.tsx",
+          "src\\app\\(auth)\\onboarding\\page.tsx",
+          "src\\app\\(auth)\\signup\\page.tsx",
+          "src\\app\\api\\onboarding\\options\\route.ts",
+          "src\\app\\api\\settings\\matter-types\\route.ts",
+          "src\\app\\api\\settings\\matter-types\\[id]\\route.ts",
+          "src\\app\\invite\\[token]\\InviteAcceptForm.tsx",
+          "src\\app\\workspace\\[agency]\\[[...path]]\\page.tsx",
+          "src\\components\\saas\\application-approvals\\pages.tsx",
+          "src\\components\\saas\\marketing-pages.tsx",
+          "src\\components\\ui\\command.tsx",
+          "src\\components\\ui\\immimate-form.tsx",
+          "src\\features\\activity\\components\\ActivityFeedPage.tsx",
+          "src\\features\\admin\\components\\SystemHealthPage.tsx",
+          "src\\features\\agreements\\components\\list\\agreements-list.tsx",
+          "src\\features\\agreements\\components\\NewAgreementPage.tsx",
+          "src\\features\\agreements\\components\\wizard\\steps\\ClientStep.tsx",
+          "src\\features\\agreements\\components\\wizard\\steps\\FeesStep.tsx",
+          "src\\features\\agreements\\components\\wizard\\steps\\MatterStep.tsx",
+          "src\\features\\agreements\\components\\wizard\\steps\\TermsStep.tsx",
+          "src\\features\\agreements\\constants\\matter-field-config.ts",
+          "src\\features\\agreements\\services\\template.service.ts",
+          "src\\features\\analytics\\components\\AnalyticsPage.tsx",
+          "src\\features\\approvals\\components\\details\\approval-detail-page.tsx",
+          "src\\features\\approvals\\components\\list\\approvals-list.tsx",
+          "src\\features\\approvals\\components\\portal\\client-review-portal.tsx",
+          "src\\features\\approvals\\components\\wizard\\approval-wizard.tsx",
+          "src\\features\\auth\\store\\authStore.ts",
+          "src\\features\\clients\\components\\ClientDetailPage.tsx",
+          "src\\features\\clients\\components\\ClientsPage.tsx",
+          "src\\features\\compliance\\components\\ComplianceDashboardPage.tsx",
+          "src\\features\\dashboard\\components\\PlaceholderDashboardPage.tsx",
+          "src\\features\\documents\\components\\DocumentLibraryPage.tsx",
+          "src\\features\\documents\\components\\SendDocumentPage.tsx",
+          "src\\features\\file-notes\\components\\ClientSearchInput.tsx",
+          "src\\features\\file-notes\\components\\FileNotesWorkspace.tsx",
+          "src\\features\\onboarding\\components\\OnboardingWizardPage.tsx",
+          "src\\features\\reports\\components\\ReportsPage.tsx",
+          "src\\features\\search\\components\\GlobalSearchModal.tsx",
+          "src\\features\\service-statements\\components\\sos-wizard.tsx",
+          "src\\features\\settings\\components\\BrandingSettingsPanel.tsx",
+          "src\\features\\settings\\components\\MatterTypesSettingsPanel.tsx",
+          "src\\features\\settings\\components\\MatterTypesWorkflowModal.tsx",
+          "src\\features\\settings\\components\\SecurityCenterPanel.tsx",
+          "src\\features\\settings\\components\\SettingsPage.tsx",
+          "src\\features\\settings\\components\\WorkspaceSettingsPanels.tsx",
+          "src\\features\\templates\\components\\TemplatesPage.tsx",
+          "src\\lib\\settings\\load-agency-settings.ts",
+          "src\\lib\\settings\\types.ts",
+          "src\\lib\\supabase\\repositories.ts"
+        ],
+        "all": [
+          {
+            "file": "docs\\BILL1_STRIPE_AUDIT.md",
+            "classification": "other"
+          },
+          {
+            "file": "docs\\DASH1_PREMIUM_AUDIT.md",
+            "classification": "other"
+          },
+          {
+            "file": "docs\\e2e-evidence\\bill1-run-1781082502350.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\e2e-evidence\\bill1-run-1781082793821.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\e2e-evidence\\bill1-run-1781082889033.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\e2e-evidence\\bill1-run-1781083020251.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\e2e-evidence\\dash1-run.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\e2e-evidence\\final-preflight.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\e2e-evidence\\master-audit-1.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\e2e-evidence\\mock1-run.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\e2e-evidence\\release-hardening.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\ENVIRONMENT_AUDIT.md",
+            "classification": "other"
+          },
+          {
+            "file": "docs\\MOCK1_PRODUCTION_DATA_AUDIT.md",
+            "classification": "other"
+          },
+          {
+            "file": "docs\\PAGINATION_REMEDIATION_REPORT.md",
+            "classification": "other"
+          },
+          {
+            "file": "docs\\PLATFORM_BETA_AUDIT.md",
+            "classification": "other"
+          },
+          {
+            "file": "e2e-test.js",
+            "classification": "test_only"
+          },
+          {
+            "file": "fix.js",
+            "classification": "other"
+          },
+          {
+            "file": "fix2.js",
+            "classification": "other"
+          },
+          {
+            "file": "monolithic-backup-utf8.tsx",
+            "classification": "other"
+          },
+          {
+            "file": "original.tsx",
+            "classification": "other"
+          },
+          {
+            "file": "route-audit-report.md",
+            "classification": "other"
+          },
+          {
+            "file": "scripts\\agreement-wizard-browser-audit.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\audit-agency-placeholders.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\bill1-verify.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\cleanup-mock-agreement-data.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\dash1-verify.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\debug-client-create.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\doc1-verify.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\e2e2-workflow.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\file-notes-browser-audit.mjs",
+            "classification": "test_only"
+          }
+        ]
+      },
+      {
+        "pattern": "mock",
+        "total": 25,
+        "prodReachable": [],
+        "all": [
+          {
+            "file": "button-hardening-report.md",
+            "classification": "other"
+          },
+          {
+            "file": "critical-errors.md",
+            "classification": "other"
+          },
+          {
+            "file": "dashboard-performance-audit.md",
+            "classification": "other"
+          },
+          {
+            "file": "docs\\DOC1_DOCUMENT_LIBRARY_AUDIT.md",
+            "classification": "other"
+          },
+          {
+            "file": "docs\\e2e-evidence\\master-audit-1.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\e2e-evidence\\mock1-run.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\e2e-evidence\\release-hardening.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\MASTER_AUDIT_1_REPORT.md",
+            "classification": "other"
+          },
+          {
+            "file": "docs\\MOCK1_PRODUCTION_DATA_AUDIT.md",
+            "classification": "other"
+          },
+          {
+            "file": "docs\\PLATFORM_BETA_AUDIT.md",
+            "classification": "other"
+          },
+          {
+            "file": "docs\\RELEASE_HARDENING_REPORT.md",
+            "classification": "other"
+          },
+          {
+            "file": "fix2.js",
+            "classification": "other"
+          },
+          {
+            "file": "monolithic-backup-utf8.tsx",
+            "classification": "other"
+          },
+          {
+            "file": "original.tsx",
+            "classification": "other"
+          },
+          {
+            "file": "pre-launch-checklist.md",
+            "classification": "other"
+          },
+          {
+            "file": "scripts\\cleanup-mock-agreement-data.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\doc1-verify.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\master-audit-1.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\mock1-verify.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\release-hardening-1.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "send-document-architecture-report.md",
+            "classification": "other"
+          },
+          {
+            "file": "user-journey-report.md",
+            "classification": "other"
+          },
+          {
+            "file": "ux-gap-report.md",
+            "classification": "other"
+          },
+          {
+            "file": "verify_env.js",
+            "classification": "other"
+          },
+          {
+            "file": "wire-modules.mjs",
+            "classification": "other"
+          }
+        ]
+      },
+      {
+        "pattern": "fake",
+        "total": 10,
+        "prodReachable": [
+          "src\\components\\ui\\standards\\README.md",
+          "src\\features\\documents\\components\\SendDocumentPage.tsx"
+        ],
+        "all": [
+          {
+            "file": "button-hardening-report.md",
+            "classification": "other"
+          },
+          {
+            "file": "docs\\e2e-evidence\\master-audit-1.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\e2e-evidence\\mock1-run.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\MOCK1_PRODUCTION_DATA_AUDIT.md",
+            "classification": "other"
+          },
+          {
+            "file": "scripts\\master-audit-1.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\mock1-verify.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\verify-mm6-matter-search.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "send-document-architecture-report.md",
+            "classification": "other"
+          },
+          {
+            "file": "src\\components\\ui\\standards\\README.md",
+            "classification": "production_reachable"
+          },
+          {
+            "file": "src\\features\\documents\\components\\SendDocumentPage.tsx",
+            "classification": "production_reachable"
+          }
+        ]
+      },
+      {
+        "pattern": "demo",
+        "total": 43,
+        "prodReachable": [
+          "src\\app\\(marketing)\\layout.tsx",
+          "src\\app\\(marketing)\\page.tsx",
+          "src\\lib\\data\\production-filters.ts"
+        ],
+        "all": [
+          {
+            "file": "add-badges.mjs",
+            "classification": "other"
+          },
+          {
+            "file": "docs\\e2e-evidence\\master-audit-1.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\e2e-evidence\\mock1-run.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\e2e-evidence\\release-hardening.json",
+            "classification": "test_only"
+          },
+          {
+            "file": "docs\\MASTER_AUDIT_1_REPORT.md",
+            "classification": "other"
+          },
+          {
+            "file": "docs\\MOCK1_PRODUCTION_DATA_AUDIT.md",
+            "classification": "other"
+          },
+          {
+            "file": "docs\\PAGINATION_REMEDIATION_REPORT.md",
+            "classification": "other"
+          },
+          {
+            "file": "docs\\verification-screenshots\\phase11-4-api-report.json",
+            "classification": "other"
+          },
+          {
+            "file": "e2e-flow.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "e2e-test.js",
+            "classification": "test_only"
+          },
+          {
+            "file": "fix_uuids.sql",
+            "classification": "other"
+          },
+          {
+            "file": "monolithic-backup-utf8.tsx",
+            "classification": "other"
+          },
+          {
+            "file": "original.tsx",
+            "classification": "other"
+          },
+          {
+            "file": "pre-launch-checklist.md",
+            "classification": "other"
+          },
+          {
+            "file": "provision_tenant.js",
+            "classification": "other"
+          },
+          {
+            "file": "README.md",
+            "classification": "other"
+          },
+          {
+            "file": "scripts\\cleanup-example-clients.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\cleanup-mock-agreement-data.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\debug-invite.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\file-notes-browser-audit.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\master-audit-1.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\mock1-verify.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\pagination-demo-cleanup.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\phase16-95-purge-demo-clients.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\phase5-browser-proof.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\phase5-verify.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\phase6c-demo-data-cleanup.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\phase6e-db-proof.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\phase6e-owner-migration.mjs",
+            "classification": "test_only"
+          },
+          {
+            "file": "scripts\\verify-compliance-dashboard.mjs",
+            "classification": "test_only"
+          }
+        ]
+      }
+    ],
+    "db": [
+      {
+        "placeholderAgencies": []
+      },
+      {
+        "demoUsers": [
+          {
+            "id": "35429e46-2966-416d-b8ff-c7e31613b7a6",
+            "email": "testowner_1780228890060@demoagency.com",
+            "agency_id": "1cd4007e-bbe1-4205-9481-233e2fe90ee7"
+          },
+          {
+            "id": "22222222-2222-2222-2222-222222222222",
+            "email": "admin@demoagency.com",
+            "agency_id": "1cd4007e-bbe1-4205-9481-233e2fe90ee7"
+          },
+          {
+            "id": "22222222-2222-2222-2222-222222222223",
+            "email": "agent@demoagency.com",
+            "agency_id": "1cd4007e-bbe1-4205-9481-233e2fe90ee7"
+          },
+          {
+            "id": "22222222-2222-2222-2222-222222222224",
+            "email": "manager@demoagency.com",
+            "agency_id": "1cd4007e-bbe1-4205-9481-233e2fe90ee7"
+          },
+          {
+            "id": "22222222-2222-2222-2222-222222222225",
+            "email": "assistant@demoagency.com",
+            "agency_id": "1cd4007e-bbe1-4205-9481-233e2fe90ee7"
+          },
+          {
+            "id": "22222222-2222-2222-2222-222222222226",
+            "email": "readonly@demoagency.com",
+            "agency_id": "1cd4007e-bbe1-4205-9481-233e2fe90ee7"
+          },
+          {
+            "id": "b3d184d4-f0f4-4a79-98f9-3bc7c6dea32d",
+            "email": "debug.1780317307544@demoagency.com",
+            "agency_id": "1cd4007e-bbe1-4205-9481-233e2fe90ee7"
+          },
+          {
+            "id": "c6c66a38-a6bc-49a3-95f4-eeb1d1cb6462",
+            "email": "phase5.invite.1780317320133@demoagency.com",
+            "agency_id": "1cd4007e-bbe1-4205-9481-233e2fe90ee7"
+          },
+          {
+            "id": "ff4871d0-c47f-4c87-bd91-f774e7ae21f7",
+            "email": "phase5.invite.1780317364857@demoagency.com",
+            "agency_id": "1cd4007e-bbe1-4205-9481-233e2fe90ee7"
+          },
+          {
+            "id": "22222222-2222-2222-2222-222222222221",
+            "email": "owner@demoagency.com",
+            "agency_id": "1cd4007e-bbe1-4205-9481-233e2fe90ee7"
+          }
+        ]
+      }
+    ],
+    "api": [
+      {
+        "path": "/api/compliance/dashboard",
+        "status": 200,
+        "bad": []
+      },
+      {
+        "path": "/api/clients/search?q=test&limit=5",
+        "status": 200,
+        "bad": []
+      },
+      {
+        "path": "/api/approvals?agencyId=3cd3a307-b7e5-4984-82d4-bf757e834afd&page=1&limit=5",
+        "status": 200,
+        "bad": []
+      },
+      {
+        "path": "/api/templates",
+        "status": 200,
+        "bad": []
+      },
+      {
+        "path": "/api/notifications?limit=5",
+        "status": 200,
+        "bad": []
+      },
+      {
+        "path": "/api/search?meta=1&q=ritik",
+        "status": 200,
+        "bad": []
+      }
+    ],
+    "screenshots": [
+      "mock-dashboard.png",
+      "mock-clients.png",
+      "mock-agreements.png",
+      "mock-documents.png",
+      "mock-templates.png",
+      "mock-settings.png",
+      "mock-billing.png"
+    ],
+    "browser": [
+      {
+        "route": "dashboard",
+        "bad": []
+      },
+      {
+        "route": "clients",
+        "bad": []
+      },
+      {
+        "route": "agreements",
+        "bad": []
+      },
+      {
+        "route": "documents",
+        "bad": []
+      },
+      {
+        "route": "templates",
+        "bad": []
+      },
+      {
+        "route": "settings",
+        "bad": []
+      },
+      {
+        "route": "billing",
+        "bad": []
+      }
+    ]
+  },
+  "verdict": "PASS"
+}

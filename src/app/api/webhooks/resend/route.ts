@@ -1,7 +1,11 @@
 // @ts-nocheck
+import crypto from "crypto";
 import { Webhook } from "svix";
-import { headers } from "next/headers";// @ts-nocheckimport { NextResponse } from "next/server";
+import { headers } from "next/headers";
+import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { markWebhookEventProcessed, recordWebhookEvent } from "@/lib/integrations/webhook-events";
+import { updateEmailDeliveryByResendId } from "@/lib/email/delivery-audit";
 
 const webhookSecret = process.env.RESEND_WEBHOOK_SECRET;
 
@@ -12,7 +16,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Configuration error" }, { status: 500 });
   }
 
-  const payload = await req.json();
+  const rawBody = await req.text();
+  let payload: unknown;
+  try {
+    payload = JSON.parse(rawBody);
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
   const headerPayload = headers();
   const svix_id = headerPayload.get("svix-id");
   const svix_timestamp = headerPayload.get("svix-timestamp");
@@ -29,7 +39,7 @@ export async function POST(req: Request) {
   let evt: any;
 
   try {
-    evt = wh.verify(JSON.stringify(payload), {
+    evt = wh.verify(rawBody, {
       "svix-id": svix_id,
       "svix-timestamp": svix_timestamp,
       "svix-signature": svix_signature,
@@ -41,6 +51,17 @@ export async function POST(req: Request) {
 
   const { type, data } = evt;
   const emailId = data.email_id;
+
+  const payloadHash = crypto.createHash("sha256").update(rawBody).digest("hex");
+
+  const webhookEventId = await recordWebhookEvent(supabase, {
+    provider: 'resend',
+    eventType: type,
+    externalId: emailId,
+    payload: data,
+    payloadHash,
+    status: 'received',
+  });
 
   try {
     // Record the event
@@ -63,9 +84,30 @@ export async function POST(req: Request) {
         .eq("resend_id", emailId);
     }
 
+    if (type === "email.delivered" && emailId) {
+      await updateEmailDeliveryByResendId(emailId, {
+        status: "delivered",
+        deliveredAt: new Date().toISOString(),
+      });
+    } else if ((type === "email.bounced" || type === "email.complained") && emailId) {
+      await updateEmailDeliveryByResendId(emailId, {
+        status: type === "email.bounced" ? "bounced" : "failed",
+        error: type,
+      });
+    } else if (type === "email.sent" && emailId) {
+      await updateEmailDeliveryByResendId(emailId, { status: "sent" });
+    }
+
+    if (webhookEventId) {
+      await markWebhookEventProcessed(supabase, webhookEventId, 'processed');
+    }
     return NextResponse.json({ success: true, message: "Webhook processed" });
   } catch (err) {
     console.error("Error processing resend webhook payload:", err);
+    if (webhookEventId) {
+      const msg = err instanceof Error ? err.message : 'Webhook processing failed';
+      await markWebhookEventProcessed(supabase, webhookEventId, 'failed', msg);
+    }
     return NextResponse.json(
       { error: "Error processing webhook" },
       { status: 500 }

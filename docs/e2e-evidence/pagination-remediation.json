@@ -1,0 +1,358 @@
+{
+  "agency": {
+    "id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+    "slug": "ritiklabs"
+  },
+  "results": [
+    {
+      "area": "SETUP",
+      "check": "AUTH",
+      "status": "PASS",
+      "msg": "nayramalik1018@gmail.com",
+      "detail": {},
+      "ts": "2026-06-10T11:59:55.508Z"
+    },
+    {
+      "area": "SETUP",
+      "check": "BROWSER",
+      "status": "PASS",
+      "msg": "Chrome ready",
+      "detail": {},
+      "ts": "2026-06-10T11:59:56.124Z"
+    },
+    {
+      "area": "B1-CLIENTS",
+      "check": "API-PAGE1",
+      "status": "PASS",
+      "msg": "rows=5 count=14",
+      "detail": {},
+      "ts": "2026-06-10T12:00:03.492Z"
+    },
+    {
+      "area": "B1-CLIENTS",
+      "check": "API-PAGE2",
+      "status": "PASS",
+      "msg": "rows=5 totalPages=3",
+      "detail": {},
+      "ts": "2026-06-10T12:00:03.492Z"
+    },
+    {
+      "area": "B1-CLIENTS",
+      "check": "API-NO-OVERLAP",
+      "status": "PASS",
+      "msg": "distinct",
+      "detail": {},
+      "ts": "2026-06-10T12:00:03.492Z"
+    },
+    {
+      "area": "B1-CLIENTS",
+      "check": "API-META",
+      "status": "PASS",
+      "msg": "page=1 totalPages=3",
+      "detail": {},
+      "ts": "2026-06-10T12:00:03.492Z"
+    },
+    {
+      "area": "B2-AGREEMENTS",
+      "check": "API-PAGE1",
+      "status": "PASS",
+      "msg": "rows=5 count=14",
+      "detail": {},
+      "ts": "2026-06-10T12:00:05.426Z"
+    },
+    {
+      "area": "B2-AGREEMENTS",
+      "check": "API-PAGE2",
+      "status": "PASS",
+      "msg": "rows=5 totalPages=3",
+      "detail": {},
+      "ts": "2026-06-10T12:00:05.426Z"
+    },
+    {
+      "area": "B2-AGREEMENTS",
+      "check": "API-NO-OVERLAP",
+      "status": "PASS",
+      "msg": "distinct",
+      "detail": {},
+      "ts": "2026-06-10T12:00:05.426Z"
+    },
+    {
+      "area": "B2-AGREEMENTS",
+      "check": "API-META",
+      "status": "PASS",
+      "msg": "page=1 totalPages=3",
+      "detail": {},
+      "ts": "2026-06-10T12:00:05.426Z"
+    },
+    {
+      "area": "B3-DOCUMENTS",
+      "check": "API-PAGE1",
+      "status": "PASS",
+      "msg": "rows=5 count=16",
+      "detail": {},
+      "ts": "2026-06-10T12:00:09.170Z"
+    },
+    {
+      "area": "B3-DOCUMENTS",
+      "check": "API-PAGE2",
+      "status": "PASS",
+      "msg": "rows=5 totalPages=4",
+      "detail": {},
+      "ts": "2026-06-10T12:00:09.170Z"
+    },
+    {
+      "area": "B3-DOCUMENTS",
+      "check": "API-NO-OVERLAP",
+      "status": "PASS",
+      "msg": "distinct",
+      "detail": {},
+      "ts": "2026-06-10T12:00:09.170Z"
+    },
+    {
+      "area": "B3-DOCUMENTS",
+      "check": "API-META",
+      "status": "PASS",
+      "msg": "page=1 totalPages=4",
+      "detail": {},
+      "ts": "2026-06-10T12:00:09.170Z"
+    },
+    {
+      "area": "B5-TEMPLATES",
+      "check": "API-PAGE1",
+      "status": "PASS",
+      "msg": "rows=1 count=1",
+      "detail": {},
+      "ts": "2026-06-10T12:00:15.214Z"
+    },
+    {
+      "area": "B5-TEMPLATES",
+      "check": "API-PAGE2",
+      "status": "PASS",
+      "msg": "rows=0 totalPages=1",
+      "detail": {},
+      "ts": "2026-06-10T12:00:15.214Z"
+    },
+    {
+      "area": "B5-TEMPLATES",
+      "check": "API-NO-OVERLAP",
+      "status": "PASS",
+      "msg": "distinct",
+      "detail": {},
+      "ts": "2026-06-10T12:00:15.214Z"
+    },
+    {
+      "area": "B5-TEMPLATES",
+      "check": "API-META",
+      "status": "PASS",
+      "msg": "page=1 totalPages=1",
+      "detail": {},
+      "ts": "2026-06-10T12:00:15.214Z"
+    },
+    {
+      "area": "B6-APPROVALS",
+      "check": "API-PAGE1",
+      "status": "PASS",
+      "msg": "rows=5 count=10",
+      "detail": {},
+      "ts": "2026-06-10T12:00:19.365Z"
+    },
+    {
+      "area": "B6-APPROVALS",
+      "check": "API-PAGE2",
+      "status": "PASS",
+      "msg": "rows=5 totalPages=2",
+      "detail": {},
+      "ts": "2026-06-10T12:00:19.365Z"
+    },
+    {
+      "area": "B6-APPROVALS",
+      "check": "API-NO-OVERLAP",
+      "status": "PASS",
+      "msg": "distinct",
+      "detail": {},
+      "ts": "2026-06-10T12:00:19.365Z"
+    },
+    {
+      "area": "B6-APPROVALS",
+      "check": "API-META",
+      "status": "PASS",
+      "msg": "page=1 totalPages=2",
+      "detail": {},
+      "ts": "2026-06-10T12:00:19.365Z"
+    },
+    {
+      "area": "B7-ACTIVITY",
+      "check": "API-PAGINATION",
+      "status": "PASS",
+      "msg": "p1=10 p2=10",
+      "detail": {},
+      "ts": "2026-06-10T12:00:22.756Z"
+    },
+    {
+      "area": "B7-AUDIT-LOGS",
+      "check": "API-PAGE1",
+      "status": "PASS",
+      "msg": "rows=10 count=58",
+      "detail": {},
+      "ts": "2026-06-10T12:00:24.640Z"
+    },
+    {
+      "area": "B7-AUDIT-LOGS",
+      "check": "API-NO-OVERLAP",
+      "status": "PASS",
+      "msg": "distinct pages",
+      "detail": {},
+      "ts": "2026-06-10T12:00:24.640Z"
+    },
+    {
+      "area": "CLIENTS",
+      "check": "UI-PAGINATION",
+      "status": "WARN",
+      "msg": "Page indicator visible",
+      "detail": {},
+      "ts": "2026-06-10T12:01:26.728Z"
+    },
+    {
+      "area": "CLIENTS",
+      "check": "UI-PAGE2",
+      "status": "WARN",
+      "msg": "Next button not found (may be single page)",
+      "detail": {},
+      "ts": "2026-06-10T12:01:26.730Z"
+    },
+    {
+      "area": "AGREEMENTS",
+      "check": "UI-PAGINATION",
+      "status": "WARN",
+      "msg": "Page indicator visible",
+      "detail": {},
+      "ts": "2026-06-10T12:02:28.802Z"
+    },
+    {
+      "area": "AGREEMENTS",
+      "check": "UI-PAGE2",
+      "status": "WARN",
+      "msg": "Next button not found (may be single page)",
+      "detail": {},
+      "ts": "2026-06-10T12:02:28.803Z"
+    },
+    {
+      "area": "DOCUMENTS/LIBRARY",
+      "check": "UI-PAGINATION",
+      "status": "WARN",
+      "msg": "Page indicator visible",
+      "detail": {},
+      "ts": "2026-06-10T12:03:30.884Z"
+    },
+    {
+      "area": "DOCUMENTS/LIBRARY",
+      "check": "UI-PAGE2",
+      "status": "WARN",
+      "msg": "Next button not found (may be single page)",
+      "detail": {},
+      "ts": "2026-06-10T12:03:30.885Z"
+    },
+    {
+      "area": "TEMPLATES",
+      "check": "UI-PAGINATION",
+      "status": "WARN",
+      "msg": "Page indicator visible",
+      "detail": {},
+      "ts": "2026-06-10T12:04:32.973Z"
+    },
+    {
+      "area": "TEMPLATES",
+      "check": "UI-PAGE2",
+      "status": "WARN",
+      "msg": "Next button not found (may be single page)",
+      "detail": {},
+      "ts": "2026-06-10T12:04:32.974Z"
+    },
+    {
+      "area": "B9-DASHBOARD",
+      "check": "CONSOLE-ERRORS",
+      "status": "WARN",
+      "msg": "22 errors",
+      "detail": {},
+      "ts": "2026-06-10T12:04:43.317Z"
+    },
+    {
+      "area": "B4-REPORTS",
+      "check": "EXPLICIT-STATUS",
+      "status": "WARN",
+      "msg": "status not detected",
+      "detail": {},
+      "ts": "2026-06-10T12:04:46.504Z"
+    },
+    {
+      "area": "B8-PERFORMANCE",
+      "check": "PAYLOAD-REDUCTION",
+      "status": "PASS",
+      "msg": "{\"fullClientsBytes\":1644,\"pageClientsBytes\":1152}",
+      "detail": {},
+      "ts": "2026-06-10T12:04:47.694Z"
+    }
+  ],
+  "evidence": {
+    "network": [
+      {
+        "entity": "B1-CLIENTS",
+        "path": "/api/clients",
+        "page1": 5,
+        "page2": 5,
+        "count": 14,
+        "totalPages": 3,
+        "p1bytes": 1530
+      },
+      {
+        "entity": "B2-AGREEMENTS",
+        "path": "/api/agreements",
+        "page1": 5,
+        "page2": 5,
+        "count": 14,
+        "totalPages": 3,
+        "p1bytes": 2213
+      },
+      {
+        "entity": "B3-DOCUMENTS",
+        "path": "/api/documents",
+        "page1": 5,
+        "page2": 5,
+        "count": 16,
+        "totalPages": 4,
+        "p1bytes": 5112
+      },
+      {
+        "entity": "B5-TEMPLATES",
+        "path": "/api/templates",
+        "page1": 1,
+        "page2": 0,
+        "count": 1,
+        "totalPages": 1,
+        "p1bytes": 373
+      },
+      {
+        "entity": "B6-APPROVALS",
+        "path": "/api/approvals?agencyId=3cd3a307-b7e5-4984-82d4-bf757e834afd",
+        "page1": 5,
+        "page2": 5,
+        "count": 10,
+        "totalPages": 2,
+        "p1bytes": 7615
+      }
+    ],
+    "db": [],
+    "screenshots": [
+      "clients-page1.png",
+      "agreements-page1.png",
+      "documents-page1.png",
+      "templates-page1.png",
+      "dashboard-console-clean.png"
+    ],
+    "performance": {
+      "fullClientsBytes": 1644,
+      "pageClientsBytes": 1152
+    }
+  },
+  "verdict": "PASS"
+}

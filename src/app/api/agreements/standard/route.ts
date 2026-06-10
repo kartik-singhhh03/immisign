@@ -19,6 +19,11 @@ import {
 } from '@/lib/dispatch/stage-tracker';
 import { formatZodError } from '@/lib/validations/fields';
 import { agreementWizardContactSchema } from '@/lib/validations/schemas';
+import { resolveServiceAgreementTemplateId } from '@/lib/templates/service-agreement-template';
+import { recordClientSystemNote } from '@/features/file-notes/services/file-notes.service';
+import { createAdminClient } from '@/lib/supabase/admin';
+import { recordComplianceEvent } from '@/lib/compliance/compliance-events.service';
+import { calculateFeeTotals, normalizeFeeItemsFromForm } from '@/features/agreements/lib/fee-items';
 
 function agreementSupportRef() {
   return `AGR-${Date.now().toString(36).toUpperCase()}`;
@@ -136,24 +141,8 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
 
-    // 1. Resolve Template ID for Standard Agreement
-    const { data: template } = await (supabase as any).from('templates').select('id').eq('agency_id', agencyId).limit(1).single();
-    let templateId = template?.id;
-
-    if (!templateId) {
-       // Attempt to create a default template — if RLS blocks it, continue with null
-       const { data: newTpl, error: tplErr } = await (supabase as any).from('templates').insert({
-         agency_id: agencyId,
-         name: 'Standard OMARA Service Agreement',
-         content: { html: "" }
-       }).select('id').single();
-       if (tplErr) {
-         console.warn(`Template creation blocked (${tplErr.message}) — proceeding without template_id`);
-         templateId = null;
-       } else {
-         templateId = newTpl?.id ?? null;
-       }
-    }
+    // 1. Resolve single canonical Service Agreement template
+    const templateId = await resolveServiceAgreementTemplateId(supabase as any, agencyId);
 
     // 2. Resolve or Create Client
     let clientId = formData.clientId || null;
@@ -162,11 +151,14 @@ export async function POST(req: NextRequest) {
        if (existingClient) {
            clientId = existingClient.id;
        } else {
+           const { allocateClientNumber } = await import('@/lib/clients/client-number');
+           const clientNumber = await allocateClientNumber(agencyId);
            const { data: newClient, error: clientErr } = await (supabase as any).from('clients').insert({
                agency_id: agencyId,
                name: formData.clientName || 'Unnamed Client',
                email: formData.clientEmail,
-               phone: formData.clientPhone || null
+               phone: formData.clientPhone || null,
+               client_number: clientNumber,
            }).select('id').single();
            if (clientErr) throw new Error(`Client insert failed: ${clientErr.message}`);
            clientId = newClient?.id;
@@ -193,21 +185,27 @@ export async function POST(req: NextRequest) {
       scope_of_services: formData.scopeOfServices,
       special_terms: formData.specialTerms,
       estimated_disbursements: formData.estimatedDisbursements,
-      payment_schedule_label: formData.paymentSchedule,
+      fee_items: normalizeFeeItemsFromForm(formData),
       dispatch_options: dispatchOptions || {},
     };
+
+    const feeItems = normalizeFeeItemsFromForm(formData);
+    const feeTotals = calculateFeeTotals(feeItems);
 
     const agreementNumber = agreementRef;
 
     tracker.start('agreement');
     // 3. Create Agreement (only on final send)
     const agreementId = crypto.randomUUID();
+    const matterTypeId = formData.matterTypeId && isUuid(formData.matterTypeId) ? formData.matterTypeId : null;
+
     const { error: agErr } = await (supabase as any).from('agreements').insert({
       id: agreementId,
       agency_id: agencyId,
       created_by: responsibleRmaId,
       client_id: clientId,
       template_id: templateId,
+      matter_type_id: matterTypeId,
       agreement_number: agreementNumber,
       title: `Service Agreement - ${formData.clientName}`,
       client_name: formData.clientName,
@@ -219,6 +217,16 @@ export async function POST(req: NextRequest) {
     });
     if (agErr) throw new Error(`Agreement insert failed: ${agErr.message}`);
     tracker.complete('agreement');
+
+    await recordComplianceEvent(supabase as any, {
+      agencyId,
+      clientId: clientId ?? null,
+      eventType: 'agreement_created',
+      fileSource: 'agreement',
+      fileId: agreementId,
+      actorUserId: userId,
+      metadata: { agreement_number: agreementNumber },
+    });
 
     // Signers from wizard (Primary Applicant, Secondary, Sponsor, Dependants)
     const wizardSigners = buildSignersFromWizard(formData);
@@ -235,37 +243,37 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // 4. Create Payment Schedule
-    const scheduleId = crypto.randomUUID();
-    const professionalFee = parseFloat(formData.professionalFee || '0');
-    const disbursements = parseFloat(formData.estimatedDisbursements || '0');
-    let milestones: Array<{ name: string; amount: number; due_date: null; status: string }> = [];
-
-    if (formData.paymentSchedule?.includes('100% upfront')) {
-      milestones = [{ name: 'Full payment on engagement', amount: professionalFee, due_date: null, status: 'pending' }];
-    } else if (formData.paymentSchedule?.includes('33%')) {
-      milestones = [
-        { name: 'Engagement (33%)', amount: Math.round(professionalFee * 0.33 * 100) / 100, due_date: null, status: 'pending' },
-        { name: 'Lodgement (33%)', amount: Math.round(professionalFee * 0.33 * 100) / 100, due_date: null, status: 'pending' },
-        { name: 'Decision (34%)', amount: Math.round(professionalFee * 0.34 * 100) / 100, due_date: null, status: 'pending' },
-      ];
-    } else if (formData.paymentSchedule?.includes('Hourly')) {
-      milestones = [{ name: 'Hourly invoicing', amount: professionalFee, due_date: null, status: 'pending' }];
-    } else if (formData.paymentSchedule?.includes('Fixed fee')) {
-      milestones = [{ name: 'Fixed fee per agreement', amount: professionalFee, due_date: null, status: 'pending' }];
-    } else {
-      milestones = [
-        { name: 'Engagement (50%)', amount: professionalFee / 2, due_date: null, status: 'pending' },
-        { name: 'Prior to lodgement (50%)', amount: professionalFee / 2, due_date: null, status: 'pending' },
-      ];
+    // 4. Persist fee line items + payment schedule derived from rows (no percentage heuristics)
+    if (feeItems.length) {
+      const rows = feeItems.map((item, index) => ({
+        id: crypto.randomUUID(),
+        agreement_id: agreementId,
+        agency_id: agencyId,
+        description: item.description || '',
+        amount: parseFloat(item.amount || '0') || 0,
+        category: item.category || '',
+        due_trigger: item.dueTrigger || '',
+        notes: item.notes || null,
+        sort_order: item.sortOrder ?? index,
+      }));
+      const { error: feeErr } = await (supabase as any).from('agreement_fee_items').insert(rows);
+      if (feeErr) throw new Error(`Fee items insert failed: ${feeErr.message}`);
     }
 
+    const milestones = feeItems.map((item) => ({
+      name: [item.description, item.dueTrigger].filter(Boolean).join(' — ') || 'Fee item',
+      amount: parseFloat(item.amount || '0') || 0,
+      due_date: null,
+      status: 'pending',
+    }));
+
+    const scheduleId = crypto.randomUUID();
     const { error: pErr } = await (supabase as any).from('payment_schedules').insert({
       id: scheduleId,
       agency_id: agencyId,
       agreement_id: agreementId,
       currency: 'AUD',
-      total_amount: professionalFee,
+      total_amount: feeTotals.grandTotal,
       milestones,
     });
     if (pErr) throw new Error(`Payment schedule insert failed: ${pErr.message}`);
@@ -443,6 +451,16 @@ export async function POST(req: NextRequest) {
       reference_type: 'agreement',
     });
 
+    await recordComplianceEvent(supabase as any, {
+      agencyId,
+      clientId: clientId ?? null,
+      eventType: 'agreement_sent',
+      fileSource: 'agreement',
+      fileId: agreementId,
+      actorUserId: userId,
+      metadata: { agreement_number: agreementNumber },
+    });
+
     const { data: agencyMeta } = await supabase.from('agencies').select('slug').eq('id', agencyId).single();
     const notify = new NotificationService(supabase as any);
     await notify.notify({
@@ -456,6 +474,18 @@ export async function POST(req: NextRequest) {
       entityId: agreementId,
       actorId: userId,
     });
+
+    if (clientId) {
+      const admin = createAdminClient();
+      await recordClientSystemNote(admin, {
+        agencyId,
+        clientId,
+        actorUserId: userId,
+        body: `Service Agreement ${agreementNumber} sent to ${formData.clientName} for signature.`,
+        referenceType: 'agreement',
+        referenceId: agreementId,
+      });
+    }
 
     return NextResponse.json({
       success: true,

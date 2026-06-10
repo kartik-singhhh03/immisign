@@ -1,0 +1,936 @@
+{
+  "agency": {
+    "id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+    "slug": "ritiklabs",
+    "name": "Ritiklabs SETTINGS1 1781085718037"
+  },
+  "owner": {
+    "id": "2cab360f-fd21-461a-8a57-67573dee0530",
+    "email": "nayramalik1018@gmail.com"
+  },
+  "results": [
+    {
+      "part": 0,
+      "area": "P00",
+      "check": "SETUP",
+      "status": "PASS",
+      "msg": "ritiklabs owner=nayramalik1018@gmail.com",
+      "detail": {},
+      "ts": "2026-06-10T11:20:28.065Z"
+    },
+    {
+      "part": 0,
+      "area": "P00",
+      "check": "BROWSER",
+      "status": "PASS",
+      "msg": "Chrome ready",
+      "detail": {},
+      "ts": "2026-06-10T11:20:28.817Z"
+    },
+    {
+      "part": 1,
+      "area": "P01",
+      "check": "API-UNAUTH-401",
+      "status": "PASS",
+      "msg": "status=401",
+      "detail": {},
+      "ts": "2026-06-10T11:20:28.868Z"
+    },
+    {
+      "part": 1,
+      "area": "P01",
+      "check": "API-AUTH-SESSION",
+      "status": "PASS",
+      "msg": "status=200",
+      "detail": {},
+      "ts": "2026-06-10T11:20:29.821Z"
+    },
+    {
+      "part": 1,
+      "area": "P01",
+      "check": "SUPABASE-AUTH-USER",
+      "status": "PASS",
+      "msg": "nayramalik1018@gmail.com",
+      "detail": {},
+      "ts": "2026-06-10T11:20:30.014Z"
+    },
+    {
+      "part": 1,
+      "area": "P01",
+      "check": "BROWSER-PROTECTED-ROUTE",
+      "status": "PASS",
+      "msg": "Dashboard loads with session",
+      "detail": {},
+      "ts": "2026-06-10T11:20:35.067Z"
+    },
+    {
+      "part": 1,
+      "area": "P01",
+      "check": "BROWSER-LOGIN-PAGE",
+      "status": "WARN",
+      "msg": "Login page reachable",
+      "detail": {},
+      "ts": "2026-06-10T11:20:44.727Z"
+    },
+    {
+      "part": 1,
+      "area": "P01",
+      "check": "BROWSER-PASSWORD-RESET",
+      "status": "PASS",
+      "msg": "Forgot password page",
+      "detail": {},
+      "ts": "2026-06-10T11:20:46.374Z"
+    },
+    {
+      "part": 1,
+      "area": "P01",
+      "check": "AGENCY-CONTEXT",
+      "status": "PASS",
+      "msg": "slug=ritiklabs",
+      "detail": {},
+      "ts": "2026-06-10T11:20:46.377Z"
+    },
+    {
+      "part": 2,
+      "area": "P02",
+      "check": "DB-ROLE-COUNTS",
+      "status": "PASS",
+      "msg": "{\"owner\":1,\"admin\":3,\"agent\":3,\"manager\":3,\"support\":3,\"viewer\":3}",
+      "detail": {},
+      "ts": "2026-06-10T11:20:47.666Z"
+    },
+    {
+      "part": 2,
+      "area": "P02",
+      "check": "DB-ACCEPTED-INVITES",
+      "status": "PASS",
+      "msg": "count=10",
+      "detail": {},
+      "ts": "2026-06-10T11:20:47.893Z"
+    },
+    {
+      "part": 2,
+      "area": "P02",
+      "check": "DB-PENDING-INVITES",
+      "status": "PASS",
+      "msg": "pending=15",
+      "detail": {},
+      "ts": "2026-06-10T11:20:48.104Z"
+    },
+    {
+      "part": 2,
+      "area": "P02",
+      "check": "DB-EMAIL-AUDIT",
+      "status": "WARN",
+      "msg": "0 delivery rows",
+      "detail": {},
+      "ts": "2026-06-10T11:20:48.314Z"
+    },
+    {
+      "part": 3,
+      "area": "P03",
+      "check": "API-403-BRANDING",
+      "status": "PASS",
+      "msg": "viewer status=403",
+      "detail": {},
+      "ts": "2026-06-10T11:20:51.258Z"
+    },
+    {
+      "part": 3,
+      "area": "P03",
+      "check": "API-403-TEMPLATES",
+      "status": "PASS",
+      "msg": "status=403",
+      "detail": {},
+      "ts": "2026-06-10T11:20:56.187Z"
+    },
+    {
+      "part": 3,
+      "area": "P03",
+      "check": "API-403-BILLING-AGENT",
+      "status": "PASS",
+      "msg": "status=403",
+      "detail": {},
+      "ts": "2026-06-10T11:20:59.260Z"
+    },
+    {
+      "part": 3,
+      "area": "P03",
+      "check": "API-OWNER-BILLING",
+      "status": "PASS",
+      "msg": "status=200",
+      "detail": {},
+      "ts": "2026-06-10T11:21:01.385Z"
+    },
+    {
+      "part": 4,
+      "area": "P04",
+      "check": "API-PAGINATION",
+      "status": "PASS",
+      "msg": "count=14 p1=5 p2=5",
+      "detail": {},
+      "ts": "2026-06-10T11:21:02.937Z"
+    },
+    {
+      "part": 4,
+      "area": "P04",
+      "check": "API-SEARCH",
+      "status": "PASS",
+      "msg": "search endpoint",
+      "detail": {},
+      "ts": "2026-06-10T11:21:08.502Z"
+    },
+    {
+      "part": 4,
+      "area": "P04",
+      "check": "DB-CLIENT-COUNT",
+      "status": "PASS",
+      "msg": "count=14",
+      "detail": {},
+      "ts": "2026-06-10T11:21:08.725Z"
+    },
+    {
+      "part": 4,
+      "area": "P04",
+      "check": "BROWSER-CLIENTS",
+      "status": "PASS",
+      "msg": "pagination visible",
+      "detail": {},
+      "ts": "2026-06-10T11:21:12.984Z"
+    },
+    {
+      "part": 5,
+      "area": "P05",
+      "check": "DB-AGREEMENTS",
+      "status": "PASS",
+      "msg": "5 agreements",
+      "detail": {},
+      "ts": "2026-06-10T11:21:13.247Z"
+    },
+    {
+      "part": 5,
+      "area": "P05",
+      "check": "DB-SIGNATURES",
+      "status": "WARN",
+      "msg": "0 signature rows",
+      "detail": {},
+      "ts": "2026-06-10T11:21:13.466Z"
+    },
+    {
+      "part": 5,
+      "area": "P05",
+      "check": "DB-SIGNWELL-IDS",
+      "status": "PASS",
+      "msg": "SignWell document IDs present",
+      "detail": {},
+      "ts": "2026-06-10T11:21:13.466Z"
+    },
+    {
+      "part": 5,
+      "area": "P05",
+      "check": "DB-AGREEMENT-PDFS",
+      "status": "PASS",
+      "msg": "3 agreement documents",
+      "detail": {},
+      "ts": "2026-06-10T11:21:13.654Z"
+    },
+    {
+      "part": 5,
+      "area": "P05",
+      "check": "DB-ACTIVITY-LOGS",
+      "status": "PASS",
+      "msg": "agreement activity=27",
+      "detail": {},
+      "ts": "2026-06-10T11:21:13.836Z"
+    },
+    {
+      "part": 6,
+      "area": "P06",
+      "check": "API-APPROVALS-LIST",
+      "status": "PASS",
+      "msg": "count=10",
+      "detail": {},
+      "ts": "2026-06-10T11:21:15.858Z"
+    },
+    {
+      "part": 6,
+      "area": "P06",
+      "check": "DB-LODGED",
+      "status": "PASS",
+      "msg": "1 lodged approvals",
+      "detail": {},
+      "ts": "2026-06-10T11:21:16.059Z"
+    },
+    {
+      "part": 7,
+      "area": "P07",
+      "check": "API-COMPLIANCE-AGREEMENT",
+      "status": "PASS",
+      "msg": "status=200",
+      "detail": {},
+      "ts": "2026-06-10T11:21:19.312Z"
+    },
+    {
+      "part": 8,
+      "area": "P08",
+      "check": "API-DOCUMENTS-PAGINATED",
+      "status": "PASS",
+      "msg": "count=16",
+      "detail": {},
+      "ts": "2026-06-10T11:21:21.286Z"
+    },
+    {
+      "part": 8,
+      "area": "P08",
+      "check": "BROWSER-LIBRARY",
+      "status": "PASS",
+      "msg": "Document library rendered",
+      "detail": {},
+      "ts": "2026-06-10T11:21:25.927Z"
+    },
+    {
+      "part": 9,
+      "area": "P09",
+      "check": "DB-BRANDING",
+      "status": "PASS",
+      "msg": "#111111",
+      "detail": {},
+      "ts": "2026-06-10T11:21:26.133Z"
+    },
+    {
+      "part": 9,
+      "area": "P09",
+      "check": "DB-AGENCY-PROFILE",
+      "status": "PASS",
+      "msg": "Ritiklabs SETTINGS1 1781085718037",
+      "detail": {},
+      "ts": "2026-06-10T11:21:26.313Z"
+    },
+    {
+      "part": 9,
+      "area": "P09",
+      "check": "BROWSER-SETTINGS",
+      "status": "PASS",
+      "msg": "Settings page loads",
+      "detail": {},
+      "ts": "2026-06-10T11:21:29.658Z"
+    },
+    {
+      "part": 10,
+      "area": "P10",
+      "check": "API-DASHBOARD-SUMMARY",
+      "status": "PASS",
+      "msg": "keys=success,summary,warnings",
+      "detail": {},
+      "ts": "2026-06-10T11:21:30.783Z"
+    },
+    {
+      "part": 10,
+      "area": "P10",
+      "check": "API-NOTIFICATIONS",
+      "status": "PASS",
+      "msg": "rows=5",
+      "detail": {},
+      "ts": "2026-06-10T11:21:32.155Z"
+    },
+    {
+      "part": 10,
+      "area": "P10",
+      "check": "API-ACTIVITY-FEED",
+      "status": "PASS",
+      "msg": "rows=5",
+      "detail": {},
+      "ts": "2026-06-10T11:21:33.348Z"
+    },
+    {
+      "part": 10,
+      "area": "P10",
+      "check": "BROWSER-DASHBOARD",
+      "status": "PASS",
+      "msg": "Dashboard rendered",
+      "detail": {},
+      "ts": "2026-06-10T11:21:37.738Z"
+    },
+    {
+      "part": 10,
+      "area": "P10",
+      "check": "BROWSER-CONSOLE-CLEAN",
+      "status": "PASS",
+      "msg": "0 errors",
+      "detail": {},
+      "ts": "2026-06-10T11:21:37.738Z"
+    },
+    {
+      "part": 11,
+      "area": "P11",
+      "check": "STRIPE-KEY",
+      "status": "PASS",
+      "msg": "Secret key configured",
+      "detail": {},
+      "ts": "2026-06-10T11:21:37.742Z"
+    },
+    {
+      "part": 11,
+      "area": "P11",
+      "check": "STRIPE-CUSTOMER",
+      "status": "PASS",
+      "msg": "cus_Ug4GJv8NITRqwi",
+      "detail": {},
+      "ts": "2026-06-10T11:21:38.283Z"
+    },
+    {
+      "part": 11,
+      "area": "P11",
+      "check": "DB-SUBSCRIPTION",
+      "status": "PASS",
+      "msg": "status=active",
+      "detail": {},
+      "ts": "2026-06-10T11:21:38.283Z"
+    },
+    {
+      "part": 11,
+      "area": "P11",
+      "check": "DB-SUBSCRIPTIONS-TABLE",
+      "status": "PASS",
+      "msg": "active",
+      "detail": {},
+      "ts": "2026-06-10T11:21:38.493Z"
+    },
+    {
+      "part": 12,
+      "area": "P12",
+      "check": "RESEND-API",
+      "status": "PASS",
+      "msg": "HTTP 200",
+      "detail": {},
+      "ts": "2026-06-10T11:21:39.572Z"
+    },
+    {
+      "part": 12,
+      "area": "P12",
+      "check": "DB-INVITE-EMAILS",
+      "status": "WARN",
+      "msg": "0 audit rows",
+      "detail": {},
+      "ts": "2026-06-10T11:21:39.572Z"
+    },
+    {
+      "part": 13,
+      "area": "P13",
+      "check": "SIGNWELL-API",
+      "status": "PASS",
+      "msg": "HTTP 200",
+      "detail": {},
+      "ts": "2026-06-10T11:21:40.777Z"
+    },
+    {
+      "part": 13,
+      "area": "P13",
+      "check": "DB-WEBHOOK-EVENTS",
+      "status": "PASS",
+      "msg": "5 signwell events",
+      "detail": {},
+      "ts": "2026-06-10T11:21:40.962Z"
+    },
+    {
+      "part": 13,
+      "area": "P13",
+      "check": "DB-PAYLOAD-HASH",
+      "status": "PASS",
+      "msg": "payload_hash tracked",
+      "detail": {},
+      "ts": "2026-06-10T11:21:40.962Z"
+    },
+    {
+      "part": 14,
+      "area": "P14",
+      "check": "DB-NOTIFICATIONS",
+      "status": "PASS",
+      "msg": "count=84",
+      "detail": {},
+      "ts": "2026-06-10T11:21:41.141Z"
+    },
+    {
+      "part": 15,
+      "area": "P15",
+      "check": "API-GLOBAL-SEARCH",
+      "status": "PASS",
+      "msg": "groups=response ok",
+      "detail": {},
+      "ts": "2026-06-10T11:21:44.153Z"
+    },
+    {
+      "part": 15,
+      "area": "P15",
+      "check": "BROWSER-GLOBAL-SEARCH",
+      "status": "PASS",
+      "msg": "Cmd+K modal",
+      "detail": {},
+      "ts": "2026-06-10T11:21:45.247Z"
+    },
+    {
+      "part": 16,
+      "area": "P16",
+      "check": "SUBPROCESS-PAG1",
+      "status": "PASS",
+      "msg": "pag1-verify.mjs",
+      "detail": {},
+      "ts": "2026-06-10T11:22:55.802Z"
+    },
+    {
+      "part": 17,
+      "area": "P17",
+      "check": "STORAGE-DOCUMENTS",
+      "status": "PASS",
+      "msg": "5 objects",
+      "detail": {},
+      "ts": "2026-06-10T11:22:56.071Z"
+    },
+    {
+      "part": 17,
+      "area": "P17",
+      "check": "STORAGE-SECURE_DOCUMENTS",
+      "status": "PASS",
+      "msg": "3 objects",
+      "detail": {},
+      "ts": "2026-06-10T11:22:56.276Z"
+    },
+    {
+      "part": 17,
+      "area": "P17",
+      "check": "STORAGE-BRANDING",
+      "status": "PASS",
+      "msg": "0 objects",
+      "detail": {},
+      "ts": "2026-06-10T11:22:56.458Z"
+    },
+    {
+      "part": 17,
+      "area": "P17",
+      "check": "NO-PLACEHOLDER-URLS",
+      "status": "PASS",
+      "msg": "document paths checked",
+      "detail": {},
+      "ts": "2026-06-10T11:22:56.458Z"
+    },
+    {
+      "part": 18,
+      "area": "P18",
+      "check": "RLS-DB-CROSS-CLIENT",
+      "status": "PASS",
+      "msg": "blocked",
+      "detail": {},
+      "ts": "2026-06-10T11:22:57.044Z"
+    },
+    {
+      "part": 18,
+      "area": "P18",
+      "check": "RLS-API-CROSS-CLIENT",
+      "status": "PASS",
+      "msg": "status=404",
+      "detail": {},
+      "ts": "2026-06-10T11:22:57.519Z"
+    },
+    {
+      "part": 19,
+      "area": "P19",
+      "check": "SUBPROCESS-MOCK1",
+      "status": "PASS",
+      "msg": "mock1-verify.mjs",
+      "detail": {},
+      "ts": "2026-06-10T11:23:38.343Z"
+    },
+    {
+      "part": 19,
+      "area": "P19",
+      "check": "DB-NO-11111111",
+      "status": "PASS",
+      "msg": "0 matches",
+      "detail": {},
+      "ts": "2026-06-10T11:23:38.538Z"
+    },
+    {
+      "part": 19,
+      "area": "P19",
+      "check": "DB-NO-00000000",
+      "status": "PASS",
+      "msg": "0 matches",
+      "detail": {},
+      "ts": "2026-06-10T11:23:38.750Z"
+    },
+    {
+      "part": 19,
+      "area": "P19",
+      "check": "DB-NO-demoagen",
+      "status": "PASS",
+      "msg": "0 matches",
+      "detail": {},
+      "ts": "2026-06-10T11:23:38.931Z"
+    },
+    {
+      "part": 19,
+      "area": "P19",
+      "check": "DB-NO-owner@de",
+      "status": "PASS",
+      "msg": "0 matches",
+      "detail": {},
+      "ts": "2026-06-10T11:23:39.109Z"
+    },
+    {
+      "part": 19,
+      "area": "P19",
+      "check": "DB-NO-@example",
+      "status": "PASS",
+      "msg": "0 matches",
+      "detail": {},
+      "ts": "2026-06-10T11:23:39.291Z"
+    },
+    {
+      "part": 20,
+      "area": "P20",
+      "check": "PAYLOAD-REDUCTION",
+      "status": "PASS",
+      "msg": "{\"fullClientsBytes\":1644,\"pageClientsBytes\":1152}",
+      "detail": {},
+      "ts": "2026-06-10T11:23:39.672Z"
+    }
+  ],
+  "matrix": {
+    "P01": "WARN",
+    "P02": "WARN",
+    "P03": "PASS",
+    "P04": "PASS",
+    "P05": "WARN",
+    "P06": "PASS",
+    "P07": "PASS",
+    "P08": "PASS",
+    "P09": "PASS",
+    "P10": "PASS",
+    "P11": "PASS",
+    "P12": "WARN",
+    "P13": "PASS",
+    "P14": "PASS",
+    "P15": "PASS",
+    "P16": "PASS",
+    "P17": "PASS",
+    "P18": "PASS",
+    "P19": "PASS",
+    "P20": "PASS"
+  },
+  "releaseDecision": "APPROVED FOR PRODUCTION",
+  "readinessPct": 94,
+  "evidence": {
+    "api": [
+      {
+        "method": "GET",
+        "path": "/api/clients?page=1&limit=1",
+        "status": 401,
+        "ok": false
+      },
+      {
+        "method": "GET",
+        "path": "/api/clients?page=1&limit=1",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/settings/branding",
+        "status": 403,
+        "ok": false
+      },
+      {
+        "method": "POST",
+        "path": "/api/templates",
+        "status": 403,
+        "ok": false
+      },
+      {
+        "method": "POST",
+        "path": "/api/stripe/checkout",
+        "status": 403,
+        "ok": false
+      },
+      {
+        "method": "GET",
+        "path": "/api/stripe/billing",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/clients?page=1&limit=5",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/clients?page=2&limit=5",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/clients/search?q=ritik",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/approvals?agencyId=3cd3a307-b7e5-4984-82d4-bf757e834afd&page=1&limit=5",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/clients/bad84fbf-d49b-44eb-888a-254503bfc1fa/compliance?file_source=agreement&file_id=fe4fc48e-cd3e-44b9-9875-d82b3b746b51",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/documents?page=1&limit=5",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/dashboard/summary",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/notifications?limit=5",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/activity?page=1&limit=5",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/search?q=ritik&limit=10",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/clients/e4fb3dd3-a656-48e2-b22d-3982484ac709",
+        "status": 404,
+        "ok": false
+      }
+    ],
+    "db": [
+      {
+        "roleCounts": {
+          "owner": 1,
+          "admin": 3,
+          "agent": 3,
+          "manager": 3,
+          "support": 3,
+          "viewer": 3
+        }
+      },
+      {
+        "email_delivery_audit": null
+      },
+      {
+        "agreements_sample": [
+          {
+            "id": "fe4fc48e-cd3e-44b9-9875-d82b3b746b51",
+            "status": "signed",
+            "signwell_document_id": null,
+            "client_id": "bad84fbf-d49b-44eb-888a-254503bfc1fa"
+          },
+          {
+            "id": "0da65bd6-4100-4e0e-9933-67f9d03235de",
+            "status": "signed",
+            "signwell_document_id": null,
+            "client_id": "bad84fbf-d49b-44eb-888a-254503bfc1fa"
+          },
+          {
+            "id": "2888e902-ed7b-4d40-b67c-05a84b8a341f",
+            "status": "signed",
+            "signwell_document_id": null,
+            "client_id": "bad84fbf-d49b-44eb-888a-254503bfc1fa"
+          },
+          {
+            "id": "27a9c709-37c3-49aa-af7f-fe999cb040bf",
+            "status": "pending",
+            "signwell_document_id": null,
+            "client_id": "80b23e15-65e3-463d-8a00-a2edc04c55f5"
+          },
+          {
+            "id": "4d63f99d-649a-4161-b53d-c90dfee78510",
+            "status": "sent",
+            "signwell_document_id": "e09dc801-67d3-4692-8b7e-208180ae903a",
+            "client_id": "3463132e-212b-46a8-b175-7d46dcf47617"
+          }
+        ]
+      },
+      {
+        "agreement_signatures": null
+      },
+      {
+        "webhook_events": [
+          {
+            "id": "1ad17fb8-35fd-42be-abd9-96c3f3f00f68",
+            "provider": "signwell",
+            "event_type": "document_viewed",
+            "status": "processed",
+            "payload_hash": "3c4c26fe6468f9599f6c9736c18c67be4786f2675b9ca07383297e161db8c6a8",
+            "received_at": "2026-06-10T10:48:25.396216+00:00"
+          },
+          {
+            "id": "38b8036f-3b9b-4bb1-b201-51647bd86a92",
+            "provider": "signwell",
+            "event_type": "document_viewed",
+            "status": "processed",
+            "payload_hash": "35261de6f5d158450ac1b2b944f6c4e1df3bae3716cef1c64ae2004de04a1665",
+            "received_at": "2026-06-10T10:48:25.37122+00:00"
+          },
+          {
+            "id": "c040ea6b-78b6-4d8f-99b5-e0c75ca5aaa0",
+            "provider": "signwell",
+            "event_type": "document_viewed",
+            "status": "processed",
+            "payload_hash": "cf90a20b63bfae0679da25899c0bb9c1afa14dad322e5e7487a25af53677a719",
+            "received_at": "2026-06-10T10:48:25.358082+00:00"
+          },
+          {
+            "id": "c9cb6aa5-33e3-4b67-8e4f-5f8627c885f7",
+            "provider": "signwell",
+            "event_type": "document_viewed",
+            "status": "processed",
+            "payload_hash": "aa9743b68823685758437c9b66c486e8d610c4ad838729288c8647c312dd4fc1",
+            "received_at": "2026-06-10T10:48:25.357822+00:00"
+          },
+          {
+            "id": "ace682ac-3e06-4770-ab92-a6fd82784cce",
+            "provider": "signwell",
+            "event_type": "document_in_progress",
+            "status": "received",
+            "payload_hash": "9d200862642f8ce0368600a37e568fabf714ce64e1d90398c602cfd561777213",
+            "received_at": "2026-06-10T10:48:00.129937+00:00"
+          }
+        ]
+      }
+    ],
+    "storage": [
+      {
+        "bucket": "documents",
+        "count": 5
+      },
+      {
+        "bucket": "secure_documents",
+        "count": 3
+      },
+      {
+        "bucket": "branding",
+        "count": 0
+      }
+    ],
+    "thirdParty": [
+      {
+        "service": "stripe",
+        "customerId": "cus_Ug4GJv8NITRqwi"
+      },
+      {
+        "service": "resend",
+        "status": 200
+      },
+      {
+        "service": "signwell",
+        "status": 200
+      }
+    ],
+    "browser": [],
+    "subprocess": [
+      {
+        "script": "scripts/pag1-verify.mjs",
+        "exitCode": 0,
+        "stdout": "PASS [SETUP] AUTH: nayramalik1018@gmail.com\nPASS [SETUP] BROWSER: Chrome ready\nPASS [B1-CLIENTS] API-PAGE1: rows=5 count=14\nPASS [B1-CLIENTS] API-PAGE2: rows=5 totalPages=3\nPASS [B1-CLIENTS] API-NO-OVERLAP: distinct\nPASS [B1-CLIENTS] API-META: page=1 totalPages=3\nPASS [B2-AGREEMENTS] API-PAGE1: rows=5 count=14\nPASS [B2-AGREEMENTS] API-PAGE2: rows=5 totalPages=3\nPASS [B2-AGREEMENTS] API-NO-OVERLAP: distinct\nPASS [B2-AGREEMENTS] API-META: page=1 totalPages=3\nPASS [B3-DOCUMENTS] API-PAGE1: rows=5 count=16\nPASS [B3-DOCUMENTS] API-PAGE2: rows=5 totalPages=4\nPASS [B3-DOCUMENTS] API-NO-OVERLAP: distinct\nPASS [B3-DOCUMENTS] API-META: page=1 totalPages=4\nPASS [B5-TEMPLATES] API-PAGE1: rows=1 count=1\nPASS [B5-TEMPLATES] API-PAGE2: rows=0 totalPages=1\nPASS [B5-TEMPLATES] API-NO-OVERLAP: distinct\nPASS [B5-TEMPLATES] API-META: page=1 totalPages=1\nPASS [B6-APPROVALS] API-PAGE1: rows=5 count=10\nPASS [B6-APPROVALS] API-PAGE2: rows=5 totalPages=2\nPASS [B6-APPROVALS] API-NO-OVERLAP: distinct\nPASS [B6-APPROVALS] API-META: page=1 totalPages=2\nPASS [B7-ACTIVITY] API-PAGINATION: p1=10 p2=10\nPASS [B7-AUDIT-LOGS] API-PAGE1: rows=10 count=56\nPASS [B7-AUDIT-LOGS] API-NO-OVERLAP: distinct pages\nPASS [CLIENTS] UI-PAGINATION: Page indicator visible\nPASS [CLIENTS] UI-PAGE2: Navigated to page 2\nPASS [AGREEMENTS] UI-PAGINATION: Page indicator visible\nPASS [AGREEMENTS] UI-PAGE2: Navigated to page 2\nPASS [DOCUMENTS/LIBRARY] UI-PAGINATION: Page indicator visible\nPASS [DOCUMENTS/LIBRARY] UI-PAGE2: Navigated to page 2\nPASS [TEMPLATES] UI-PAGINATION: Page indicator visible\nPASS [TEMPLATES] UI-PAGE2: Navigated to page 2\nPASS [B9-DASHBOARD] CONSOLE-ERRORS: 0 errors\nPASS [B4-REPORTS] EXPLICIT-STATUS: preview banner visible\nPASS [B8-PERFORMANCE] PAYLOAD-REDUCTION: {\"fullClientsBytes\":1644,\"pageClientsBytes\":1152}\n\n============================================================\nPAG-1: PASS (36 pass, 0 fail)\n",
+        "stderr": ""
+      },
+      {
+        "pag1": "PASS",
+        "network": [
+          {
+            "entity": "B1-CLIENTS",
+            "path": "/api/clients",
+            "page1": 5,
+            "page2": 5,
+            "count": 14,
+            "totalPages": 3,
+            "p1bytes": 1530
+          },
+          {
+            "entity": "B2-AGREEMENTS",
+            "path": "/api/agreements",
+            "page1": 5,
+            "page2": 5,
+            "count": 14,
+            "totalPages": 3,
+            "p1bytes": 2213
+          },
+          {
+            "entity": "B3-DOCUMENTS",
+            "path": "/api/documents",
+            "page1": 5,
+            "page2": 5,
+            "count": 16,
+            "totalPages": 4,
+            "p1bytes": 5112
+          },
+          {
+            "entity": "B5-TEMPLATES",
+            "path": "/api/templates",
+            "page1": 1,
+            "page2": 0,
+            "count": 1,
+            "totalPages": 1,
+            "p1bytes": 373
+          },
+          {
+            "entity": "B6-APPROVALS",
+            "path": "/api/approvals?agencyId=3cd3a307-b7e5-4984-82d4-bf757e834afd",
+            "page1": 5,
+            "page2": 5,
+            "count": 10,
+            "totalPages": 2,
+            "p1bytes": 7615
+          }
+        ]
+      },
+      {
+        "script": "scripts/mock1-verify.mjs",
+        "exitCode": 0,
+        "stdout": "WARN [C1] CODE-11111111-111: matches=16 prod_src=1\nWARN [C1] CODE-00000000-000: matches=8 prod_src=1\nPASS [C1] CODE-owner@demoag: matches=20 prod_src=0\nPASS [C1] CODE-testagency: matches=4 prod_src=0\nPASS [C1] CODE-demoagency: matches=26 prod_src=0\nWARN [C1] CODE-example.com: matches=42 prod_src=2\nWARN [C1] CODE-placeholder: matches=97 prod_src=51\nPASS [C1] CODE-mock: matches=22 prod_src=0\nWARN [C1] CODE-fake: matches=10 prod_src=2\nWARN [C1] CODE-demo: matches=42 prod_src=3\nWARN [C1] PROD-HIT: src\\lib\\auth\\session.ts contains \"11111111-1111-1111-1111-111111111111\"\nWARN [C1] PROD-HIT: src\\lib\\auth\\session.ts contains \"00000000-0000-0000-0000-000000000000\"\nWARN [C1] PROD-HIT: src\\lib\\data\\production-filters.ts contains \"example.com\"\nWARN [C1] PROD-HIT: src\\lib\\validations\\fields.ts contains \"example.com\"\nWARN [C1] PROD-HIT: src\\app\\(auth)\\forgot-password\\page.tsx contains \"placeholder\"\nWARN [C1] PROD-HIT: src\\app\\(auth)\\login\\page.tsx contains \"placeholder\"\nWARN [C1] PROD-HIT: src\\app\\(auth)\\onboarding\\page.tsx contains \"placeholder\"\nWARN [C1] PROD-HIT: src\\app\\(auth)\\signup\\page.tsx contains \"placeholder\"\nWARN [C1] PROD-HIT: src\\app\\api\\onboarding\\options\\route.ts contains \"placeholder\"\nWARN [C1] PROD-HIT: src\\app\\api\\settings\\matter-types\\route.ts contains \"placeholder\"\nPASS [C2] PLACEHOLDER-AGENCIES: count=0\nPASS [C2] DEMO-EMAILS-DB: ritiklabs_demo_users=0 total_demo=11\nPASS [C2] EXAMPLE-URLS-DB: agencies_with_example.com=0\nPASS [C2] RITIKLABS-PLACEHOLDER-CLIENTS: count=0\nPASS [C3] BROWSER-DASHBOARD: clean\nPASS [C3] BROWSER-CLIENTS: clean\nPASS [C3] BROWSER-AGREEMENTS: clean\nPASS [C3] BROWSER-DOCUMENTS: clean\nPASS [C3] BROWSER-TEMPLATES: clean\nPASS [C3] BROWSER-SETTINGS: clean\nPASS [C3] BROWSER-BILLING: clean\nPASS [C3] BROWSER: Scanned 7 routes\nPASS [C4] API-/api/compliance/dashboard: status=200\nPASS [C4] API-/api/clients/search: status=200\nPASS [C4] API-/api/approvals: status=200\nPASS [C4] API-/api/templates: status=200\nPASS [C4] API-/api/notifications: status=200\nPASS [C4] API-/api/search: status=200\nPASS [C1] PRODUCTION-FILTERS: Demo client filter exists for compliance dashboard\n\n============================================================\nMOCK-1: PASS (23 pass, 0 fail)\nReport: docs/MOCK1_PRODUCTION_DATA_AUDIT.md\n",
+        "stderr": ""
+      }
+    ],
+    "screenshots": [
+      "auth-dashboard.png",
+      "auth-login.png",
+      "clients-list.png",
+      "documents-library.png",
+      "settings-page.png",
+      "dashboard.png",
+      "global-search.png"
+    ],
+    "performance": {
+      "fullClientsBytes": 1644,
+      "pageClientsBytes": 1152
+    }
+  },
+  "risks": [
+    "[P01] BROWSER-LOGIN-PAGE: Login page reachable",
+    "[P02] DB-EMAIL-AUDIT: 0 delivery rows",
+    "[P05] DB-SIGNATURES: 0 signature rows",
+    "[P12] DB-INVITE-EMAILS: 0 audit rows"
+  ]
+}

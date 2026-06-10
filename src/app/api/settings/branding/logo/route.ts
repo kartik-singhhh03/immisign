@@ -1,16 +1,19 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { getWorkspaceApiContext } from '@/lib/auth/workspace-api';
 import { createAdminClient } from '@/lib/supabase/admin';
 
 async function resolveAgencyId() {
-  const supabase = await createClient();
-  const { data: auth } = await supabase.auth.getUser();
-  if (!auth.user) return { error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
+  const ctx = await getWorkspaceApiContext();
+  if ('error' in ctx) {
+    return { error: NextResponse.json({ error: ctx.error }, { status: ctx.status }) };
+  }
 
-  const { data: profile } = await supabase.from('users').select('agency_id').eq('id', auth.user.id).single();
-  if (!profile?.agency_id) return { error: NextResponse.json({ error: 'No agency context' }, { status: 400 }) };
+  const role = String(ctx.dbRole || '').toLowerCase();
+  if (!['owner', 'admin'].includes(role)) {
+    return { error: NextResponse.json({ error: 'Only owners and admins can update branding' }, { status: 403 }) };
+  }
 
-  return { agencyId: profile.agency_id as string, userId: auth.user.id };
+  return { agencyId: ctx.agencyId, userId: ctx.userId };
 }
 
 export async function POST(req: Request) {

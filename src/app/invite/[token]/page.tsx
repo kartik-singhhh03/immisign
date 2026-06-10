@@ -1,15 +1,14 @@
-import { createClient } from '@/lib/supabase/server';
-import { redirect } from 'next/navigation';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { InviteAcceptForm } from './InviteAcceptForm';
 
 export default async function InvitePage({ params }: { params: { token: string } }) {
-  const supabase = await createClient();
+  const admin = createAdminClient();
   const token = params.token;
 
-  // Verify token
-  const { data: invite, error } = await supabase
+  // Service-role lookup — invite links are opened without an authenticated session.
+  const { data: invite, error } = await admin
     .from('invitations')
-    .select('*, agencies(name)')
+    .select('id, email, role, token, expires_at, accepted_at, agency_id, agencies(name)')
     .eq('token', token)
     .single();
 

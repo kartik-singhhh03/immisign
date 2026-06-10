@@ -1,0 +1,561 @@
+{
+  "ids": {
+    "clientId": "aba4adf4-7e5a-4148-9289-e13e84932f38",
+    "agreementId": "ee089978-45d0-418d-8621-bbc20d6e0844",
+    "approvalId": "7c5b877e-f7e0-48e3-b080-7d3d49485cd7",
+    "matterId": "17fc716d-612f-42da-8e21-5384f6f029a5"
+  },
+  "results": [
+    {
+      "issue": "MIG",
+      "id": "E2E31-SCHEMA",
+      "status": "PASS",
+      "msg": "Migration applied",
+      "detail": {},
+      "ts": "2026-06-10T08:12:02.795Z"
+    },
+    {
+      "issue": "SETUP",
+      "id": "ONBOARDING",
+      "status": "PASS",
+      "msg": "created",
+      "detail": {
+        "clientId": "aba4adf4-7e5a-4148-9289-e13e84932f38",
+        "agreementId": "ee089978-45d0-418d-8621-bbc20d6e0844",
+        "approvalId": "7c5b877e-f7e0-48e3-b080-7d3d49485cd7",
+        "matterId": "17fc716d-612f-42da-8e21-5384f6f029a5"
+      },
+      "ts": "2026-06-10T08:12:14.972Z"
+    },
+    {
+      "issue": "ISSUE-1",
+      "id": "API-SEND",
+      "status": "PASS",
+      "msg": "sent",
+      "detail": {},
+      "ts": "2026-06-10T08:12:26.634Z"
+    },
+    {
+      "issue": "ISSUE-1",
+      "id": "WEBHOOK-COMPLETED",
+      "status": "PASS",
+      "msg": "status 200",
+      "detail": {
+        "received": true,
+        "status": "processed",
+        "entity": "agreement"
+      },
+      "ts": "2026-06-10T08:12:38.134Z"
+    },
+    {
+      "issue": "ISSUE-1",
+      "id": "IDEMPOTENT",
+      "status": "PASS",
+      "msg": "count 1 → 1",
+      "detail": {},
+      "ts": "2026-06-10T08:12:46.437Z"
+    },
+    {
+      "issue": "ISSUE-1",
+      "id": "DB-SIGNATURES",
+      "status": "PASS",
+      "msg": "1 row(s)",
+      "detail": {
+        "id": "4d191f78-4398-4ee1-bfbd-67852085217b",
+        "agreement_id": "ee089978-45d0-418d-8621-bbc20d6e0844",
+        "signer_role": "client",
+        "signwell_signer_id": null,
+        "signing_url": null,
+        "signed_at": "2026-06-10T08:12:27.836+00:00",
+        "ip_address": null,
+        "created_at": "2026-06-10T08:12:35.093871+00:00",
+        "updated_at": "2026-06-10T08:12:35.093871+00:00",
+        "signer_id": null,
+        "signer_email": "e2e31.signer@example.com",
+        "provider": "signwell",
+        "provider_document_id": "d8357ea5-f48e-42c7-83e1-38d5cddd5905",
+        "webhook_event_id": "7e10ce09-b970-4f2d-aa98-ea9ef1d33b39"
+      },
+      "ts": "2026-06-10T08:12:46.651Z"
+    },
+    {
+      "issue": "ISSUE-2",
+      "id": "API-COMPLIANCE-A",
+      "status": "PASS",
+      "msg": "score=25",
+      "detail": {
+        "success": true,
+        "client_id": "aba4adf4-7e5a-4148-9289-e13e84932f38",
+        "matter_id": "17fc716d-612f-42da-8e21-5384f6f029a5",
+        "file_id": "7c5b877e-f7e0-48e3-b080-7d3d49485cd7",
+        "file_source": "application_approval",
+        "compliance_score": 25,
+        "compliance_status": "Open",
+        "completion_gates": [
+          {
+            "id": "service_agreement",
+            "label": "Signed Service Agreement",
+            "met": true
+          },
+          {
+            "id": "approval_signed",
+            "label": "Application approval signed",
+            "met": false
+          },
+          {
+            "id": "lodgement",
+            "label": "Application lodged",
+            "met": false
+          },
+          {
+            "id": "statement_of_service",
+            "label": "Statement of Service acknowledged",
+            "met": false
+          }
+        ]
+      },
+      "ts": "2026-06-10T08:12:49.651Z"
+    },
+    {
+      "issue": "ISSUE-2",
+      "id": "API-COMPLIANCE-B",
+      "status": "PASS",
+      "msg": "score=100",
+      "detail": {
+        "success": true,
+        "client_id": "85fb5e06-3c48-4e3f-8c62-ba30dcb765c0",
+        "matter_id": "cf13b973-1532-4f94-b7e2-139a797f708d",
+        "file_id": "1104c2d7-110f-4ac3-976e-31c7ff591635",
+        "file_source": "application_approval",
+        "compliance_score": 100,
+        "compliance_status": "Completed",
+        "completion_gates": [
+          {
+            "id": "service_agreement",
+            "label": "Signed Service Agreement",
+            "met": true
+          },
+          {
+            "id": "approval_signed",
+            "label": "Application approval signed",
+            "met": true
+          },
+          {
+            "id": "lodgement",
+            "label": "Application lodged",
+            "met": true
+          },
+          {
+            "id": "statement_of_service",
+            "label": "Statement of Service acknowledged",
+            "met": true
+          }
+        ]
+      },
+      "ts": "2026-06-10T08:12:51.594Z"
+    },
+    {
+      "issue": "ISSUE-2",
+      "id": "API-COMPLIANCE-C",
+      "status": "PASS",
+      "msg": "score=50",
+      "detail": {
+        "success": true,
+        "client_id": "99e6f959-aa91-474e-9f9d-2af5fd3223f3",
+        "matter_id": "c93dc55d-abf4-4ced-a164-341b7231d2ca",
+        "file_id": "933ec291-c98a-4137-b574-60ce0a648f43",
+        "file_source": "application_approval",
+        "compliance_score": 50,
+        "compliance_status": "Lodged",
+        "completion_gates": [
+          {
+            "id": "service_agreement",
+            "label": "Signed Service Agreement",
+            "met": false
+          },
+          {
+            "id": "approval_signed",
+            "label": "Application approval signed",
+            "met": true
+          },
+          {
+            "id": "lodgement",
+            "label": "Application lodged",
+            "met": true
+          },
+          {
+            "id": "statement_of_service",
+            "label": "Statement of Service acknowledged",
+            "met": false
+          }
+        ]
+      },
+      "ts": "2026-06-10T08:12:53.583Z"
+    },
+    {
+      "issue": "ISSUE-2",
+      "id": "MATTER-ISOLATION",
+      "status": "PASS",
+      "msg": "[{\"label\":\"Matter-A-fresh\",\"score\":25,\"status\":\"Open\"},{\"label\":\"Matter-B-complete\",\"score\":100,\"status\":\"Completed\"},{\"label\":\"Matter-C-lodged\",\"score\":50,\"status\":\"Lodged\"}]",
+      "detail": {},
+      "ts": "2026-06-10T08:12:53.583Z"
+    },
+    {
+      "issue": "ISSUE-3",
+      "id": "WEBHOOK-SIGNWELL",
+      "status": "PASS",
+      "msg": "4 signwell events",
+      "detail": {},
+      "ts": "2026-06-10T08:12:53.771Z"
+    },
+    {
+      "issue": "ISSUE-3",
+      "id": "WEBHOOK-STATUSES",
+      "status": "PASS",
+      "msg": "received=true processed=true",
+      "detail": {},
+      "ts": "2026-06-10T08:12:53.771Z"
+    },
+    {
+      "issue": "ISSUE-3",
+      "id": "WEBHOOK-PAYLOAD-HASH",
+      "status": "PASS",
+      "msg": "payload_hash present",
+      "detail": {},
+      "ts": "2026-06-10T08:12:53.771Z"
+    },
+    {
+      "issue": "ISSUE-4",
+      "id": "EMAIL-AUDIT-ROWS",
+      "status": "PASS",
+      "msg": "1 rows since run",
+      "detail": {},
+      "ts": "2026-06-10T08:12:53.961Z"
+    },
+    {
+      "issue": "ISSUE-4",
+      "id": "EMAIL-DELIVERED-AT",
+      "status": "PASS",
+      "msg": "1 with delivered_at",
+      "detail": {},
+      "ts": "2026-06-10T08:12:53.961Z"
+    },
+    {
+      "issue": "ISSUE-4",
+      "id": "EMAIL-AGREEMENT",
+      "status": "PASS",
+      "msg": "1 agreement emails",
+      "detail": {},
+      "ts": "2026-06-10T08:12:53.961Z"
+    },
+    {
+      "issue": "ISSUE-4",
+      "id": "EMAIL-APPROVAL",
+      "status": "WARN",
+      "msg": "approval emails",
+      "detail": {},
+      "ts": "2026-06-10T08:12:53.961Z"
+    },
+    {
+      "issue": "ISSUE-4",
+      "id": "EMAIL-SOS",
+      "status": "WARN",
+      "msg": "sos emails",
+      "detail": {},
+      "ts": "2026-06-10T08:12:53.961Z"
+    },
+    {
+      "issue": "ISSUE-4",
+      "id": "EMAIL-COMPLETION",
+      "status": "WARN",
+      "msg": "completion/lodge emails",
+      "detail": {},
+      "ts": "2026-06-10T08:12:53.961Z"
+    },
+    {
+      "issue": "BROWSER",
+      "id": "CLIENT-PROFILE",
+      "status": "PASS",
+      "msg": "Screenshot captured",
+      "detail": {},
+      "ts": "2026-06-10T08:13:01.239Z"
+    }
+  ],
+  "evidence": {
+    "db": [
+      {
+        "table": "agreement_signatures",
+        "rows": [
+          {
+            "id": "4d191f78-4398-4ee1-bfbd-67852085217b",
+            "agreement_id": "ee089978-45d0-418d-8621-bbc20d6e0844",
+            "signer_role": "client",
+            "signwell_signer_id": null,
+            "signing_url": null,
+            "signed_at": "2026-06-10T08:12:27.836+00:00",
+            "ip_address": null,
+            "created_at": "2026-06-10T08:12:35.093871+00:00",
+            "updated_at": "2026-06-10T08:12:35.093871+00:00",
+            "signer_id": null,
+            "signer_email": "e2e31.signer@example.com",
+            "provider": "signwell",
+            "provider_document_id": "d8357ea5-f48e-42c7-83e1-38d5cddd5905",
+            "webhook_event_id": "7e10ce09-b970-4f2d-aa98-ea9ef1d33b39"
+          }
+        ]
+      },
+      {
+        "table": "webhook_events",
+        "rows": [
+          {
+            "provider": "signwell",
+            "event_type": "document_completed",
+            "external_id": "d8357ea5-f48e-42c7-83e1-38d5cddd5905",
+            "payload_hash": "e179e7ffcb17e5c12d69930ddb6ae8cedb4108223c00efbd4bad43431cdaee07",
+            "status": "processed",
+            "received_at": "2026-06-10T08:12:40.777258+00:00",
+            "processed_at": "2026-06-10T08:12:44.327+00:00",
+            "error": null
+          },
+          {
+            "provider": "resend",
+            "event_type": "email.delivered",
+            "external_id": "bf996a22-fb29-4e10-bbb5-c49e1fc9fd73",
+            "payload_hash": "e1eddf325b5295df7865e619fdf04a89bc773c4b9d9af8cb47359de8e6f10cf4",
+            "status": "processed",
+            "received_at": "2026-06-10T08:12:40.574001+00:00",
+            "processed_at": "2026-06-10T08:12:39.011+00:00",
+            "error": null
+          },
+          {
+            "provider": "resend",
+            "event_type": "email.sent",
+            "external_id": "bf996a22-fb29-4e10-bbb5-c49e1fc9fd73",
+            "payload_hash": "65a67bfe563609f878220ab13a6ae95a4fd62e52b915a0cb8af0fa7f39643f72",
+            "status": "processed",
+            "received_at": "2026-06-10T08:12:39.92602+00:00",
+            "processed_at": "2026-06-10T08:12:38.229+00:00",
+            "error": null
+          },
+          {
+            "provider": "signwell",
+            "event_type": "document_sent",
+            "external_id": "d8357ea5-f48e-42c7-83e1-38d5cddd5905",
+            "payload_hash": "20b0ebfff81fe01e48fda4c20380b3202495d7dfed8b4500cf7f87042792d36e",
+            "status": "received",
+            "received_at": "2026-06-10T08:12:30.536027+00:00",
+            "processed_at": null,
+            "error": null
+          },
+          {
+            "provider": "signwell",
+            "event_type": "document_completed",
+            "external_id": "d8357ea5-f48e-42c7-83e1-38d5cddd5905",
+            "payload_hash": "67a1399fb5b8649dccb4b4d59cef0cb757bfb8ad679e9bdc5cec56eb7e1c4e6a",
+            "status": "processed",
+            "received_at": "2026-06-10T08:12:29.211401+00:00",
+            "processed_at": "2026-06-10T08:12:35.72+00:00",
+            "error": null
+          },
+          {
+            "provider": "signwell",
+            "event_type": "document_created",
+            "external_id": "d8357ea5-f48e-42c7-83e1-38d5cddd5905",
+            "payload_hash": "beb98b2242fa7060abcf9eb9f6a831a01c35a1979ded196310448eaf693b86d4",
+            "status": "received",
+            "received_at": "2026-06-10T08:12:28.797378+00:00",
+            "processed_at": null,
+            "error": null
+          }
+        ]
+      },
+      {
+        "table": "email_delivery_audit",
+        "rows": [
+          {
+            "email_type": "agreement",
+            "subject": "Agreement signed",
+            "status": "delivered",
+            "delivered_at": "2026-06-10T08:12:38.825+00:00",
+            "recipient": "nayramalik1018@gmail.com",
+            "created_at": "2026-06-10T08:12:37.611426+00:00"
+          }
+        ]
+      }
+    ],
+    "api": [
+      {
+        "method": "POST",
+        "path": "/api/onboarding/complete",
+        "status": 200,
+        "json": {
+          "success": true,
+          "clientId": "aba4adf4-7e5a-4148-9289-e13e84932f38",
+          "clientNumber": "AGR-2026-1006",
+          "matterId": "17fc716d-612f-42da-8e21-5384f6f029a5",
+          "agreementId": "ee089978-45d0-418d-8621-bbc20d6e0844",
+          "approvalId": "7c5b877e-f7e0-48e3-b080-7d3d49485cd7",
+          "deepLink": "/workspace/ritiklabs/clients/aba4adf4-7e5a-4148-9289-e13e84932f38?file_source=application_approval&file_id=7c5b877e-f7e0-48e3-b080-7d3d49485cd7&tab=overview",
+          "agreementPdfGenerated": true
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/api/agreements/send",
+        "status": 200,
+        "json": {
+          "message": "Successfully sent agreement. Agent signature applied automatically; external signers notified via SignWell.",
+          "signwellDocId": "d8357ea5-f48e-42c7-83e1-38d5cddd5905",
+          "status": "Created"
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/api/clients/aba4adf4-7e5a-4148-9289-e13e84932f38/compliance?file_source=application_approval&file_id=7c5b877e-f7e0-48e3-b080-7d3d49485cd7",
+        "status": 200,
+        "json": {
+          "success": true,
+          "client_id": "aba4adf4-7e5a-4148-9289-e13e84932f38",
+          "matter_id": "17fc716d-612f-42da-8e21-5384f6f029a5",
+          "file_id": "7c5b877e-f7e0-48e3-b080-7d3d49485cd7",
+          "file_source": "application_approval",
+          "compliance_score": 25,
+          "compliance_status": "Open",
+          "completion_gates": [
+            {
+              "id": "service_agreement",
+              "label": "Signed Service Agreement",
+              "met": true
+            },
+            {
+              "id": "approval_signed",
+              "label": "Application approval signed",
+              "met": false
+            },
+            {
+              "id": "lodgement",
+              "label": "Application lodged",
+              "met": false
+            },
+            {
+              "id": "statement_of_service",
+              "label": "Statement of Service acknowledged",
+              "met": false
+            }
+          ]
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/api/clients/85fb5e06-3c48-4e3f-8c62-ba30dcb765c0/compliance?file_source=application_approval&file_id=1104c2d7-110f-4ac3-976e-31c7ff591635",
+        "status": 200,
+        "json": {
+          "success": true,
+          "client_id": "85fb5e06-3c48-4e3f-8c62-ba30dcb765c0",
+          "matter_id": "cf13b973-1532-4f94-b7e2-139a797f708d",
+          "file_id": "1104c2d7-110f-4ac3-976e-31c7ff591635",
+          "file_source": "application_approval",
+          "compliance_score": 100,
+          "compliance_status": "Completed",
+          "completion_gates": [
+            {
+              "id": "service_agreement",
+              "label": "Signed Service Agreement",
+              "met": true
+            },
+            {
+              "id": "approval_signed",
+              "label": "Application approval signed",
+              "met": true
+            },
+            {
+              "id": "lodgement",
+              "label": "Application lodged",
+              "met": true
+            },
+            {
+              "id": "statement_of_service",
+              "label": "Statement of Service acknowledged",
+              "met": true
+            }
+          ]
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/api/clients/99e6f959-aa91-474e-9f9d-2af5fd3223f3/compliance?file_source=application_approval&file_id=933ec291-c98a-4137-b574-60ce0a648f43",
+        "status": 200,
+        "json": {
+          "success": true,
+          "client_id": "99e6f959-aa91-474e-9f9d-2af5fd3223f3",
+          "matter_id": "c93dc55d-abf4-4ced-a164-341b7231d2ca",
+          "file_id": "933ec291-c98a-4137-b574-60ce0a648f43",
+          "file_source": "application_approval",
+          "compliance_score": 50,
+          "compliance_status": "Lodged",
+          "completion_gates": [
+            {
+              "id": "service_agreement",
+              "label": "Signed Service Agreement",
+              "met": false
+            },
+            {
+              "id": "approval_signed",
+              "label": "Application approval signed",
+              "met": true
+            },
+            {
+              "id": "lodgement",
+              "label": "Application lodged",
+              "met": true
+            },
+            {
+              "id": "statement_of_service",
+              "label": "Statement of Service acknowledged",
+              "met": false
+            }
+          ]
+        }
+      }
+    ],
+    "webhook": [
+      {
+        "documentId": "d8357ea5-f48e-42c7-83e1-38d5cddd5905",
+        "eventType": "document_completed",
+        "status": 200,
+        "json": {
+          "received": true,
+          "status": "processed",
+          "entity": "agreement"
+        }
+      },
+      {
+        "documentId": "d8357ea5-f48e-42c7-83e1-38d5cddd5905",
+        "eventType": "document_completed",
+        "status": 200,
+        "json": {
+          "received": true,
+          "status": "processed",
+          "entity": "agreement"
+        }
+      }
+    ]
+  },
+  "matterSamples": [
+    {
+      "label": "Matter-A-fresh",
+      "score": 25,
+      "status": "Open"
+    },
+    {
+      "label": "Matter-B-complete",
+      "score": 100,
+      "status": "Completed"
+    },
+    {
+      "label": "Matter-C-lodged",
+      "score": 50,
+      "status": "Lodged"
+    }
+  ]
+}

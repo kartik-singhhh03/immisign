@@ -1,0 +1,564 @@
+{
+  "stamp": 1781082502350,
+  "agency": {
+    "id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+    "slug": "ritiklabs",
+    "name": "Ritiklabs",
+    "stripe_customer_id": null,
+    "subscription_status": "trialing"
+  },
+  "owner": {
+    "id": "2cab360f-fd21-461a-8a57-67573dee0530",
+    "email": "nayramalik1018@gmail.com"
+  },
+  "billableCount": 5,
+  "expectedMonthly": 69,
+  "stripeCustomerId": "cus_Ug4GJv8NITRqwi",
+  "stripeSubscriptionId": null,
+  "checkoutSessionId": null,
+  "results": [
+    {
+      "area": "PART1",
+      "check": "STRIPE-CONFIG",
+      "status": "PASS",
+      "msg": "Keys and price IDs verified via Stripe API",
+      "detail": {
+        "checks": [
+          {
+            "item": "secret_key_mode",
+            "status": "test"
+          },
+          {
+            "item": "base_price",
+            "status": "PASS",
+            "amount": 4900,
+            "currency": "aud",
+            "interval": "month",
+            "product": "ImmiMate Agency Plan"
+          },
+          {
+            "item": "seat_price",
+            "status": "PASS",
+            "amount": 1000,
+            "currency": "aud",
+            "interval": "month",
+            "product": "ImmiMate Additional Seat"
+          }
+        ],
+        "blockers": []
+      },
+      "ts": "2026-06-10T09:08:23.434Z"
+    },
+    {
+      "area": "PART1",
+      "check": "KEY-ENV-MATCH",
+      "status": "PASS",
+      "msg": "secret=test publishable=test",
+      "detail": {},
+      "ts": "2026-06-10T09:08:23.440Z"
+    },
+    {
+      "area": "PART1",
+      "check": "PRICE-ID-FORMAT",
+      "status": "PASS",
+      "msg": "base=price_1TghQcFv5HaF9jWGY9E1jcKN seat=price_1TghTBFv5HaF9jWGzp6LCadA",
+      "detail": {},
+      "ts": "2026-06-10T09:08:23.440Z"
+    },
+    {
+      "area": "PART1",
+      "check": "WEBHOOK-SECRET",
+      "status": "PASS",
+      "msg": "whsec_* present",
+      "detail": {},
+      "ts": "2026-06-10T09:08:23.440Z"
+    },
+    {
+      "area": "SETUP",
+      "check": "OWNER",
+      "status": "PASS",
+      "msg": "nayramalik1018@gmail.com",
+      "detail": {
+        "userId": "2cab360f-fd21-461a-8a57-67573dee0530"
+      },
+      "ts": "2026-06-10T09:08:25.475Z"
+    },
+    {
+      "area": "PART5",
+      "check": "SEAT-MATH-CURRENT",
+      "status": "PASS",
+      "msg": "5 billable → $69/mo",
+      "detail": {
+        "billableCount": 5,
+        "expectedMonthly": 69,
+        "expectedAdditional": 2
+      },
+      "ts": "2026-06-10T09:08:26.021Z"
+    },
+    {
+      "area": "PART5",
+      "check": "SEAT-MATH-3-USERS",
+      "status": "PASS",
+      "msg": "$49/mo",
+      "detail": {},
+      "ts": "2026-06-10T09:08:26.021Z"
+    },
+    {
+      "area": "PART5",
+      "check": "SEAT-MATH-4-USERS",
+      "status": "PASS",
+      "msg": "$59/mo",
+      "detail": {},
+      "ts": "2026-06-10T09:08:26.021Z"
+    },
+    {
+      "area": "PART5",
+      "check": "SEAT-MATH-5-USERS",
+      "status": "PASS",
+      "msg": "$69/mo",
+      "detail": {},
+      "ts": "2026-06-10T09:08:26.021Z"
+    },
+    {
+      "area": "PART2",
+      "check": "BILLING-NO-CRASH",
+      "status": "PASS",
+      "msg": "Page loaded",
+      "detail": {},
+      "ts": "2026-06-10T09:08:38.179Z"
+    },
+    {
+      "area": "PART2",
+      "check": "BILLING-NO-PLACEHOLDER",
+      "status": "PASS",
+      "msg": "No placeholder env strings",
+      "detail": {},
+      "ts": "2026-06-10T09:08:38.179Z"
+    },
+    {
+      "area": "PART2",
+      "check": "BILLING-REAL-PLAN",
+      "status": "PASS",
+      "msg": "Plan pricing visible",
+      "detail": {
+        "screenshot": "docs\\bill1-screenshots\\01-billing-page.png"
+      },
+      "ts": "2026-06-10T09:08:38.180Z"
+    },
+    {
+      "area": "PART3",
+      "check": "CHECKOUT-NEEDED",
+      "status": "PASS",
+      "msg": "No active Stripe subscription — starting checkout",
+      "detail": {},
+      "ts": "2026-06-10T09:08:39.706Z"
+    },
+    {
+      "area": "PART3",
+      "check": "CHECKOUT-REDIRECT",
+      "status": "PASS",
+      "msg": "https://checkout.stripe.com/c/pay/cs_test_b1clgcnWkArgPk9T1QEIZ5XBNPagawMhGqaiTAicKzdzaucppH22QVWeHa#fidnandhYHdWcXxpYCc%2FJ2FgY2RwaXEnKSdicGRmZGhqaWBTZHdsZGtxJz8nZmprcXdqaScpJ2R1bE5gfCc%2FJ3VuWnFgdnFaMDRXYHBNbkNzME1kQzxvUkJsSUp2Z1JPNzZhNn1Xclx8XGxRQ2pkNG5Td0xWUWFGb0luPGNcT0o3Q11uYUkzQ1ZQVEdDVlJnaTU9XXRcMTBoZmtSPD1AN0M1NWN9N0BdN2h8JyknY3dqaFZgd3Ngdyc%2FcXdwYCknZ2RmbmJ3anBrYUZqaWp3Jz8nJmNjY2NjYycpJ2lkfGpwcVF8dWAnPydocGlxbFpscWBoJyknYGtkZ2lgVWlkZmBtamlhYHd2Jz9xd3BgeCUl",
+      "detail": {},
+      "ts": "2026-06-10T09:08:53.355Z"
+    },
+    {
+      "area": "PART3",
+      "check": "CHECKOUT-RETURN",
+      "status": "PASS",
+      "msg": "Returned with session_id=none",
+      "detail": {},
+      "ts": "2026-06-10T09:09:20.422Z"
+    },
+    {
+      "area": "PART3",
+      "check": "CHECKOUT-SYNC-FALLBACK",
+      "status": "WARN",
+      "msg": "sync 500",
+      "detail": {},
+      "ts": "2026-06-10T09:09:22.310Z"
+    },
+    {
+      "area": "PART3",
+      "check": "DB-CUSTOMER",
+      "status": "PASS",
+      "msg": "cus_Ug4GJv8NITRqwi",
+      "detail": {},
+      "ts": "2026-06-10T09:09:22.731Z"
+    },
+    {
+      "area": "PART3",
+      "check": "DB-SUBSCRIPTION",
+      "status": "FAIL",
+      "msg": "no subscription id",
+      "detail": {
+        "status": "trialing",
+        "additional_seats": 0
+      },
+      "ts": "2026-06-10T09:09:22.731Z"
+    },
+    {
+      "area": "PART3",
+      "check": "STRIPE-CUSTOMER",
+      "status": "PASS",
+      "msg": "cus_Ug4GJv8NITRqwi",
+      "detail": {},
+      "ts": "2026-06-10T09:09:23.274Z"
+    },
+    {
+      "area": "PART4",
+      "check": "WEBHOOK-CHECKOUT-SESSION-COMPLETED",
+      "status": "PASS",
+      "msg": "seen",
+      "detail": {},
+      "ts": "2026-06-10T09:09:35.932Z"
+    },
+    {
+      "area": "PART4",
+      "check": "WEBHOOK-CUSTOMER-SUBSCRIPTION-CREATED",
+      "status": "PASS",
+      "msg": "seen",
+      "detail": {},
+      "ts": "2026-06-10T09:09:35.933Z"
+    },
+    {
+      "area": "PART4",
+      "check": "WEBHOOK-CUSTOMER-SUBSCRIPTION-UPDATED",
+      "status": "WARN",
+      "msg": "not in logs",
+      "detail": {},
+      "ts": "2026-06-10T09:09:35.933Z"
+    },
+    {
+      "area": "PART4",
+      "check": "WEBHOOK-INVOICE-PAID",
+      "status": "PASS",
+      "msg": "seen",
+      "detail": {},
+      "ts": "2026-06-10T09:09:35.933Z"
+    },
+    {
+      "area": "PART4",
+      "check": "WEBHOOK-INVOICE-PAYMENT_SUCCEEDED",
+      "status": "PASS",
+      "msg": "seen",
+      "detail": {},
+      "ts": "2026-06-10T09:09:35.933Z"
+    },
+    {
+      "area": "PART4",
+      "check": "WEBHOOK-LOGS",
+      "status": "PASS",
+      "msg": "12 webhook_logs rows",
+      "detail": {},
+      "ts": "2026-06-10T09:09:35.933Z"
+    },
+    {
+      "area": "PART4",
+      "check": "WEBHOOK-EVENTS",
+      "status": "WARN",
+      "msg": "0 webhook_events rows",
+      "detail": {},
+      "ts": "2026-06-10T09:09:35.933Z"
+    },
+    {
+      "area": "PART4",
+      "check": "WEBHOOK-PAYLOAD-HASH",
+      "status": "FAIL",
+      "msg": "missing",
+      "detail": {},
+      "ts": "2026-06-10T09:09:35.933Z"
+    },
+    {
+      "area": "PART4",
+      "check": "WEBHOOK-NO-FAILURES",
+      "status": "FAIL",
+      "msg": "2 failed",
+      "detail": {},
+      "ts": "2026-06-10T09:09:35.933Z"
+    },
+    {
+      "area": "PART6",
+      "check": "PORTAL-SESSION",
+      "status": "PASS",
+      "msg": "https://billing.stripe.com/p/session/test_YWNjdF8xUmV1SGtGdjVIYUY5aldHLF9VZzRIdGE5dHBZTDh6U3JQdU5WTnNCb3g5NzU4Q1Az0100jru2CtRq",
+      "detail": {},
+      "ts": "2026-06-10T09:09:37.854Z"
+    },
+    {
+      "area": "PART6",
+      "check": "PORTAL-UI",
+      "status": "PASS",
+      "msg": "Portal loaded with billing controls",
+      "detail": {
+        "screenshot": "docs\\bill1-screenshots\\04-stripe-portal.png"
+      },
+      "ts": "2026-06-10T09:09:45.508Z"
+    }
+  ],
+  "evidence": {
+    "stripe": [
+      {
+        "customer": {
+          "id": "cus_Ug4GJv8NITRqwi",
+          "email": "nayramalik1018@gmail.com"
+        }
+      }
+    ],
+    "db": [],
+    "webhooks": [
+      {
+        "eventId": "evt_1Tgi8DFv5HaF9jWGtUX1rK8C",
+        "type": "checkout.session.completed",
+        "status": 200,
+        "json": {
+          "status": "Ignored: duplicate event locked implicitly"
+        }
+      },
+      {
+        "eventId": "evt_1Tgi8DFv5HaF9jWGkJQKvzvy",
+        "type": "customer.subscription.created",
+        "status": 200,
+        "json": {
+          "status": "Ignored: duplicate event locked implicitly"
+        }
+      },
+      {
+        "eventId": "evt_1Tgi8EFv5HaF9jWGyvZBeHtu",
+        "type": "invoice.payment_succeeded",
+        "status": 200,
+        "json": {
+          "received": true
+        }
+      },
+      {
+        "eventId": "evt_1Tgi8DFv5HaF9jWGiZOqGYuU",
+        "type": "invoice.paid",
+        "status": 200,
+        "json": {
+          "status": "Ignored: duplicate event locked implicitly"
+        }
+      },
+      {
+        "eventId": "evt_1Tgi8DFv5HaF9jWG0Cv55HZE",
+        "type": "invoice.finalized",
+        "status": 200,
+        "json": {
+          "received": true
+        }
+      },
+      {
+        "eventId": "evt_1Tgi8EFv5HaF9jWGA5lDu6bu",
+        "type": "invoice.created",
+        "status": 200,
+        "json": {
+          "received": true
+        }
+      },
+      {
+        "eventId": "evt_3Tgi8AFv5HaF9jWG1aOEiOfW",
+        "type": "payment_intent.succeeded",
+        "status": 200,
+        "json": {
+          "received": true
+        }
+      },
+      {
+        "eventId": "evt_1Tgi8DFv5HaF9jWGDbsAL3tK",
+        "type": "payment_method.attached",
+        "status": 200,
+        "json": {
+          "received": true
+        }
+      },
+      {
+        "eventId": "evt_3Tgi8AFv5HaF9jWG1Q7Qur7P",
+        "type": "charge.succeeded",
+        "status": 200,
+        "json": {
+          "received": true
+        }
+      },
+      {
+        "eventId": "evt_3Tgi8AFv5HaF9jWG1aDuoPzF",
+        "type": "payment_intent.created",
+        "status": 200,
+        "json": {
+          "received": true
+        }
+      },
+      {
+        "eventId": "evt_1Tgi8DFv5HaF9jWG9Tcc8O5X",
+        "type": "customer.updated",
+        "status": 200,
+        "json": {
+          "received": true
+        }
+      },
+      {
+        "eventId": "evt_1Tgi7sFv5HaF9jWG85uR7pfE",
+        "type": "customer.created",
+        "status": 200,
+        "json": {
+          "received": true
+        }
+      }
+    ],
+    "screenshots": [
+      "docs\\bill1-screenshots\\01-billing-page.png",
+      "docs\\bill1-screenshots\\02-stripe-checkout.png",
+      "docs\\bill1-screenshots\\03-billing-after-checkout.png",
+      "docs\\bill1-screenshots\\04-stripe-portal.png"
+    ],
+    "seats": [
+      {
+        "users": 3,
+        "monthlyUsd": 49
+      },
+      {
+        "users": 4,
+        "monthlyUsd": 59
+      },
+      {
+        "users": 5,
+        "monthlyUsd": 69
+      }
+    ]
+  },
+  "webhookLogs": [
+    {
+      "event_id": "evt_1Tgi7sFv5HaF9jWG85uR7pfE",
+      "event_type": "customer.created",
+      "status": "success",
+      "processed_at": "2026-06-10T09:09:34.959+00:00"
+    },
+    {
+      "event_id": "evt_1Tgi8DFv5HaF9jWG9Tcc8O5X",
+      "event_type": "customer.updated",
+      "status": "success",
+      "processed_at": "2026-06-10T09:09:33.792+00:00"
+    },
+    {
+      "event_id": "evt_3Tgi8AFv5HaF9jWG1aDuoPzF",
+      "event_type": "payment_intent.created",
+      "status": "success",
+      "processed_at": "2026-06-10T09:09:33.035+00:00"
+    },
+    {
+      "event_id": "evt_3Tgi8AFv5HaF9jWG1Q7Qur7P",
+      "event_type": "charge.succeeded",
+      "status": "success",
+      "processed_at": "2026-06-10T09:09:32.282+00:00"
+    },
+    {
+      "event_id": "evt_1Tgi8DFv5HaF9jWGDbsAL3tK",
+      "event_type": "payment_method.attached",
+      "status": "success",
+      "processed_at": "2026-06-10T09:09:31.524+00:00"
+    },
+    {
+      "event_id": "evt_3Tgi8AFv5HaF9jWG1aOEiOfW",
+      "event_type": "payment_intent.succeeded",
+      "status": "success",
+      "processed_at": "2026-06-10T09:09:30.76+00:00"
+    },
+    {
+      "event_id": "evt_1Tgi8EFv5HaF9jWGA5lDu6bu",
+      "event_type": "invoice.created",
+      "status": "success",
+      "processed_at": "2026-06-10T09:09:30.005+00:00"
+    },
+    {
+      "event_id": "evt_1Tgi8DFv5HaF9jWG0Cv55HZE",
+      "event_type": "invoice.finalized",
+      "status": "success",
+      "processed_at": "2026-06-10T09:09:29.247+00:00"
+    },
+    {
+      "event_id": "evt_1Tgi8EFv5HaF9jWGyvZBeHtu",
+      "event_type": "invoice.payment_succeeded",
+      "status": "success",
+      "processed_at": "2026-06-10T09:09:25.871+00:00"
+    },
+    {
+      "event_id": "evt_1Tgi8DFv5HaF9jWGtUX1rK8C",
+      "event_type": "checkout.session.completed",
+      "status": "failed_processing",
+      "processed_at": null
+    },
+    {
+      "event_id": "evt_1Tgi8DFv5HaF9jWGkJQKvzvy",
+      "event_type": "customer.subscription.created",
+      "status": "failed_processing",
+      "processed_at": null
+    },
+    {
+      "event_id": "evt_1Tgi8DFv5HaF9jWGiZOqGYuU",
+      "event_type": "invoice.paid",
+      "status": "success",
+      "processed_at": "2026-06-10T09:09:05.474+00:00"
+    }
+  ],
+  "webhookEvents": null,
+  "replayed": [
+    {
+      "type": "checkout.session.completed",
+      "id": "evt_1Tgi8DFv5HaF9jWGtUX1rK8C",
+      "status": 200
+    },
+    {
+      "type": "customer.subscription.created",
+      "id": "evt_1Tgi8DFv5HaF9jWGkJQKvzvy",
+      "status": 200
+    },
+    {
+      "type": "invoice.payment_succeeded",
+      "id": "evt_1Tgi8EFv5HaF9jWGyvZBeHtu",
+      "status": 200
+    },
+    {
+      "type": "invoice.paid",
+      "id": "evt_1Tgi8DFv5HaF9jWGiZOqGYuU",
+      "status": 200
+    },
+    {
+      "type": "invoice.finalized",
+      "id": "evt_1Tgi8DFv5HaF9jWG0Cv55HZE",
+      "status": 200
+    },
+    {
+      "type": "invoice.created",
+      "id": "evt_1Tgi8EFv5HaF9jWGA5lDu6bu",
+      "status": 200
+    },
+    {
+      "type": "payment_intent.succeeded",
+      "id": "evt_3Tgi8AFv5HaF9jWG1aOEiOfW",
+      "status": 200
+    },
+    {
+      "type": "payment_method.attached",
+      "id": "evt_1Tgi8DFv5HaF9jWGDbsAL3tK",
+      "status": 200
+    },
+    {
+      "type": "charge.succeeded",
+      "id": "evt_3Tgi8AFv5HaF9jWG1Q7Qur7P",
+      "status": 200
+    },
+    {
+      "type": "payment_intent.created",
+      "id": "evt_3Tgi8AFv5HaF9jWG1aDuoPzF",
+      "status": 200
+    },
+    {
+      "type": "customer.updated",
+      "id": "evt_1Tgi8DFv5HaF9jWG9Tcc8O5X",
+      "status": 200
+    },
+    {
+      "type": "customer.created",
+      "id": "evt_1Tgi7sFv5HaF9jWG85uR7pfE",
+      "status": 200
+    }
+  ]
+}

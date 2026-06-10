@@ -1,0 +1,121 @@
+{
+  "timestamp": "2026-06-04T08:07:16.076Z",
+  "workspaceSlug": "anshu-labs",
+  "schema": {
+    "documentColumns": [
+      "sender_attestation_path",
+      "signwell_dispatch_error",
+      "signwell_document_id",
+      "signwell_signing_links",
+      "signwell_status"
+    ]
+  },
+  "data": {
+    "agency": {
+      "id": "2992e15b-f578-414c-8b9d-f76268a3779c",
+      "slug": "anshu-labs",
+      "name": "anshu labs"
+    },
+    "recentDocuments": [
+      {
+        "id": "3e59807f-421e-48f4-a926-e1f52259eef6",
+        "file_name": "agreement-AGR-2026-0002.pdf",
+        "signwell_document_id": null,
+        "signwell_status": null,
+        "signwell_sent_at": null,
+        "signwell_dispatch_error": null,
+        "signwell_external_signer_count": null,
+        "sender_attestation_path": null,
+        "created_at": "2026-06-04T07:09:58.934Z"
+      },
+      {
+        "id": "54328978-bce7-4636-9aaa-b53284607ac9",
+        "file_name": "screencapture-fromheretotherelife-2026-06-04-00_34_50.pdf",
+        "signwell_document_id": null,
+        "signwell_status": null,
+        "signwell_sent_at": null,
+        "signwell_dispatch_error": null,
+        "signwell_external_signer_count": null,
+        "sender_attestation_path": null,
+        "created_at": "2026-06-03T21:44:53.135Z"
+      },
+      {
+        "id": "226371d7-9d92-4b3d-9995-03b1f575764a",
+        "file_name": "agreement-AGR-2026-0001.pdf",
+        "signwell_document_id": null,
+        "signwell_status": null,
+        "signwell_sent_at": null,
+        "signwell_dispatch_error": null,
+        "signwell_external_signer_count": null,
+        "sender_attestation_path": null,
+        "created_at": "2026-06-03T21:43:29.375Z"
+      }
+    ],
+    "recentAgreements": [
+      {
+        "id": "a30ee28a-5b10-44d5-ac39-6738a5eac579",
+        "agreement_number": "AGR-2026-0002",
+        "status": "sent",
+        "signwell_document_id": "dea4bae0-766b-4fd6-9c49-4fd0177057b9",
+        "client_name": "kartik singh",
+        "created_at": "2026-06-04T07:09:50.018Z"
+      },
+      {
+        "id": "18d724a6-d01d-457e-836e-d3d14f9777b6",
+        "agreement_number": "AGR-2026-0001",
+        "status": "sent",
+        "signwell_document_id": "f5cf2706-df83-4768-aa88-4b4df6b1ecf7",
+        "client_name": "kartik singh",
+        "created_at": "2026-06-03T21:43:21.626Z"
+      }
+    ],
+    "sampleClients": [
+      {
+        "id": "099da322-3d40-4976-8bff-a55403f3e482",
+        "name": "kartik singh",
+        "email": "kartiksingh37193@gmail.com"
+      }
+    ],
+    "sendDocumentDrafts": [
+      {
+        "agency_id": "2992e15b-f578-414c-8b9d-f76268a3779c",
+        "user_id": "152298ef-10f3-4c48-bdb0-754a56e64812",
+        "current_step": 5,
+        "updated_at": "2026-06-04T07:11:47.817Z",
+        "draft_step": 5
+      },
+      {
+        "agency_id": "6618c1bc-6b29-43d4-9780-f53afecb452f",
+        "user_id": "1b6d5946-0b8f-415a-9167-ab1ed0beb46a",
+        "current_step": 3,
+        "updated_at": "2026-06-04T02:36:34.836Z",
+        "draft_step": 3
+      },
+      {
+        "agency_id": "1cd4007e-bbe1-4205-9481-233e2fe90ee7",
+        "user_id": "22222222-2222-2222-2222-222222222223",
+        "current_step": 5,
+        "updated_at": "2026-06-03T21:25:12.899Z",
+        "draft_step": 5
+      },
+      {
+        "agency_id": "df44c95a-3eac-482c-83c6-22551febc791",
+        "user_id": "f49335d8-456b-467d-8fc1-23ab121559b1",
+        "current_step": 0,
+        "updated_at": "2026-06-03T19:52:03.678Z",
+        "draft_step": 0
+      },
+      {
+        "agency_id": "1cd4007e-bbe1-4205-9481-233e2fe90ee7",
+        "user_id": "22222222-2222-2222-2222-222222222221",
+        "current_step": 0,
+        "updated_at": "2026-06-03T12:40:56.114Z",
+        "draft_step": 0
+      }
+    ]
+  },
+  "signwellEnv": {
+    "SIGNWELL_TEST_MODE": "(unset)",
+    "NODE_ENV": "(unset)"
+  }
+}

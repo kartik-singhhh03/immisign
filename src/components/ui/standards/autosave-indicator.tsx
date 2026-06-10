@@ -16,7 +16,7 @@ export function AutosaveIndicator({
   className?: string
 }) {
   const label = React.useMemo(() => {
-    if (status === "saving") return "Saving draft…"
+    if (status === "saving") return "Saving..."
     if (status === "unsaved") return "Unsaved changes"
     if (status === "error") return "Draft save failed"
     if (status === "saved" && lastSavedAt) {
@@ -32,7 +32,7 @@ export function AutosaveIndicator({
     <div
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-bold",
-        status === "saved" && "border-emerald-100 bg-emerald-50/80 text-emerald-800",
+        status === "saved" && "border-[#E7E7E7] bg-[#FAFAFA] text-[#111111]",
         status === "saving" && "border-slate-200 bg-slate-50 text-slate-600",
         status === "unsaved" && "border-amber-100 bg-amber-50/80 text-amber-800",
         status === "error" && "border-red-100 bg-red-50 text-red-700",

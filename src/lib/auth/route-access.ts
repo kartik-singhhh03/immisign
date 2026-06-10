@@ -2,6 +2,7 @@ import {
   canAccessBilling,
   canAccessOwnerOnlyPages,
   canAccessSettings,
+  canAccessSystemHealth,
   canManageTeam,
   canWriteTemplates,
   type DbRole,
@@ -21,6 +22,10 @@ export function canAccessWorkspacePath(dbRole: DbRole, pathKey: string): boolean
   }
 
   if (root === 'templates' && segments.includes('new') && !canWriteTemplates(dbRole)) {
+    return false;
+  }
+
+  if (root === 'admin' && !canAccessSystemHealth(dbRole)) {
     return false;
   }
 

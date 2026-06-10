@@ -20,7 +20,6 @@ export function PhoneInput({ value, onChange, className, ...props }: PhoneInputP
       type="tel"
       inputMode="tel"
       autoComplete="tel"
-      pattern="[0-9+()\\s.-]*"
       value={value}
       onChange={(e) => onChange(sanitizePhoneInput(e.target.value))}
       className={cn(className)}

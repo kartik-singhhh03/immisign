@@ -7,6 +7,18 @@ import { AgreementRepository } from '@/features/agreements/repositories/agreemen
 import { AgreementStatus } from '@/features/agreements/types';
 import { NotificationService, buildWorkspaceActionUrl } from '@/lib/notifications/notification.service';
 import { DocumentGenerationService } from '@/features/agreements/services/document-generation.service';
+import { ApprovalCertificateService } from '@/features/approvals/services/approval-certificate.service';
+import {
+  logApprovalActivity,
+  logApprovalCompleted,
+  logCertificateGenerated,
+  notifyApprovalUser,
+} from '@/features/approvals/lib/activity-log';
+import { recordClientSystemNote } from '@/features/file-notes/services/file-notes.service';
+import { DocumentAuditService } from '@/lib/audit/document-audit.service';
+import { recordComplianceEvent } from '@/lib/compliance/compliance-events.service';
+import { recordAgreementSignature } from '@/lib/agreements/agreement-signature-record';
+import { markWebhookEventProcessed, recordWebhookEvent } from '@/lib/integrations/webhook-events';
 
 const HANDLED_EVENTS = new Set([
   'document_viewed',
@@ -30,16 +42,25 @@ async function logWebhookFailure(
 ) {
   console.error('[signwell-webhook]', details);
   if (details.agencyId) {
-    await supabase.from('activity_logs').insert({
-      id: crypto.randomUUID(),
-      agency_id: details.agencyId,
-      user_id: null,
-      type: 'signwell.webhook_failed',
-      title: 'SignWell webhook processing failed',
-      description: `${details.eventType}: ${details.message}`,
-      reference_id: details.documentId || null,
-      reference_type: 'signwell',
-    });
+    const { data: owner } = await supabase
+      .from('users')
+      .select('id')
+      .eq('agency_id', details.agencyId)
+      .eq('role', 'owner')
+      .limit(1)
+      .maybeSingle();
+    if (owner?.id) {
+      await supabase.from('activity_logs').insert({
+        id: crypto.randomUUID(),
+        agency_id: details.agencyId,
+        user_id: owner.id,
+        type: 'signwell.webhook_failed',
+        title: 'SignWell webhook processing failed',
+        description: `${details.eventType}: ${details.message}`,
+        reference_id: details.documentId || null,
+        reference_type: 'signwell',
+      });
+    }
   }
 }
 
@@ -98,6 +119,7 @@ async function persistCompletedPdf(
 export async function POST(req: NextRequest) {
   const supabase = createAdminClient();
   let parsed: ReturnType<typeof parseSignwellWebhookPayload> = null;
+  let webhookEventId: string | null = null;
 
   try {
     const rawBody = await req.text();
@@ -131,18 +153,36 @@ export async function POST(req: NextRequest) {
       idempotencyKey: parsed.idempotencyKey,
     };
 
-    const { data: existingWebhook } = await supabase
-      .from('processed_webhooks')
-      .select('webhook_id')
-      .eq('webhook_id', idempotencyKey)
-      .maybeSingle();
+    const payloadHash = crypto.createHash('sha256').update(rawBody).digest('hex');
 
-    if (existingWebhook) {
-      return NextResponse.json({ received: true, ignored: 'Duplicate webhook' });
+    webhookEventId = await recordWebhookEvent(supabase, {
+      provider: 'signwell',
+      eventType,
+      externalId: documentId,
+      payload: { idempotencyKey },
+      payloadHash,
+      status: 'received',
+      agencyId: null,
+    });
+
+    const { error: claimError } = await supabase.from('processed_webhooks').insert({
+      webhook_id: idempotencyKey,
+      event_type: eventType,
+    });
+    if (claimError) {
+      const duplicate =
+        claimError.message.includes('duplicate') ||
+        claimError.code === '23505';
+      if (duplicate) {
+        if (webhookEventId) {
+          await markWebhookEventProcessed(supabase, webhookEventId, 'processed');
+        }
+        return NextResponse.json({ received: true, ignored: 'Duplicate webhook' });
+      }
+      throw claimError;
     }
 
     if (!HANDLED_EVENTS.has(eventType)) {
-      await markProcessed(supabase, idempotencyKey, `ignored:${eventType}`);
       return NextResponse.json({ received: true, ignored: `Unhandled event: ${eventType}` });
     }
 
@@ -153,6 +193,194 @@ export async function POST(req: NextRequest) {
       .maybeSingle();
 
     if (!agreement) {
+      const { data: approval } = await supabase
+        .from('application_approvals')
+        .select('*, clients(name, email)')
+        .eq('signwell_document_id', documentId)
+        .is('deleted_at', null)
+        .maybeSingle();
+
+      if (approval) {
+        const isFinalSign = eventType === 'document_signed' || eventType === 'document_completed';
+        const alreadySigned = Boolean(approval.client_signed_at);
+        const updates: Record<string, unknown> = { updated_at: new Date().toISOString() };
+
+        if (eventType === 'document_viewed' && !approval.client_viewed_at) {
+          updates.client_viewed_at = new Date().toISOString();
+        }
+        if (isFinalSign && !alreadySigned) {
+          const now = new Date().toISOString();
+          updates.client_signed_at = now;
+          updates.approved_at = approval.approved_at || now;
+          updates.status = 'approved';
+          updates.signed_by = (approval.clients as { name?: string })?.name || approval.title;
+          updates.signature_provider = 'signwell';
+          updates.document_version = approval.signwell_document_id || documentId;
+        }
+
+        if (isFinalSign) {
+          try {
+            const pdfBytes = await signwellClient.downloadCompletedPdf(documentId);
+            const signedPath = `${approval.agency_id}/approvals/${approval.id}/signed-application.pdf`;
+            await supabase.storage
+              .from('documents')
+              .upload(signedPath, pdfBytes, { contentType: 'application/pdf', upsert: true });
+            updates.signed_document_path = signedPath;
+          } catch (err) {
+            console.error('Failed to preserve signed approval PDF', err);
+          }
+        }
+
+        if (Object.keys(updates).length > 1) {
+          await supabase.from('application_approvals').update(updates).eq('id', approval.id);
+        }
+
+        const approvalAudit = new DocumentAuditService(supabase);
+        const approvalAuditType =
+          eventType === 'document_viewed'
+            ? 'viewed'
+            : isFinalSign
+              ? 'signed'
+              : null;
+        if (approvalAuditType) {
+          await approvalAudit.record({
+            agencyId: approval.agency_id,
+            clientId: approval.client_id,
+            matterId: (approval as { matter_id?: string }).matter_id ?? null,
+            documentType: 'application_approval',
+            documentId: approval.id,
+            eventType: approvalAuditType,
+            actorName: (approval.clients as { name?: string })?.name,
+            actorEmail: (approval.clients as { email?: string })?.email,
+            provider: 'signwell',
+            metadata: { signwell_document_id: documentId, event_type: eventType },
+          });
+        }
+
+        if (isFinalSign && !alreadySigned) {
+          await recordComplianceEvent(supabase, {
+            agencyId: approval.agency_id,
+            clientId: approval.client_id,
+            eventType: 'approval_signed',
+            fileSource: 'application_approval',
+            fileId: approval.id,
+            metadata: {
+              signwell_document_id: documentId,
+              signed_at: updates.client_signed_at,
+            },
+          });
+        }
+
+        const { data: freshApproval } = await supabase
+          .from('application_approvals')
+          .select('*, clients(name, email)')
+          .eq('id', approval.id)
+          .single();
+
+        const current = freshApproval || approval;
+
+        if (isFinalSign && !approval.certificate_storage_path && current.client_signed_at) {
+          try {
+            const { data: agency } = await supabase
+              .from('agencies')
+              .select('name, slug')
+              .eq('id', approval.agency_id)
+              .single();
+            const certService = new ApprovalCertificateService(supabase);
+            const { storagePath, generatedAt } = await certService.generate(
+              approval.agency_id,
+              current,
+              agency?.name || 'Agency',
+            );
+            await supabase
+              .from('application_approvals')
+              .update({
+                certificate_storage_path: storagePath,
+                certificate_generated_at: generatedAt,
+              })
+              .eq('id', approval.id);
+            await logCertificateGenerated(supabase, {
+              agency_id: approval.agency_id,
+              user_id: approval.created_by,
+              approval_id: approval.id,
+              approval_number: approval.approval_number,
+              title: approval.title,
+              agencySlug: agency?.slug,
+            });
+            await approvalAudit.record({
+              agencyId: approval.agency_id,
+              clientId: approval.client_id,
+              matterId: (approval as { matter_id?: string }).matter_id ?? null,
+              documentType: 'certificate',
+              documentId: approval.id,
+              eventType: 'generated',
+              eventTimestamp: generatedAt,
+              provider: 'immimate',
+              metadata: { storage_path: storagePath },
+            });
+            if (approval.client_id) {
+              await recordClientSystemNote(supabase, {
+                agencyId: approval.agency_id,
+                clientId: approval.client_id,
+                actorUserId: approval.created_by,
+                body: `Certificate of Approval generated for ${approval.approval_number || approval.title}.`,
+                referenceType: 'application_approval',
+                referenceId: approval.id,
+              });
+            }
+          } catch (err) {
+            console.error('Approval certificate generation failed', err);
+          }
+        }
+
+        const { data: agencyMeta } = await supabase
+          .from('agencies')
+          .select('slug')
+          .eq('id', approval.agency_id)
+          .single();
+
+        if (isFinalSign && !alreadySigned) {
+          await logApprovalActivity(supabase, {
+            agency_id: approval.agency_id,
+            user_id: approval.created_by,
+            type: 'approval.client_signed_signwell',
+            title: 'Client signed via SignWell',
+            description: approval.approval_number || approval.title,
+            approval_id: approval.id,
+          });
+          await notifyApprovalUser(supabase, {
+            agencyId: approval.agency_id,
+            agencySlug: agencyMeta?.slug,
+            userId: approval.created_by,
+            title: 'Client signed application',
+            message: `${approval.approval_number || approval.title} was signed via SignWell.`,
+            approvalId: approval.id,
+            category: 'approval',
+          });
+          if (approval.client_id) {
+            await recordClientSystemNote(supabase, {
+              agencyId: approval.agency_id,
+              clientId: approval.client_id,
+              actorUserId: approval.created_by,
+              body: `Application Approval ${approval.approval_number || approval.title} signed by client.`,
+              referenceType: 'application_approval',
+              referenceId: approval.id,
+            });
+          }
+          await logApprovalCompleted(supabase, {
+            agency_id: approval.agency_id,
+            user_id: approval.created_by,
+            approval_id: approval.id,
+            approval_number: approval.approval_number,
+            title: approval.title,
+            agencySlug: agencyMeta?.slug,
+            via: 'signwell',
+          });
+        }
+
+        return NextResponse.json({ received: true, status: 'processed', entity: 'application_approval' });
+      }
+
       const { data: standaloneDoc } = await supabase
         .from('documents')
         .select('*')
@@ -160,7 +388,6 @@ export async function POST(req: NextRequest) {
         .maybeSingle();
 
       if (!standaloneDoc) {
-        await markProcessed(supabase, idempotencyKey, `orphan:${eventType}`);
         return NextResponse.json({ received: true, error: 'Entity not found' }, { status: 404 });
       }
 
@@ -225,11 +452,11 @@ export async function POST(req: NextRequest) {
         });
       }
 
-      await markProcessed(supabase, idempotencyKey, eventType);
       return NextResponse.json({ received: true, status: 'processed', entity: 'document' });
     }
 
     const agreementRepo = new AgreementRepository(supabase);
+    const agreementAlreadySigned = agreement.status === AgreementStatus.SIGNED;
     let newStatus: AgreementStatus | null = null;
     let signwellStatus: string | null = null;
     const isFinalSign = eventType === 'document_signed' || eventType === 'document_completed';
@@ -262,7 +489,12 @@ export async function POST(req: NextRequest) {
     if (newStatus) {
       agreementUpdate.status = newStatus;
       if (newStatus === AgreementStatus.SIGNED) {
-        agreementUpdate.completed_at = new Date().toISOString();
+        const signedAt = new Date().toISOString();
+        agreementUpdate.completed_at = signedAt;
+        agreementUpdate.signed_at = signedAt;
+        agreementUpdate.signature_provider = 'signwell';
+        agreementUpdate.signed_by = agreement.client_name || null;
+        agreementUpdate.document_version = agreement.signwell_document_id || documentId;
       }
     }
     if (signwellStatus) {
@@ -299,19 +531,83 @@ export async function POST(req: NextRequest) {
       reference_type: 'agreement',
     });
 
+    const auditSvc = new DocumentAuditService(supabase);
+    const auditEventType =
+      eventType === 'document_viewed'
+        ? 'viewed'
+        : isFinalSign
+          ? 'signed'
+          : eventType === 'document_completed'
+            ? 'completed'
+            : null;
+    if (auditEventType) {
+      await auditSvc.record({
+        agencyId: agreement.agency_id,
+        clientId: agreement.client_id,
+        matterId: (agreement as { matter_id?: string }).matter_id ?? null,
+        documentType: 'service_agreement',
+        documentId: agreement.id,
+        eventType: auditEventType as 'viewed' | 'signed' | 'completed',
+        eventTimestamp: new Date().toISOString(),
+        actorName: agreement.client_name,
+        actorEmail: agreement.client_email,
+        provider: 'signwell',
+        metadata: { signwell_document_id: documentId, event_type: eventType },
+      });
+    }
+
     if (eventType === 'document_completed') {
+      const signerEmail =
+        (parsed.event.related_signer?.email as string | undefined)?.trim() ||
+        agreement.client_email?.trim() ||
+        '';
+      if (signerEmail) {
+        await recordAgreementSignature(supabase, {
+          agreementId: agreement.id,
+          signerEmail,
+          signedAt: (agreementUpdate.signed_at as string) || new Date().toISOString(),
+          ipAddress:
+            (parsed.raw as { data?: { object?: { ip_address?: string } } })?.data?.object
+              ?.ip_address ?? null,
+          provider: 'signwell',
+          providerDocumentId: documentId,
+          webhookEventId,
+          signwellSignerId:
+            (parsed.raw as { data?: { object?: { recipients?: Array<{ id?: string }> } } })?.data
+              ?.object?.recipients?.[0]?.id ?? null,
+        });
+      }
+    }
+
+    if (isFinalSign && !agreementAlreadySigned) {
+      await recordComplianceEvent(supabase, {
+        agencyId: agreement.agency_id,
+        clientId: agreement.client_id,
+        eventType: 'agreement_signed',
+        fileSource: 'agreement',
+        fileId: agreement.id,
+        metadata: {
+          signwell_document_id: documentId,
+          signed_at: agreementUpdate.signed_at,
+        },
+      });
+    }
+
+    if (isFinalSign && !agreementAlreadySigned) {
       const { data: agencyMeta } = await supabase
         .from('agencies')
         .select('slug')
         .eq('id', agreement.agency_id)
         .single();
       const notify = new NotificationService(supabase);
+      const signedTitle =
+        eventType === 'document_completed' ? 'Agreement signed' : 'Agreement signature received';
       await notify.notify({
         agencyId: agreement.agency_id,
         userId: agreement.created_by,
         type: 'agreement',
-        title: 'Agreement signed',
-        message: `${agreement.client_name || agreement.title} completed signing via SignWell.`,
+        title: signedTitle,
+        message: `${agreement.client_name || agreement.title} ${eventType === 'document_completed' ? 'completed signing' : 'signed'} via SignWell.`,
         actionUrl: buildWorkspaceActionUrl(
           agencyMeta?.slug || 'workspace',
           `/agreements/${agreement.id}`,
@@ -319,13 +615,33 @@ export async function POST(req: NextRequest) {
         entityType: 'agreement',
         entityId: agreement.id,
       });
+
+      if (agreement.client_id) {
+        await recordClientSystemNote(supabase, {
+          agencyId: agreement.agency_id,
+          clientId: agreement.client_id,
+          actorUserId: agreement.created_by,
+          body: `Service Agreement ${agreement.agreement_number || agreement.title} signed by client.`,
+          referenceType: 'agreement',
+          referenceId: agreement.id,
+        });
+      }
     }
 
-    await markProcessed(supabase, idempotencyKey, eventType);
+    if (webhookEventId) {
+      await markWebhookEventProcessed(supabase, webhookEventId, 'processed');
+      await supabase
+        .from('webhook_events')
+        .update({ agency_id: agreement.agency_id })
+        .eq('id', webhookEventId);
+    }
     return NextResponse.json({ received: true, status: 'processed', entity: 'agreement' });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Internal Server Error';
     console.error('SignWell Webhook Error:', error);
+    if (webhookEventId) {
+      await markWebhookEventProcessed(supabase, webhookEventId, 'failed', message);
+    }
     if (parsed) {
       try {
         await logWebhookFailure(createAdminClient(), {

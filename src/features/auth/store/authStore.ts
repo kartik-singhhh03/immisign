@@ -84,7 +84,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   onboardingData: {
     agencyName: "",
     slug: "",
-    primaryColor: "#0D9F8C",
+    primaryColor: "#3E7C6B",
     logoText: "",
     specialty: "skilled",
     teamSize: "1",

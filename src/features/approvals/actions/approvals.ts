@@ -1,6 +1,7 @@
 "use server"
 
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { uiRoleToDb, type DbRole } from '@/lib/auth/db-roles';
 import { ApprovalService } from '../services/approval.service';
 import type { ApprovalAction } from '../types';
@@ -78,6 +79,18 @@ export async function toggleChecklistAction(
     itemId,
     isCompleted,
   );
+}
+
+export async function clientApproveAction(token: string) {
+  const admin = createAdminClient();
+  const service = new ApprovalService(admin);
+  return service.clientApproveByToken(token);
+}
+
+export async function clientRequestChangesAction(token: string, content: string) {
+  const admin = createAdminClient();
+  const service = new ApprovalService(admin);
+  return service.clientRequestChangesByToken(token, content);
 }
 
 /** @deprecated Client portal deferred — kept for /review/[token] only */

@@ -1,0 +1,33 @@
+{
+  "runAt": "2026-06-06T15:13:11.447Z",
+  "results": {
+    "dashboardLoad": {
+      "pass": true,
+      "detail": "http://localhost:3000/workspace/avc-migration-live/dashboard"
+    },
+    "summaryCards": {
+      "pass": true,
+      "detail": "6 summary cards section visible"
+    },
+    "cardDrillDown": {
+      "pass": true,
+      "detail": "http://localhost:3000/workspace/avc-migration-live/clients?compliance=missing_sa"
+    },
+    "activityFeed": {
+      "pass": true,
+      "detail": "activity section rendered"
+    },
+    "attentionQueue": {
+      "pass": true,
+      "detail": "attention queue section rendered"
+    },
+    "auditReadiness": {
+      "pass": true,
+      "detail": "audit readiness percentage shown"
+    },
+    "quickActions": {
+      "pass": true,
+      "detail": "quick actions section rendered"
+    }
+  }
+}

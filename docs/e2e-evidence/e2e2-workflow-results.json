@@ -1,0 +1,128 @@
+{
+  "timestamp": "2026-06-10T07:04:16.019Z",
+  "E2E": {
+    "clientId": "763c7ef3-a4ca-4495-b495-cbffad638c41",
+    "agreementId": "b51f2447-7928-4317-84cd-de3d8b78c245",
+    "approvalId": "4b1db870-74ee-46e4-a9dd-881e140aad79",
+    "agencySlug": "ritiklabs"
+  },
+  "results": [
+    {
+      "stage": "STEP-1",
+      "id": "NTF1-MIGRATION",
+      "status": "BLOCKED",
+      "msg": "Apply 20260617100000_ntf1_notifications.sql in Supabase SQL Editor",
+      "detail": {
+        "error": "column notifications.priority does not exist"
+      }
+    },
+    {
+      "stage": "STEP-2",
+      "id": "BROWSER-AGREEMENT",
+      "status": "FAIL",
+      "msg": "Agreement tab missing expected content",
+      "detail": {
+        "snippet": ""
+      }
+    },
+    {
+      "stage": "STEP-2",
+      "id": "API-PREVIEW-PDF",
+      "status": "FAIL",
+      "msg": "Unauthorized",
+      "detail": {
+        "error": "Unauthorized"
+      }
+    },
+    {
+      "stage": "STEP-2",
+      "id": "DB-AGREEMENT-BEFORE",
+      "status": "PASS",
+      "msg": "status=draft",
+      "detail": {
+        "id": "b51f2447-7928-4317-84cd-de3d8b78c245"
+      }
+    },
+    {
+      "stage": "STEP-3",
+      "id": "API-SEND",
+      "status": "FAIL",
+      "msg": "Invalid agreement state transition: Cannot transition from draft to sent.",
+      "detail": {
+        "success": false,
+        "error": "Invalid agreement state transition: Cannot transition from draft to sent.",
+        "code": "INTERNAL_ERROR"
+      }
+    },
+    {
+      "stage": "STEP-4",
+      "id": "DB-APPROVAL",
+      "status": "PASS",
+      "msg": "status=draft",
+      "detail": {
+        "client_signed_at": null
+      }
+    },
+    {
+      "stage": "STEP-5",
+      "id": "API-LODGE",
+      "status": "FAIL",
+      "msg": "Invalid approval transition: draft → lodged",
+      "detail": {
+        "error": "Invalid approval transition: draft → lodged"
+      }
+    },
+    {
+      "stage": "STEP-5",
+      "id": "DB-LODGE",
+      "status": "FAIL",
+      "msg": "lodged_at=null",
+      "detail": {}
+    },
+    {
+      "stage": "STEP-6",
+      "id": "API-SOS",
+      "status": "FAIL",
+      "msg": "Could not create SOS — workflow gates may block",
+      "detail": {}
+    },
+    {
+      "stage": "STEP-7",
+      "id": "API-COMPLIANCE",
+      "status": "FAIL",
+      "detail": null
+    },
+    {
+      "stage": "STEP-8",
+      "id": "BROWSER-DOC-LIBRARY",
+      "status": "PASS",
+      "msg": "Document library page captured",
+      "detail": {}
+    },
+    {
+      "stage": "STEP-9",
+      "id": "API-NOTIFICATIONS",
+      "status": "PASS",
+      "msg": "count=32",
+      "detail": {}
+    },
+    {
+      "stage": "STEP-10",
+      "id": "DB-AUDIT",
+      "status": "PASS",
+      "msg": "1 document_audit_events",
+      "detail": {
+        "types": [
+          "generated"
+        ]
+      }
+    },
+    {
+      "stage": "STEP-10",
+      "id": "DB-FILE-NOTES",
+      "status": "FAIL",
+      "msg": "0 file notes",
+      "detail": {}
+    }
+  ]
+}

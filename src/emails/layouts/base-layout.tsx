@@ -12,6 +12,7 @@ import {
 } from '@react-email/components';
 import * as React from 'react';
 import { AgencyBranding } from '@/lib/email/client';
+import { APP_NAME } from '@/lib/brand';
 
 export interface BaseLayoutProps {
   previewText?: string;
@@ -40,16 +41,15 @@ export const BaseLayout = ({ previewText, branding, children }: BaseLayoutProps)
             {children}
           </Section>
 
-          {/* Master Footer (Secured Defaulting via ImmiSign Audit Strings usually) */}
           <Hr style={dividerStyle} />
           
           <Section style={footerStyle}>
             <Text style={footerTextStyle}>
-              This communication securely originated via the ImmiSign framework on behalf of {branding.name}.
+              This communication securely originated via {APP_NAME} on behalf of {branding.name}.
               Ensure due diligence verifying URLs inside legal frameworks.
             </Text>
             <Text style={footerTextStyle}>
-              Powered by <Link href="https://immisign.app" style={footerLinkStyle}>ImmiSign Enterprise</Link>.
+              Powered by {APP_NAME}.
             </Text>
           </Section>
         </Container>

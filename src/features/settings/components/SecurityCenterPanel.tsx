@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import { validatePassword, passwordPolicyMessage } from "@/lib/auth/password-policy"
 import { useUserProfile } from "@/lib/hooks/useSupabaseData"
+import { PaginationBar } from "@/components/ui/pagination-bar"
 
 const TABS = [
   { id: "profile", label: "Profile" },
@@ -59,6 +60,9 @@ export function SecurityCenterPanel({
   const [logs, setLogs] = React.useState<
     { id: string; event_type: string; ip_address: string | null; created_at: string; device_label: string | null }[]
   >([])
+  const [logsPage, setLogsPage] = React.useState(1)
+  const [logsCount, setLogsCount] = React.useState(0)
+  const logsPageSize = 20
 
   const [deletePassword, setDeletePassword] = React.useState("")
   const [deleteConfirm, setDeleteConfirm] = React.useState("")
@@ -78,10 +82,13 @@ export function SecurityCenterPanel({
   }, [])
 
   const loadLogs = React.useCallback(async () => {
-    const res = await fetch("/api/security/audit-logs?limit=40")
+    const res = await fetch(`/api/security/audit-logs?page=${logsPage}&limit=${logsPageSize}`)
     const json = await res.json()
-    if (res.ok) setLogs(json.logs || [])
-  }, [])
+    if (res.ok) {
+      setLogs(json.logs || json.data || [])
+      setLogsCount(json.count || 0)
+    }
+  }, [logsPage])
 
   React.useEffect(() => {
     if (activeTab === "mfa") void loadMfaStatus()
@@ -217,7 +224,7 @@ export function SecurityCenterPanel({
             className={cn(
               "rounded-lg px-3 py-1.5 text-xs font-bold transition-colors",
               activeTab === tab.id
-                ? "bg-[#0D9F8C] text-white"
+                ? "bg-[#111111] text-white"
                 : "text-slate-500 hover:bg-slate-50",
             )}
           >
@@ -247,7 +254,7 @@ export function SecurityCenterPanel({
           <Button
             onClick={handleSaveProfile}
             disabled={profileLoading}
-            className="rounded-xl bg-[#0D9F8C] font-bold"
+            className="rounded-xl bg-[#111111] font-bold"
           >
             Save profile
           </Button>
@@ -281,7 +288,7 @@ export function SecurityCenterPanel({
           <Button
             type="submit"
             disabled={passwordSaving}
-            className="rounded-xl bg-[#0D9F8C] font-bold"
+            className="rounded-xl bg-[#111111] font-bold"
           >
             Update password
           </Button>
@@ -297,7 +304,7 @@ export function SecurityCenterPanel({
           )}
           {mfaStatus?.enrolled ? (
             <div className="space-y-3">
-              <p className="text-sm font-semibold text-emerald-700">MFA is active (TOTP).</p>
+              <p className="text-sm font-semibold text-[#111111]">MFA is active (TOTP).</p>
               {mfaStatus.factors
                 .filter((f) => f.status === "verified")
                 .map((f) => (
@@ -323,7 +330,7 @@ export function SecurityCenterPanel({
                 Use Google Authenticator, Microsoft Authenticator, 1Password, or any TOTP app.
               </p>
               {!enrollData ? (
-                <Button type="button" onClick={startMfaEnroll} className="rounded-xl bg-[#0D9F8C] font-bold">
+                <Button type="button" onClick={startMfaEnroll} className="rounded-xl bg-[#111111] font-bold">
                   Set up authenticator
                 </Button>
               ) : (
@@ -344,7 +351,7 @@ export function SecurityCenterPanel({
                     onChange={(e) => setTotpCode(e.target.value)}
                     className="h-11 rounded-xl max-w-[200px]"
                   />
-                  <Button type="button" onClick={verifyMfa} className="rounded-xl bg-[#0D9F8C] font-bold">
+                  <Button type="button" onClick={verifyMfa} className="rounded-xl bg-[#111111] font-bold">
                     Verify and enable
                   </Button>
                 </div>
@@ -394,7 +401,7 @@ export function SecurityCenterPanel({
                   <span className="font-bold text-slate-700">
                     {s.browser} · {s.device}
                     {s.isCurrent && (
-                      <span className="ml-2 text-emerald-600 font-bold">Current</span>
+                      <span className="ml-2 text-[#5C5C5C] font-bold">Current</span>
                     )}
                   </span>
                   <p className="text-slate-400 mt-0.5">
@@ -441,6 +448,15 @@ export function SecurityCenterPanel({
               )}
             </tbody>
           </table>
+          {logsCount > 0 && (
+            <PaginationBar
+              page={logsPage}
+              totalPages={Math.ceil(logsCount / logsPageSize) || 0}
+              total={logsCount}
+              pageSize={logsPageSize}
+              onPageChange={setLogsPage}
+            />
+          )}
         </div>
       )}
 

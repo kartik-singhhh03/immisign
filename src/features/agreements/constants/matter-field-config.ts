@@ -21,8 +21,8 @@ export type MatterTypeConfig = {
   extraFields?: MatterFieldDef[]
 }
 
-/** Canonical ImmiSign matter types — must match original product list exactly */
-export const IMMISIGN_MATTER_TYPES: MatterTypeConfig[] = [
+/** Canonical ImmiMate matter types — must match original product list exactly */
+export const IMMIMATE_MATTER_TYPES: MatterTypeConfig[] = [
   {
     id: 'partner_visa',
     label: 'Partner Visa (Onshore/Offshore)',
@@ -127,10 +127,10 @@ export const IMMISIGN_MATTER_TYPES: MatterTypeConfig[] = [
   },
 ]
 
-export const MATTER_TYPE_OPTIONS = IMMISIGN_MATTER_TYPES.map((m) => m.label)
+export const MATTER_TYPE_OPTIONS = IMMIMATE_MATTER_TYPES.map((m) => m.label)
 
 export function getMatterConfig(matterTypeLabel: string): MatterTypeConfig | undefined {
-  return IMMISIGN_MATTER_TYPES.find((m) => m.label === matterTypeLabel)
+  return IMMIMATE_MATTER_TYPES.find((m) => m.label === matterTypeLabel)
 }
 
 export const RESPONSIBLE_AGENT_ROLES = ['owner', 'migration_agent', 'agent'] as const

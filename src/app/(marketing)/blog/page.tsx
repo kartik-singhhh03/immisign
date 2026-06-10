@@ -1,3 +1,3 @@
-import { ResourcesPage } from "@/components/saas/marketing-pages"
+import { BlogPage } from "@/components/saas/marketing-pages"
 
-export default ResourcesPage
+export default BlogPage

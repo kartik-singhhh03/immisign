@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Check, Loader2 } from "lucide-react"
+import { Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export type WorkflowStep = {
@@ -43,7 +43,7 @@ export function WorkflowProgress({
       aria-busy={activeIndex < steps.length && !error}
     >
       <div className="text-center sm:text-left">
-        <h3 className="text-lg font-bold text-[#081B2E]">{title}</h3>
+        <h3 className="text-lg font-bold text-[#111111]">{title}</h3>
         {subtitle && <p className="text-sm text-slate-500 mt-1 font-medium">{subtitle}</p>}
       </div>
 
@@ -57,19 +57,21 @@ export function WorkflowProgress({
               key={step.id}
               className={cn(
                 "flex gap-3 rounded-xl border px-4 py-3 transition-colors",
-                done && "border-emerald-100 bg-emerald-50/40",
-                active && "border-[#0D9F8C]/30 bg-[#f3fcf9]",
+                done && "border-[#E7E7E7] bg-[#FAFAFA]/40",
+                active && "border-[#111111]/30 bg-[#FAFAFA]",
                 pending && "border-slate-100 bg-slate-50/30 opacity-70",
                 error && index === activeIndex && "border-red-200 bg-red-50/50",
               )}
             >
               <div className="mt-0.5 shrink-0">
                 {done ? (
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#FAFAFA] text-[#111111]">
                     <Check className="h-3.5 w-3.5" aria-hidden />
                   </span>
                 ) : active ? (
-                  <Loader2 className="h-6 w-6 text-[#0D9F8C] animate-spin" aria-hidden />
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full border border-[#E7E7E7] bg-[#FAFAFA]" aria-hidden>
+                    <span className="h-2 w-2 rounded-full bg-[#111111] animate-pulse" />
+                  </span>
                 ) : (
                   <span className="flex h-6 w-6 items-center justify-center rounded-full border border-slate-200 text-[10px] font-bold text-slate-400">
                     {index + 1}
@@ -77,7 +79,7 @@ export function WorkflowProgress({
                 )}
               </div>
               <div className="min-w-0 flex-1">
-                <div className="text-sm font-bold text-[#081B2E]">{step.label}</div>
+                <div className="text-sm font-bold text-[#111111]">{step.label}</div>
                 {step.description && (
                   <p className="text-xs text-slate-500 mt-0.5 font-medium">{step.description}</p>
                 )}
@@ -100,7 +102,7 @@ export function WorkflowProgress({
         >
           {logs.map((line, i) => (
             <div key={`${i}-${line.slice(0, 24)}`}>
-              <span className="text-[#0D9F8C] font-bold mr-2">&gt;</span>
+              <span className="text-[#111111] font-bold mr-2">&gt;</span>
               {line}
             </div>
           ))}

@@ -13,7 +13,7 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
 }
 
 const textareaClass =
-  "flex min-h-[160px] w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm font-medium leading-relaxed focus:outline-none focus:ring-1 focus:ring-[#0D9F8C] resize-y"
+  "flex min-h-[160px] w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm font-medium leading-relaxed focus:outline-none focus:ring-1 focus:ring-[#111111] resize-y"
 
 type Props = {
   form: AgreementWizardFormData
@@ -53,7 +53,7 @@ export function TermsStep({ form, clauses, onChange, onBack, onContinue }: Props
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-[#081B2E]">Terms</h2>
+        <h2 className="text-xl font-bold text-[#111111]">Terms</h2>
         <p className="text-sm text-slate-500 mt-1">Define scope of services, special terms, and agreement clauses.</p>
       </div>
 
@@ -90,12 +90,12 @@ export function TermsStep({ form, clauses, onChange, onBack, onContinue }: Props
                   checked={enabled}
                   disabled={clause.isMandatory}
                   onChange={() => toggleClause(clause.id, clause.isMandatory)}
-                  className="mt-1 h-4 w-4 rounded border-slate-300 text-[#0D9F8C] focus:ring-[#0D9F8C]"
+                  className="mt-1 h-4 w-4 rounded border-slate-300 text-[#111111] focus:ring-[#111111]"
                 />
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-bold text-[#081B2E]">{clause.title}</div>
+                  <div className="text-sm font-bold text-[#111111]">{clause.title}</div>
                   {clause.isMandatory && (
-                    <span className="text-[10px] font-bold uppercase tracking-wide text-emerald-600">Mandatory</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wide text-[#5C5C5C]">Mandatory</span>
                   )}
                   <p className="text-xs text-slate-500 mt-1 line-clamp-2">{clause.content}</p>
                 </div>

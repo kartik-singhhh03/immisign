@@ -95,7 +95,15 @@ export class DocumentGenerationService {
     let firstVac = 'TBD';
     let block1Fee = 'TBD';
     let block2Fee = 'TBD';
-    let surcharge = '1.4';
+    let surcharge = '';
+    const { data: agencyDefaults } = await admin
+      .from('matter_defaults')
+      .select('card_processing_surcharge_percent')
+      .eq('agency_id', agencyId)
+      .maybeSingle();
+    if (agencyDefaults?.card_processing_surcharge_percent != null) {
+      surcharge = String(agencyDefaults.card_processing_surcharge_percent);
+    }
     let secondVac = 'TBD';
 
     if (paymentSchedule?.milestones && Array.isArray(paymentSchedule.milestones)) {

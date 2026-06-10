@@ -55,6 +55,8 @@ original.tsx
 .env.production
 .env.development
 .env*.local
+!.env.example
+!.env.production.example
 
 # supabase CLI local state (may contain project refs / connection hints)
 supabase/.temp/

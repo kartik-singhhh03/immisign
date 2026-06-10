@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { format } from "date-fns"
 import { ArrowLeft, Clock, History, FileCheck2, Share, ShieldCheck, Check } from "lucide-react"
+import { PageHeader } from "@/components/layout/PageHeader"
 
 export default function ApprovalDetailsPage() {
   const params = useParams()
@@ -32,20 +33,17 @@ export default function ApprovalDetailsPage() {
         </Button>
       </div>
 
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-[#081B2E]">{approval.client || approval.title}</h1>
-          <p className="text-slate-500 mt-1 flex items-center gap-2">
-            ID: <span className="font-mono bg-slate-100 px-2 py-0.5 rounded text-xs">{approval.id}</span>
-          </p>
-        </div>
-        <Badge variant="outline">{approval.status}</Badge>
-      </div>
+      <PageHeader
+        eyebrow="Application Approval"
+        title={approval.client || approval.title}
+        description={`ID: ${approval.id}`}
+        action={<Badge variant="outline">{approval.status}</Badge>}
+      />
 
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-[#0D9F8C]" /> Approval Details
+            <ShieldCheck className="h-5 w-5 text-[#111111]" /> Approval Details
           </CardTitle>
         </CardHeader>
         <CardContent>

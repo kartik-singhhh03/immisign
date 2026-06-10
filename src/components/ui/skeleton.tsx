@@ -6,10 +6,17 @@ function Skeleton({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("animate-pulse rounded-xl bg-muted/60", className)}
+      className={cn("immimate-skeleton rounded-xl", className)}
       {...props}
     />
   )
+}
+
+export function ImmiMateSkeleton({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return <Skeleton className={className} {...props} />
 }
 
 export { Skeleton }

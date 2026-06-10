@@ -20,10 +20,13 @@ export async function GET(req: NextRequest) {
       : (statusParam as ApprovalStatus);
   }
 
+  const page = Number(sp.get('page') || 1);
+  const limit = Number(sp.get('limit') || 20);
+
   const service = new ApprovalService(ctx.supabase);
   const result = await service.list(ctx.agencyId, ctx.dbRole, ctx.userId, {
-    page: Number(sp.get('page') || 1),
-    limit: Number(sp.get('limit') || 20),
+    page,
+    limit,
     search: sp.get('search') || undefined,
     status,
     agentId: sp.get('agentId') || undefined,
@@ -34,7 +37,14 @@ export async function GET(req: NextRequest) {
     dateTo: sp.get('dateTo') || undefined,
   });
 
-  return NextResponse.json({ success: true, ...result });
+  const count = result.count || 0;
+  return NextResponse.json({
+    success: true,
+    ...result,
+    page,
+    limit,
+    totalPages: count > 0 ? Math.ceil(count / limit) : 0,
+  });
   });
 }
 

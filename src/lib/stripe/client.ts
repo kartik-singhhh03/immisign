@@ -11,7 +11,7 @@ export function getStripe(): Stripe {
   stripeClient = new Stripe(stripeSecretKey, {
     apiVersion: '2026-04-22.dahlia' as any,
     appInfo: {
-      name: 'ImmiSign SaaS',
+      name: 'ImmiMate SaaS',
       version: '1.0.0',
       url: resolveAppUrl(false) || 'http://localhost:3000',
     },

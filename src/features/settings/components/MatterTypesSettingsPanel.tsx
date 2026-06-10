@@ -124,7 +124,7 @@ export function MatterTypesSettingsPanel({
                   {fields.map((f) => (
                     <div key={f.id} className="flex items-center justify-between rounded-lg border border-slate-100 px-3 py-2 text-xs">
                       <div>
-                        <span className="font-bold text-[#081B2E]">{f.label}</span>
+                        <span className="font-bold text-[#111111]">{f.label}</span>
                         <span className="text-slate-400 ml-2">({f.field_type})</span>
                         {f.required && <span className="text-rose-500 ml-1">*</span>}
                       </div>
@@ -167,7 +167,7 @@ export function MatterTypesSettingsPanel({
                     <option value="date">Date</option>
                     <option value="textarea">Textarea</option>
                   </select>
-                  <Button type="button" onClick={handleAddField} className="h-10 rounded-xl bg-[#0D9F8C] text-xs font-bold">
+                  <Button type="button" onClick={handleAddField} className="h-10 rounded-xl bg-[#111111] text-xs font-bold">
                     <Plus className="h-3.5 w-3.5 mr-1" /> Add Field
                   </Button>
                 </div>

@@ -1,3 +1,4 @@
+import { APP_NAME } from '@/lib/brand';
 import { getRequiredEnv, getOptionalEnv } from '@/lib/env';
 
 export const IMMISIGN_PLAN_ID = 'IMMISIGN' as const;
@@ -41,7 +42,7 @@ export function getImmisignPlan(): ImmisignPlanConfig {
 
   cachedPlan = {
     id: IMMISIGN_PLAN_ID,
-    name: 'ImmiSign Plan',
+    name: `${APP_NAME} Plan`,
     description:
       'One agency workspace with unlimited agreements, signing, templates, branding, and audit trail.',
     baseMonthlyPriceId: resolvePriceId('STRIPE_IMMISIGN_BASE_PRICE_ID'),

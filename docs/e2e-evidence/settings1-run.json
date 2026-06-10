@@ -1,0 +1,521 @@
+{
+  "stamp": 1781086050739,
+  "agency": {
+    "id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+    "name": "Ritiklabs SETTINGS1 1781085718037",
+    "slug": "ritiklabs",
+    "logo_url": null,
+    "website": "https://settings1-1781085718037.immimate.au",
+    "email": "singhkartik466@gmail.com",
+    "phone": "+61400718037",
+    "country": null,
+    "timezone": null,
+    "subscription_status": "active",
+    "plan_type": "IMMISIGN",
+    "max_users": 15,
+    "max_documents": 999999,
+    "custom_domain": null,
+    "primary_color": null,
+    "secondary_color": null,
+    "is_active": true,
+    "created_at": "2026-06-04T09:16:47.261647+00:00",
+    "updated_at": "2026-06-10T10:06:38.996368+00:00",
+    "deleted_at": null,
+    "stripe_customer_id": "cus_Ug4GJv8NITRqwi",
+    "billing_email": null,
+    "current_plan": "STARTER",
+    "legal_name": null,
+    "abn": null,
+    "bank_name": null,
+    "bank_bsb": null,
+    "bank_account_number": null,
+    "address": "1781085718037 Collins St, Melbourne VIC",
+    "principal_name": "Ritik singh",
+    "marn": "1236589"
+  },
+  "owner": {
+    "id": "2cab360f-fd21-461a-8a57-67573dee0530",
+    "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+    "full_name": "ritik singh",
+    "email": "nayramalik1018@gmail.com",
+    "avatar_url": null,
+    "role": "owner",
+    "job_title": "MARN 1478523",
+    "phone": null,
+    "is_active": true,
+    "last_login_at": null,
+    "email_verified": true,
+    "mfa_enabled": true,
+    "created_at": "2026-06-04T09:16:47.503337+00:00",
+    "updated_at": "2026-06-10T10:06:39.605139+00:00",
+    "deleted_at": null,
+    "mfa_enrolled_at": "2026-06-10T10:04:40.882+00:00",
+    "mfa_recovery_codes": [
+      "0036-350D",
+      "D151-BB4A",
+      "EA48-C0B4",
+      "254D-59D5",
+      "90F5-B687",
+      "7B1E-B951",
+      "16D7-973B",
+      "204E-F886"
+    ]
+  },
+  "results": [
+    {
+      "area": "SETUP",
+      "check": "AUTH",
+      "status": "PASS",
+      "msg": "nayramalik1018@gmail.com",
+      "detail": {},
+      "ts": "2026-06-10T10:07:32.837Z"
+    },
+    {
+      "area": "SETUP",
+      "check": "BROWSER",
+      "status": "PASS",
+      "msg": "Chrome ready",
+      "detail": {},
+      "ts": "2026-06-10T10:07:33.435Z"
+    },
+    {
+      "area": "PART1",
+      "check": "AGENCY-SAVE",
+      "status": "PASS",
+      "msg": "Ritiklabs SETTINGS1 1781086050739",
+      "detail": {
+        "id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+        "name": "Ritiklabs SETTINGS1 1781086050739",
+        "slug": "ritiklabs",
+        "logo_url": null,
+        "website": "https://settings1-1781086050739.immimate.au",
+        "email": "singhkartik466@gmail.com",
+        "phone": "+61400050739",
+        "country": null,
+        "timezone": null,
+        "subscription_status": "active",
+        "plan_type": "IMMISIGN",
+        "max_users": 15,
+        "max_documents": 999999,
+        "custom_domain": null,
+        "primary_color": null,
+        "secondary_color": null,
+        "is_active": true,
+        "created_at": "2026-06-04T09:16:47.261647+00:00",
+        "updated_at": "2026-06-10T10:07:41.708126+00:00",
+        "deleted_at": null,
+        "stripe_customer_id": "cus_Ug4GJv8NITRqwi",
+        "billing_email": null,
+        "current_plan": "STARTER",
+        "legal_name": null,
+        "abn": null,
+        "bank_name": null,
+        "bank_bsb": null,
+        "bank_account_number": null,
+        "address": "1781086050739 Collins St, Melbourne VIC",
+        "principal_name": "Ritik singh",
+        "marn": "1236589"
+      },
+      "ts": "2026-06-10T10:07:39.658Z"
+    },
+    {
+      "area": "PART1",
+      "check": "AGENCY-UI-RELOAD",
+      "status": "PASS",
+      "msg": "After hard refresh",
+      "detail": {},
+      "ts": "2026-06-10T10:07:42.642Z"
+    },
+    {
+      "area": "PART1",
+      "check": "AGENCY-UI-RELOGIN",
+      "status": "WARN",
+      "msg": "After re-login",
+      "detail": {},
+      "ts": "2026-06-10T10:07:47.388Z"
+    },
+    {
+      "area": "PART1",
+      "check": "AGENCY-DB",
+      "status": "PASS",
+      "msg": "{\"name\":\"Ritiklabs SETTINGS1 1781086050739\",\"phone\":\"+61400050739\",\"address\":\"1781086050739 Collins St, Melbourne VIC\",\"website\":\"https://settings1-1781086050739.immimate.au\"}",
+      "detail": {},
+      "ts": "2026-06-10T10:07:47.574Z"
+    },
+    {
+      "area": "PART1",
+      "check": "CONSOLE-ERRORS",
+      "status": "PASS",
+      "msg": "0 errors",
+      "detail": {},
+      "ts": "2026-06-10T10:07:47.574Z"
+    },
+    {
+      "area": "PART2",
+      "check": "BRANDING-API",
+      "status": "PASS",
+      "msg": "#1a2b3c",
+      "detail": {},
+      "ts": "2026-06-10T10:07:48.390Z"
+    },
+    {
+      "area": "PART2",
+      "check": "LOGO-UPLOAD",
+      "status": "PASS",
+      "msg": "https://wnohcmgmyhamsbmkiybc.supabase.co/storage/v1/object/public/agency_logos/3cd3a307-b7e5-4984-82d4-bf757e834afd/logo.png",
+      "detail": {},
+      "ts": "2026-06-10T10:07:50.195Z"
+    },
+    {
+      "area": "PART2",
+      "check": "FAVICON",
+      "status": "WARN",
+      "msg": "Favicon upload not supported in settings UI",
+      "detail": {},
+      "ts": "2026-06-10T10:07:50.195Z"
+    },
+    {
+      "area": "PART2",
+      "check": "BRANDING-DB",
+      "status": "PASS",
+      "msg": "#1a2b3c",
+      "detail": {},
+      "ts": "2026-06-10T10:07:50.376Z"
+    },
+    {
+      "area": "PART2",
+      "check": "LOGO-STORAGE",
+      "status": "PASS",
+      "msg": "https://wnohcmgmyhamsbmkiybc.supabase.co/storage/v1/object/public/agency_logos/3cd3a307-b7e5-4984-82d4-bf757e834afd/logo.png",
+      "detail": {},
+      "ts": "2026-06-10T10:07:50.376Z"
+    },
+    {
+      "area": "PART2",
+      "check": "BRANDING-VISIBLE",
+      "status": "PASS",
+      "msg": "Dashboard loaded with branding context",
+      "detail": {},
+      "ts": "2026-06-10T10:08:00.753Z"
+    },
+    {
+      "area": "PART3",
+      "check": "CLAUSE-CREATE",
+      "status": "PASS",
+      "msg": "b2d609a3-e7fa-437b-9485-28a1e68f68ea",
+      "detail": {},
+      "ts": "2026-06-10T10:08:00.979Z"
+    },
+    {
+      "area": "PART3",
+      "check": "CLAUSE-EDIT",
+      "status": "PASS",
+      "msg": "DB update (UI edit not exposed)",
+      "detail": {},
+      "ts": "2026-06-10T10:08:01.164Z"
+    },
+    {
+      "area": "PART3",
+      "check": "CLAUSE-NO-DUP",
+      "status": "PASS",
+      "msg": "count=1",
+      "detail": {},
+      "ts": "2026-06-10T10:08:01.372Z"
+    },
+    {
+      "area": "PART3",
+      "check": "CLAUSE-UI",
+      "status": "PASS",
+      "msg": "Clause visible after reload",
+      "detail": {},
+      "ts": "2026-06-10T10:08:07.719Z"
+    },
+    {
+      "area": "PART3",
+      "check": "CLAUSE-DELETE",
+      "status": "PASS",
+      "msg": "deleted",
+      "detail": {},
+      "ts": "2026-06-10T10:08:09.859Z"
+    },
+    {
+      "area": "PART4",
+      "check": "DEFAULTS-SAVE",
+      "status": "PASS",
+      "msg": "SETTINGS1-SCOPE-1781086050739",
+      "detail": {},
+      "ts": "2026-06-10T10:08:10.550Z"
+    },
+    {
+      "area": "PART4",
+      "check": "FRESH-MATTER",
+      "status": "PASS",
+      "msg": "b9361154-9367-4808-81b4-c2bb519d4554",
+      "detail": {},
+      "ts": "2026-06-10T10:08:22.802Z"
+    },
+    {
+      "area": "PART4",
+      "check": "DEFAULTS-INHERIT-FEE",
+      "status": "PASS",
+      "msg": "fee=7777",
+      "detail": {},
+      "ts": "2026-06-10T10:08:23.007Z"
+    },
+    {
+      "area": "PART4",
+      "check": "WIZARD-DEFAULTS",
+      "status": "WARN",
+      "msg": "Scope in new agreement wizard",
+      "detail": {},
+      "ts": "2026-06-10T10:08:32.233Z"
+    },
+    {
+      "area": "PART5",
+      "check": "PROFILE-SAVE",
+      "status": "PASS",
+      "msg": "SETTINGS1 Owner 1781086050739",
+      "detail": {},
+      "ts": "2026-06-10T10:08:32.559Z"
+    },
+    {
+      "area": "PART5",
+      "check": "PROFILE-UI",
+      "status": "WARN",
+      "msg": "Profile form after reload",
+      "detail": {},
+      "ts": "2026-06-10T10:08:36.586Z"
+    },
+    {
+      "area": "PART5",
+      "check": "AVATAR",
+      "status": "WARN",
+      "msg": "Avatar upload not implemented in settings",
+      "detail": {},
+      "ts": "2026-06-10T10:08:39.956Z"
+    },
+    {
+      "area": "PART5",
+      "check": "PROFILE-DB",
+      "status": "PASS",
+      "msg": "{\"full_name\":\"SETTINGS1 Owner 1781086050739\",\"phone\":\"+61411050739\"}",
+      "detail": {},
+      "ts": "2026-06-10T10:08:40.159Z"
+    },
+    {
+      "area": "PART6",
+      "check": "MFA-ENROLL",
+      "status": "PASS",
+      "msg": "Pre-existing verified TOTP factor",
+      "detail": {},
+      "ts": "2026-06-10T10:08:41.528Z"
+    },
+    {
+      "area": "PART6",
+      "check": "MFA-CHALLENGE",
+      "status": "PASS",
+      "msg": "challenge issued",
+      "detail": {},
+      "ts": "2026-06-10T10:08:41.768Z"
+    },
+    {
+      "area": "PART6",
+      "check": "MFA-VERIFY",
+      "status": "PASS",
+      "msg": "Factor already verified (secret not re-exposed)",
+      "detail": {},
+      "ts": "2026-06-10T10:08:41.768Z"
+    },
+    {
+      "area": "PART6",
+      "check": "MFA-DB-ENABLED",
+      "status": "PASS",
+      "msg": "true",
+      "detail": {},
+      "ts": "2026-06-10T10:08:41.962Z"
+    },
+    {
+      "area": "PART6",
+      "check": "MFA-DISABLE-OWNER",
+      "status": "PASS",
+      "msg": "MFA is mandatory for your role and cannot be disabled.",
+      "detail": {},
+      "ts": "2026-06-10T10:08:42.938Z"
+    },
+    {
+      "area": "CLEANUP",
+      "check": "RESTORE",
+      "status": "PASS",
+      "msg": "Original agency/branding/defaults/profile restored",
+      "detail": {},
+      "ts": "2026-06-10T10:08:46.710Z"
+    }
+  ],
+  "evidence": {
+    "db": [
+      {
+        "table": "agencies",
+        "row": {
+          "id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "name": "Ritiklabs SETTINGS1 1781086050739",
+          "slug": "ritiklabs",
+          "logo_url": null,
+          "website": "https://settings1-1781086050739.immimate.au",
+          "email": "singhkartik466@gmail.com",
+          "phone": "+61400050739",
+          "country": null,
+          "timezone": null,
+          "subscription_status": "active",
+          "plan_type": "IMMISIGN",
+          "max_users": 15,
+          "max_documents": 999999,
+          "custom_domain": null,
+          "primary_color": null,
+          "secondary_color": null,
+          "is_active": true,
+          "created_at": "2026-06-04T09:16:47.261647+00:00",
+          "updated_at": "2026-06-10T10:07:41.708126+00:00",
+          "deleted_at": null,
+          "stripe_customer_id": "cus_Ug4GJv8NITRqwi",
+          "billing_email": null,
+          "current_plan": "STARTER",
+          "legal_name": null,
+          "abn": null,
+          "bank_name": null,
+          "bank_bsb": null,
+          "bank_account_number": null,
+          "address": "1781086050739 Collins St, Melbourne VIC",
+          "principal_name": "Ritik singh",
+          "marn": "1236589"
+        }
+      },
+      {
+        "table": "branding_settings",
+        "row": {
+          "id": "35db8cb3-6d91-4810-be6d-7c62faa7c4e9",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "logo_url": "https://wnohcmgmyhamsbmkiybc.supabase.co/storage/v1/object/public/agency_logos/3cd3a307-b7e5-4984-82d4-bf757e834afd/logo.png",
+          "favicon_url": null,
+          "primary_color": "#1a2b3c",
+          "secondary_color": "#445566",
+          "font_family": "Inter",
+          "custom_css": null,
+          "email_header": null,
+          "email_footer": null,
+          "created_at": "2026-06-04T12:55:44.454642+00:00",
+          "updated_at": "2026-06-10T10:07:52.263222+00:00",
+          "agreement_ref_prefix": "AGR",
+          "agreement_ref_start": 1000,
+          "agreement_header_title": "Migration Agent Service Agreement",
+          "agreement_footer_text": "This document was prepared by a Registered Migration Agent bound by the MARA Code of Conduct."
+        }
+      },
+      {
+        "table": "matter_defaults",
+        "row": {
+          "id": "19a9b78b-2f2d-4cb8-b0a5-6e888be124fc",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "default_professional_fee": 7777,
+          "default_currency": "AUD",
+          "default_payment_terms": "50% upfront, 50% on lodgement",
+          "require_second_reviewer": false,
+          "created_at": "2026-06-04T13:15:44.309406+00:00",
+          "updated_at": "2026-06-10T10:08:12.609276+00:00",
+          "default_scope_of_services": "SETTINGS1-SCOPE-1781086050739",
+          "default_special_terms": "Special 1781086050739",
+          "default_payment_schedule": "On engagement",
+          "card_processing_surcharge_percent": 2.5,
+          "sos_compliance_disclosure": "This Statement of Service is issued in accordance with the Code of Conduct for Registered Migration Agents under the Migration Act 1958.\n\nThe services described above have been provided by a Registered Migration Agent in a professional and ethical manner consistent with the obligations set out in the Code of Conduct.\n\nFile Retention: Your client file will be retained for a minimum of seven (7) years from the date of this statement in accordance with regulatory requirements.\n\nComplaints: If you have concerns regarding services provided, you may contact the Office of the Migration Agents Registration Authority (OMARA) at omara.immi.gov.au or on 1300 226 272. You may also contact the Commonwealth Ombudsman at ombudsman.gov.au."
+        }
+      }
+    ],
+    "api": [
+      {
+        "method": "PATCH",
+        "path": "/api/settings/branding",
+        "status": 200,
+        "json": {
+          "success": true,
+          "branding": {
+            "id": "35db8cb3-6d91-4810-be6d-7c62faa7c4e9",
+            "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+            "logo_url": "https://wnohcmgmyhamsbmkiybc.supabase.co/storage/v1/object/public/agency_logos/3cd3a307-b7e5-4984-82d4-bf757e834afd/logo.jpeg",
+            "favicon_url": null,
+            "primary_color": "#1a2b3c",
+            "secondary_color": "#445566",
+            "font_family": "Inter",
+            "custom_css": null,
+            "email_header": null,
+            "email_footer": null,
+            "created_at": "2026-06-04T12:55:44.454642+00:00",
+            "updated_at": "2026-06-10T10:07:50.452619+00:00",
+            "agreement_ref_prefix": "AGR",
+            "agreement_ref_start": 1000,
+            "agreement_header_title": "Migration Agent Service Agreement",
+            "agreement_footer_text": "This document was prepared by a Registered Migration Agent bound by the MARA Code of Conduct."
+          }
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/api/onboarding/complete",
+        "status": 200,
+        "json": {
+          "success": true,
+          "clientId": "d018bba2-887a-42ed-ae21-0d4f4a3331cc",
+          "clientNumber": "AGR-2026-1011",
+          "matterId": "b9361154-9367-4808-81b4-c2bb519d4554",
+          "agreementId": "9c473c36-b821-4d51-bb73-0d1f2622a672",
+          "approvalId": "f3383546-d98a-40b6-9472-13eb4bb02fc3",
+          "deepLink": "/workspace/ritiklabs/clients/d018bba2-887a-42ed-ae21-0d4f4a3331cc?file_source=application_approval&file_id=f3383546-d98a-40b6-9472-13eb4bb02fc3&tab=overview",
+          "agreementPdfGenerated": true
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/api/security/mfa/status",
+        "status": 200,
+        "json": {
+          "success": true,
+          "enrolled": true,
+          "mandatory": true,
+          "factors": [
+            {
+              "id": "d75afa7f-9992-4d41-ba79-a2533cbd199c",
+              "created_at": "2026-06-10T10:04:41.141853Z",
+              "updated_at": "2026-06-10T10:04:42.846373Z",
+              "status": "verified",
+              "friendly_name": "Authenticator app",
+              "factor_type": "totp",
+              "phone": "",
+              "last_challenged_at": "2026-06-10T10:04:42.539932Z"
+            }
+          ],
+          "recoveryCodesConfigured": false
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/api/security/mfa/disable",
+        "status": 403,
+        "json": {
+          "success": false,
+          "error": "MFA is mandatory for your role and cannot be disabled."
+        }
+      }
+    ],
+    "screenshots": [
+      "agency-profile-before.png",
+      "agency-profile-after.png",
+      "branding-after.png",
+      "clauses-list.png",
+      "defaults-saved.png",
+      "wizard-defaults.png",
+      "profile-before.png",
+      "profile-after.png",
+      "security-mfa.png"
+    ],
+    "consoleErrors": []
+  },
+  "verdict": "PASS"
+}

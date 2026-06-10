@@ -1,5 +1,5 @@
 /**
- * @deprecated Use `@/lib/stripe/plan` — single ImmiSign plan only.
+ * @deprecated Use `@/lib/stripe/plan` — single ImmiMate plan only.
  */
 export {
   IMMISIGN_PLAN_ID,

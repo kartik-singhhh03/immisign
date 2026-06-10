@@ -4,6 +4,8 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { adminRest } from '@/lib/supabase/admin-rest';
 import { dbRoleToUi } from '@/lib/auth/db-roles';
 import { createRmaFromInvite } from '@/lib/rma/create-from-invite';
+import { NotificationService, buildWorkspaceActionUrl } from '@/lib/notifications/notification.service';
+import { logSecurityEvent, getRequestMeta } from '@/lib/security/audit-log';
 
 export async function POST(req: Request) {
   const { token } = (await req.json()) as { token?: string };
@@ -59,9 +61,58 @@ export async function POST(req: Request) {
     body: JSON.stringify({ accepted_at: new Date().toISOString() }),
   });
 
+  const { data: agency } = await admin
+    .from('agencies')
+    .select('slug')
+    .eq('id', invite.agency_id)
+    .single();
+
+  const { data: admins } = await admin
+    .from('users')
+    .select('id')
+    .eq('agency_id', invite.agency_id)
+    .in('role', ['owner', 'admin'])
+    .neq('id', user.id);
+
+  const slug = agency?.slug || 'workspace';
+  const notifications = new NotificationService(admin);
+  for (const adminUser of admins || []) {
+    await notifications.notify({
+      agencyId: invite.agency_id,
+      userId: adminUser.id,
+      type: 'team',
+      title: 'Team member joined',
+      message: `${displayName} accepted their invitation and joined the workspace.`,
+      actionUrl: buildWorkspaceActionUrl(slug, '/settings?section=RmaTeam'),
+      entityType: 'user',
+      entityId: user.id,
+      actorId: user.id,
+    });
+  }
+
+  await admin.from('activity_logs').insert({
+    agency_id: invite.agency_id,
+    user_id: user.id,
+    type: 'team.joined',
+    title: 'Team member joined',
+    description: `${displayName} joined the workspace`,
+    reference_id: user.id,
+    reference_type: 'user',
+  });
+
+  const meta = getRequestMeta(req);
+  await logSecurityEvent(admin, {
+    agencyId: invite.agency_id,
+    userId: user.id,
+    eventType: 'invite.accepted',
+    ...meta,
+    metadata: { role: invite.role, email: invite.email, via: 'oauth' },
+  });
+
   return NextResponse.json({
     success: true,
     email: invite.email,
     role: dbRoleToUi(invite.role),
+    agency_slug: agency?.slug,
   });
 }

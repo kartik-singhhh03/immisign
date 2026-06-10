@@ -1,6 +1,11 @@
 import type { AgencyWizardContext, AgreementWizardFormData, RmaOption } from '../types/wizard'
 import { generateProvisionalAgreementRef } from '../types/wizard'
 import type { MatterTypeConfig } from '@/lib/settings/types'
+import { calculateFeeTotals, normalizeFeeItemsFromForm } from './fee-items'
+import {
+  buildPdfRunningHeaderCss,
+  buildPdfRunningHeaderHtml,
+} from '@/lib/documents/pdf-running-header'
 
 export type AgentSignaturePreview = {
   name: string
@@ -64,7 +69,8 @@ function formatDisplayDate(raw: string): string {
   return raw
 }
 
-function scopeToHtml(scope: string): string {
+function scopeToHtml(scope: string | undefined | null): string {
+  if (!scope?.trim()) return '<p class="muted">—</p>'
   const lines = scope.split('\n').map((l) => l.trim()).filter(Boolean)
   if (!lines.length) return '<p class="muted">—</p>'
   if (lines.every((l) => /^\d+\./.test(l))) {
@@ -89,12 +95,13 @@ function clauseSection(num: number, title: string, content: string): string {
 }
 
 function buildDocumentStyles(agency: AgencyWizardContext): string {
-  const primary = agency.branding?.primaryColor || '#0D9F8C'
-  const secondary = agency.branding?.secondaryColor || '#081B2E'
+  const primary = agency.branding?.primaryColor || '#111111'
+  const secondary = agency.branding?.secondaryColor || '#111111'
   const font = agency.branding?.fontFamily || "'Segoe UI', Calibri, Arial, sans-serif"
 
   return `
-  @page { size: A4; margin: 14mm 16mm 18mm; }
+  ${buildPdfRunningHeaderCss()}
+  @page { size: A4 portrait; margin: 14mm 16mm 18mm; }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
   body {
@@ -161,7 +168,7 @@ function buildDocumentStyles(agency: AgencyWizardContext): string {
     letter-spacing: 0.06em;
   }
   .compliance {
-    background: #ecfdf5;
+    background: #FAFAFA;
     border: 1px solid #99f6e4;
     border-left: 4px solid ${primary};
     padding: 12px 14px;
@@ -292,9 +299,9 @@ function buildDocumentStyles(agency: AgencyWizardContext): string {
     font-weight: 800;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #0D9F8C;
+    color: #111111;
   }
-  .sig-name { font-weight: 800; font-size: 10.5pt; color: #081B2E; margin: 0 0 2px; }
+  .sig-name { font-weight: 800; font-size: 10.5pt; color: #111111; margin: 0 0 2px; }
   .sig-meta { font-size: 9pt; color: #64748b; margin: 0 0 16px; }
   .sig-box {
     height: 56px;
@@ -341,7 +348,7 @@ export function buildAgreementPreviewHtml(ctx: AgreementPreviewContext): string 
   const statusLabel = ctx.statusLabel || 'AWAITING SIGNATURE'
   const agreementDate = formatDisplayDate(form.agreementDate)
   const documentStyles = buildDocumentStyles(agency)
-  const primaryColor = agency.branding?.primaryColor || '#0D9F8C'
+  const primaryColor = agency.branding?.primaryColor || '#111111'
   const logoUrl = agency.branding?.logoUrl
   const headerTitle = agency.branding?.agreementHeaderTitle || 'Migration Agent Service Agreement'
   const footerText = agency.branding?.agreementFooterText ||
@@ -409,6 +416,12 @@ export function buildAgreementPreviewHtml(ctx: AgreementPreviewContext): string 
   <style>${documentStyles}</style>
 </head>
 <body>
+  ${buildPdfRunningHeaderHtml({
+    agencyName: agencyDisplayName,
+    marn: agentMarn || null,
+    matterRef: agreementRef,
+    clientName: clientName || null,
+  })}
   <div class="document">
 
     <header class="doc-banner">
@@ -477,13 +490,43 @@ export function buildAgreementPreviewHtml(ctx: AgreementPreviewContext): string 
 
     <section class="clause">
       <h2 class="clause-title"><span class="clause-num">Section 3</span> Professional Fees &amp; Disbursements</h2>
+      ${(() => {
+        const feeItems = normalizeFeeItemsFromForm(form)
+        const totals = calculateFeeTotals(feeItems)
+        if (!feeItems.length) {
+          return '<p class="muted">No fee items specified.</p>'
+        }
+        const rows = feeItems.map((item) => `
+          <tr>
+            <td>${escapeHtml(item.description || '—')}</td>
+            <td class="value">${formatCurrencyAud(item.amount)}</td>
+            <td>${escapeHtml(item.dueTrigger || '—')}</td>
+            <td>${escapeHtml(item.category || '—')}</td>
+            <td>${escapeHtml(item.notes || '—')}</td>
+          </tr>
+        `).join('')
+        return `
+      <table class="fees-table" style="width:100%; margin-bottom: 16px;">
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Amount</th>
+            <th>Due Trigger</th>
+            <th>Category</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
       <table class="fees-table">
         <tbody>
-          <tr><th>Professional fee</th><td class="value">${formatCurrencyAud(form.professionalFee)}</td></tr>
-          <tr><th>Estimated disbursements</th><td class="value">${formatCurrencyAud(form.estimatedDisbursements)}</td></tr>
-          <tr><th>Payment schedule</th><td class="value">${escapeHtml(form.paymentSchedule || '—')}</td></tr>
+          <tr><th>Professional fees</th><td class="value">$${totals.professionalFees.toLocaleString('en-AU', { minimumFractionDigits: 2 })} AUD</td></tr>
+          <tr><th>Government fees</th><td class="value">$${totals.governmentFees.toLocaleString('en-AU', { minimumFractionDigits: 2 })} AUD</td></tr>
+          <tr><th>Disbursements</th><td class="value">$${totals.disbursements.toLocaleString('en-AU', { minimumFractionDigits: 2 })} AUD</td></tr>
+          <tr><th>Grand total</th><td class="value">$${totals.grandTotal.toLocaleString('en-AU', { minimumFractionDigits: 2 })} AUD</td></tr>
         </tbody>
-      </table>
+      </table>`
+      })()}
     </section>
 
     ${clauseSectionsBlock}
@@ -509,7 +552,7 @@ export function buildAgreementPreviewHtml(ctx: AgreementPreviewContext): string 
           <p class="sig-name">${escapeHtml(clientName || '—')}</p>
           <p class="sig-meta">&nbsp;</p>
           ${ctx.clientSigned
-            ? '<p class="sig-label">Signature</p><div class="sig-applied" style="font-size:11pt;font-weight:700;color:#0A5B52;">Signed electronically via SignWell</div>'
+            ? '<p class="sig-label">Signature</p><div class="sig-applied" style="font-size:11pt;font-weight:700;color:#222222;">Signed electronically via SignWell</div>'
             : '<div class="sig-box">Sign here</div>'}
           <div class="sig-date">Date Signed: ${ctx.clientSigned ? escapeHtml(formatDisplayDateForSignature(new Date())) : '_______________________________'}</div>
         </div>
@@ -521,7 +564,7 @@ export function buildAgreementPreviewHtml(ctx: AgreementPreviewContext): string 
       ${agency.address ? `<p>${escapeHtml(agency.address)}</p>` : ''}
       <p>${[agency.phone, agency.email].filter(Boolean).map((v) => escapeHtml(v!)).join(' · ')}</p>
       <p>${escapeHtml(footerText)}</p>
-      <p><strong style="color:${primaryColor}">Powered by ImmiSign</strong> · MARA-compliant e-signature platform</p>
+      <p><strong style="color:${primaryColor}">Powered by ImmiMate</strong> · MARA-compliant e-signature platform</p>
     </footer>
 
   </div>

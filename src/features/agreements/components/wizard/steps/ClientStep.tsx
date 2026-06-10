@@ -1,14 +1,14 @@
 "use client"
 
-import { Input } from "@/components/ui/input"
 import { PhoneInput } from "@/components/ui/phone-input"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+  ImmiMateInput,
+  ImmiMateSelect,
+  ImmiMateSelectContent,
+  ImmiMateSelectItem,
+  ImmiMateSelectTrigger,
+  ImmiMateSelectValue,
+} from "@/components/ui/immimate-form"
 import type { AgreementWizardFormData, ClientPickerOption } from "../../../types/wizard"
 import { WizardNav } from "../WizardNav"
 
@@ -48,7 +48,7 @@ export function ClientStep({ form, clients, onChange, onContinue }: Props) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-[#081B2E]">Client Details</h2>
+        <h2 className="text-xl font-bold text-[#111111]">Client Details</h2>
         <p className="text-sm text-slate-500 mt-1">
           Select an existing client from your library or enter details for a new client.
         </p>
@@ -57,27 +57,26 @@ export function ClientStep({ form, clients, onChange, onContinue }: Props) {
       {clients.length > 0 && (
         <label className="grid gap-2">
           <FieldLabel>Client from library</FieldLabel>
-          <Select value={form.clientId || "__new__"} onValueChange={handleSelectClient}>
-            <SelectTrigger className="h-11 rounded-xl border-slate-200 bg-white text-sm font-medium">
-              <SelectValue placeholder="Select client" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="__new__">Enter new client manually</SelectItem>
+          <ImmiMateSelect value={form.clientId || "__new__"} onValueChange={handleSelectClient}>
+            <ImmiMateSelectTrigger>
+              <ImmiMateSelectValue placeholder="Select client" />
+            </ImmiMateSelectTrigger>
+            <ImmiMateSelectContent>
+              <ImmiMateSelectItem value="__new__">Enter new client manually</ImmiMateSelectItem>
               {clients.map((c) => (
-                <SelectItem key={c.id} value={c.id}>
+                <ImmiMateSelectItem key={c.id} value={c.id}>
                   {c.name} ({c.email})
-                </SelectItem>
+                </ImmiMateSelectItem>
               ))}
-            </SelectContent>
-          </Select>
+            </ImmiMateSelectContent>
+          </ImmiMateSelect>
         </label>
       )}
 
       <div className="grid gap-5 md:grid-cols-2">
         <label className="grid gap-2">
           <FieldLabel required>Client Full Name</FieldLabel>
-          <Input
-            className="h-11 rounded-xl border-slate-200 bg-white text-sm font-medium focus-visible:ring-1 focus-visible:ring-[#0D9F8C]"
+          <ImmiMateInput
             placeholder="e.g. Jane Smith"
             value={form.clientName}
             onChange={(e) => onChange("clientName", e.target.value)}
@@ -86,9 +85,8 @@ export function ClientStep({ form, clients, onChange, onContinue }: Props) {
         </label>
         <label className="grid gap-2">
           <FieldLabel required>Client Email</FieldLabel>
-          <Input
+          <ImmiMateInput
             type="email"
-            className="h-11 rounded-xl border-slate-200 bg-white text-sm font-medium focus-visible:ring-1 focus-visible:ring-[#0D9F8C]"
             placeholder="client@email.com"
             value={form.clientEmail}
             onChange={(e) => onChange("clientEmail", e.target.value)}
@@ -98,7 +96,6 @@ export function ClientStep({ form, clients, onChange, onContinue }: Props) {
         <label className="grid gap-2">
           <FieldLabel>Phone</FieldLabel>
           <PhoneInput
-            className="h-11 rounded-xl border-slate-200 bg-white text-sm font-medium focus-visible:ring-1 focus-visible:ring-[#0D9F8C]"
             placeholder="+61 4xx xxx xxx"
             value={form.clientPhone}
             onChange={(v) => onChange("clientPhone", v)}
@@ -107,8 +104,7 @@ export function ClientStep({ form, clients, onChange, onContinue }: Props) {
         </label>
         <label className="grid gap-2">
           <FieldLabel>Address</FieldLabel>
-          <Input
-            className="h-11 rounded-xl border-slate-200 bg-white text-sm font-medium focus-visible:ring-1 focus-visible:ring-[#0D9F8C]"
+          <ImmiMateInput
             placeholder="Street, Suburb, State"
             value={form.clientAddress}
             onChange={(e) => onChange("clientAddress", e.target.value)}
@@ -117,7 +113,7 @@ export function ClientStep({ form, clients, onChange, onContinue }: Props) {
       </div>
 
       {fromLibrary && (
-        <p className="text-xs font-semibold text-emerald-700">
+        <p className="text-xs font-semibold text-[#111111]">
           Contact details loaded from client record. Address can still be added for this agreement.
         </p>
       )}

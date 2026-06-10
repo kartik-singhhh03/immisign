@@ -81,5 +81,73 @@ export async function notifyApprovalUser(
     entityId: params.approvalId,
     actorId: params.actorId,
     emailSubject: params.emailSubject || params.title,
+    priority: 'high',
+    workflowCategory: 'approvals',
+    actions: actionUrl
+      ? [{ id: 'review', label: 'Review Approval', href: actionUrl, variant: 'primary' }]
+      : undefined,
+  });
+}
+
+export async function logCertificateGenerated(
+  supabase: SupabaseClient,
+  params: {
+    agency_id: string;
+    user_id: string;
+    approval_id: string;
+    approval_number?: string | null;
+    title: string;
+    agencySlug?: string;
+  },
+): Promise<void> {
+  const label = params.approval_number || params.title;
+  await logApprovalActivity(supabase, {
+    agency_id: params.agency_id,
+    user_id: params.user_id,
+    type: 'approval.certificate_generated',
+    title: 'Certificate of Approval generated',
+    description: label,
+    approval_id: params.approval_id,
+  });
+  await notifyApprovalUser(supabase, {
+    agencyId: params.agency_id,
+    agencySlug: params.agencySlug,
+    userId: params.user_id,
+    title: 'Certificate of Approval generated',
+    message: `Certificate ready for ${label}.`,
+    approvalId: params.approval_id,
+    category: 'approval',
+  });
+}
+
+export async function logApprovalCompleted(
+  supabase: SupabaseClient,
+  params: {
+    agency_id: string;
+    user_id: string;
+    approval_id: string;
+    approval_number?: string | null;
+    title: string;
+    agencySlug?: string;
+    via: 'signwell' | 'portal';
+  },
+): Promise<void> {
+  const label = params.approval_number || params.title;
+  await logApprovalActivity(supabase, {
+    agency_id: params.agency_id,
+    user_id: params.user_id,
+    type: 'approval.completed',
+    title: 'Application approval completed',
+    description: label,
+    approval_id: params.approval_id,
+  });
+  await notifyApprovalUser(supabase, {
+    agencyId: params.agency_id,
+    agencySlug: params.agencySlug,
+    userId: params.user_id,
+    title: 'Application approval completed',
+    message: `${label} is signed and ready for lodgement.`,
+    approvalId: params.approval_id,
+    category: 'approval',
   });
 }

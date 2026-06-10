@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/layout/PageHeader"
 import { StatusPill } from "@/components/saas/dashboard-pages"
-import { sendApprovalForReviewAction } from "@/features/approvals/actions/approvals"
 import { ApplicationApproval } from "../../types"
 
 export function ApprovalDashboard({ 
@@ -30,13 +29,14 @@ export function ApprovalDashboard({
   const handleSend = async () => {
     try {
       setSending(true)
-      const role = 'agency_admin' as any
-      await sendApprovalForReviewAction(approval.agency_id, userId, role, approval.id)
-      alert('Approval request sent successfully! In a real app this would dispatch an email.')
+      const res = await fetch(`/api/approvals/${approval.id}/send-for-client-approval`, { method: 'POST' })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Send failed')
+      alert('Approval request sent to client via SignWell.')
       window.location.reload()
     } catch (e) {
       console.error(e)
-      alert('Failed to transition state. Check constraints.')
+      alert(e instanceof Error ? e.message : 'Failed to send for client approval.')
     } finally {
       setSending(false)
     }
@@ -62,7 +62,7 @@ export function ApprovalDashboard({
             <Button 
               onClick={handleSend}
               disabled={sending || approval.status === 'approved'}
-              className="rounded-xl bg-[#0D9F8C] font-bold shadow-sm hover:bg-[#0A5B52] disabled:opacity-50"
+              className="rounded-xl bg-[#111111] font-bold shadow-sm hover:bg-[#222222] disabled:opacity-50"
             >
               <Send className="h-4 w-4 mr-1.5" /> 
               {sending ? 'Sending...' : 'Send Review Link'}
@@ -77,7 +77,7 @@ export function ApprovalDashboard({
         <div className="lg:col-span-3 space-y-6">
           <Card className="rounded-[1.35rem] border-slate-200 shadow-sm bg-white/50 backdrop-blur-sm">
             <CardHeader className="pb-3 border-b border-slate-100">
-              <CardTitle className="text-sm font-black text-[#081B2E]">Metadata</CardTitle>
+              <CardTitle className="text-sm font-black text-[#111111]">Metadata</CardTitle>
             </CardHeader>
             <CardContent className="p-5 space-y-5">
               <div>
@@ -86,18 +86,18 @@ export function ApprovalDashboard({
               </div>
               <div>
                 <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Visa Subclass</div>
-                <div className="text-sm font-semibold text-[#081B2E] mt-1">{approval.visa_subclass || 'N/A'}</div>
+                <div className="text-sm font-semibold text-[#111111] mt-1">{approval.visa_subclass || 'N/A'}</div>
               </div>
               <div>
                 <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Version</div>
-                <div className="text-sm font-semibold text-[#081B2E] mt-1">v{approval.version_number}.{approval.revision_count}</div>
+                <div className="text-sm font-semibold text-[#111111] mt-1">v{approval.version_number}.{approval.revision_count}</div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="rounded-[1.35rem] border-slate-200 shadow-sm bg-white/50 backdrop-blur-sm overflow-hidden border border-emerald-100">
-            <CardHeader className="pb-3 border-b border-emerald-100 bg-emerald-50/50">
-              <CardTitle className="text-sm font-black text-[#0D9F8C] flex items-center gap-2">
+          <Card className="rounded-[1.35rem] border-slate-200 shadow-sm bg-white/50 backdrop-blur-sm overflow-hidden border border-[#E7E7E7]">
+            <CardHeader className="pb-3 border-b border-[#E7E7E7] bg-[#FAFAFA]/50">
+              <CardTitle className="text-sm font-black text-[#111111] flex items-center gap-2">
                 <LinkIcon className="h-4 w-4" /> Client Link
               </CardTitle>
             </CardHeader>
@@ -108,7 +108,7 @@ export function ApprovalDashboard({
                   {portalUrl}
                 </div>
                 <Button onClick={handleCopy} variant="ghost" size="sm" className="h-auto rounded-none border-l border-slate-200 hover:bg-slate-100 px-3">
-                  {copied ? <CheckCircle2 className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4 text-slate-500" />}
+                  {copied ? <CheckCircle2 className="h-4 w-4 text-[#111111]" /> : <Copy className="h-4 w-4 text-slate-500" />}
                 </Button>
               </div>
             </CardContent>
@@ -120,8 +120,8 @@ export function ApprovalDashboard({
           <Card className="rounded-[1.35rem] border-slate-200 shadow-sm overflow-hidden bg-slate-50 flex flex-col h-[800px]">
             <div className="flex justify-between items-center px-6 py-4 bg-white border-b border-slate-200">
               <div className="flex items-center gap-2">
-                <FileText className="h-4 w-4 text-[#0D9F8C]" />
-                <h3 className="font-bold text-[#081B2E] text-sm">Application Document</h3>
+                <FileText className="h-4 w-4 text-[#111111]" />
+                <h3 className="font-bold text-[#111111] text-sm">Application Document</h3>
               </div>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" className="h-8 text-xs font-bold rounded-lg border-slate-200 shadow-sm">
@@ -144,7 +144,7 @@ export function ApprovalDashboard({
         <div className="lg:col-span-3">
           <Card className="rounded-[1.35rem] border-slate-200 shadow-sm bg-white/50 backdrop-blur-sm h-full max-h-[800px] flex flex-col">
             <CardHeader className="pb-4 border-b border-slate-100">
-              <CardTitle className="text-sm font-black text-[#081B2E]">Audit Trail</CardTitle>
+              <CardTitle className="text-sm font-black text-[#111111]">Audit Trail</CardTitle>
             </CardHeader>
             <CardContent className="p-0 overflow-y-auto flex-1">
               <div className="p-6 relative">
@@ -154,7 +154,7 @@ export function ApprovalDashboard({
                   {auditLogs.length > 0 ? auditLogs.map((log) => (
                     <div key={log.id} className="flex gap-4">
                       <div className="relative mt-1">
-                        <div className="h-4 w-4 rounded-full border-2 border-white bg-[#0D9F8C] ring-1 ring-slate-200 shadow-sm flex items-center justify-center relative z-10">
+                        <div className="h-4 w-4 rounded-full border-2 border-white bg-[#111111] ring-1 ring-slate-200 shadow-sm flex items-center justify-center relative z-10">
                           {log.action.includes('Approved') || log.action.includes('Created') ? (
                             <CheckCircle2 className="h-2 w-2 text-white" />
                           ) : log.action.includes('Changes') ? (
@@ -165,7 +165,7 @@ export function ApprovalDashboard({
                         </div>
                       </div>
                       <div className="flex-1 pb-1">
-                        <div className="text-xs font-bold text-[#081B2E]">{log.action}</div>
+                        <div className="text-xs font-bold text-[#111111]">{log.action}</div>
                         <div className="text-xs font-semibold text-slate-400 mt-0.5">
                           {new Date(log.created_at).toLocaleString()}
                         </div>

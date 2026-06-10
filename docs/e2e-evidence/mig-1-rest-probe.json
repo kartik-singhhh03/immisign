@@ -1,0 +1,68 @@
+{
+  "tables": {
+    "clients": {
+      "exists": true
+    },
+    "agreements": {
+      "exists": true
+    },
+    "agreement_fee_items": {
+      "exists": true
+    },
+    "application_approvals": {
+      "exists": true
+    },
+    "service_statements": {
+      "exists": true
+    },
+    "file_notes": {
+      "exists": true
+    },
+    "notifications": {
+      "exists": true
+    },
+    "activity_events": {
+      "exists": true
+    },
+    "webhook_events": {
+      "exists": true
+    },
+    "document_audit_events": {
+      "exists": true
+    },
+    "email_delivery_audit": {
+      "exists": true
+    },
+    "matter_applicants": {
+      "exists": true
+    },
+    "matter_financials": {
+      "exists": true
+    },
+    "integration_health_logs": {
+      "exists": true
+    },
+    "user_notification_preferences": {
+      "exists": true
+    },
+    "schema_migrations": {
+      "exists": true
+    }
+  },
+  "columns": {
+    "notifications": {
+      "priority": true,
+      "scope": true,
+      "deleted_at": true,
+      "metadata": true,
+      "assigned_to_user_id": true,
+      "due_at": true,
+      "archived_at": true,
+      "workflow_category": true
+    },
+    "user_notification_preferences": {
+      "email_digest_frequency": true,
+      "last_digest_sent_at": true
+    }
+  }
+}

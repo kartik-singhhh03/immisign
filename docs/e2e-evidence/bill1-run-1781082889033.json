@@ -1,0 +1,838 @@
+{
+  "stamp": 1781082889033,
+  "agency": {
+    "id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+    "slug": "ritiklabs",
+    "name": "Ritiklabs",
+    "stripe_customer_id": "cus_Ug4GJv8NITRqwi",
+    "subscription_status": "active"
+  },
+  "owner": {
+    "id": "2cab360f-fd21-461a-8a57-67573dee0530",
+    "email": "nayramalik1018@gmail.com"
+  },
+  "billableCount": 5,
+  "expectedMonthly": 69,
+  "stripeCustomerId": "cus_Ug4GJv8NITRqwi",
+  "stripeSubscriptionId": "sub_1Tgi8BFv5HaF9jWGRZ4SPXYP",
+  "checkoutSessionId": null,
+  "results": [
+    {
+      "area": "PART1",
+      "check": "STRIPE-CONFIG",
+      "status": "PASS",
+      "msg": "Keys and price IDs verified via Stripe API",
+      "detail": {
+        "checks": [
+          {
+            "item": "secret_key_mode",
+            "status": "test"
+          },
+          {
+            "item": "base_price",
+            "status": "PASS",
+            "amount": 4900,
+            "currency": "aud",
+            "interval": "month",
+            "product": "ImmiMate Agency Plan"
+          },
+          {
+            "item": "seat_price",
+            "status": "PASS",
+            "amount": 1000,
+            "currency": "aud",
+            "interval": "month",
+            "product": "ImmiMate Additional Seat"
+          }
+        ],
+        "blockers": []
+      },
+      "ts": "2026-06-10T09:14:50.001Z"
+    },
+    {
+      "area": "PART1",
+      "check": "KEY-ENV-MATCH",
+      "status": "PASS",
+      "msg": "secret=test publishable=test",
+      "detail": {},
+      "ts": "2026-06-10T09:14:50.003Z"
+    },
+    {
+      "area": "PART1",
+      "check": "PRICE-ID-FORMAT",
+      "status": "PASS",
+      "msg": "base=price_1TghQcFv5HaF9jWGY9E1jcKN seat=price_1TghTBFv5HaF9jWGzp6LCadA",
+      "detail": {},
+      "ts": "2026-06-10T09:14:50.003Z"
+    },
+    {
+      "area": "PART1",
+      "check": "WEBHOOK-SECRET",
+      "status": "PASS",
+      "msg": "whsec_* present",
+      "detail": {},
+      "ts": "2026-06-10T09:14:50.003Z"
+    },
+    {
+      "area": "SETUP",
+      "check": "OWNER",
+      "status": "PASS",
+      "msg": "nayramalik1018@gmail.com",
+      "detail": {
+        "userId": "2cab360f-fd21-461a-8a57-67573dee0530"
+      },
+      "ts": "2026-06-10T09:14:51.393Z"
+    },
+    {
+      "area": "PART5",
+      "check": "SEAT-MATH-CURRENT",
+      "status": "PASS",
+      "msg": "5 billable → $69/mo",
+      "detail": {
+        "billableCount": 5,
+        "expectedMonthly": 69,
+        "expectedAdditional": 2
+      },
+      "ts": "2026-06-10T09:14:51.614Z"
+    },
+    {
+      "area": "PART5",
+      "check": "SEAT-MATH-3-USERS",
+      "status": "PASS",
+      "msg": "$49/mo",
+      "detail": {},
+      "ts": "2026-06-10T09:14:51.614Z"
+    },
+    {
+      "area": "PART5",
+      "check": "SEAT-MATH-4-USERS",
+      "status": "PASS",
+      "msg": "$59/mo",
+      "detail": {},
+      "ts": "2026-06-10T09:14:51.614Z"
+    },
+    {
+      "area": "PART5",
+      "check": "SEAT-MATH-5-USERS",
+      "status": "PASS",
+      "msg": "$69/mo",
+      "detail": {},
+      "ts": "2026-06-10T09:14:51.614Z"
+    },
+    {
+      "area": "PART2",
+      "check": "BILLING-NO-CRASH",
+      "status": "PASS",
+      "msg": "Page loaded",
+      "detail": {},
+      "ts": "2026-06-10T09:14:56.036Z"
+    },
+    {
+      "area": "PART2",
+      "check": "BILLING-NO-PLACEHOLDER",
+      "status": "PASS",
+      "msg": "No placeholder env strings",
+      "detail": {},
+      "ts": "2026-06-10T09:14:56.036Z"
+    },
+    {
+      "area": "PART2",
+      "check": "BILLING-REAL-PLAN",
+      "status": "FAIL",
+      "msg": "Plan pricing visible",
+      "detail": {
+        "screenshot": "docs\\bill1-screenshots\\01-billing-page.png"
+      },
+      "ts": "2026-06-10T09:14:56.036Z"
+    },
+    {
+      "area": "PART3",
+      "check": "CHECKOUT-EXISTING",
+      "status": "PASS",
+      "msg": "Active subscription already present — skipping new checkout",
+      "detail": {},
+      "ts": "2026-06-10T09:14:57.617Z"
+    },
+    {
+      "area": "PART3",
+      "check": "DB-CUSTOMER",
+      "status": "PASS",
+      "msg": "cus_Ug4GJv8NITRqwi",
+      "detail": {},
+      "ts": "2026-06-10T09:14:58.031Z"
+    },
+    {
+      "area": "PART3",
+      "check": "DB-SUBSCRIPTION",
+      "status": "PASS",
+      "msg": "sub_1Tgi8BFv5HaF9jWGRZ4SPXYP",
+      "detail": {
+        "status": "active",
+        "additional_seats": 2
+      },
+      "ts": "2026-06-10T09:14:58.031Z"
+    },
+    {
+      "area": "PART3",
+      "check": "STRIPE-CUSTOMER",
+      "status": "PASS",
+      "msg": "cus_Ug4GJv8NITRqwi",
+      "detail": {},
+      "ts": "2026-06-10T09:14:58.568Z"
+    },
+    {
+      "area": "PART3",
+      "check": "STRIPE-SUBSCRIPTION",
+      "status": "PASS",
+      "msg": "active",
+      "detail": {},
+      "ts": "2026-06-10T09:14:58.930Z"
+    },
+    {
+      "area": "PART5",
+      "check": "STRIPE-BASE-ITEM",
+      "status": "PASS",
+      "msg": "base qty=1",
+      "detail": {},
+      "ts": "2026-06-10T09:14:58.930Z"
+    },
+    {
+      "area": "PART5",
+      "check": "STRIPE-SEAT-QTY",
+      "status": "PASS",
+      "msg": "seat qty=2 expected=2",
+      "detail": {},
+      "ts": "2026-06-10T09:14:58.930Z"
+    },
+    {
+      "area": "PART5",
+      "check": "STRIPE-MONTHLY-EST",
+      "status": "PASS",
+      "msg": "Expected ~$69/mo for 5 billable users",
+      "detail": {},
+      "ts": "2026-06-10T09:14:58.930Z"
+    },
+    {
+      "area": "PART4",
+      "check": "WEBHOOK-CHECKOUT-SESSION-COMPLETED",
+      "status": "PASS",
+      "msg": "seen",
+      "detail": {},
+      "ts": "2026-06-10T09:15:07.065Z"
+    },
+    {
+      "area": "PART4",
+      "check": "WEBHOOK-CUSTOMER-SUBSCRIPTION-CREATED",
+      "status": "PASS",
+      "msg": "seen",
+      "detail": {},
+      "ts": "2026-06-10T09:15:07.065Z"
+    },
+    {
+      "area": "PART4",
+      "check": "WEBHOOK-CUSTOMER-SUBSCRIPTION-UPDATED",
+      "status": "PASS",
+      "msg": "seen",
+      "detail": {},
+      "ts": "2026-06-10T09:15:07.065Z"
+    },
+    {
+      "area": "PART4",
+      "check": "WEBHOOK-INVOICE-PAID",
+      "status": "PASS",
+      "msg": "seen",
+      "detail": {},
+      "ts": "2026-06-10T09:15:07.065Z"
+    },
+    {
+      "area": "PART4",
+      "check": "WEBHOOK-INVOICE-PAYMENT_SUCCEEDED",
+      "status": "PASS",
+      "msg": "seen",
+      "detail": {},
+      "ts": "2026-06-10T09:15:07.065Z"
+    },
+    {
+      "area": "PART4",
+      "check": "WEBHOOK-LOGS",
+      "status": "PASS",
+      "msg": "18 webhook_logs rows",
+      "detail": {},
+      "ts": "2026-06-10T09:15:07.065Z"
+    },
+    {
+      "area": "PART4",
+      "check": "WEBHOOK-EVENTS",
+      "status": "PASS",
+      "msg": "20 webhook_events rows",
+      "detail": {},
+      "ts": "2026-06-10T09:15:07.065Z"
+    },
+    {
+      "area": "PART4",
+      "check": "WEBHOOK-PAYLOAD-HASH",
+      "status": "PASS",
+      "msg": "payload_hash stored",
+      "detail": {},
+      "ts": "2026-06-10T09:15:07.065Z"
+    },
+    {
+      "area": "PART4",
+      "check": "WEBHOOK-NO-FAILURES",
+      "status": "FAIL",
+      "msg": "1 failed",
+      "detail": {},
+      "ts": "2026-06-10T09:15:07.065Z"
+    },
+    {
+      "area": "PART6",
+      "check": "PORTAL-SESSION",
+      "status": "PASS",
+      "msg": "https://billing.stripe.com/p/session/test_YWNjdF8xUmV1SGtGdjVIYUY5aldHLF9VZzRNNFVYelNzRE5Rc01iMjFKVjEyWG5WYkJ5cFV30100jcbZjpgj",
+      "detail": {},
+      "ts": "2026-06-10T09:15:08.265Z"
+    },
+    {
+      "area": "PART6",
+      "check": "PORTAL-UI",
+      "status": "PASS",
+      "msg": "Portal loaded with billing controls",
+      "detail": {
+        "screenshot": "docs\\bill1-screenshots\\04-stripe-portal.png"
+      },
+      "ts": "2026-06-10T09:15:16.783Z"
+    },
+    {
+      "area": "PART7",
+      "check": "CANCEL-WEBHOOK",
+      "status": "PASS",
+      "msg": "cancel_at_period_end=true",
+      "detail": {},
+      "ts": "2026-06-10T09:15:27.429Z"
+    },
+    {
+      "area": "PART7",
+      "check": "CANCEL-UI",
+      "status": "WARN",
+      "msg": "Cancellation messaging on billing page",
+      "detail": {
+        "screenshot": "docs\\bill1-screenshots\\05-billing-cancel-pending.png"
+      },
+      "ts": "2026-06-10T09:15:31.855Z"
+    }
+  ],
+  "evidence": {
+    "stripe": [
+      {
+        "customer": {
+          "id": "cus_Ug4GJv8NITRqwi",
+          "email": "nayramalik1018@gmail.com"
+        }
+      },
+      {
+        "subscription": {
+          "id": "sub_1Tgi8BFv5HaF9jWGRZ4SPXYP",
+          "status": "active",
+          "items": [
+            {
+              "price": "price_1TghQcFv5HaF9jWGY9E1jcKN",
+              "quantity": 1
+            },
+            {
+              "price": "price_1TghTBFv5HaF9jWGzp6LCadA",
+              "quantity": 2
+            }
+          ]
+        }
+      }
+    ],
+    "db": [],
+    "webhooks": [
+      {
+        "eventId": "evt_1TgiD4Fv5HaF9jWGAqq49Bmp",
+        "type": "customer.subscription.updated",
+        "status": 200,
+        "json": {
+          "status": "Ignored: duplicate event locked implicitly"
+        }
+      },
+      {
+        "eventId": "evt_1TgiCtFv5HaF9jWGQmjEK6Yv",
+        "type": "customer.subscription.updated",
+        "status": 200,
+        "json": {
+          "status": "Ignored: duplicate event locked implicitly"
+        }
+      },
+      {
+        "eventId": "evt_1TgiCiFv5HaF9jWGto3eck8H",
+        "type": "billing_portal.session.created",
+        "status": 200,
+        "json": {
+          "received": true
+        }
+      },
+      {
+        "eventId": "evt_1Tgi8lFv5HaF9jWGNKtjNUob",
+        "type": "billing_portal.session.created",
+        "status": 200,
+        "json": {
+          "status": "Ignored: duplicate event locked implicitly"
+        }
+      },
+      {
+        "eventId": "evt_1Tgi8DFv5HaF9jWGtUX1rK8C",
+        "type": "checkout.session.completed",
+        "status": 200,
+        "json": {
+          "status": "Ignored: duplicate event locked implicitly"
+        }
+      },
+      {
+        "eventId": "evt_1Tgi8DFv5HaF9jWGkJQKvzvy",
+        "type": "customer.subscription.created",
+        "status": 200,
+        "json": {
+          "status": "Ignored: duplicate event locked implicitly"
+        }
+      },
+      {
+        "eventId": "evt_1Tgi8EFv5HaF9jWGyvZBeHtu",
+        "type": "invoice.payment_succeeded",
+        "status": 200,
+        "json": {
+          "status": "Ignored: duplicate event locked implicitly"
+        }
+      },
+      {
+        "eventId": "evt_1Tgi8DFv5HaF9jWGiZOqGYuU",
+        "type": "invoice.paid",
+        "status": 200,
+        "json": {
+          "status": "Ignored: duplicate event locked implicitly"
+        }
+      },
+      {
+        "eventId": "evt_1Tgi8DFv5HaF9jWG0Cv55HZE",
+        "type": "invoice.finalized",
+        "status": 200,
+        "json": {
+          "status": "Ignored: duplicate event locked implicitly"
+        }
+      },
+      {
+        "eventId": "evt_1Tgi8EFv5HaF9jWGA5lDu6bu",
+        "type": "invoice.created",
+        "status": 200,
+        "json": {
+          "status": "Ignored: duplicate event locked implicitly"
+        }
+      },
+      {
+        "eventId": "evt_3Tgi8AFv5HaF9jWG1aOEiOfW",
+        "type": "payment_intent.succeeded",
+        "status": 200,
+        "json": {
+          "status": "Ignored: duplicate event locked implicitly"
+        }
+      },
+      {
+        "eventId": "evt_1Tgi8DFv5HaF9jWGDbsAL3tK",
+        "type": "payment_method.attached",
+        "status": 200,
+        "json": {
+          "status": "Ignored: duplicate event locked implicitly"
+        }
+      },
+      {
+        "eventId": "evt_bill1_cancel_1781082889033",
+        "type": "customer.subscription.updated",
+        "status": 200,
+        "json": {
+          "received": true
+        }
+      },
+      {
+        "eventId": "evt_bill1_restore_1781082889033",
+        "type": "customer.subscription.updated",
+        "status": 200,
+        "json": {
+          "received": true
+        }
+      }
+    ],
+    "screenshots": [
+      "docs\\bill1-screenshots\\01-billing-page.png",
+      "docs\\bill1-screenshots\\04-stripe-portal.png",
+      "docs\\bill1-screenshots\\05-billing-cancel-pending.png"
+    ],
+    "seats": [
+      {
+        "users": 3,
+        "monthlyUsd": 49
+      },
+      {
+        "users": 4,
+        "monthlyUsd": 59
+      },
+      {
+        "users": 5,
+        "monthlyUsd": 69
+      }
+    ]
+  },
+  "webhookLogs": [
+    {
+      "event_id": "evt_1TgiCiFv5HaF9jWGto3eck8H",
+      "event_type": "billing_portal.session.created",
+      "status": "success",
+      "processed_at": "2026-06-10T09:15:01.151+00:00"
+    },
+    {
+      "event_id": "evt_1TgiD4Fv5HaF9jWGAqq49Bmp",
+      "event_type": "customer.subscription.updated",
+      "status": "success",
+      "processed_at": "2026-06-10T09:14:06.203+00:00"
+    },
+    {
+      "event_id": "evt_bill1_restore_1781082793821",
+      "event_type": "customer.subscription.updated",
+      "status": "success",
+      "processed_at": "2026-06-10T09:14:06.086+00:00"
+    },
+    {
+      "event_id": "evt_1TgiCtFv5HaF9jWGQmjEK6Yv",
+      "event_type": "customer.subscription.updated",
+      "status": "success",
+      "processed_at": "2026-06-10T09:13:54.902+00:00"
+    },
+    {
+      "event_id": "evt_bill1_cancel_1781082793821",
+      "event_type": "customer.subscription.updated",
+      "status": "success",
+      "processed_at": "2026-06-10T09:13:54.531+00:00"
+    },
+    {
+      "event_id": "evt_1Tgi8lFv5HaF9jWGNKtjNUob",
+      "event_type": "billing_portal.session.created",
+      "status": "success",
+      "processed_at": "2026-06-10T09:13:32.416+00:00"
+    },
+    {
+      "event_id": "evt_1Tgi8DFv5HaF9jWGtUX1rK8C",
+      "event_type": "checkout.session.completed",
+      "status": "success",
+      "processed_at": "2026-06-10T09:13:00.666+00:00"
+    },
+    {
+      "event_id": "evt_1Tgi7sFv5HaF9jWG85uR7pfE",
+      "event_type": "customer.created",
+      "status": "success",
+      "processed_at": "2026-06-10T09:09:34.959+00:00"
+    },
+    {
+      "event_id": "evt_1Tgi8DFv5HaF9jWG9Tcc8O5X",
+      "event_type": "customer.updated",
+      "status": "success",
+      "processed_at": "2026-06-10T09:09:33.792+00:00"
+    },
+    {
+      "event_id": "evt_3Tgi8AFv5HaF9jWG1aDuoPzF",
+      "event_type": "payment_intent.created",
+      "status": "success",
+      "processed_at": "2026-06-10T09:09:33.035+00:00"
+    },
+    {
+      "event_id": "evt_3Tgi8AFv5HaF9jWG1Q7Qur7P",
+      "event_type": "charge.succeeded",
+      "status": "success",
+      "processed_at": "2026-06-10T09:09:32.282+00:00"
+    },
+    {
+      "event_id": "evt_1Tgi8DFv5HaF9jWGDbsAL3tK",
+      "event_type": "payment_method.attached",
+      "status": "success",
+      "processed_at": "2026-06-10T09:09:31.524+00:00"
+    },
+    {
+      "event_id": "evt_3Tgi8AFv5HaF9jWG1aOEiOfW",
+      "event_type": "payment_intent.succeeded",
+      "status": "success",
+      "processed_at": "2026-06-10T09:09:30.76+00:00"
+    },
+    {
+      "event_id": "evt_1Tgi8EFv5HaF9jWGA5lDu6bu",
+      "event_type": "invoice.created",
+      "status": "success",
+      "processed_at": "2026-06-10T09:09:30.005+00:00"
+    },
+    {
+      "event_id": "evt_1Tgi8DFv5HaF9jWG0Cv55HZE",
+      "event_type": "invoice.finalized",
+      "status": "success",
+      "processed_at": "2026-06-10T09:09:29.247+00:00"
+    },
+    {
+      "event_id": "evt_1Tgi8EFv5HaF9jWGyvZBeHtu",
+      "event_type": "invoice.payment_succeeded",
+      "status": "success",
+      "processed_at": "2026-06-10T09:09:25.871+00:00"
+    },
+    {
+      "event_id": "evt_1Tgi8DFv5HaF9jWGkJQKvzvy",
+      "event_type": "customer.subscription.created",
+      "status": "failed_processing",
+      "processed_at": null
+    },
+    {
+      "event_id": "evt_1Tgi8DFv5HaF9jWGiZOqGYuU",
+      "event_type": "invoice.paid",
+      "status": "success",
+      "processed_at": "2026-06-10T09:09:05.474+00:00"
+    }
+  ],
+  "webhookEvents": [
+    {
+      "id": "f9cff1bb-4fc1-4a68-9365-5a3adb9d861a",
+      "event_type": "payment_method.attached",
+      "external_id": "evt_1Tgi8DFv5HaF9jWGDbsAL3tK",
+      "status": "processed",
+      "payload_hash": "3cff1d0f8622823dc3b775af937fadcfb354a476bc9b9b170669fedfec712509",
+      "processed_at": "2026-06-10T09:15:06.423+00:00",
+      "received_at": "2026-06-10T09:15:08.342632+00:00"
+    },
+    {
+      "id": "8a78910f-bbd5-42cc-84f2-b9bfded88e6b",
+      "event_type": "payment_intent.succeeded",
+      "external_id": "evt_3Tgi8AFv5HaF9jWG1aOEiOfW",
+      "status": "processed",
+      "payload_hash": "84eb419e734c4817b9c5f11252f643e39b42c7e35009fb86e278ae65b5226812",
+      "processed_at": "2026-06-10T09:15:05.841+00:00",
+      "received_at": "2026-06-10T09:15:07.765353+00:00"
+    },
+    {
+      "id": "266cc697-411f-4028-bc87-caa20f74dd10",
+      "event_type": "invoice.created",
+      "external_id": "evt_1Tgi8EFv5HaF9jWGA5lDu6bu",
+      "status": "processed",
+      "payload_hash": "a7ca31a14ffa4720b45dfbdccfc9c632864e9d194141aad43be2bec7806a4a97",
+      "processed_at": "2026-06-10T09:15:05.282+00:00",
+      "received_at": "2026-06-10T09:15:07.19486+00:00"
+    },
+    {
+      "id": "ea418566-47ab-415f-a30b-e8c189355457",
+      "event_type": "invoice.finalized",
+      "external_id": "evt_1Tgi8DFv5HaF9jWG0Cv55HZE",
+      "status": "processed",
+      "payload_hash": "f55bb0eebf1619b44438b4b3007a2de108c480a5d4c8f2ea35163e12717d730c",
+      "processed_at": "2026-06-10T09:15:04.711+00:00",
+      "received_at": "2026-06-10T09:15:06.630284+00:00"
+    },
+    {
+      "id": "da8cb360-90f6-403b-9002-b9f1adce431c",
+      "event_type": "invoice.paid",
+      "external_id": "evt_1Tgi8DFv5HaF9jWGiZOqGYuU",
+      "status": "processed",
+      "payload_hash": "c16c4dc62a13c5ec6917c747fdb5337b92bc292386d58073f31291eb687b20ca",
+      "processed_at": "2026-06-10T09:15:04.144+00:00",
+      "received_at": "2026-06-10T09:15:06.057341+00:00"
+    },
+    {
+      "id": "f9e38d16-bc27-4475-9ffe-50e203da2512",
+      "event_type": "invoice.payment_succeeded",
+      "external_id": "evt_1Tgi8EFv5HaF9jWGyvZBeHtu",
+      "status": "processed",
+      "payload_hash": "de9ea60528d43a89a4abb09c7f1c07307f80fee359bf1725987247aa67df0dfb",
+      "processed_at": "2026-06-10T09:15:03.575+00:00",
+      "received_at": "2026-06-10T09:15:05.494383+00:00"
+    },
+    {
+      "id": "1ba70c61-9de8-4b62-a6d3-d809b3263c16",
+      "event_type": "customer.subscription.created",
+      "external_id": "evt_1Tgi8DFv5HaF9jWGkJQKvzvy",
+      "status": "processed",
+      "payload_hash": "42ebb708825c3a416ba0664cbfa20dd5565e6fb24deb618405fe4ce72636bcae",
+      "processed_at": "2026-06-10T09:15:03.007+00:00",
+      "received_at": "2026-06-10T09:15:04.928574+00:00"
+    },
+    {
+      "id": "609ddd85-0751-463f-9d73-83de767957f3",
+      "event_type": "checkout.session.completed",
+      "external_id": "evt_1Tgi8DFv5HaF9jWGtUX1rK8C",
+      "status": "processed",
+      "payload_hash": "65976c8eec390cbf7379674401e5060658b17b0307d25ce27a6ed613492ebe9c",
+      "processed_at": "2026-06-10T09:15:02.446+00:00",
+      "received_at": "2026-06-10T09:15:04.364735+00:00"
+    },
+    {
+      "id": "9776c019-3034-476d-bb74-3bc9d610add0",
+      "event_type": "billing_portal.session.created",
+      "external_id": "evt_1Tgi8lFv5HaF9jWGNKtjNUob",
+      "status": "processed",
+      "payload_hash": "cfdbed2058b2d5b776001d82e87fefb125a77b5930de1309e747c3a440ed317a",
+      "processed_at": "2026-06-10T09:15:01.884+00:00",
+      "received_at": "2026-06-10T09:15:03.811168+00:00"
+    },
+    {
+      "id": "b3b25467-28d4-4404-a692-3800fb30964c",
+      "event_type": "billing_portal.session.created",
+      "external_id": "evt_1TgiCiFv5HaF9jWGto3eck8H",
+      "status": "processed",
+      "payload_hash": "63014a4f3cb5aaebb53f499eba9697f02ff77ca5c822f76b65c94ad92dd5eb5e",
+      "processed_at": "2026-06-10T09:15:01.333+00:00",
+      "received_at": "2026-06-10T09:15:03.075024+00:00"
+    },
+    {
+      "id": "a6cab19e-5532-4317-85c8-898b1b4e242f",
+      "event_type": "customer.subscription.updated",
+      "external_id": "evt_1TgiCtFv5HaF9jWGQmjEK6Yv",
+      "status": "processed",
+      "payload_hash": "e8caed31fa81166de1aa6ca69ce395b5a5379b6b10e920df23093303b9559858",
+      "processed_at": "2026-06-10T09:15:00.592+00:00",
+      "received_at": "2026-06-10T09:15:02.510377+00:00"
+    },
+    {
+      "id": "b66ca983-43ca-4d8b-9e0a-fdf00ab985e2",
+      "event_type": "customer.subscription.updated",
+      "external_id": "evt_1TgiD4Fv5HaF9jWGAqq49Bmp",
+      "status": "processed",
+      "payload_hash": "a386c592fc147a1dc96e1ff9824ad5eb9b6f6bb2cd52098192d24dc9a9481de0",
+      "processed_at": "2026-06-10T09:15:00.026+00:00",
+      "received_at": "2026-06-10T09:15:01.927019+00:00"
+    },
+    {
+      "id": "0f033603-1273-47a8-a35d-f3bd9f9a5fe6",
+      "event_type": "customer.subscription.updated",
+      "external_id": "evt_1TgiD4Fv5HaF9jWGAqq49Bmp",
+      "status": "processed",
+      "payload_hash": "1574386246b6dc5d105ff6d02aaadacaf070ac33b6f2df3b704290d2c1ee9e26",
+      "processed_at": "2026-06-10T09:14:06.387+00:00",
+      "received_at": "2026-06-10T09:14:07.482795+00:00"
+    },
+    {
+      "id": "78d54f27-8b5e-40bc-9365-278781fc69bf",
+      "event_type": "customer.subscription.updated",
+      "external_id": "evt_bill1_restore_1781082793821",
+      "status": "processed",
+      "payload_hash": "8560c74a0e1257937ad65e39ae6814f8d7896a875d169739f61ef5d59310820e",
+      "processed_at": "2026-06-10T09:14:06.265+00:00",
+      "received_at": "2026-06-10T09:14:07.399663+00:00"
+    },
+    {
+      "id": "96773aae-e672-4b87-9eaf-61b84544c5df",
+      "event_type": "customer.subscription.updated",
+      "external_id": "evt_1TgiCtFv5HaF9jWGQmjEK6Yv",
+      "status": "processed",
+      "payload_hash": "ef217d8d728c3fa528494ce76353df95b94a5e8d1b968560f4a8b7740eec0c25",
+      "processed_at": "2026-06-10T09:13:55.127+00:00",
+      "received_at": "2026-06-10T09:13:56.211765+00:00"
+    },
+    {
+      "id": "c907e014-06af-4b59-9d88-626e5683aeca",
+      "event_type": "customer.subscription.updated",
+      "external_id": "evt_bill1_cancel_1781082793821",
+      "status": "processed",
+      "payload_hash": "5a4f0c4558d79eb961b72d9b0eb0decc3987bf8e2ceef1c47d4c79075b32efa0",
+      "processed_at": "2026-06-10T09:13:54.747+00:00",
+      "received_at": "2026-06-10T09:13:55.820067+00:00"
+    },
+    {
+      "id": "9b32aabb-6f41-434e-8800-984aa5b2f9f9",
+      "event_type": "customer.updated",
+      "external_id": "evt_1Tgi8DFv5HaF9jWG9Tcc8O5X",
+      "status": "processed",
+      "payload_hash": "8ccd622bbd1e27b223ac19d768b2235537ae08979a2c1e335ffb8cc080fbedce",
+      "processed_at": "2026-06-10T09:13:39.17+00:00",
+      "received_at": "2026-06-10T09:13:41.088763+00:00"
+    },
+    {
+      "id": "0687bcfc-5f96-4806-97dc-160b6901e2fe",
+      "event_type": "payment_intent.created",
+      "external_id": "evt_3Tgi8AFv5HaF9jWG1aDuoPzF",
+      "status": "processed",
+      "payload_hash": "07d7af9a50d1b3e10a06cc22a30f506a7578b03de510f3a4a2810fa994e0185b",
+      "processed_at": "2026-06-10T09:13:38.601+00:00",
+      "received_at": "2026-06-10T09:13:40.5154+00:00"
+    },
+    {
+      "id": "e463ff10-71e4-46a8-ac16-54bd98071fab",
+      "event_type": "charge.succeeded",
+      "external_id": "evt_3Tgi8AFv5HaF9jWG1Q7Qur7P",
+      "status": "processed",
+      "payload_hash": "874a2c12ce837ff7a0dbd1595e2cd8639378d82d6ef0b0882ed35fab4c772fb4",
+      "processed_at": "2026-06-10T09:13:38.02+00:00",
+      "received_at": "2026-06-10T09:13:39.926889+00:00"
+    },
+    {
+      "id": "ae3f82ef-2dd3-4d93-980d-17d577392e8a",
+      "event_type": "payment_method.attached",
+      "external_id": "evt_1Tgi8DFv5HaF9jWGDbsAL3tK",
+      "status": "processed",
+      "payload_hash": "3cff1d0f8622823dc3b775af937fadcfb354a476bc9b9b170669fedfec712509",
+      "processed_at": "2026-06-10T09:13:37.436+00:00",
+      "received_at": "2026-06-10T09:13:39.341626+00:00"
+    }
+  ],
+  "replayed": [
+    {
+      "type": "customer.subscription.updated",
+      "id": "evt_1TgiD4Fv5HaF9jWGAqq49Bmp",
+      "status": 200
+    },
+    {
+      "type": "customer.subscription.updated",
+      "id": "evt_1TgiCtFv5HaF9jWGQmjEK6Yv",
+      "status": 200
+    },
+    {
+      "type": "billing_portal.session.created",
+      "id": "evt_1TgiCiFv5HaF9jWGto3eck8H",
+      "status": 200
+    },
+    {
+      "type": "billing_portal.session.created",
+      "id": "evt_1Tgi8lFv5HaF9jWGNKtjNUob",
+      "status": 200
+    },
+    {
+      "type": "checkout.session.completed",
+      "id": "evt_1Tgi8DFv5HaF9jWGtUX1rK8C",
+      "status": 200
+    },
+    {
+      "type": "customer.subscription.created",
+      "id": "evt_1Tgi8DFv5HaF9jWGkJQKvzvy",
+      "status": 200
+    },
+    {
+      "type": "invoice.payment_succeeded",
+      "id": "evt_1Tgi8EFv5HaF9jWGyvZBeHtu",
+      "status": 200
+    },
+    {
+      "type": "invoice.paid",
+      "id": "evt_1Tgi8DFv5HaF9jWGiZOqGYuU",
+      "status": 200
+    },
+    {
+      "type": "invoice.finalized",
+      "id": "evt_1Tgi8DFv5HaF9jWG0Cv55HZE",
+      "status": 200
+    },
+    {
+      "type": "invoice.created",
+      "id": "evt_1Tgi8EFv5HaF9jWGA5lDu6bu",
+      "status": 200
+    },
+    {
+      "type": "payment_intent.succeeded",
+      "id": "evt_3Tgi8AFv5HaF9jWG1aOEiOfW",
+      "status": 200
+    },
+    {
+      "type": "payment_method.attached",
+      "id": "evt_1Tgi8DFv5HaF9jWGDbsAL3tK",
+      "status": 200
+    }
+  ]
+}

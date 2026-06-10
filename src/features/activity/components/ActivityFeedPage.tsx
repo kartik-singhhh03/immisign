@@ -67,7 +67,7 @@ export function ActivityFeedPage() {
             <div key={log.id} className="px-6 py-4">
               <div className="flex justify-between gap-4">
                 <div>
-                  <p className="text-sm font-bold text-[#081B2E]">{log.title}</p>
+                  <p className="text-sm font-bold text-[#111111]">{log.title}</p>
                   {log.description && (
                     <p className="text-sm text-slate-600 mt-0.5">{log.description}</p>
                   )}

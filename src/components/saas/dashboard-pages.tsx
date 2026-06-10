@@ -3,14 +3,10 @@
 import * as React from "react"
 import dynamic from "next/dynamic"
 
-// Premium loading spinner matching client design aesthetics
+import { DashboardSkeleton } from "@/components/ui/skeletons"
+
 function PageLoading() {
-  return (
-    <div className="flex min-h-[45vh] flex-col items-center justify-center gap-4 text-center animate-in fade-in duration-300">
-      <span className="h-8 w-8 animate-spin rounded-full border-4 border-[#0D9F8C] border-t-transparent" />
-      <p className="text-[11px] font-bold uppercase tracking-widest text-[#0D9F8C]">Loading Secure Module...</p>
-    </div>
-  )
+  return <DashboardSkeleton />
 }
 
 // -------------------------------------------------------------
@@ -82,6 +78,11 @@ export const PlaceholderDashboardPage = dynamic(
   { loading: () => <PageLoading /> }
 )
 
+export const SystemHealthPage = dynamic(
+  () => import("@/features/admin/components/SystemHealthPage").then(m => m.SystemHealthPage),
+  { loading: () => <PageLoading /> }
+)
+
 // -------------------------------------------------------------
 // SECURE SYSTEM STATUS PILL (REUSED STYLING WIDGET EXPORT)
 // -------------------------------------------------------------
@@ -89,7 +90,7 @@ export const PlaceholderDashboardPage = dynamic(
 function statusClass(status: string) {
   const s = status.toLowerCase()
   if (s === "signed" || s === "active" || s === "completed") {
-    return "border-emerald-250 bg-emerald-50 text-emerald-700 shadow-[0_1px_2px_rgba(16,185,129,0.02)]"
+    return "border-[#E7E7E7] bg-[#FAFAFA] text-[#111111] shadow-[0_1px_2px_rgba(17,17,17,0.02)]"
   }
   if (s === "awaiting" || s === "awaiting signature" || s === "sent to client" || s === "under_review") {
     return "border-amber-250 bg-amber-50 text-amber-700 shadow-[0_1px_2px_rgba(245,158,11,0.02)]"

@@ -91,7 +91,7 @@ export function ProfessionalErrorPanel({
       <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-red-600 mb-4">
         <AlertCircle className="h-7 w-7" />
       </div>
-      <h2 className="text-xl font-bold text-[#081B2E]">{copy.title}</h2>
+      <h2 className="text-xl font-bold text-[#111111]">{copy.title}</h2>
       <p className="mt-2 text-sm text-slate-600 font-medium">{copy.description}</p>
       {detail && (
         <p className="mt-3 text-sm text-red-700 font-semibold rounded-lg bg-red-50 border border-red-100 px-3 py-2">
@@ -104,7 +104,7 @@ export function ProfessionalErrorPanel({
       )}
       <div className="mt-6 flex flex-wrap justify-center gap-3">
         {onRetry && (
-          <Button onClick={onRetry} className="rounded-xl bg-[#0D9F8C] font-bold">
+          <Button onClick={onRetry} className="rounded-xl bg-[#111111] font-bold">
             <RefreshCw className="h-4 w-4 mr-1.5" /> Retry
           </Button>
         )}

@@ -1,0 +1,54 @@
+{
+  "runAt": "2026-06-06T15:12:31.984Z",
+  "checks": [
+    {
+      "name": "missing_sa",
+      "api": 1,
+      "db": 1,
+      "pass": true
+    },
+    {
+      "name": "pending_approval",
+      "api": 0,
+      "db": 0,
+      "pass": true
+    },
+    {
+      "name": "unack_sos",
+      "api": 0,
+      "db": 0,
+      "pass": true
+    },
+    {
+      "name": "activity_feed",
+      "api": 20,
+      "db": "non-empty check",
+      "pass": true
+    },
+    {
+      "name": "audit_readiness_range",
+      "api": 25,
+      "db": "0-100",
+      "pass": true
+    },
+    {
+      "name": "workflow_funnel_stages",
+      "api": 9,
+      "db": 9,
+      "pass": true
+    }
+  ],
+  "apiCards": {
+    "missing_sa": 1,
+    "pending_approval": 0,
+    "outstanding_docs": 0,
+    "unack_sos": 0,
+    "ready_lodge": 0,
+    "completed": 0
+  },
+  "db": {
+    "dbMissingSa": 1,
+    "dbPendingApproval": 0,
+    "dbUnackSos": 0
+  }
+}

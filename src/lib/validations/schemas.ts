@@ -131,3 +131,10 @@ export const agreementSchema = z.object({
   title: z.string().min(1, 'Title is required.'),
   metadata: z.record(z.string(), z.any()).optional(),
 });
+
+export const fileNoteCreateSchema = z.object({
+  note_type: z.string().trim().min(1, 'Note type is required.'),
+  body: z.string().trim().min(1, 'Note text is required.').max(8000),
+  file_source: z.enum(['agreement', 'application_approval']),
+  file_id: z.string().uuid('Invalid file ID.'),
+});

@@ -155,6 +155,16 @@ export async function GET() {
       });
     }
 
+    const { data: feeRows } = await ctx.supabase
+      .from('agreements')
+      .select('professional_fee')
+      .eq('agency_id', ctx.agencyId)
+      .is('deleted_at', null);
+    const practiceRevenueTotal = (feeRows || []).reduce(
+      (sum, row) => sum + (Number((row as { professional_fee?: number }).professional_fee) || 0),
+      0,
+    );
+
     return NextResponse.json({
       success: true,
       summary: {
@@ -166,6 +176,11 @@ export async function GET() {
         upcomingDeadlines: upcomingDeadlines.data || [],
         overdueApprovals: overdueApprovals.data || [],
         pendingSignatures: pendingSignatures.data || [],
+        practiceRevenue: {
+          total: practiceRevenueTotal,
+          currency: 'AUD',
+          hasData: practiceRevenueTotal > 0,
+        },
       },
     });
   } catch (e: unknown) {

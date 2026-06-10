@@ -31,7 +31,7 @@ export function InviteAcceptForm({ token, email, role }: { token: string, email:
         });
         const payload = await res.json();
         if (!res.ok) throw new Error(payload.error || 'Failed to accept invitation via Google');
-        router.push('/dashboard');
+        router.push(payload.agency_slug ? `/workspace/${payload.agency_slug}/dashboard` : '/dashboard');
       } catch (err: unknown) {
         setError(err instanceof Error ? err.message : 'OAuth invite acceptance failed');
       } finally {
@@ -60,7 +60,16 @@ export function InviteAcceptForm({ token, email, role }: { token: string, email:
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed to accept invitation')
 
-      router.push('/dashboard')
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: data.email || email,
+        password,
+      })
+      if (signInError) {
+        router.push(`/login?email=${encodeURIComponent(data.email || email)}`)
+        return
+      }
+
+      router.push(data.agency_slug ? `/workspace/${data.agency_slug}/dashboard` : '/dashboard')
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to accept invitation')
       setLoading(false)
@@ -118,7 +127,7 @@ export function InviteAcceptForm({ token, email, role }: { token: string, email:
         <p className="text-[11px] text-slate-400 mt-1">{passwordPolicyMessage()}</p>
       </div>
 
-      <Button type="submit" disabled={loading || oauthLoading} className="w-full bg-[#0D9F8C] hover:bg-[#0A8F7E] text-white rounded-xl h-12">
+      <Button type="submit" disabled={loading || oauthLoading} className="w-full bg-[#111111] hover:bg-[#222222] text-white rounded-xl h-12">
         {loading ? "Creating Account..." : "Create Account & Join"}
       </Button>
 

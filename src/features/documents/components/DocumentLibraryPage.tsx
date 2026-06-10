@@ -4,6 +4,7 @@ import * as React from "react";
 import { useRequireWorkspace } from "@/lib/hooks/use-workspace"
 import { useAuthStore } from "@/store/authStore";
 import { useDocuments } from "@/lib/hooks/useSupabaseData";
+import { PaginationBar } from "@/components/ui/pagination-bar";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -72,7 +73,13 @@ export function DocumentLibraryPage() {
   }
 
   const [searchQuery, setSearchQuery] = React.useState("");
+  const [debouncedSearch, setDebouncedSearch] = React.useState("");
   const [activeCategory, setActiveCategory] = React.useState("All");
+  const [page, setPage] = React.useState(1);
+  const [documentsList, setDocumentsList] = React.useState<DocumentItem[]>([]);
+  const [documentCount, setDocumentCount] = React.useState(0);
+  const [listLoading, setListLoading] = React.useState(true);
+  const pageSize = 10;
   const [isUploadOpen, setIsUploadOpen] = React.useState(false);
 
   // Real Upload States
@@ -91,9 +98,45 @@ export function DocumentLibraryPage() {
   // Custom Dynamic Toast simulation
   const [toastMessage, setToastMessage] = React.useState<string | null>(null);
 
-  const { data: documentsList, addDocument, loading, count: documentCount } = useDocuments({
-    limit: 200,
-  });
+  const { addDocument } = useDocuments();
+  const loading = listLoading;
+
+  React.useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(searchQuery), 300);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
+
+  React.useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, activeCategory]);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      setListLoading(true);
+      const params = new URLSearchParams({
+        page: String(page),
+        limit: String(pageSize),
+        sort: "created_at",
+        direction: "desc",
+      });
+      if (debouncedSearch) params.set("search", debouncedSearch);
+      if (activeCategory === "PDF") params.set("mimeType", "pdf");
+      else if (activeCategory === "Images") params.set("mimeType", "image");
+      else if (activeCategory === "Word") params.set("mimeType", "doc");
+      const res = await fetch(`/api/documents?${params}`);
+      const json = await res.json();
+      if (!cancelled && json.success) {
+        setDocumentsList(json.data || []);
+        setDocumentCount(json.count || 0);
+      }
+      if (!cancelled) setListLoading(false);
+    };
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, [page, debouncedSearch, activeCategory]);
 
   const totalBytes = (documentsList || []).reduce(
     (sum: number, d: DocumentItem) => {
@@ -111,15 +154,8 @@ export function DocumentLibraryPage() {
     return age < 7 * 24 * 60 * 60 * 1000;
   }).length;
 
-  // Filter lists
-  const filteredDocs = (documentsList || []).filter((doc: any) => {
-    const matchesSearch =
-      doc.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      doc.id.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory =
-      activeCategory === "All" || doc.category === activeCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const filteredDocs = documentsList || [];
+  const totalPages = Math.ceil(documentCount / pageSize) || 0;
 
   // Recent Templates (First 3 in documentsList)
   const recentTemplates = (documentsList || []).slice(0, 3);
@@ -148,6 +184,14 @@ export function DocumentLibraryPage() {
       }
       setUploading(false);
       setUploadSuccess(true);
+      setPage(1);
+      const params = new URLSearchParams({ page: "1", limit: String(pageSize), sort: "created_at", direction: "desc" });
+      const res = await fetch(`/api/documents?${params}`);
+      const json = await res.json();
+      if (json.success) {
+        setDocumentsList(json.data || []);
+        setDocumentCount(json.count || 0);
+      }
       triggerToast(
         `Document "${selectedFile.name}" uploaded successfully!`,
       );
@@ -180,8 +224,8 @@ export function DocumentLibraryPage() {
     <div className="animate-enter space-y-6 relative">
       {/* Visual Dynamic Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-[100] animate-enter rounded-xl border border-emerald-100 bg-white/90 p-4 text-xs font-bold text-[#0D9F8C] shadow-2xl flex items-center gap-3 backdrop-blur-md">
-          <ShieldCheck className="h-5 w-5 text-[#0D9F8C] shrink-0" />
+        <div className="fixed bottom-6 right-6 z-[100] animate-enter rounded-xl border border-[#E7E7E7] bg-white/90 p-4 text-xs font-bold text-[#111111] shadow-2xl flex items-center gap-3 backdrop-blur-md">
+          <ShieldCheck className="h-5 w-5 text-[#111111] shrink-0" />
           <span>{toastMessage}</span>
           <button
             onClick={() => setToastMessage(null)}
@@ -199,7 +243,7 @@ export function DocumentLibraryPage() {
         action={
           <Button
             onClick={() => setIsUploadOpen(true)}
-            className="rounded-xl bg-[#0D9F8C] font-bold shadow-[0_10px_24px_rgba(13,159,140,0.18)] hover:bg-[#0A5B52]"
+            className="rounded-xl bg-[#111111] font-bold shadow-[0_10px_24px_rgba(17,17,17,0.12)] hover:bg-[#222222]"
           >
             <UploadCloud className="h-4 w-4 mr-1.5" /> Upload Document
           </Button>
@@ -242,15 +286,15 @@ export function DocumentLibraryPage() {
               <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                 {stat.label}
               </div>
-              <div className="mt-3 text-2xl font-black text-[#081B2E] tracking-tight">
+              <div className="font-sans-ui mt-3 text-2xl font-bold text-[#111111] tracking-tight">
                 {stat.value}
               </div>
-              <div className="mt-1 text-xs text-[#0D9F8C] font-bold">
+              <div className="mt-1 text-xs text-[#111111] font-bold">
                 {stat.desc}
               </div>
               <div className="mt-3.5 h-[5px] overflow-hidden rounded-full bg-slate-100/80">
                 <div
-                  className="chart-bar h-full rounded-full bg-gradient-to-r from-[#0D9F8C] to-[#33C48D]"
+                  className="chart-bar immimate-progress-fill h-full rounded-full"
                   style={{ width: `${stat.progress}%` }}
                 />
               </div>
@@ -267,29 +311,29 @@ export function DocumentLibraryPage() {
           <div className="space-y-3">
             <div className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
               <span>Quick Access Templates</span>
-              <span className="h-1.5 w-1.5 rounded-full bg-[#0D9F8C] animate-ping" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[#111111] animate-ping" />
             </div>
             <div className="grid gap-4 sm:grid-cols-3">
               {recentTemplates.map((doc) => (
                 <Card
                   key={doc.id}
                   onClick={() => setSelectedDoc(doc)}
-                  className="group rounded-xl border border-[#0D9F8C]/15 bg-[#f5fbf9]/60 p-4 shadow-sm hover:border-[#0D9F8C]/50 hover:bg-white cursor-pointer transition-all duration-300 hover:-translate-y-0.5"
+                  className="group rounded-xl border border-[#E7E7E7] bg-[#FAFAFA] p-4 shadow-sm hover:border-[#111111]/20 hover:bg-white cursor-pointer transition-all duration-300 hover:-translate-y-0.5"
                 >
                   <div className="flex justify-between items-start gap-2">
-                    <span className="rounded-full bg-emerald-100/60 px-2 py-0.5 text-[8px] font-black text-[#0A8F7E] uppercase">
+                    <span className="rounded-full bg-[#FAFAFA]/60 px-2 py-0.5 text-[8px] font-black text-[#222222] uppercase">
                       LATEST
                     </span>
                     <span className="text-[9px] text-slate-400 font-bold">
                       {doc.size}
                     </span>
                   </div>
-                  <h3 className="text-xs font-bold text-[#081b36] mt-3 group-hover:text-[#0D9F8C] transition-colors truncate">
+                  <h3 className="font-sans-ui text-xs font-semibold text-[#111111] mt-3 truncate">
                     {doc.name}
                   </h3>
                   <div className="flex items-center justify-between text-[9px] text-slate-400 font-semibold mt-3 pt-2.5 border-t border-slate-100">
                     <span>{doc.downloads} downloads</span>
-                    <ArrowRight className="h-3 w-3 text-[#0D9F8C] transition-transform group-hover:translate-x-0.5" />
+                    <ArrowRight className="h-3 w-3 text-[#111111] transition-transform group-hover:translate-x-0.5" />
                   </div>
                 </Card>
               ))}
@@ -305,7 +349,7 @@ export function DocumentLibraryPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search template documents by filename, code subclasses, or ID..."
-                className="h-12 rounded-xl border-slate-200 bg-white pl-11 focus-visible:ring-1 focus-visible:ring-[#0D9F8C] placeholder:text-slate-400 text-xs font-semibold"
+                className="h-12 rounded-xl border-slate-200 bg-white pl-11 focus-visible:ring-1 focus-visible:ring-[#111111] placeholder:text-slate-400 text-xs font-semibold"
               />
             </div>
 
@@ -331,7 +375,7 @@ export function DocumentLibraryPage() {
                     className={cn(
                       "rounded-xl px-3.5 py-2 text-xs font-bold transition-all duration-300 flex items-center gap-2",
                       isActive
-                        ? "bg-[#0D9F8C] text-white shadow-[0_6px_16px_rgba(13,159,140,0.12)]"
+                        ? "bg-[#111111] text-white shadow-[0_6px_16px_rgba(17,17,17,0.12)]"
                         : "bg-white hover:bg-slate-50 text-slate-600 border border-slate-200/60",
                     )}
                   >
@@ -364,7 +408,7 @@ export function DocumentLibraryPage() {
                   <CardContent className="p-5 space-y-4">
                     {/* Top Row info */}
                     <div className="flex justify-between items-start gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-b from-[#effcf7] to-[#ffffff] text-[#0D9F8C] border border-emerald-100/50 shadow-sm group-hover:scale-105 transition-transform duration-300">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FAFAFA] text-[#111111] border border-[#E7E7E7] shadow-sm group-hover:scale-105 transition-transform duration-300">
                         <FolderOpen className="h-5 w-5" />
                       </div>
                       <div className="text-right">
@@ -379,11 +423,11 @@ export function DocumentLibraryPage() {
 
                     {/* File particulars */}
                     <div>
-                      <h3 className="text-sm font-bold tracking-tight text-[#081B2E] truncate group-hover:text-[#0D9F8C] transition-colors">
+                      <h3 className="font-sans-ui text-sm font-semibold text-[#111111] truncate">
                         {doc.name}
                       </h3>
                       <div className="flex gap-2 items-center mt-2">
-                        <span className="rounded bg-emerald-50 px-2 py-0.5 text-[8px] font-bold text-[#0D9F8C]">
+                        <span className="rounded bg-[#FAFAFA] px-2 py-0.5 text-[8px] font-bold text-[#111111]">
                           {doc.category}
                         </span>
                         <span className="text-[9px] text-slate-400 font-semibold">
@@ -395,7 +439,7 @@ export function DocumentLibraryPage() {
                     {/* Action metadata row */}
                     <div className="flex items-center justify-between border-t border-slate-100 pt-3.5 text-xs text-slate-400 font-bold">
                       <span>{doc.signwell_status ? `SignWell: ${doc.signwell_status}` : 'Not sent'}</span>
-                      <div className="flex items-center gap-1.5 text-slate-400 group-hover:text-[#0D9F8C] transition-colors">
+                      <div className="flex items-center gap-1.5 text-slate-400 group-hover:text-[#111111] transition-colors">
                         <span>Added {doc.date}</span>
                         <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                       </div>
@@ -408,7 +452,7 @@ export function DocumentLibraryPage() {
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-50 text-slate-400 mb-4 border border-slate-200">
                   <Search className="h-5 w-5" />
                 </div>
-                <h3 className="text-sm font-bold text-[#081B2E]">
+                <h3 className="text-sm font-bold text-[#111111]">
                   No documents match search
                 </h3>
                 <p className="text-xs text-slate-400 mt-1 font-semibold">
@@ -417,6 +461,17 @@ export function DocumentLibraryPage() {
               </div>
             )}
           </div>
+
+          {!loading && documentCount > 0 && (
+            <PaginationBar
+              page={page}
+              totalPages={totalPages}
+              total={documentCount}
+              pageSize={pageSize}
+              onPageChange={setPage}
+              className="rounded-2xl border border-slate-200/50 bg-white/60"
+            />
+          )}
         </div>
 
         {/* Right Narrower Panel: Cloud Storage Sidebar */}
@@ -427,15 +482,15 @@ export function DocumentLibraryPage() {
               <div className="text-xs font-black uppercase tracking-[0.1em] text-slate-400">
                 Vault Custody Storage
               </div>
-              <h3 className="mt-2 text-2xl font-black tracking-tight text-[#081B2E]">
+              <p className="font-sans-ui mt-2 text-2xl font-bold tracking-tight text-[#111111]">
                 {vaultPct.toFixed(1)}% Allocated
-              </h3>
+              </p>
             </div>
 
             <div className="space-y-1.5">
               <div className="h-2.5 rounded-full bg-slate-100 overflow-hidden border border-slate-200/50">
                 <div
-                  className="h-full bg-[#0D9F8C] rounded-full"
+                  className="h-full bg-[#111111] rounded-full"
                   style={{ width: `${vaultPct}%` }}
                 />
               </div>
@@ -452,7 +507,7 @@ export function DocumentLibraryPage() {
 
           {/* Office uploads logs feed */}
           <Card className="rounded-[1.4rem] border border-slate-200 bg-white p-5 shadow-sm space-y-4">
-            <div className="font-bold text-xs text-[#081B2E] uppercase tracking-wider border-b border-slate-100 pb-2">
+            <div className="font-bold text-xs text-[#111111] uppercase tracking-wider border-b border-slate-100 pb-2">
               Recent Library Operations
             </div>
 
@@ -472,7 +527,7 @@ export function DocumentLibraryPage() {
           {selectedDoc && (
             <>
               <DialogHeader className="border-b border-slate-100 pb-4 mb-4">
-                <DialogTitle className="text-base font-black text-[#081B2E] truncate">
+                <DialogTitle className="text-base font-black text-[#111111] truncate">
                   {selectedDoc.name}
                 </DialogTitle>
                 <div className="text-xs text-slate-400 font-bold mt-1">
@@ -480,7 +535,7 @@ export function DocumentLibraryPage() {
                 </div>
               </DialogHeader>
 
-              <div className="space-y-5 text-xs text-[#081B2E]">
+              <div className="space-y-5 text-xs text-[#111111]">
                 <div className="grid gap-3.5 grid-cols-2">
                   <div className="p-3 rounded-xl border border-slate-100 space-y-1 bg-slate-50/50">
                     <span className="text-[8px] text-slate-400 uppercase tracking-wider font-bold">
@@ -578,14 +633,14 @@ export function DocumentLibraryPage() {
       >
         <DialogContent className="max-w-md bg-white border-slate-250 p-6 rounded-2xl shadow-2xl">
           <DialogHeader className="border-b border-slate-100 pb-4 mb-4">
-            <DialogTitle className="text-base font-black text-[#081B2E]">
+            <DialogTitle className="text-base font-black text-[#111111]">
               Upload to Cloud Custody
             </DialogTitle>
           </DialogHeader>
 
           {uploadSuccess ? (
             <div className="text-center py-6 space-y-4">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-[#0D9F8C] border border-emerald-100 shadow-sm">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#FAFAFA] text-[#111111] border border-[#E7E7E7] shadow-sm">
                 <CheckCircle2 className="h-8 w-8 animate-pulse" />
               </div>
               <h3 className="text-lg font-bold text-[#081b36]">
@@ -601,7 +656,7 @@ export function DocumentLibraryPage() {
               </p>
               <Button
                 onClick={resetUploadModal}
-                className="mt-4 bg-[#0D9F8C] hover:bg-[#0A5B52] rounded-xl font-bold text-xs"
+                className="mt-4 bg-[#111111] hover:bg-[#222222] rounded-xl font-bold text-xs"
               >
                 Back to Library
               </Button>
@@ -639,7 +694,7 @@ export function DocumentLibraryPage() {
                 <select
                   value={newFileCategory}
                   onChange={(e) => setNewFileCategory(e.target.value)}
-                  className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]"
+                  className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#111111]"
                   disabled={uploading}
                 >
                   <option value="General Uploads">General Uploads</option>
@@ -657,7 +712,7 @@ export function DocumentLibraryPage() {
                   </div>
                   <div className="h-2 rounded-full bg-slate-100 overflow-hidden border border-slate-200/50">
                     <div
-                      className="h-full bg-[#0D9F8C] transition-all duration-300 rounded-full bg-gradient-to-r from-[#0D9F8C] to-[#33C48D]"
+                      className="h-full immimate-progress-fill transition-all duration-300 rounded-full"
                       style={{ width: `${uploadProgress}%` }}
                     />
                   </div>
@@ -669,7 +724,7 @@ export function DocumentLibraryPage() {
               ) : (
                   <div className="rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/50 p-6 text-center transition-colors">
                     <UploadCloud className="mx-auto h-7 w-7 text-slate-400" />
-                    <div className="mt-2 text-xs font-bold text-[#0D9F8C]">
+                    <div className="mt-2 text-xs font-bold text-[#111111]">
                       Select a file above
                     </div>
                     <p className="text-[9px] text-slate-400 mt-1">
@@ -691,7 +746,7 @@ export function DocumentLibraryPage() {
                   <Button
                     type="submit"
                     disabled={!selectedFile}
-                    className="h-9 rounded-xl bg-[#0D9F8C] hover:bg-[#0A5B52] px-5 font-bold text-xs disabled:opacity-40"
+                    className="h-9 rounded-xl bg-[#111111] hover:bg-[#222222] px-5 font-bold text-xs disabled:opacity-40"
                   >
                     Upload & Scans File
                   </Button>

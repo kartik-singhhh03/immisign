@@ -104,3 +104,39 @@ export function resolveAppUrl(throwIfMissing = true): string | null {
 
   return null
 }
+
+/** Detect dev port / host mismatch between NEXT_PUBLIC_APP_URL and the running server. */
+export function detectAppUrlMismatch(): {
+  configured: string;
+  detected: string;
+  portMismatch: boolean;
+} | null {
+  const configured = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '');
+  if (!configured) return null;
+
+  const devPort = process.env.PORT?.trim() || '3000';
+  const detected =
+    process.env.NODE_ENV === 'production'
+      ? configured
+      : `http://localhost:${devPort}`;
+
+  try {
+    const cfg = new URL(configured);
+    const det = new URL(detected);
+    const portMismatch = cfg.port !== det.port || cfg.hostname !== det.hostname;
+    if (!portMismatch) return null;
+    return { configured, detected, portMismatch: true };
+  } catch {
+    return null;
+  }
+}
+
+/** Log APP URL warnings at server startup (dev + production). */
+export function warnAppUrlMismatch(): void {
+  const mismatch = detectAppUrlMismatch();
+  if (mismatch) {
+    console.warn(
+      `[env] NEXT_PUBLIC_APP_URL mismatch: configured=${mismatch.configured} detected=${mismatch.detected}. Email and webhook deep links may be wrong.`,
+    );
+  }
+}

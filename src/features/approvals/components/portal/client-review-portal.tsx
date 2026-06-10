@@ -4,8 +4,10 @@ import React, { useState } from "react"
 import { CheckCircle2, ShieldAlert, FileText, Send } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { clientApproveAction, clientRequestChangesAction } from "@/features/approvals/actions/approvals"
+import { pageHeaderTypography } from "@/components/layout/PageHeader"
 
-export function ClientReviewPortal({ approval, token, documentUrl }: { approval: any, token: string, documentUrl: string }) {
+export function ClientReviewPortal({ approval, token, documentUrl }: { approval: { client_signed_at?: string; status: string; signwell_document_id?: string | null; client_sent_at?: string | null }, token: string, documentUrl: string }) {
+  const requiresSignWell = Boolean(approval.signwell_document_id)
   const [submitting, setSubmitting] = useState(false)
   const [showReject, setShowReject] = useState(false)
   const [comment, setComment] = useState("")
@@ -39,12 +41,12 @@ export function ClientReviewPortal({ approval, token, documentUrl }: { approval:
     }
   }
 
-  if (approval.status === 'approved') {
+  if (approval.client_signed_at || approval.status === 'approved') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6 font-sans">
         <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-sm text-center border border-slate-200">
-          <CheckCircle2 className="h-16 w-16 text-emerald-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-black text-[#081B2E]">Document Approved</h1>
+          <CheckCircle2 className="h-16 w-16 text-[#111111] mx-auto mb-4" />
+          <h1 className="font-serif text-2xl font-normal tracking-tight text-[#111111]">Document Approved</h1>
           <p className="mt-3 text-sm text-slate-500 font-medium">Thank you for reviewing. Your agent has been notified.</p>
         </div>
       </div>
@@ -56,7 +58,7 @@ export function ClientReviewPortal({ approval, token, documentUrl }: { approval:
       <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6 font-sans">
         <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-sm text-center border border-slate-200">
           <ShieldAlert className="h-16 w-16 text-amber-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-black text-[#081B2E]">Changes Requested</h1>
+          <h1 className="font-serif text-2xl font-normal tracking-tight text-[#111111]">Changes Requested</h1>
           <p className="mt-3 text-sm text-slate-500 font-medium">Your agent is working on the revisions and will send a new link shortly.</p>
         </div>
       </div>
@@ -81,21 +83,29 @@ export function ClientReviewPortal({ approval, token, documentUrl }: { approval:
           <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-4">
             <FileText className="h-6 w-6" />
           </div>
-          <h1 className="text-xl font-black text-[#081B2E] leading-tight">Please review your application</h1>
-          <p className="text-sm text-slate-500 mt-2 font-medium">
+          <p className={pageHeaderTypography.eyebrow}>Application Review</p>
+          <h1 className={pageHeaderTypography.title}>Please review your application</h1>
+          <p className={pageHeaderTypography.description}>
             Please carefully review the attached document. By approving, you confirm all details are correct and authorize lodgement.
           </p>
         </div>
 
         {!showReject ? (
           <div className="space-y-3 mt-auto">
-            <Button 
-              onClick={handleApprove} 
-              disabled={submitting}
-              className="w-full h-14 bg-[#0D9F8C] hover:bg-[#0A5B52] font-bold text-lg rounded-xl shadow-md"
-            >
-              Approve Document
-            </Button>
+            {requiresSignWell ? (
+              <div className="p-4 rounded-xl bg-blue-50 border border-blue-100 text-sm text-blue-900 font-medium">
+                <p className="font-bold mb-1">Electronic signature required</p>
+                <p>Check your email for the SignWell signing link. Use that link to approve and sign this application.</p>
+              </div>
+            ) : (
+              <Button 
+                onClick={handleApprove} 
+                disabled={submitting}
+                className="w-full h-14 bg-[#111111] hover:bg-[#222222] font-bold text-lg rounded-xl shadow-md"
+              >
+                Approve Document
+              </Button>
+            )}
             <Button 
               onClick={() => setShowReject(true)} 
               variant="outline"
@@ -109,7 +119,7 @@ export function ClientReviewPortal({ approval, token, documentUrl }: { approval:
           <div className="space-y-4 mt-auto">
             <h3 className="font-bold text-sm text-slate-700">What needs to be changed?</h3>
             <textarea 
-              className="w-full min-h-[120px] p-3 rounded-xl border border-slate-200 text-sm focus:ring-1 focus:ring-[#0D9F8C] outline-none"
+              className="w-full min-h-[120px] p-3 rounded-xl border border-slate-200 text-sm focus:ring-1 focus:ring-[#111111] outline-none"
               placeholder="e.g. My passport number has a typo..."
               value={comment}
               onChange={(e) => setComment(e.target.value)}

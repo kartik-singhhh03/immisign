@@ -6,6 +6,7 @@ import WelcomeEmail from '@/emails/auth/welcome';
 import PasswordResetEmail from '@/emails/auth/password-reset';
 import InvitationEmail from '@/emails/agency/invitation';
 import SubscriptionUpdatedEmail from '@/emails/billing/subscription-updated';
+import { APP_NAME } from '@/lib/brand';
 import { getResendFromEmail, sendEmailWithForensicLogging } from './resend';
 
 const templateRegistry: Record<string, any> = {
@@ -42,7 +43,7 @@ export class EmailService {
           };
 
           const payloadData = (typeof (job as any).payload === 'string' ? JSON.parse((job as any).payload) : (job as any).payload) || {};
-          const subject = payloadData.subject || 'Notification from ImmiSign';
+          const subject = payloadData.subject || `Notification from ${APP_NAME}`;
 
           const htmlOutput = await render(
               React.createElement(TemplateComponent, {
@@ -67,6 +68,9 @@ export class EmailService {
                        { name: 'job_id', value: jobId },
                        { name: 'agency_id', value: (job as any).agency_id || '' }
                    ]
+               }, {
+                   emailType: (job as any).type,
+                   agencyId: (job as any).agency_id ?? null,
                });
 
                if ((res as any).error) throw new Error((res as any).error.message);

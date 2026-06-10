@@ -10,6 +10,7 @@ import {
   Text,
 } from "@react-email/components";
 import { BaseLayout } from "../layouts/base-layout";
+import { APP_NAME } from "@/lib/brand";
 
 interface WelcomeEmailProps {
   name: string;
@@ -31,10 +32,10 @@ export const WelcomeEmail = ({
     <BaseLayout branding={agencyBranding}>
       <Section className="px-6 py-8">
         <Heading className="text-2xl font-semibold text-gray-900 mb-6 font-sans">
-          Welcome to ImmiSign, {name}!
+          Welcome to {APP_NAME}, {name}!
         </Heading>
         <Text className="text-base text-gray-700 leading-6 mb-6 font-sans">
-          We're thrilled to have you on board. ImmiSign is your complete operating 
+          We're thrilled to have you on board. {APP_NAME} is your complete operating 
           system for managing immigration workloads securely and efficiently.
         </Text>
         <Text className="text-base text-gray-700 leading-6 mb-8 font-sans">
@@ -51,7 +52,7 @@ export const WelcomeEmail = ({
           </Link>
         </Section>
         <Text className="text-sm text-gray-500 mt-8 mb-0 font-sans">
-          If you didn't create an account with ImmiSign, you can safely ignore this email.
+          If you didn't create an account with {APP_NAME}, you can safely ignore this email.
         </Text>
       </Section>
     </BaseLayout>

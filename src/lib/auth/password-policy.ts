@@ -10,6 +10,7 @@ const WEAK_PASSWORD_PATTERNS: RegExp[] = [
   /^qwerty\d{3,}!?$/i,
   /^admin\d{3,}!?$/i,
   /^letmein\d{3,}!?$/i,
+  /^immimate\d{3,}!?$/i,
   /^immisign\d{3,}!?$/i,
   /^immimate\d{3,}!?$/i,
 ];

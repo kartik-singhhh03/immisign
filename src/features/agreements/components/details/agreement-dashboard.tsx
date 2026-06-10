@@ -11,6 +11,7 @@ import { useAuthStore } from "@/store/authStore"
 import { Role, canEdit, canDelete } from "@/features/auth/types/roles"
 
 import { sendAgreementForSignatureAction } from "@/features/agreements/actions/agreements"
+import { AgreementLifecycleTimeline, canSendAgreement } from "../AgreementLifecycleTimeline"
 
 export function AgreementDashboard({ 
   agreement, 
@@ -24,10 +25,28 @@ export function AgreementDashboard({
   documentUrl: string | null | undefined
 }) {
   const [sending, setSending] = React.useState(false);
+  const [generating, setGenerating] = React.useState(false);
   const user = useAuthStore((s) => s.user)
   const role = (user?.role || 'Read-only staff') as Role
   const isEditor = canEdit(role, 'agreements')
   const isDeleter = canDelete(role, 'agreements')
+  const hasPdf = Boolean(documentUrl)
+  const sendAllowed = canSendAgreement(agreement.status, hasPdf)
+
+  const handleGenerate = async () => {
+    try {
+      setGenerating(true);
+      const res = await fetch(`/api/agreements/${agreement.id}/generate`, { method: 'POST' });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'PDF generation failed');
+      window.location.reload();
+    } catch (e) {
+      console.error(e);
+      alert(e instanceof Error ? e.message : 'Failed to generate PDF');
+    } finally {
+      setGenerating(false);
+    }
+  };
 
   const handleSend = async () => {
     try {
@@ -57,11 +76,22 @@ export function AgreementDashboard({
                 <Archive className="h-4 w-4 mr-1.5" /> Archive
               </Button>
             )}
+            {isEditor && agreement.status === 'draft' && !hasPdf && (
+              <Button
+                onClick={handleGenerate}
+                disabled={generating}
+                className="rounded-xl bg-[#111111] font-bold shadow-sm hover:bg-[#222222] disabled:opacity-50"
+              >
+                <RefreshCw className={`h-4 w-4 mr-1.5 ${generating ? 'animate-spin' : ''}`} />
+                {generating ? 'Generating...' : 'Generate PDF'}
+              </Button>
+            )}
             {isEditor && (
               <Button 
                 onClick={handleSend}
-                disabled={sending || agreement.status === 'signed' || !documentUrl}
-                className="rounded-xl bg-[#0D9F8C] font-bold shadow-sm hover:bg-[#0A5B52] disabled:opacity-50"
+                disabled={sending || agreement.status === 'signed' || !sendAllowed}
+                title={!sendAllowed ? 'Generate PDF before sending' : undefined}
+                className="rounded-xl bg-[#111111] font-bold shadow-sm hover:bg-[#222222] disabled:opacity-50"
               >
                 <Send className="h-4 w-4 mr-1.5" /> 
                 {sending ? 'Sending...' : 'Request Signature'}
@@ -71,13 +101,15 @@ export function AgreementDashboard({
         }
       />
 
+      <AgreementLifecycleTimeline status={agreement.status} hasPdf={hasPdf} className="px-1" />
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/* LEFT PANEL: Metadata */}
         <div className="lg:col-span-3 space-y-6">
           <Card className="rounded-[1.35rem] border-slate-200 shadow-sm bg-white/50 backdrop-blur-sm">
             <CardHeader className="pb-3 border-b border-slate-100">
-              <CardTitle className="text-sm font-black text-[#081B2E]">Metadata</CardTitle>
+              <CardTitle className="text-sm font-black text-[#111111]">Metadata</CardTitle>
             </CardHeader>
             <CardContent className="p-5 space-y-5">
               <div>
@@ -86,28 +118,28 @@ export function AgreementDashboard({
               </div>
               <div>
                 <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Agreement ID</div>
-                <div className="text-sm font-semibold text-[#081B2E] mt-1">{agreement.agreement_number}</div>
+                <div className="text-sm font-semibold text-[#111111] mt-1">{agreement.agreement_number}</div>
               </div>
               <div>
                 <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Created Date</div>
-                <div className="text-sm font-semibold text-[#081B2E] mt-1">{new Date(agreement.created_at).toLocaleDateString()}</div>
+                <div className="text-sm font-semibold text-[#111111] mt-1">{new Date(agreement.created_at).toLocaleDateString()}</div>
               </div>
             </CardContent>
           </Card>
 
           <Card className="rounded-[1.35rem] border-slate-200 shadow-sm bg-white/50 backdrop-blur-sm">
             <CardHeader className="pb-3 border-b border-slate-100">
-              <CardTitle className="text-sm font-black text-[#081B2E]">Entities</CardTitle>
+              <CardTitle className="text-sm font-black text-[#111111]">Entities</CardTitle>
             </CardHeader>
             <CardContent className="p-5 space-y-5">
               <div>
                 <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Client</div>
-                <div className="text-sm font-semibold text-[#081B2E] mt-1">{(agreement as any).client_name || "—"}</div>
+                <div className="text-sm font-semibold text-[#111111] mt-1">{(agreement as any).client_name || "—"}</div>
                 <div className="text-xs text-slate-400 mt-0.5">{(agreement as any).client_email || ""}</div>
               </div>
               <div>
                 <div className="text-xs font-bold uppercase tracking-wider text-slate-400">SignWell</div>
-                <div className="text-xs font-mono font-semibold text-[#081B2E] mt-1 break-all">
+                <div className="text-xs font-mono font-semibold text-[#111111] mt-1 break-all">
                   {(agreement as any).signwell_document_id || "Not dispatched"}
                 </div>
                 {(agreement as any).signwell_status && (
@@ -116,11 +148,11 @@ export function AgreementDashboard({
               </div>
               <div>
                 <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Client UUID</div>
-                <div className="text-xs font-semibold text-[#081B2E] mt-1 break-all">{agreement.client_id || "Unlinked"}</div>
+                <div className="text-xs font-semibold text-[#111111] mt-1 break-all">{agreement.client_id || "Unlinked"}</div>
               </div>
               <div>
                 <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Matter Type UUID</div>
-                <div className="text-xs font-semibold text-[#081B2E] mt-1 break-all">{agreement.matter_type_id || "Unlinked"}</div>
+                <div className="text-xs font-semibold text-[#111111] mt-1 break-all">{agreement.matter_type_id || "Unlinked"}</div>
               </div>
             </CardContent>
           </Card>
@@ -131,8 +163,8 @@ export function AgreementDashboard({
           <Card className="rounded-[1.35rem] border-slate-200 shadow-sm overflow-hidden bg-slate-50 flex flex-col h-[800px]">
             <div className="flex justify-between items-center px-6 py-4 bg-white border-b border-slate-200">
               <div className="flex items-center gap-2">
-                <FileText className="h-4 w-4 text-[#0D9F8C]" />
-                <h3 className="font-bold text-[#081B2E] text-sm">Generated Document</h3>
+                <FileText className="h-4 w-4 text-[#111111]" />
+                <h3 className="font-bold text-[#111111] text-sm">Generated Document</h3>
               </div>
               <div className="flex gap-2">
                 {isEditor && (
@@ -162,7 +194,7 @@ export function AgreementDashboard({
                   <div className="h-16 w-16 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-200 text-slate-300 mb-4">
                     <FileText className="h-8 w-8" />
                   </div>
-                  <h3 className="text-[#081B2E] font-bold text-lg">No Document Generated</h3>
+                  <h3 className="text-[#111111] font-bold text-lg">No Document Generated</h3>
                   <p className="text-sm text-slate-500 font-medium max-w-sm mt-2">
                     This agreement is still in Draft state. Generate the document to preview the official PDF here.
                   </p>
@@ -176,7 +208,7 @@ export function AgreementDashboard({
         <div className="lg:col-span-3">
           <Card className="rounded-[1.35rem] border-slate-200 shadow-sm bg-white/50 backdrop-blur-sm h-full max-h-[800px] flex flex-col">
             <CardHeader className="pb-4 border-b border-slate-100">
-              <CardTitle className="text-sm font-black text-[#081B2E]">Audit Trail</CardTitle>
+              <CardTitle className="text-sm font-black text-[#111111]">Audit Trail</CardTitle>
             </CardHeader>
             <CardContent className="p-0 overflow-y-auto flex-1">
               <div className="p-6 relative">
@@ -186,7 +218,7 @@ export function AgreementDashboard({
                   {auditLogs.length > 0 ? auditLogs.map((log) => (
                     <div key={log.id} className="flex gap-4">
                       <div className="relative mt-1">
-                        <div className="h-4 w-4 rounded-full border-2 border-white bg-[#0D9F8C] ring-1 ring-slate-200 shadow-sm flex items-center justify-center relative z-10">
+                        <div className="h-4 w-4 rounded-full border-2 border-white bg-[#111111] ring-1 ring-slate-200 shadow-sm flex items-center justify-center relative z-10">
                           {log.action.includes('Generated') || log.action.includes('Created') ? (
                             <CheckCircle2 className="h-2 w-2 text-white" />
                           ) : (
@@ -195,7 +227,7 @@ export function AgreementDashboard({
                         </div>
                       </div>
                       <div className="flex-1 pb-1">
-                        <div className="text-xs font-bold text-[#081B2E]">{log.action}</div>
+                        <div className="text-xs font-bold text-[#111111]">{log.action}</div>
                         <div className="text-xs font-semibold text-slate-400 mt-0.5">
                           {new Date(log.created_at).toLocaleString()}
                         </div>

@@ -55,6 +55,17 @@ export async function POST(req: NextRequest) {
           actionUrl: buildWorkspaceActionUrl(slug, `/approvals/${row.id}`),
           entityType: 'application_approval',
           entityId: row.id,
+          priority: stage.key === 'overdue' ? 'critical' : 'high',
+          workflowCategory: 'approvals',
+          dueAt: row.lodgement_deadline,
+          actions: [
+            {
+              id: 'review',
+              label: 'Review Approval',
+              href: buildWorkspaceActionUrl(slug, `/approvals/${row.id}`),
+              variant: 'primary',
+            },
+          ],
         });
         sent++;
       }

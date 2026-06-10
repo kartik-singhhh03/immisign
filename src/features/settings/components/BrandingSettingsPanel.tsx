@@ -51,7 +51,7 @@ export function BrandingSettingsPanel({
     try {
       const form = new FormData()
       form.append("file", file)
-      const res = await fetch("/api/settings/branding/logo", { method: "POST", body: form })
+      const res = await fetch("/api/settings/branding/logo", { method: "POST", body: form, credentials: "include" })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || "Upload failed")
       setLogoUrl(data.logoUrl)
@@ -67,7 +67,7 @@ export function BrandingSettingsPanel({
   const deleteLogo = async () => {
     setUploading(true)
     try {
-      const res = await fetch("/api/settings/branding/logo", { method: "DELETE" })
+      const res = await fetch("/api/settings/branding/logo", { method: "DELETE", credentials: "include" })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || "Delete failed")
       setLogoUrl("")
@@ -94,7 +94,7 @@ export function BrandingSettingsPanel({
   return (
     <div className="space-y-6">
       <div className="rounded-xl border border-slate-200 p-4 space-y-4">
-        <h4 className="text-xs font-bold text-[#081B2E]">Agency Logo</h4>
+        <h4 className="text-xs font-bold text-[#111111]">Agency Logo</h4>
         <div className="flex flex-wrap items-center gap-4">
           {logoUrl ? (
             <img src={logoUrl} alt="Agency logo" className="h-16 max-w-[200px] object-contain rounded border border-slate-200 bg-white p-2" />
@@ -146,7 +146,7 @@ export function BrandingSettingsPanel({
       </div>
 
       {!disabled && (
-        <Button type="button" onClick={handleSave} className="rounded-xl bg-[#0D9F8C] font-bold hover:bg-[#0A5B52]">Save Settings</Button>
+        <Button type="button" onClick={handleSave} className="rounded-xl bg-[#111111] font-bold hover:bg-[#222222]">Save Settings</Button>
       )}
     </div>
   )

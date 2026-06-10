@@ -29,7 +29,7 @@ export async function POST(
     .from('documents')
     .upload(storagePath, buffer, {
       contentType: file.type || 'application/octet-stream',
-      upsert: false,
+      upsert: true,
     });
 
   if (uploadError) {

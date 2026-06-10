@@ -12,9 +12,11 @@ import {
 import { useAuthStore } from '@/store/authStore';
 import { Role, canCreate, canDelete, canEdit } from '@/features/auth/types/roles';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { ImmiMateInput, ImmiMateTextarea } from '@/components/ui/immimate-form';
+import { PageHeader } from '@/components/layout/PageHeader';
+import { ImmiMateTable } from '@/components/ui/immimate-table';
+import { ProfessionalEmptyState } from '@/components/ui/professional-empty-state';
+import { TableSkeleton } from '@/components/ui/skeletons';
 import {
   Dialog,
   DialogContent,
@@ -47,6 +49,11 @@ export function TemplatesPage() {
   const [templates, setTemplates] = React.useState<TemplateRow[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+  const [page, setPage] = React.useState(1);
+  const [totalCount, setTotalCount] = React.useState(0);
+  const [search, setSearch] = React.useState('');
+  const [debouncedSearch, setDebouncedSearch] = React.useState('');
+  const pageSize = 10;
   const [editorOpen, setEditorOpen] = React.useState(false);
   const [previewOpen, setPreviewOpen] = React.useState(false);
   const [editing, setEditing] = React.useState<TemplateRow | null>(null);
@@ -56,20 +63,37 @@ export function TemplatesPage() {
   const [previewHtml, setPreviewHtml] = React.useState('');
   const [previewTemplate, setPreviewTemplate] = React.useState<TemplateRow | null>(null);
 
+  React.useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  React.useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch]);
+
   const loadTemplates = React.useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/templates');
+      const params = new URLSearchParams({
+        page: String(page),
+        limit: String(pageSize),
+        sort: 'updated_at',
+        direction: 'desc',
+      });
+      if (debouncedSearch) params.set('search', debouncedSearch);
+      const res = await fetch(`/api/templates?${params}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to load templates');
-      setTemplates(data.templates || []);
-    } catch (e: any) {
-      setError(e.message);
+      setTemplates(data.data || data.templates || []);
+      setTotalCount(data.count ?? (data.data || []).length);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Failed to load templates');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [page, debouncedSearch]);
 
   React.useEffect(() => {
     void loadTemplates();
@@ -145,150 +169,167 @@ export function TemplatesPage() {
     await loadTemplates();
   };
 
-  return (
-    <div>
-      <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+  const columns = [
+    {
+      key: 'name',
+      header: 'Template',
+      render: (t: TemplateRow) => (
         <div>
-          <div className="text-[11px] font-bold uppercase tracking-widest text-[#0D9F8C]">
-            Templates
+          <div className="font-semibold text-[#111111]">{t.name}</div>
+          <div className="mt-0.5 text-xs text-[#5C5C5C] truncate max-w-md">
+            {t.description || 'No description'}
           </div>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-[#081B2E]">
-            Agreement templates
-          </h1>
-          <p className="mt-2 text-sm font-medium text-slate-500">
-            Stored in your agency workspace on Supabase. Changes persist across sessions.
-          </p>
         </div>
-        {canWrite && (
-          <Button
-            onClick={openNew}
-            className="h-11 rounded-xl bg-[#0D9F8C] font-bold hover:bg-[#0A5B52]"
-          >
-            <Plus className="mr-2 h-4 w-4" /> New template
-          </Button>
-        )}
-      </div>
+      ),
+    },
+    {
+      key: 'updated_at',
+      header: 'Updated',
+      className: 'text-[#5C5C5C] text-xs',
+      render: (t: TemplateRow) =>
+        new Date(t.updated_at).toLocaleDateString('en-AU', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+        }),
+    },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <PageHeader
+        eyebrow="Templates"
+        title="Agreement templates"
+        description="Stored in your agency workspace. Changes persist across sessions."
+        action={
+          canWrite ? (
+            <Button onClick={openNew}>
+              <Plus className="mr-2 h-4 w-4" /> New template
+            </Button>
+          ) : undefined
+        }
+      />
 
       {error && (
-        <Card className="mb-4 border-red-200 bg-red-50">
-          <CardContent className="p-4 text-sm font-semibold text-red-700">{error}</CardContent>
-        </Card>
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+          {error}
+        </div>
       )}
 
+      <ImmiMateInput
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search templates…"
+        className="max-w-sm"
+      />
+
       {loading ? (
-        <div className="flex justify-center py-16">
-          <span className="h-8 w-8 animate-spin rounded-full border-4 border-[#0D9F8C] border-t-transparent" />
-        </div>
+        <TableSkeleton rows={4} cols={2} />
       ) : templates.length === 0 ? (
-        <Card className="rounded-2xl border-dashed">
-          <CardContent className="p-10 text-center text-sm text-slate-500">
-            No templates yet.{canWrite ? ' Create your first template.' : ''}
-          </CardContent>
-        </Card>
+        <ProfessionalEmptyState
+          title="No templates yet"
+          description={canWrite ? 'Create your first agreement template to standardise client engagements.' : 'No templates are available in this workspace.'}
+          action={
+            canWrite ? (
+              <Button onClick={openNew}>
+                <Plus className="mr-2 h-4 w-4" /> New template
+              </Button>
+            ) : undefined
+          }
+        />
       ) : (
-        <div className="grid gap-3">
-          {templates.map((t) => (
-            <Card key={t.id} className="rounded-2xl border-slate-200/60">
-              <CardContent className="flex items-center justify-between gap-4 p-5">
-                <div className="min-w-0">
-                  <div className="font-bold text-[#081B2E]">{t.name}</div>
-                  <div className="mt-1 truncate text-xs text-slate-500">
-                    {t.description || 'No description'}
-                  </div>
-                </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="icon" className="rounded-xl">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      onClick={() => {
-                        setPreviewHtml(t.content?.html || '<p>Empty</p>');
-                        setPreviewTemplate(t);
-                        setPreviewOpen(true);
-                      }}
-                    >
-                      <Eye className="mr-2 h-4 w-4" /> Preview
-                    </DropdownMenuItem>
-                    {canWrite && (
-                      <DropdownMenuItem onClick={() => void duplicateTemplate(t)}>
-                        <Copy className="mr-2 h-4 w-4" /> Duplicate
-                      </DropdownMenuItem>
-                    )}
-                    {canModify && (
-                      <DropdownMenuItem onClick={() => openEdit(t)}>
-                        <Pencil className="mr-2 h-4 w-4" /> Edit
-                      </DropdownMenuItem>
-                    )}
-                    {canRemove && (
-                      <DropdownMenuItem
-                        className="text-red-600"
-                        onClick={() => void deleteTemplate(t.id)}
-                      >
-                        <Trash2 className="mr-2 h-4 w-4" /> Delete
-                      </DropdownMenuItem>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <ImmiMateTable
+          columns={columns}
+          data={templates}
+          rowKey={(t) => t.id}
+          page={page}
+          pageSize={pageSize}
+          total={totalCount}
+          onPageChange={setPage}
+          rowActions={(t) => (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={() => {
+                    setPreviewTemplate(t);
+                    setPreviewHtml(t.content?.html || '');
+                    setPreviewOpen(true);
+                  }}
+                >
+                  <Eye className="mr-2 h-4 w-4" /> Preview
+                </DropdownMenuItem>
+                {canModify && (
+                  <DropdownMenuItem onClick={() => openEdit(t)}>
+                    <Pencil className="mr-2 h-4 w-4" /> Edit
+                  </DropdownMenuItem>
+                )}
+                {canWrite && (
+                  <DropdownMenuItem onClick={() => duplicateTemplate(t)}>
+                    <Copy className="mr-2 h-4 w-4" /> Duplicate
+                  </DropdownMenuItem>
+                )}
+                {canRemove && (
+                  <DropdownMenuItem
+                    className="text-red-600"
+                    onClick={() => deleteTemplate(t.id)}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" /> Delete
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        />
       )}
 
       <Dialog open={editorOpen} onOpenChange={setEditorOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl rounded-xl border-[#E7E7E7] bg-white">
           <DialogHeader>
-            <DialogTitle>{editing ? 'Edit template' : 'New template'}</DialogTitle>
+            <DialogTitle>
+              {editing ? 'Edit template' : 'New template'}
+            </DialogTitle>
           </DialogHeader>
-          <div className="grid gap-4">
-            <Input
-              placeholder="Template name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <Input
-              placeholder="Description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-            <Textarea
-              className="min-h-[200px] font-mono text-xs"
-              value={html}
-              onChange={(e) => setHtml(e.target.value)}
-            />
+          <div className="space-y-4 mt-2">
+            <label className="grid gap-2 text-xs font-semibold text-[#5C5C5C]">
+              Name
+              <ImmiMateInput value={name} onChange={(e) => setName(e.target.value)} />
+            </label>
+            <label className="grid gap-2 text-xs font-semibold text-[#5C5C5C]">
+              Description
+              <ImmiMateInput value={description} onChange={(e) => setDescription(e.target.value)} />
+            </label>
+            <label className="grid gap-2 text-xs font-semibold text-[#5C5C5C]">
+              HTML content
+              <ImmiMateTextarea
+                className="min-h-[200px] font-mono text-xs"
+                value={html}
+                onChange={(e) => setHtml(e.target.value)}
+              />
+            </label>
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setEditorOpen(false)}>
-                Cancel
-              </Button>
-              <Button
-                className="bg-[#0D9F8C]"
-                onClick={() => void saveTemplate().catch((e) => alert(e.message))}
-              >
-                Save
-              </Button>
+              <Button variant="outline" onClick={() => setEditorOpen(false)}>Cancel</Button>
+              <Button onClick={() => void saveTemplate().catch((e) => alert(e.message))}>Save</Button>
             </div>
           </div>
         </DialogContent>
       </Dialog>
 
       <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="max-w-3xl rounded-xl border-[#E7E7E7] bg-white">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold">{previewTemplate?.name || 'Preview'}</DialogTitle>
-            {previewTemplate?.description && (
-              <p className="text-sm text-slate-500 font-medium">{previewTemplate.description}</p>
-            )}
+            <DialogTitle>
+              {previewTemplate?.name || 'Preview'}
+            </DialogTitle>
           </DialogHeader>
-          <div className="mt-4 border-t border-slate-100 pt-4">
-            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Template Content</h3>
-            <div
-              className="prose max-w-none rounded-xl border border-slate-200 bg-slate-50/50 p-6 text-sm"
-              dangerouslySetInnerHTML={{ __html: previewHtml }}
-            />
-          </div>
+          <div
+            className="prose prose-sm max-w-none rounded-xl border border-[#E7E7E7] bg-white p-6"
+            dangerouslySetInnerHTML={{ __html: previewHtml }}
+          />
         </DialogContent>
       </Dialog>
     </div>

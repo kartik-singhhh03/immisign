@@ -1,0 +1,1998 @@
+{
+  "stamp": 1781078216357,
+  "baseUrl": "http://localhost:3000",
+  "agencySlug": "ritiklabs",
+  "ids": {
+    "clientId": "99e6f959-aa91-474e-9f9d-2af5fd3223f3",
+    "matterId": "c93dc55d-abf4-4ced-a164-341b7231d2ca",
+    "agreementId": "8b279c90-7dc3-4561-ab25-1698c83f2038",
+    "approvalId": "933ec291-c98a-4137-b574-60ce0a648f43"
+  },
+  "testEmail": "e2e3.prod.1781078216357@example.com",
+  "results": [
+    {
+      "stage": "PREREQ",
+      "id": "BROWSER",
+      "status": "PASS",
+      "msg": "Chrome puppeteer ready",
+      "detail": {},
+      "ts": "2026-06-10T07:56:59.146Z"
+    },
+    {
+      "stage": "STAGE-1",
+      "id": "API-ONBOARDING",
+      "status": "PASS",
+      "msg": "Fresh E2E-3 client created",
+      "detail": {
+        "clientId": "99e6f959-aa91-474e-9f9d-2af5fd3223f3",
+        "matterId": "c93dc55d-abf4-4ced-a164-341b7231d2ca",
+        "agreementId": "8b279c90-7dc3-4561-ab25-1698c83f2038",
+        "approvalId": "933ec291-c98a-4137-b574-60ce0a648f43"
+      },
+      "ts": "2026-06-10T07:57:12.561Z"
+    },
+    {
+      "stage": "STAGE-1",
+      "id": "DB-CLIENT",
+      "status": "PASS",
+      "msg": "name=E2E-3 Production Client",
+      "detail": {
+        "id": "99e6f959-aa91-474e-9f9d-2af5fd3223f3"
+      },
+      "ts": "2026-06-10T07:57:12.926Z"
+    },
+    {
+      "stage": "STAGE-1",
+      "id": "DB-MATTER",
+      "status": "PASS",
+      "msg": "matter_id=c93dc55d-abf4-4ced-a164-341b7231d2ca",
+      "detail": {
+        "id": "c93dc55d-abf4-4ced-a164-341b7231d2ca",
+        "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+        "client_id": "99e6f959-aa91-474e-9f9d-2af5fd3223f3",
+        "matter_type_id": "444b6670-a844-4c50-9c74-41dfe32c905a",
+        "visa_subclass": "190",
+        "visa_stream": "Skilled Nominated",
+        "assigned_rma_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+        "priority": "normal",
+        "agreement_id": "8b279c90-7dc3-4561-ab25-1698c83f2038",
+        "approval_id": "933ec291-c98a-4137-b574-60ce0a648f43",
+        "status": "active",
+        "created_at": "2026-06-10T07:57:07.405655+00:00",
+        "updated_at": "2026-06-10T07:57:10.968301+00:00"
+      },
+      "ts": "2026-06-10T07:57:13.281Z"
+    },
+    {
+      "stage": "STAGE-1",
+      "id": "DB-APPLICANTS",
+      "status": "PASS",
+      "msg": "1 applicant(s)",
+      "detail": {},
+      "ts": "2026-06-10T07:57:13.585Z"
+    },
+    {
+      "stage": "STAGE-1",
+      "id": "DB-FINANCIALS",
+      "status": "PASS",
+      "msg": "deposit=1200",
+      "detail": {},
+      "ts": "2026-06-10T07:57:13.960Z"
+    },
+    {
+      "stage": "STAGE-2",
+      "id": "DB-AGREEMENT-DRAFT",
+      "status": "PASS",
+      "msg": "status=draft",
+      "detail": {},
+      "ts": "2026-06-10T07:57:32.435Z"
+    },
+    {
+      "stage": "STAGE-2",
+      "id": "API-GENERATE",
+      "status": "FAIL",
+      "msg": "Cannot read properties of undefined (reading 'split')",
+      "detail": {
+        "success": false,
+        "error": "Cannot read properties of undefined (reading 'split')",
+        "code": "INTERNAL_ERROR"
+      },
+      "ts": "2026-06-10T07:57:37.327Z"
+    },
+    {
+      "stage": "STAGE-2",
+      "id": "DB-DOCUMENT",
+      "status": "FAIL",
+      "msg": "no document row",
+      "detail": null,
+      "ts": "2026-06-10T07:57:40.023Z"
+    },
+    {
+      "stage": "STAGE-2",
+      "id": "DB-GENERATED",
+      "status": "FAIL",
+      "msg": "status=draft",
+      "detail": {},
+      "ts": "2026-06-10T07:57:40.023Z"
+    },
+    {
+      "stage": "STAGE-3",
+      "id": "API-SEND",
+      "status": "FAIL",
+      "msg": "Invalid agreement state transition: Cannot transition from draft to sent.",
+      "detail": {
+        "success": false,
+        "error": "Invalid agreement state transition: Cannot transition from draft to sent.",
+        "code": "INTERNAL_ERROR"
+      },
+      "ts": "2026-06-10T07:57:45.614Z"
+    },
+    {
+      "stage": "STAGE-3",
+      "id": "DB-SENT",
+      "status": "FAIL",
+      "msg": "status=draft",
+      "detail": {
+        "signwell_document_id": null
+      },
+      "ts": "2026-06-10T07:57:45.974Z"
+    },
+    {
+      "stage": "STAGE-4",
+      "id": "API-UPLOAD-PDF",
+      "status": "PASS",
+      "msg": "status 200",
+      "detail": {},
+      "ts": "2026-06-10T07:57:52.378Z"
+    },
+    {
+      "stage": "STAGE-4",
+      "id": "API-APPROVAL-SEND",
+      "status": "PASS",
+      "msg": "status 200",
+      "detail": {
+        "success": true,
+        "approval": {
+          "id": "933ec291-c98a-4137-b574-60ce0a648f43",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "client_id": "99e6f959-aa91-474e-9f9d-2af5fd3223f3",
+          "created_by": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "title": "visa - E2E-3 Production Client",
+          "visa_subclass": "190",
+          "status": "under_review",
+          "review_token": null,
+          "document_path": "3cd3a307-b7e5-4984-82d4-bf757e834afd/approvals/933ec291-c98a-4137-b574-60ce0a648f43/application-approval.pdf",
+          "version_number": 1,
+          "revision_count": 0,
+          "lodgement_deadline": null,
+          "approved_at": null,
+          "created_at": "2026-06-10T07:57:10.63343+00:00",
+          "updated_at": "2026-06-10T07:58:02.091+00:00",
+          "deleted_at": null,
+          "approval_number": "AGR-2026-0012",
+          "matter_type_id": "444b6670-a844-4c50-9c74-41dfe32c905a",
+          "matter_reference": null,
+          "assigned_reviewer_id": null,
+          "assigned_rma_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "priority": "normal",
+          "notes": null,
+          "internal_notes": null,
+          "submitted_at": null,
+          "ready_to_lodge_at": null,
+          "lodged_at": null,
+          "closed_at": null,
+          "rejected_at": null,
+          "reminder_at": null,
+          "escalation_at": null,
+          "reminders_sent": {},
+          "signed_document_path": null,
+          "signwell_document_id": "9460c63e-29b8-491e-b3e1-b3784c7fbe55",
+          "client_sent_at": "2026-06-10T07:58:02.091+00:00",
+          "client_signed_at": null,
+          "client_viewed_at": null,
+          "certificate_storage_path": null,
+          "certificate_generated_at": null,
+          "visa_stream": "Skilled Nominated",
+          "matter_completed_at": null,
+          "matter_completed_by": null,
+          "matter_completion_reason": null,
+          "on_hold_at": null,
+          "signed_by": null,
+          "signed_ip": null,
+          "signature_provider": null,
+          "document_version": null,
+          "matter_id": "c93dc55d-abf4-4ced-a164-341b7231d2ca"
+        },
+        "reviewUrl": "/review/null",
+        "signwellId": "9460c63e-29b8-491e-b3e1-b3784c7fbe55"
+      },
+      "ts": "2026-06-10T07:58:08.083Z"
+    },
+    {
+      "stage": "STAGE-4",
+      "id": "DB-APPROVAL-SENT",
+      "status": "PASS",
+      "msg": "client_sent_at=2026-06-10T07:58:02.091+00:00",
+      "detail": {
+        "signwell_document_id": "9460c63e-29b8-491e-b3e1-b3784c7fbe55"
+      },
+      "ts": "2026-06-10T07:58:08.422Z"
+    },
+    {
+      "stage": "STAGE-4",
+      "id": "WEBHOOK-APPROVAL-SIGNED",
+      "status": "PASS",
+      "msg": "status 200",
+      "detail": {},
+      "ts": "2026-06-10T07:58:31.349Z"
+    },
+    {
+      "stage": "STAGE-4",
+      "id": "DB-APPROVAL-SIGNED",
+      "status": "PASS",
+      "msg": "{\"client_signed_at\":\"2026-06-10T07:58:12.501+00:00\",\"status\":\"approved\"}",
+      "detail": {},
+      "ts": "2026-06-10T07:58:31.707Z"
+    },
+    {
+      "stage": "STAGE-5",
+      "id": "API-READY_TO_LODGE",
+      "status": "PASS",
+      "msg": "status 200",
+      "detail": {
+        "success": true,
+        "approval": {
+          "id": "933ec291-c98a-4137-b574-60ce0a648f43",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "client_id": "99e6f959-aa91-474e-9f9d-2af5fd3223f3",
+          "created_by": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "title": "visa - E2E-3 Production Client",
+          "visa_subclass": "190",
+          "status": "ready_to_lodge",
+          "review_token": null,
+          "document_path": "3cd3a307-b7e5-4984-82d4-bf757e834afd/approvals/933ec291-c98a-4137-b574-60ce0a648f43/application-approval.pdf",
+          "version_number": 1,
+          "revision_count": 0,
+          "lodgement_deadline": null,
+          "approved_at": "2026-06-10T07:58:12.501+00:00",
+          "created_at": "2026-06-10T07:57:10.63343+00:00",
+          "updated_at": "2026-06-10T07:58:37.041+00:00",
+          "deleted_at": null,
+          "approval_number": "AGR-2026-0012",
+          "matter_type_id": "444b6670-a844-4c50-9c74-41dfe32c905a",
+          "matter_reference": null,
+          "assigned_reviewer_id": null,
+          "assigned_rma_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "priority": "normal",
+          "notes": null,
+          "internal_notes": null,
+          "submitted_at": null,
+          "ready_to_lodge_at": "2026-06-10T07:58:37.041+00:00",
+          "lodged_at": null,
+          "closed_at": null,
+          "rejected_at": null,
+          "reminder_at": null,
+          "escalation_at": null,
+          "reminders_sent": {},
+          "signed_document_path": null,
+          "signwell_document_id": "9460c63e-29b8-491e-b3e1-b3784c7fbe55",
+          "client_sent_at": "2026-06-10T07:58:02.091+00:00",
+          "client_signed_at": "2026-06-10T07:58:12.501+00:00",
+          "client_viewed_at": "2026-06-10T07:58:09.673+00:00",
+          "certificate_storage_path": "3cd3a307-b7e5-4984-82d4-bf757e834afd/approvals/933ec291-c98a-4137-b574-60ce0a648f43/certificate-of-approval.pdf",
+          "certificate_generated_at": "2026-06-10T07:58:16.327+00:00",
+          "visa_stream": "Skilled Nominated",
+          "matter_completed_at": null,
+          "matter_completed_by": null,
+          "matter_completion_reason": null,
+          "on_hold_at": null,
+          "signed_by": "E2E-3 Production Client",
+          "signed_ip": null,
+          "signature_provider": "signwell",
+          "document_version": "9460c63e-29b8-491e-b3e1-b3784c7fbe55",
+          "matter_id": "c93dc55d-abf4-4ced-a164-341b7231d2ca"
+        }
+      },
+      "ts": "2026-06-10T07:58:40.995Z"
+    },
+    {
+      "stage": "STAGE-5",
+      "id": "API-LODGED",
+      "status": "PASS",
+      "msg": "status 200",
+      "detail": {
+        "success": true,
+        "approval": {
+          "id": "933ec291-c98a-4137-b574-60ce0a648f43",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "client_id": "99e6f959-aa91-474e-9f9d-2af5fd3223f3",
+          "created_by": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "title": "visa - E2E-3 Production Client",
+          "visa_subclass": "190",
+          "status": "lodged",
+          "review_token": null,
+          "document_path": "3cd3a307-b7e5-4984-82d4-bf757e834afd/approvals/933ec291-c98a-4137-b574-60ce0a648f43/application-approval.pdf",
+          "version_number": 1,
+          "revision_count": 0,
+          "lodgement_deadline": null,
+          "approved_at": "2026-06-10T07:58:12.501+00:00",
+          "created_at": "2026-06-10T07:57:10.63343+00:00",
+          "updated_at": "2026-06-10T07:58:41.948+00:00",
+          "deleted_at": null,
+          "approval_number": "AGR-2026-0012",
+          "matter_type_id": "444b6670-a844-4c50-9c74-41dfe32c905a",
+          "matter_reference": null,
+          "assigned_reviewer_id": null,
+          "assigned_rma_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "priority": "normal",
+          "notes": null,
+          "internal_notes": null,
+          "submitted_at": null,
+          "ready_to_lodge_at": "2026-06-10T07:58:37.041+00:00",
+          "lodged_at": "2026-06-10T07:58:41.948+00:00",
+          "closed_at": null,
+          "rejected_at": null,
+          "reminder_at": null,
+          "escalation_at": null,
+          "reminders_sent": {},
+          "signed_document_path": null,
+          "signwell_document_id": "9460c63e-29b8-491e-b3e1-b3784c7fbe55",
+          "client_sent_at": "2026-06-10T07:58:02.091+00:00",
+          "client_signed_at": "2026-06-10T07:58:12.501+00:00",
+          "client_viewed_at": "2026-06-10T07:58:09.673+00:00",
+          "certificate_storage_path": "3cd3a307-b7e5-4984-82d4-bf757e834afd/approvals/933ec291-c98a-4137-b574-60ce0a648f43/certificate-of-approval.pdf",
+          "certificate_generated_at": "2026-06-10T07:58:16.327+00:00",
+          "visa_stream": "Skilled Nominated",
+          "matter_completed_at": null,
+          "matter_completed_by": null,
+          "matter_completion_reason": null,
+          "on_hold_at": null,
+          "signed_by": "E2E-3 Production Client",
+          "signed_ip": null,
+          "signature_provider": "signwell",
+          "document_version": "9460c63e-29b8-491e-b3e1-b3784c7fbe55",
+          "matter_id": "c93dc55d-abf4-4ced-a164-341b7231d2ca"
+        }
+      },
+      "ts": "2026-06-10T07:58:46.355Z"
+    },
+    {
+      "stage": "STAGE-5",
+      "id": "DB-LODGE",
+      "status": "PASS",
+      "msg": "status=lodged lodged_at=2026-06-10T07:58:41.948+00:00",
+      "detail": {},
+      "ts": "2026-06-10T07:58:46.722Z"
+    },
+    {
+      "stage": "STAGE-5",
+      "id": "API-COMPLIANCE",
+      "status": "FAIL",
+      "detail": null,
+      "ts": "2026-06-10T07:58:47.683Z"
+    },
+    {
+      "stage": "STAGE-6",
+      "id": "API-SOS-CREATE",
+      "status": "FAIL",
+      "msg": "Could not find the 'client_email' column of 'service_statements' in the schema cache",
+      "detail": {
+        "error": "Could not find the 'client_email' column of 'service_statements' in the schema cache"
+      },
+      "ts": "2026-06-10T07:58:54.055Z"
+    },
+    {
+      "stage": "STAGE-7",
+      "id": "DB-MATTER-COMPLETED",
+      "status": "FAIL",
+      "msg": "matter_completed_at=null by=null",
+      "detail": {
+        "matter_completed_at": null,
+        "matter_completed_by": null
+      },
+      "ts": "2026-06-10T07:58:56.423Z"
+    },
+    {
+      "stage": "STAGE-7",
+      "id": "DB-COMPLETION-NOTE",
+      "status": "FAIL",
+      "msg": "none",
+      "detail": {},
+      "ts": "2026-06-10T07:58:56.776Z"
+    },
+    {
+      "stage": "STAGE-8",
+      "id": "API-NOTIFICATIONS",
+      "status": "PASS",
+      "msg": "count=38",
+      "detail": {},
+      "ts": "2026-06-10T07:59:02.860Z"
+    },
+    {
+      "stage": "STAGE-8",
+      "id": "DB-ACTIVITY-EVENTS",
+      "status": "PASS",
+      "msg": "6 activity_events",
+      "detail": {},
+      "ts": "2026-06-10T07:59:03.223Z"
+    },
+    {
+      "stage": "STAGE-8",
+      "id": "BROWSER-NOTIF-CENTER",
+      "status": "PASS",
+      "msg": "Search clients, matters, documents, notes…\n⌘K\nritik singh\nOwner Access\nRI\n\nWORK INBOX\n\nNotification Center\n\nActionable w",
+      "detail": {},
+      "ts": "2026-06-10T07:59:07.276Z"
+    },
+    {
+      "stage": "STAGE-9",
+      "id": "DB-EMAIL-AUDIT",
+      "status": "PASS",
+      "msg": "6 email_delivery_audit row(s)",
+      "detail": [
+        {
+          "email_type": null,
+          "recipient": "nayramalik1018@gmail.com",
+          "status": "delivered",
+          "subject": "Application lodged",
+          "created_at": "2026-06-10T07:58:47.398673+00:00"
+        },
+        {
+          "email_type": null,
+          "recipient": "nayramalik1018@gmail.com",
+          "status": "delivered",
+          "subject": "Ready to lodge",
+          "created_at": "2026-06-10T07:58:43.022927+00:00"
+        },
+        {
+          "email_type": null,
+          "recipient": "nayramalik1018@gmail.com",
+          "status": "delivered",
+          "subject": "Application approval completed",
+          "created_at": "2026-06-10T07:58:30.36757+00:00"
+        },
+        {
+          "email_type": null,
+          "recipient": "nayramalik1018@gmail.com",
+          "status": "delivered",
+          "subject": "Client signed application",
+          "created_at": "2026-06-10T07:58:27.002758+00:00"
+        },
+        {
+          "email_type": null,
+          "recipient": "nayramalik1018@gmail.com",
+          "status": "delivered",
+          "subject": "Certificate of Approval generated",
+          "created_at": "2026-06-10T07:58:23.044223+00:00"
+        },
+        {
+          "email_type": null,
+          "recipient": "nayramalik1018@gmail.com",
+          "status": "delivered",
+          "subject": "Application sent for client approval",
+          "created_at": "2026-06-10T07:58:09.76706+00:00"
+        }
+      ],
+      "ts": "2026-06-10T07:59:07.641Z"
+    },
+    {
+      "stage": "STAGE-10",
+      "id": "SEARCH-CLIENT",
+      "status": "PASS",
+      "msg": "total=4",
+      "detail": {
+        "success": true,
+        "query": "E2E-3",
+        "sections": [
+          {
+            "key": "agreements",
+            "title": "Agreements",
+            "items": [
+              {
+                "id": "8b279c90-7dc3-4561-ab25-1698c83f2038",
+                "type": "agreement",
+                "label": "AGR-2026-0012",
+                "sublabel": "E2E-3 Production Client · draft",
+                "href": "/workspace/ritiklabs/clients/99e6f959-aa91-474e-9f9d-2af5fd3223f3?file_source=agreement&file_id=8b279c90-7dc3-4561-ab25-1698c83f2038&tab=service_agreement",
+                "score": 0,
+                "clientId": "99e6f959-aa91-474e-9f9d-2af5fd3223f3",
+                "fileId": "8b279c90-7dc3-4561-ab25-1698c83f2038",
+                "fileSource": "agreement",
+                "fileNumber": "AGR-2026-0012"
+              }
+            ]
+          },
+          {
+            "key": "notifications",
+            "title": "Notifications",
+            "items": [
+              {
+                "id": "c30c4a4b-3662-4498-9b26-45a0576ba51a",
+                "type": "notification",
+                "label": "Application lodged",
+                "sublabel": "visa - E2E-3 Production Client",
+                "href": "/workspace/ritiklabs/approvals/933ec291-c98a-4137-b574-60ce0a648f43",
+                "score": 0
+              },
+              {
+                "id": "a6a2e1e6-5be7-4aca-8a9a-6972ff6c9811",
+                "type": "notification",
+                "label": "Ready to lodge",
+                "sublabel": "visa - E2E-3 Production Client",
+                "href": "/workspace/ritiklabs/approvals/933ec291-c98a-4137-b574-60ce0a648f43",
+                "score": 0
+              }
+            ]
+          },
+          {
+            "key": "activity",
+            "title": "Activity",
+            "items": [
+              {
+                "id": "bc5759ac-8d17-4fd4-a91e-065ebc8be64a",
+                "type": "activity",
+                "label": "Client onboarded",
+                "sublabel": "client",
+                "href": "/workspace/ritiklabs/activity",
+                "score": 0
+              }
+            ]
+          }
+        ],
+        "quickActions": [
+          {
+            "id": "create-client",
+            "label": "Create Client",
+            "description": "Start unified intake",
+            "href": "/workspace/ritiklabs/onboarding/new",
+            "keywords": [
+              "new client",
+              "create client",
+              "add client"
+            ]
+          },
+          {
+            "id": "create-agreement",
+            "label": "Create Agreement",
+            "description": "New service agreement",
+            "href": "/workspace/ritiklabs/agreements/new",
+            "keywords": [
+              "new agreement",
+              "create agreement",
+              "send agreement"
+            ]
+          },
+          {
+            "id": "create-approval",
+            "label": "Create Approval",
+            "description": "Lodgement approval workflow",
+            "href": "/workspace/ritiklabs/approvals/new",
+            "keywords": [
+              "new approval",
+              "create approval",
+              "lodgement approval"
+            ]
+          },
+          {
+            "id": "create-sos",
+            "label": "Create Statement of Service",
+            "description": "Issue SOS at completion",
+            "href": "/workspace/ritiklabs/service-statements/new",
+            "keywords": [
+              "new sos",
+              "create sos",
+              "statement of service"
+            ]
+          },
+          {
+            "id": "upload-document",
+            "label": "Upload Document",
+            "description": "Add to document library",
+            "href": "/workspace/ritiklabs/documents/upload",
+            "keywords": [
+              "upload document",
+              "add document",
+              "new document"
+            ]
+          },
+          {
+            "id": "add-note",
+            "label": "Add File Note",
+            "description": "Compliance case notes",
+            "href": "/workspace/ritiklabs/file-notes",
+            "keywords": [
+              "new note",
+              "add note",
+              "file note",
+              "create note"
+            ]
+          }
+        ],
+        "totalCount": 4,
+        "timingMs": 2912
+      },
+      "ts": "2026-06-10T07:59:11.927Z"
+    },
+    {
+      "stage": "STAGE-10",
+      "id": "SEARCH-MATTER",
+      "status": "PASS",
+      "msg": "q=AGR-2026-1004",
+      "detail": {},
+      "ts": "2026-06-10T07:59:15.329Z"
+    }
+  ],
+  "evidence": {
+    "api": [
+      {
+        "method": "POST",
+        "path": "/api/onboarding/complete",
+        "status": 200,
+        "json": {
+          "success": true,
+          "clientId": "99e6f959-aa91-474e-9f9d-2af5fd3223f3",
+          "clientNumber": "AGR-2026-1004",
+          "matterId": "c93dc55d-abf4-4ced-a164-341b7231d2ca",
+          "agreementId": "8b279c90-7dc3-4561-ab25-1698c83f2038",
+          "approvalId": "933ec291-c98a-4137-b574-60ce0a648f43",
+          "deepLink": "/workspace/ritiklabs/clients/99e6f959-aa91-474e-9f9d-2af5fd3223f3?file_source=application_approval&file_id=933ec291-c98a-4137-b574-60ce0a648f43&tab=overview",
+          "agreementPdfGenerated": false
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/api/agreements/8b279c90-7dc3-4561-ab25-1698c83f2038/generate",
+        "status": 500,
+        "json": {
+          "success": false,
+          "error": "Cannot read properties of undefined (reading 'split')",
+          "code": "INTERNAL_ERROR"
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/api/agreements/send",
+        "status": 500,
+        "json": {
+          "success": false,
+          "error": "Invalid agreement state transition: Cannot transition from draft to sent.",
+          "code": "INTERNAL_ERROR"
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/api/approvals/933ec291-c98a-4137-b574-60ce0a648f43/attachments",
+        "status": 200,
+        "json": {
+          "success": true,
+          "attachment": {
+            "id": "0962fa2d-6164-45e2-ac48-c5e206c0468c",
+            "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+            "approval_id": "933ec291-c98a-4137-b574-60ce0a648f43",
+            "uploaded_by": "2cab360f-fd21-461a-8a57-67573dee0530",
+            "file_name": "application-approval.pdf",
+            "storage_path": "3cd3a307-b7e5-4984-82d4-bf757e834afd/approvals/933ec291-c98a-4137-b574-60ce0a648f43/application-approval.pdf",
+            "mime_type": "application/pdf",
+            "file_size": 440,
+            "version_number": 1,
+            "is_current": true,
+            "created_at": "2026-06-10T07:57:52.787161+00:00"
+          },
+          "signedUrl": "https://wnohcmgmyhamsbmkiybc.supabase.co/storage/v1/object/sign/documents/3cd3a307-b7e5-4984-82d4-bf757e834afd/approvals/933ec291-c98a-4137-b574-60ce0a648f43/application-approval.pdf?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8zYTYyNjkwYy04YzkzLTRiNDAtYWM2Ni1jYzU4YmNhODllMTQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJkb2N1bWVudHMvM2NkM2EzMDctYjdlNS00OTg0LTgyZDQtYmY3NTdlODM0YWZkL2FwcHJvdmFscy85MzNlYzI5MS1jOThhLTQxMzctYjU3NC02MGNlMGE2NDhmNDMvYXBwbGljYXRpb24tYXBwcm92YWwucGRmIiwic2NvcGUiOiJkb3dubG9hZCIsImlhdCI6MTc4MTA3ODI3NCwiZXhwIjoxNzgxMDgxODc0fQ.BNOgfDrzIxR_gGzXD_Qp0CRO_ZbCg3a_vSXZQroJMBE"
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/api/approvals/933ec291-c98a-4137-b574-60ce0a648f43/send-for-client-approval",
+        "status": 200,
+        "json": {
+          "success": true,
+          "approval": {
+            "id": "933ec291-c98a-4137-b574-60ce0a648f43",
+            "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+            "client_id": "99e6f959-aa91-474e-9f9d-2af5fd3223f3",
+            "created_by": "2cab360f-fd21-461a-8a57-67573dee0530",
+            "title": "visa - E2E-3 Production Client",
+            "visa_subclass": "190",
+            "status": "under_review",
+            "review_token": null,
+            "document_path": "3cd3a307-b7e5-4984-82d4-bf757e834afd/approvals/933ec291-c98a-4137-b574-60ce0a648f43/application-approval.pdf",
+            "version_number": 1,
+            "revision_count": 0,
+            "lodgement_deadline": null,
+            "approved_at": null,
+            "created_at": "2026-06-10T07:57:10.63343+00:00",
+            "updated_at": "2026-06-10T07:58:02.091+00:00",
+            "deleted_at": null,
+            "approval_number": "AGR-2026-0012",
+            "matter_type_id": "444b6670-a844-4c50-9c74-41dfe32c905a",
+            "matter_reference": null,
+            "assigned_reviewer_id": null,
+            "assigned_rma_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+            "priority": "normal",
+            "notes": null,
+            "internal_notes": null,
+            "submitted_at": null,
+            "ready_to_lodge_at": null,
+            "lodged_at": null,
+            "closed_at": null,
+            "rejected_at": null,
+            "reminder_at": null,
+            "escalation_at": null,
+            "reminders_sent": {},
+            "signed_document_path": null,
+            "signwell_document_id": "9460c63e-29b8-491e-b3e1-b3784c7fbe55",
+            "client_sent_at": "2026-06-10T07:58:02.091+00:00",
+            "client_signed_at": null,
+            "client_viewed_at": null,
+            "certificate_storage_path": null,
+            "certificate_generated_at": null,
+            "visa_stream": "Skilled Nominated",
+            "matter_completed_at": null,
+            "matter_completed_by": null,
+            "matter_completion_reason": null,
+            "on_hold_at": null,
+            "signed_by": null,
+            "signed_ip": null,
+            "signature_provider": null,
+            "document_version": null,
+            "matter_id": "c93dc55d-abf4-4ced-a164-341b7231d2ca"
+          },
+          "reviewUrl": "/review/null",
+          "signwellId": "9460c63e-29b8-491e-b3e1-b3784c7fbe55"
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/api/approvals/933ec291-c98a-4137-b574-60ce0a648f43/transition",
+        "status": 200,
+        "json": {
+          "success": true,
+          "approval": {
+            "id": "933ec291-c98a-4137-b574-60ce0a648f43",
+            "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+            "client_id": "99e6f959-aa91-474e-9f9d-2af5fd3223f3",
+            "created_by": "2cab360f-fd21-461a-8a57-67573dee0530",
+            "title": "visa - E2E-3 Production Client",
+            "visa_subclass": "190",
+            "status": "ready_to_lodge",
+            "review_token": null,
+            "document_path": "3cd3a307-b7e5-4984-82d4-bf757e834afd/approvals/933ec291-c98a-4137-b574-60ce0a648f43/application-approval.pdf",
+            "version_number": 1,
+            "revision_count": 0,
+            "lodgement_deadline": null,
+            "approved_at": "2026-06-10T07:58:12.501+00:00",
+            "created_at": "2026-06-10T07:57:10.63343+00:00",
+            "updated_at": "2026-06-10T07:58:37.041+00:00",
+            "deleted_at": null,
+            "approval_number": "AGR-2026-0012",
+            "matter_type_id": "444b6670-a844-4c50-9c74-41dfe32c905a",
+            "matter_reference": null,
+            "assigned_reviewer_id": null,
+            "assigned_rma_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+            "priority": "normal",
+            "notes": null,
+            "internal_notes": null,
+            "submitted_at": null,
+            "ready_to_lodge_at": "2026-06-10T07:58:37.041+00:00",
+            "lodged_at": null,
+            "closed_at": null,
+            "rejected_at": null,
+            "reminder_at": null,
+            "escalation_at": null,
+            "reminders_sent": {},
+            "signed_document_path": null,
+            "signwell_document_id": "9460c63e-29b8-491e-b3e1-b3784c7fbe55",
+            "client_sent_at": "2026-06-10T07:58:02.091+00:00",
+            "client_signed_at": "2026-06-10T07:58:12.501+00:00",
+            "client_viewed_at": "2026-06-10T07:58:09.673+00:00",
+            "certificate_storage_path": "3cd3a307-b7e5-4984-82d4-bf757e834afd/approvals/933ec291-c98a-4137-b574-60ce0a648f43/certificate-of-approval.pdf",
+            "certificate_generated_at": "2026-06-10T07:58:16.327+00:00",
+            "visa_stream": "Skilled Nominated",
+            "matter_completed_at": null,
+            "matter_completed_by": null,
+            "matter_completion_reason": null,
+            "on_hold_at": null,
+            "signed_by": "E2E-3 Production Client",
+            "signed_ip": null,
+            "signature_provider": "signwell",
+            "document_version": "9460c63e-29b8-491e-b3e1-b3784c7fbe55",
+            "matter_id": "c93dc55d-abf4-4ced-a164-341b7231d2ca"
+          }
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/api/approvals/933ec291-c98a-4137-b574-60ce0a648f43/transition",
+        "status": 200,
+        "json": {
+          "success": true,
+          "approval": {
+            "id": "933ec291-c98a-4137-b574-60ce0a648f43",
+            "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+            "client_id": "99e6f959-aa91-474e-9f9d-2af5fd3223f3",
+            "created_by": "2cab360f-fd21-461a-8a57-67573dee0530",
+            "title": "visa - E2E-3 Production Client",
+            "visa_subclass": "190",
+            "status": "lodged",
+            "review_token": null,
+            "document_path": "3cd3a307-b7e5-4984-82d4-bf757e834afd/approvals/933ec291-c98a-4137-b574-60ce0a648f43/application-approval.pdf",
+            "version_number": 1,
+            "revision_count": 0,
+            "lodgement_deadline": null,
+            "approved_at": "2026-06-10T07:58:12.501+00:00",
+            "created_at": "2026-06-10T07:57:10.63343+00:00",
+            "updated_at": "2026-06-10T07:58:41.948+00:00",
+            "deleted_at": null,
+            "approval_number": "AGR-2026-0012",
+            "matter_type_id": "444b6670-a844-4c50-9c74-41dfe32c905a",
+            "matter_reference": null,
+            "assigned_reviewer_id": null,
+            "assigned_rma_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+            "priority": "normal",
+            "notes": null,
+            "internal_notes": null,
+            "submitted_at": null,
+            "ready_to_lodge_at": "2026-06-10T07:58:37.041+00:00",
+            "lodged_at": "2026-06-10T07:58:41.948+00:00",
+            "closed_at": null,
+            "rejected_at": null,
+            "reminder_at": null,
+            "escalation_at": null,
+            "reminders_sent": {},
+            "signed_document_path": null,
+            "signwell_document_id": "9460c63e-29b8-491e-b3e1-b3784c7fbe55",
+            "client_sent_at": "2026-06-10T07:58:02.091+00:00",
+            "client_signed_at": "2026-06-10T07:58:12.501+00:00",
+            "client_viewed_at": "2026-06-10T07:58:09.673+00:00",
+            "certificate_storage_path": "3cd3a307-b7e5-4984-82d4-bf757e834afd/approvals/933ec291-c98a-4137-b574-60ce0a648f43/certificate-of-approval.pdf",
+            "certificate_generated_at": "2026-06-10T07:58:16.327+00:00",
+            "visa_stream": "Skilled Nominated",
+            "matter_completed_at": null,
+            "matter_completed_by": null,
+            "matter_completion_reason": null,
+            "on_hold_at": null,
+            "signed_by": "E2E-3 Production Client",
+            "signed_ip": null,
+            "signature_provider": "signwell",
+            "document_version": "9460c63e-29b8-491e-b3e1-b3784c7fbe55",
+            "matter_id": "c93dc55d-abf4-4ced-a164-341b7231d2ca"
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/api/clients/99e6f959-aa91-474e-9f9d-2af5fd3223f3/compliance",
+        "status": 404,
+        "json": null
+      },
+      {
+        "method": "POST",
+        "path": "/api/clients/99e6f959-aa91-474e-9f9d-2af5fd3223f3/service-statements",
+        "status": 500,
+        "json": {
+          "error": "Could not find the 'client_email' column of 'service_statements' in the schema cache"
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/api/notifications?limit=30",
+        "status": 200,
+        "json": {
+          "success": true,
+          "data": [
+            {
+              "id": "c30c4a4b-3662-4498-9b26-45a0576ba51a",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "approval",
+              "title": "Application lodged",
+              "message": "visa - E2E-3 Production Client",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/approvals/933ec291-c98a-4137-b574-60ce0a648f43",
+              "created_at": "2026-06-10T07:58:45.529098+00:00",
+              "entity_type": "application_approval",
+              "entity_id": "933ec291-c98a-4137-b574-60ce0a648f43",
+              "actor_id": null,
+              "priority": "high",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "approvals",
+              "metadata": {
+                "actions": [
+                  {
+                    "id": "review",
+                    "href": "/workspace/ritiklabs/approvals/933ec291-c98a-4137-b574-60ce0a648f43",
+                    "label": "Review Approval",
+                    "variant": "primary"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "a6a2e1e6-5be7-4aca-8a9a-6972ff6c9811",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "approval",
+              "title": "Ready to lodge",
+              "message": "visa - E2E-3 Production Client",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/approvals/933ec291-c98a-4137-b574-60ce0a648f43",
+              "created_at": "2026-06-10T07:58:40.690021+00:00",
+              "entity_type": "application_approval",
+              "entity_id": "933ec291-c98a-4137-b574-60ce0a648f43",
+              "actor_id": null,
+              "priority": "high",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "approvals",
+              "metadata": {
+                "actions": [
+                  {
+                    "id": "review",
+                    "href": "/workspace/ritiklabs/approvals/933ec291-c98a-4137-b574-60ce0a648f43",
+                    "label": "Review Approval",
+                    "variant": "primary"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "d8445256-e1f3-43f8-b7a4-6ffec5b606a5",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "approval",
+              "title": "Application approval completed",
+              "message": "AGR-2026-0012 is signed and ready for lodgement.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/approvals/933ec291-c98a-4137-b574-60ce0a648f43",
+              "created_at": "2026-06-10T07:58:28.263542+00:00",
+              "entity_type": "application_approval",
+              "entity_id": "933ec291-c98a-4137-b574-60ce0a648f43",
+              "actor_id": null,
+              "priority": "high",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "approvals",
+              "metadata": {
+                "actions": [
+                  {
+                    "id": "review",
+                    "href": "/workspace/ritiklabs/approvals/933ec291-c98a-4137-b574-60ce0a648f43",
+                    "label": "Review Approval",
+                    "variant": "primary"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "a27ab64e-cbe7-4743-aad8-4a84ba046a65",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "approval",
+              "title": "Client signed application",
+              "message": "AGR-2026-0012 was signed via SignWell.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/approvals/933ec291-c98a-4137-b574-60ce0a648f43",
+              "created_at": "2026-06-10T07:58:24.89775+00:00",
+              "entity_type": "application_approval",
+              "entity_id": "933ec291-c98a-4137-b574-60ce0a648f43",
+              "actor_id": null,
+              "priority": "high",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "approvals",
+              "metadata": {
+                "actions": [
+                  {
+                    "id": "review",
+                    "href": "/workspace/ritiklabs/approvals/933ec291-c98a-4137-b574-60ce0a648f43",
+                    "label": "Review Approval",
+                    "variant": "primary"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "2a5b855e-f980-4938-b6c8-9c2b9b852c94",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "approval",
+              "title": "Certificate of Approval generated",
+              "message": "Certificate ready for AGR-2026-0012.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/approvals/933ec291-c98a-4137-b574-60ce0a648f43",
+              "created_at": "2026-06-10T07:58:20.862505+00:00",
+              "entity_type": "application_approval",
+              "entity_id": "933ec291-c98a-4137-b574-60ce0a648f43",
+              "actor_id": null,
+              "priority": "high",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "approvals",
+              "metadata": {
+                "actions": [
+                  {
+                    "id": "review",
+                    "href": "/workspace/ritiklabs/approvals/933ec291-c98a-4137-b574-60ce0a648f43",
+                    "label": "Review Approval",
+                    "variant": "primary"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "bc8f8751-3b2e-4b4b-8650-eefd4f29dc6e",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "approval",
+              "title": "Application sent for client approval",
+              "message": "AGR-2026-0012 sent to client via SignWell.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/approvals/933ec291-c98a-4137-b574-60ce0a648f43",
+              "created_at": "2026-06-10T07:58:06.113282+00:00",
+              "entity_type": "application_approval",
+              "entity_id": "933ec291-c98a-4137-b574-60ce0a648f43",
+              "actor_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "priority": "high",
+              "scope": "personal",
+              "assigned_to_user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": "approvals",
+              "metadata": {
+                "actions": [
+                  {
+                    "id": "review",
+                    "href": "/workspace/ritiklabs/approvals/933ec291-c98a-4137-b574-60ce0a648f43",
+                    "label": "Review Approval",
+                    "variant": "primary"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "a29ca92e-1be2-4965-b5b7-8697bd49b375",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "system",
+              "title": "MM6 test notification",
+              "message": "Open Matter B SOS",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/bad84fbf-d49b-44eb-888a-254503bfc1fa?file_source=application_approval&file_id=3be6b8fb-ffea-46e5-b7be-82f4d346cff8&tab=statement_of_service",
+              "created_at": "2026-06-09T16:39:05.937349+00:00",
+              "entity_type": null,
+              "entity_id": null,
+              "actor_id": null,
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": null,
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": null,
+              "metadata": {}
+            },
+            {
+              "id": "0f577a47-dbed-4d20-88c2-e40f71935583",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "system",
+              "title": "MM6 test notification",
+              "message": "Open Matter B SOS",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/bad84fbf-d49b-44eb-888a-254503bfc1fa?file_source=application_approval&file_id=3be6b8fb-ffea-46e5-b7be-82f4d346cff8&tab=statement_of_service",
+              "created_at": "2026-06-09T16:36:15.606782+00:00",
+              "entity_type": null,
+              "entity_id": null,
+              "actor_id": null,
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": null,
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": null,
+              "metadata": {}
+            },
+            {
+              "id": "043e4dcb-6db2-4ddc-ac5f-4aa91a1c4209",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "system",
+              "title": "MM6 test notification",
+              "message": "Open Matter B SOS",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/bad84fbf-d49b-44eb-888a-254503bfc1fa?file_source=application_approval&file_id=3be6b8fb-ffea-46e5-b7be-82f4d346cff8&tab=statement_of_service",
+              "created_at": "2026-06-09T16:23:00.899361+00:00",
+              "entity_type": null,
+              "entity_id": null,
+              "actor_id": null,
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": null,
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": null,
+              "metadata": {}
+            },
+            {
+              "id": "b0f73927-1e6f-42c7-881a-a0dd6e6a43d2",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "system",
+              "title": "MM6 test notification",
+              "message": "Open Matter B SOS",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/bad84fbf-d49b-44eb-888a-254503bfc1fa?file_source=application_approval&file_id=3be6b8fb-ffea-46e5-b7be-82f4d346cff8&tab=statement_of_service",
+              "created_at": "2026-06-09T16:08:07.764194+00:00",
+              "entity_type": null,
+              "entity_id": null,
+              "actor_id": null,
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": null,
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": null,
+              "metadata": {}
+            },
+            {
+              "id": "187dfd90-194c-44fe-b8c7-66b1b812ff04",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "document",
+              "title": "Statement of Service acknowledged",
+              "message": "SOS-MM3-A · AUD-MATTER-A-190 acknowledged by Rajwant sir.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/bad84fbf-d49b-44eb-888a-254503bfc1fa?file_source=application_approval&file_id=a5d314cf-b7a9-4593-a917-a9288bdf9d7d&tab=statement_of_service",
+              "created_at": "2026-06-09T13:11:29.043068+00:00",
+              "entity_type": "service_statement",
+              "entity_id": "805ec68f-7977-4003-b03c-e316c0ea2224",
+              "actor_id": null,
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": null,
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": null,
+              "metadata": {}
+            },
+            {
+              "id": "79fe3037-de4d-450a-8538-f0762760ae02",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "document",
+              "title": "Statement of Service acknowledged",
+              "message": "SOS-MM4-C · AUD-MATTER-C-AAT acknowledged by Rajwant sir.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/bad84fbf-d49b-44eb-888a-254503bfc1fa?file_source=application_approval&file_id=920d3aff-89dd-4f1a-bbfc-b27b8ab18bba&tab=statement_of_service",
+              "created_at": "2026-06-09T13:10:16.359572+00:00",
+              "entity_type": "service_statement",
+              "entity_id": "886cdc79-fb01-428e-8b23-f4cc0d6ea6e0",
+              "actor_id": null,
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": null,
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": null,
+              "metadata": {}
+            },
+            {
+              "id": "e1d43615-84a4-48b8-ba7b-7cc1123b6dbc",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "document",
+              "title": "Statement of Service acknowledged",
+              "message": "SOS-MM4-B · AUD-MATTER-B-820 acknowledged by Rajwant sir.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/bad84fbf-d49b-44eb-888a-254503bfc1fa?file_source=application_approval&file_id=3be6b8fb-ffea-46e5-b7be-82f4d346cff8&tab=statement_of_service",
+              "created_at": "2026-06-09T13:09:57.602499+00:00",
+              "entity_type": "service_statement",
+              "entity_id": "78577118-e9be-4cf7-8fa9-fb9cf05a8599",
+              "actor_id": null,
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": null,
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": null,
+              "metadata": {}
+            },
+            {
+              "id": "eb6efb5b-01a5-427f-bcc2-cedbc821bb78",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "document",
+              "title": "Statement of Service acknowledged",
+              "message": "SOS-MM4-C · AUD-MATTER-C-AAT acknowledged by Rajwant sir.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/bad84fbf-d49b-44eb-888a-254503bfc1fa?file_source=application_approval&file_id=920d3aff-89dd-4f1a-bbfc-b27b8ab18bba&tab=statement_of_service",
+              "created_at": "2026-06-09T13:07:55.351467+00:00",
+              "entity_type": "service_statement",
+              "entity_id": "56fb9c2e-0432-461a-929d-b21af333a86f",
+              "actor_id": null,
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": null,
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": null,
+              "metadata": {}
+            },
+            {
+              "id": "34d7560e-a181-4003-820d-18511d74f5e6",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "document",
+              "title": "Statement of Service acknowledged",
+              "message": "SOS-MM4-B · AUD-MATTER-B-820 acknowledged by Rajwant sir.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/bad84fbf-d49b-44eb-888a-254503bfc1fa?file_source=application_approval&file_id=3be6b8fb-ffea-46e5-b7be-82f4d346cff8&tab=statement_of_service",
+              "created_at": "2026-06-09T13:07:37.778269+00:00",
+              "entity_type": "service_statement",
+              "entity_id": "97dd7666-ac8d-4e66-a7f6-f840936aa53b",
+              "actor_id": null,
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": null,
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": null,
+              "metadata": {}
+            },
+            {
+              "id": "7d670ef0-c414-4271-bdd1-53284c2f31b1",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "document",
+              "title": "Statement of Service acknowledged",
+              "message": "SOS-MM4-C · AUD-MATTER-C-AAT acknowledged by Rajwant sir.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/bad84fbf-d49b-44eb-888a-254503bfc1fa?file_source=application_approval&file_id=920d3aff-89dd-4f1a-bbfc-b27b8ab18bba&tab=statement_of_service",
+              "created_at": "2026-06-09T13:04:35.078417+00:00",
+              "entity_type": "service_statement",
+              "entity_id": "52effde8-d281-4fa7-8013-9ccb0a7d8ab9",
+              "actor_id": null,
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": null,
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": null,
+              "metadata": {}
+            },
+            {
+              "id": "eb967bc5-69ef-4a2c-92a1-17aaa807165a",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "document",
+              "title": "Statement of Service acknowledged",
+              "message": "SOS-MM4-B · AUD-MATTER-B-820 acknowledged by Rajwant sir.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/bad84fbf-d49b-44eb-888a-254503bfc1fa?file_source=application_approval&file_id=3be6b8fb-ffea-46e5-b7be-82f4d346cff8&tab=statement_of_service",
+              "created_at": "2026-06-09T13:04:15.498311+00:00",
+              "entity_type": "service_statement",
+              "entity_id": "0518b07e-2396-408a-8814-56e269fb944a",
+              "actor_id": null,
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": null,
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": null,
+              "metadata": {}
+            },
+            {
+              "id": "24f35fcd-4c32-4a40-8d2a-69d889ee8609",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "document",
+              "title": "Statement of Service acknowledged",
+              "message": "SOS-MM4-C · AUD-MATTER-C-AAT acknowledged by Rajwant sir.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/bad84fbf-d49b-44eb-888a-254503bfc1fa?file_source=application_approval&file_id=920d3aff-89dd-4f1a-bbfc-b27b8ab18bba&tab=statement_of_service",
+              "created_at": "2026-06-09T13:02:29.96484+00:00",
+              "entity_type": "service_statement",
+              "entity_id": "dca17109-d011-48ea-96f8-d5b0191994c8",
+              "actor_id": null,
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": null,
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": null,
+              "metadata": {}
+            },
+            {
+              "id": "7df4e910-020a-4fc9-8989-d9cdcf42cf06",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "document",
+              "title": "Statement of Service acknowledged",
+              "message": "SOS-MM4-B · AUD-MATTER-B-820 acknowledged by Rajwant sir.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/bad84fbf-d49b-44eb-888a-254503bfc1fa?file_source=application_approval&file_id=3be6b8fb-ffea-46e5-b7be-82f4d346cff8&tab=statement_of_service",
+              "created_at": "2026-06-09T13:02:09.119709+00:00",
+              "entity_type": "service_statement",
+              "entity_id": "89011e8e-a845-4365-a29f-0ab80f313f3c",
+              "actor_id": null,
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": null,
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": null,
+              "metadata": {}
+            },
+            {
+              "id": "1133a951-de36-4a58-b63a-4f6f9cf7ea3e",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "document",
+              "title": "Statement of Service acknowledged",
+              "message": "SOS-MM4-C · AUD-MATTER-C-AAT acknowledged by Rajwant sir.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/bad84fbf-d49b-44eb-888a-254503bfc1fa?file_source=application_approval&file_id=920d3aff-89dd-4f1a-bbfc-b27b8ab18bba&tab=statement_of_service",
+              "created_at": "2026-06-09T13:00:30.154726+00:00",
+              "entity_type": "service_statement",
+              "entity_id": "33e9f2a4-d024-478c-8d7d-c28613b09fdd",
+              "actor_id": null,
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": null,
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": null,
+              "metadata": {}
+            },
+            {
+              "id": "1abc5985-cbf8-41ce-afad-afe4f47e5891",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "document",
+              "title": "Statement of Service acknowledged",
+              "message": "SOS-MM4-B · AUD-MATTER-B-820 acknowledged by Rajwant sir.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/bad84fbf-d49b-44eb-888a-254503bfc1fa?file_source=application_approval&file_id=3be6b8fb-ffea-46e5-b7be-82f4d346cff8&tab=statement_of_service",
+              "created_at": "2026-06-09T13:00:04.148957+00:00",
+              "entity_type": "service_statement",
+              "entity_id": "381044ef-a03c-4b75-94ca-eb87a82fe1df",
+              "actor_id": null,
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": null,
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": null,
+              "metadata": {}
+            },
+            {
+              "id": "d7a4c20a-539e-4d01-bcdb-fb7746c3ce92",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "document",
+              "title": "Statement of Service acknowledged",
+              "message": "SOS-MM4-C · AUD-MATTER-C-AAT acknowledged by Rajwant sir.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/bad84fbf-d49b-44eb-888a-254503bfc1fa?file_source=application_approval&file_id=920d3aff-89dd-4f1a-bbfc-b27b8ab18bba&tab=statement_of_service",
+              "created_at": "2026-06-09T12:58:33.019079+00:00",
+              "entity_type": "service_statement",
+              "entity_id": "50784b83-623c-4faa-ada5-f1d107a7a7a9",
+              "actor_id": null,
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": null,
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": null,
+              "metadata": {}
+            },
+            {
+              "id": "0c213ac1-a294-4477-a5ea-715460b42c0a",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "document",
+              "title": "Statement of Service acknowledged",
+              "message": "SOS-MM4-B · AUD-MATTER-B-820 acknowledged by Rajwant sir.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/bad84fbf-d49b-44eb-888a-254503bfc1fa?file_source=application_approval&file_id=3be6b8fb-ffea-46e5-b7be-82f4d346cff8&tab=statement_of_service",
+              "created_at": "2026-06-09T12:58:19.041786+00:00",
+              "entity_type": "service_statement",
+              "entity_id": "118c95b7-0941-4792-9484-f7596a7dc5c6",
+              "actor_id": null,
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": null,
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": null,
+              "metadata": {}
+            },
+            {
+              "id": "fbeee33f-b813-4f65-8365-dd8ce5308901",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "document",
+              "title": "Statement of Service acknowledged",
+              "message": "SOS-MM4-C · AUD-MATTER-C-AAT acknowledged by Rajwant sir.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/bad84fbf-d49b-44eb-888a-254503bfc1fa?file_source=application_approval&file_id=920d3aff-89dd-4f1a-bbfc-b27b8ab18bba&tab=statement_of_service",
+              "created_at": "2026-06-09T12:55:22.837169+00:00",
+              "entity_type": "service_statement",
+              "entity_id": "bc82dda2-bac7-4e01-ae80-489eba9dd499",
+              "actor_id": null,
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": null,
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": null,
+              "metadata": {}
+            },
+            {
+              "id": "57fb26f6-b15d-4288-8e5e-ad24f98f6019",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "document",
+              "title": "Statement of Service acknowledged",
+              "message": "SOS-MM4-B · AUD-MATTER-B-820 acknowledged by Rajwant sir.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/bad84fbf-d49b-44eb-888a-254503bfc1fa?file_source=application_approval&file_id=3be6b8fb-ffea-46e5-b7be-82f4d346cff8&tab=statement_of_service",
+              "created_at": "2026-06-09T12:55:06.038889+00:00",
+              "entity_type": "service_statement",
+              "entity_id": "a80c5cdb-9958-49d4-85ac-d3fa516113f5",
+              "actor_id": null,
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": null,
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": null,
+              "metadata": {}
+            },
+            {
+              "id": "8ea32244-049c-424a-bb4d-cf2232951f01",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "document",
+              "title": "Statement of Service acknowledged",
+              "message": "SOS-MM3-A · AUD-MATTER-A-190 acknowledged by Rajwant sir.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/bad84fbf-d49b-44eb-888a-254503bfc1fa?file_source=application_approval&file_id=a5d314cf-b7a9-4593-a917-a9288bdf9d7d&tab=statement_of_service",
+              "created_at": "2026-06-09T12:49:02.917388+00:00",
+              "entity_type": "service_statement",
+              "entity_id": "d33769b7-fdce-4d0f-8771-9d2e0593fbd1",
+              "actor_id": null,
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": null,
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": null,
+              "metadata": {}
+            },
+            {
+              "id": "177629f0-f385-48ed-806b-ecdb94e5fbd0",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "document",
+              "title": "Statement of Service acknowledged",
+              "message": "SOS-MM3-A · AUD-MATTER-A-190 acknowledged by Rajwant sir.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/bad84fbf-d49b-44eb-888a-254503bfc1fa?file_source=application_approval&file_id=a5d314cf-b7a9-4593-a917-a9288bdf9d7d&tab=statement_of_service",
+              "created_at": "2026-06-09T12:47:16.492587+00:00",
+              "entity_type": "service_statement",
+              "entity_id": "bfcb06bc-138a-4dfe-99c1-cba2734fc76f",
+              "actor_id": null,
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": null,
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": null,
+              "metadata": {}
+            },
+            {
+              "id": "8e7126dc-1b57-4a9c-83bc-7105aa970ffe",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "document",
+              "title": "Statement of Service acknowledged",
+              "message": "SOS-MM3-A · AUD-MATTER-A-190 acknowledged by Rajwant sir.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/bad84fbf-d49b-44eb-888a-254503bfc1fa?file_source=application_approval&file_id=a5d314cf-b7a9-4593-a917-a9288bdf9d7d&tab=statement_of_service",
+              "created_at": "2026-06-09T12:43:20.852443+00:00",
+              "entity_type": "service_statement",
+              "entity_id": "ea405e31-2e5a-44b8-b903-c92c1e265c96",
+              "actor_id": null,
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": null,
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": null,
+              "metadata": {}
+            },
+            {
+              "id": "f1578b0b-ad1f-4005-880c-f129619dfc8a",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "document",
+              "title": "Statement of Service acknowledged",
+              "message": "SOS-MM3-A · AUD-MATTER-A-190 acknowledged by Rajwant sir.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/clients/bad84fbf-d49b-44eb-888a-254503bfc1fa?file_source=application_approval&file_id=a5d314cf-b7a9-4593-a917-a9288bdf9d7d&tab=statement_of_service",
+              "created_at": "2026-06-09T12:37:01.755991+00:00",
+              "entity_type": "service_statement",
+              "entity_id": "01bd100a-b5a3-4f49-bfa6-59e7b1c2f798",
+              "actor_id": null,
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": null,
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": null,
+              "metadata": {}
+            },
+            {
+              "id": "68927f3e-0837-4ee8-a34a-009c1e817a56",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "user_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "type": "agreement",
+              "title": "Agreement sent for signature",
+              "message": "Service agreement for kartik singh was sent via SignWell.",
+              "is_read": false,
+              "action_url": "/workspace/ritiklabs/agreements/4d63f99d-649a-4161-b53d-c90dfee78510",
+              "created_at": "2026-06-09T09:45:19.711851+00:00",
+              "entity_type": "agreement",
+              "entity_id": "4d63f99d-649a-4161-b53d-c90dfee78510",
+              "actor_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+              "priority": "normal",
+              "scope": "personal",
+              "assigned_to_user_id": null,
+              "due_at": null,
+              "archived_at": null,
+              "deleted_at": null,
+              "workflow_category": null,
+              "metadata": {}
+            }
+          ],
+          "count": 38,
+          "page": 1,
+          "limit": 30
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/api/search?q=E2E-3&limit=20",
+        "status": 200,
+        "json": {
+          "success": true,
+          "query": "E2E-3",
+          "sections": [
+            {
+              "key": "agreements",
+              "title": "Agreements",
+              "items": [
+                {
+                  "id": "8b279c90-7dc3-4561-ab25-1698c83f2038",
+                  "type": "agreement",
+                  "label": "AGR-2026-0012",
+                  "sublabel": "E2E-3 Production Client · draft",
+                  "href": "/workspace/ritiklabs/clients/99e6f959-aa91-474e-9f9d-2af5fd3223f3?file_source=agreement&file_id=8b279c90-7dc3-4561-ab25-1698c83f2038&tab=service_agreement",
+                  "score": 0,
+                  "clientId": "99e6f959-aa91-474e-9f9d-2af5fd3223f3",
+                  "fileId": "8b279c90-7dc3-4561-ab25-1698c83f2038",
+                  "fileSource": "agreement",
+                  "fileNumber": "AGR-2026-0012"
+                }
+              ]
+            },
+            {
+              "key": "notifications",
+              "title": "Notifications",
+              "items": [
+                {
+                  "id": "c30c4a4b-3662-4498-9b26-45a0576ba51a",
+                  "type": "notification",
+                  "label": "Application lodged",
+                  "sublabel": "visa - E2E-3 Production Client",
+                  "href": "/workspace/ritiklabs/approvals/933ec291-c98a-4137-b574-60ce0a648f43",
+                  "score": 0
+                },
+                {
+                  "id": "a6a2e1e6-5be7-4aca-8a9a-6972ff6c9811",
+                  "type": "notification",
+                  "label": "Ready to lodge",
+                  "sublabel": "visa - E2E-3 Production Client",
+                  "href": "/workspace/ritiklabs/approvals/933ec291-c98a-4137-b574-60ce0a648f43",
+                  "score": 0
+                }
+              ]
+            },
+            {
+              "key": "activity",
+              "title": "Activity",
+              "items": [
+                {
+                  "id": "bc5759ac-8d17-4fd4-a91e-065ebc8be64a",
+                  "type": "activity",
+                  "label": "Client onboarded",
+                  "sublabel": "client",
+                  "href": "/workspace/ritiklabs/activity",
+                  "score": 0
+                }
+              ]
+            }
+          ],
+          "quickActions": [
+            {
+              "id": "create-client",
+              "label": "Create Client",
+              "description": "Start unified intake",
+              "href": "/workspace/ritiklabs/onboarding/new",
+              "keywords": [
+                "new client",
+                "create client",
+                "add client"
+              ]
+            },
+            {
+              "id": "create-agreement",
+              "label": "Create Agreement",
+              "description": "New service agreement",
+              "href": "/workspace/ritiklabs/agreements/new",
+              "keywords": [
+                "new agreement",
+                "create agreement",
+                "send agreement"
+              ]
+            },
+            {
+              "id": "create-approval",
+              "label": "Create Approval",
+              "description": "Lodgement approval workflow",
+              "href": "/workspace/ritiklabs/approvals/new",
+              "keywords": [
+                "new approval",
+                "create approval",
+                "lodgement approval"
+              ]
+            },
+            {
+              "id": "create-sos",
+              "label": "Create Statement of Service",
+              "description": "Issue SOS at completion",
+              "href": "/workspace/ritiklabs/service-statements/new",
+              "keywords": [
+                "new sos",
+                "create sos",
+                "statement of service"
+              ]
+            },
+            {
+              "id": "upload-document",
+              "label": "Upload Document",
+              "description": "Add to document library",
+              "href": "/workspace/ritiklabs/documents/upload",
+              "keywords": [
+                "upload document",
+                "add document",
+                "new document"
+              ]
+            },
+            {
+              "id": "add-note",
+              "label": "Add File Note",
+              "description": "Compliance case notes",
+              "href": "/workspace/ritiklabs/file-notes",
+              "keywords": [
+                "new note",
+                "add note",
+                "file note",
+                "create note"
+              ]
+            }
+          ],
+          "totalCount": 4,
+          "timingMs": 2912
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/api/search?q=AGR-2026-1004&limit=10",
+        "status": 200,
+        "json": {
+          "success": true,
+          "query": "AGR-2026-1004",
+          "sections": [],
+          "quickActions": [
+            {
+              "id": "create-client",
+              "label": "Create Client",
+              "description": "Start unified intake",
+              "href": "/workspace/ritiklabs/onboarding/new",
+              "keywords": [
+                "new client",
+                "create client",
+                "add client"
+              ]
+            },
+            {
+              "id": "create-agreement",
+              "label": "Create Agreement",
+              "description": "New service agreement",
+              "href": "/workspace/ritiklabs/agreements/new",
+              "keywords": [
+                "new agreement",
+                "create agreement",
+                "send agreement"
+              ]
+            },
+            {
+              "id": "create-approval",
+              "label": "Create Approval",
+              "description": "Lodgement approval workflow",
+              "href": "/workspace/ritiklabs/approvals/new",
+              "keywords": [
+                "new approval",
+                "create approval",
+                "lodgement approval"
+              ]
+            },
+            {
+              "id": "create-sos",
+              "label": "Create Statement of Service",
+              "description": "Issue SOS at completion",
+              "href": "/workspace/ritiklabs/service-statements/new",
+              "keywords": [
+                "new sos",
+                "create sos",
+                "statement of service"
+              ]
+            },
+            {
+              "id": "upload-document",
+              "label": "Upload Document",
+              "description": "Add to document library",
+              "href": "/workspace/ritiklabs/documents/upload",
+              "keywords": [
+                "upload document",
+                "add document",
+                "new document"
+              ]
+            },
+            {
+              "id": "add-note",
+              "label": "Add File Note",
+              "description": "Compliance case notes",
+              "href": "/workspace/ritiklabs/file-notes",
+              "keywords": [
+                "new note",
+                "add note",
+                "file note",
+                "create note"
+              ]
+            }
+          ],
+          "totalCount": 0,
+          "timingMs": 2051
+        }
+      }
+    ],
+    "db": [
+      {
+        "table": "clients",
+        "row": {
+          "id": "99e6f959-aa91-474e-9f9d-2af5fd3223f3",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "name": "E2E-3 Production Client",
+          "email": "e2e3.prod.1781078216357@example.com",
+          "phone": "+61400999888",
+          "created_at": "2026-06-10T07:57:07.079967+00:00",
+          "updated_at": "2026-06-10T07:57:07.079967+00:00",
+          "dob": "1990-06-15",
+          "client_number": "AGR-2026-1004",
+          "first_name": "E2E-3",
+          "last_name": "Production Client",
+          "address": "200 Collins Street, Melbourne VIC 3000"
+        }
+      },
+      {
+        "table": "matters",
+        "row": {
+          "id": "c93dc55d-abf4-4ced-a164-341b7231d2ca",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "client_id": "99e6f959-aa91-474e-9f9d-2af5fd3223f3",
+          "matter_type_id": "444b6670-a844-4c50-9c74-41dfe32c905a",
+          "visa_subclass": "190",
+          "visa_stream": "Skilled Nominated",
+          "assigned_rma_id": "2cab360f-fd21-461a-8a57-67573dee0530",
+          "priority": "normal",
+          "agreement_id": "8b279c90-7dc3-4561-ab25-1698c83f2038",
+          "approval_id": "933ec291-c98a-4137-b574-60ce0a648f43",
+          "status": "active",
+          "created_at": "2026-06-10T07:57:07.405655+00:00",
+          "updated_at": "2026-06-10T07:57:10.968301+00:00"
+        }
+      },
+      {
+        "table": "matter_financials",
+        "row": {
+          "matter_id": "c93dc55d-abf4-4ced-a164-341b7231d2ca",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "professional_fee": 4200,
+          "deposit": 1200,
+          "visa_fees": 4640,
+          "visa_fee_surcharge": 116,
+          "surcharge_percent_applied": 2.5,
+          "created_at": "2026-06-10T07:57:08.094786+00:00",
+          "updated_at": "2026-06-10T07:57:08.094786+00:00"
+        }
+      }
+    ],
+    "browser": [
+      {
+        "screenshot": "docs\\e2e3-screenshots\\01-onboarding-complete.png",
+        "url": "/workspace/ritiklabs/clients/99e6f959-aa91-474e-9f9d-2af5fd3223f3?file_source=application_approval&file_id=933ec291-c98a-4137-b574-60ce0a648f43&tab=overview"
+      },
+      {
+        "screenshot": "docs\\e2e3-screenshots\\02-agreement-draft-generated.png",
+        "url": "/workspace/ritiklabs/clients/99e6f959-aa91-474e-9f9d-2af5fd3223f3?file_source=agreement&file_id=8b279c90-7dc3-4561-ab25-1698c83f2038&tab=service_agreement"
+      },
+      {
+        "screenshot": "docs\\e2e3-screenshots\\04-approval-signed.png",
+        "url": "/workspace/ritiklabs/clients/99e6f959-aa91-474e-9f9d-2af5fd3223f3?file_source=application_approval&file_id=933ec291-c98a-4137-b574-60ce0a648f43&tab=approval"
+      },
+      {
+        "screenshot": "docs\\e2e3-screenshots\\05-lodgement.png",
+        "url": "/workspace/ritiklabs/clients/99e6f959-aa91-474e-9f9d-2af5fd3223f3?file_source=application_approval&file_id=933ec291-c98a-4137-b574-60ce0a648f43&tab=lodgement"
+      },
+      {
+        "screenshot": "docs\\e2e3-screenshots\\07-matter-complete.png",
+        "url": "/workspace/ritiklabs/clients/99e6f959-aa91-474e-9f9d-2af5fd3223f3?file_source=application_approval&file_id=933ec291-c98a-4137-b574-60ce0a648f43&tab=completion"
+      },
+      {
+        "screenshot": "docs\\e2e3-screenshots\\08-notification-center.png",
+        "url": "/workspace/ritiklabs/notifications"
+      },
+      {
+        "screenshot": "docs\\e2e3-screenshots\\09-search-dashboard.png",
+        "url": "/workspace/ritiklabs/dashboard"
+      }
+    ],
+    "webhook": [
+      {
+        "documentId": "9460c63e-29b8-491e-b3e1-b3784c7fbe55",
+        "eventType": "document_viewed",
+        "status": 200,
+        "body": {
+          "received": true,
+          "status": "processed",
+          "entity": "application_approval"
+        },
+        "payload": {
+          "event": {
+            "type": "document_viewed",
+            "time": 1781078288,
+            "hash": "6a94ff232d3ce8e04f701d987250ccfa606b6d593e8b417ca1a4ce447fb9ecce"
+          },
+          "data": {
+            "object": {
+              "id": "9460c63e-29b8-491e-b3e1-b3784c7fbe55"
+            }
+          }
+        }
+      },
+      {
+        "documentId": "9460c63e-29b8-491e-b3e1-b3784c7fbe55",
+        "eventType": "document_completed",
+        "status": 200,
+        "body": {
+          "received": true,
+          "status": "processed",
+          "entity": "application_approval"
+        },
+        "payload": {
+          "event": {
+            "type": "document_completed",
+            "time": 1781078291,
+            "hash": "539a3df7433906bc38ca7515e238a2367d0ed91d991931e12c419da25960f516"
+          },
+          "data": {
+            "object": {
+              "id": "9460c63e-29b8-491e-b3e1-b3784c7fbe55"
+            }
+          }
+        }
+      }
+    ],
+    "email": [
+      {
+        "rows": [
+          {
+            "email_type": null,
+            "recipient": "nayramalik1018@gmail.com",
+            "status": "delivered",
+            "subject": "Application lodged",
+            "created_at": "2026-06-10T07:58:47.398673+00:00"
+          },
+          {
+            "email_type": null,
+            "recipient": "nayramalik1018@gmail.com",
+            "status": "delivered",
+            "subject": "Ready to lodge",
+            "created_at": "2026-06-10T07:58:43.022927+00:00"
+          },
+          {
+            "email_type": null,
+            "recipient": "nayramalik1018@gmail.com",
+            "status": "delivered",
+            "subject": "Application approval completed",
+            "created_at": "2026-06-10T07:58:30.36757+00:00"
+          },
+          {
+            "email_type": null,
+            "recipient": "nayramalik1018@gmail.com",
+            "status": "delivered",
+            "subject": "Client signed application",
+            "created_at": "2026-06-10T07:58:27.002758+00:00"
+          },
+          {
+            "email_type": null,
+            "recipient": "nayramalik1018@gmail.com",
+            "status": "delivered",
+            "subject": "Certificate of Approval generated",
+            "created_at": "2026-06-10T07:58:23.044223+00:00"
+          },
+          {
+            "email_type": null,
+            "recipient": "nayramalik1018@gmail.com",
+            "status": "delivered",
+            "subject": "Application sent for client approval",
+            "created_at": "2026-06-10T07:58:09.76706+00:00"
+          }
+        ]
+      }
+    ]
+  }
+}

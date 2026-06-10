@@ -2,7 +2,8 @@
 import * as React from "react"
 import { useRequireWorkspace } from "@/lib/hooks/use-workspace"
 import { useAuthStore } from "@/store/authStore"
-import { useDocuments } from "@/lib/hooks/useSupabaseData"
+import { useDocuments, getRealAgencyId } from "@/lib/hooks/useSupabaseData"
+import { createClient } from "@/lib/supabase/client"
 import Link from "next/link"
 import {
   ArrowRight,
@@ -18,6 +19,7 @@ import {
   FileSignature,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { PageHeader } from "@/components/layout/PageHeader"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
@@ -76,13 +78,13 @@ export function SendDocumentPage() {
   ])
 
   // Step 3: Email state
-  const mockEmailTemplates = [
+  const defaultEmailTemplates = [
     { id: "t1", name: "Standard Visa Intake Signature Request", subject: "Action Required: Digital Signature needed for Australian Visa File", message: "Please review and digitally sign the attached evidentiary document for your Australian visa application. This document must be executed in compliance with OMARA practice requirements. Click the review link below to get started." },
     { id: "t2", name: "Follow-up Evidentiary Declaration Request", subject: "Follow-up: Complete Stat Dec for Subclass 820 Sponsor Details", message: "Following our initial matter interview, we have drafted the necessary sponsor particulars checklist. Please check, digitally countersign the declarations, and verify secure local locks." },
     { id: "t3", name: "Urgent Appeals Representation Mandate", subject: "URGENT: Review AAT Appeals Representation Contract", message: "We have finalized your AAT Review Application particulars. Please execute this retainer agreement immediately so we may log the appeals registry before the statutory deadline." },
   ]
-  const [emailSubject, setEmailSubject] = React.useState(mockEmailTemplates[0].subject)
-  const [emailMessage, setEmailMessage] = React.useState(mockEmailTemplates[0].message)
+  const [emailSubject, setEmailSubject] = React.useState(defaultEmailTemplates[0].subject)
+  const [emailMessage, setEmailMessage] = React.useState(defaultEmailTemplates[0].message)
   const [selectedTemplateId, setSelectedTemplateId] = React.useState("t1")
   const [ccMe, setCcMe] = React.useState(true)
   const [autoRemind7Days, setAutoRemind7Days] = React.useState(true)
@@ -225,7 +227,7 @@ export function SendDocumentPage() {
 
   const handleTemplateChange = (templateId: string) => {
     setSelectedTemplateId(templateId)
-    const t = mockEmailTemplates.find(x => x.id === templateId)
+    const t = defaultEmailTemplates.find(x => x.id === templateId)
     if (t) {
       setEmailSubject(t.subject)
       setEmailMessage(t.message)
@@ -314,7 +316,11 @@ export function SendDocumentPage() {
 
     try {
       if (!uploadedFile?.file) throw new Error("No file uploaded")
-      const resolvedAgencyId = agencyId || activeWorkspace?.id
+      const supabase = createClient()
+      const resolvedAgencyId = await getRealAgencyId(
+        supabase,
+        agencyId || activeWorkspace?.id || "",
+      )
       if (!resolvedAgencyId) throw new Error("No active workspace")
 
       stages = markTimelineRunning(stages, "upload")
@@ -342,6 +348,7 @@ export function SendDocumentPage() {
           const res = await fetch("/api/documents/send", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            credentials: "include",
             body: JSON.stringify({
               documentId: document.id,
               agencyId: resolvedAgencyId,
@@ -354,7 +361,17 @@ export function SendDocumentPage() {
               emailOnComplete,
             }),
           })
-          const json = await res.json()
+          const raw = await res.text()
+          let json: Record<string, unknown> = {}
+          try {
+            json = raw ? JSON.parse(raw) : {}
+          } catch {
+            throw new Error(
+              res.ok
+                ? "Invalid response from send API"
+                : `Send API failed (${res.status}). Restart the dev server if you see HTML errors.`,
+            )
+          }
           if (!res.ok || !json.success) {
             const err = new Error(json.error || "Failed to dispatch signature request") as Error & {
               stages?: DispatchStageRecord[]
@@ -435,21 +452,21 @@ export function SendDocumentPage() {
   const renderTypeStep = () => (
     <div className="space-y-6">
       <div className="grid gap-6 md:grid-cols-1">
-        <Card 
+        <Card
           onClick={() => {
             setAgreementType("custom")
             setCurrentStep(1)
           }}
-          className="cursor-pointer transition-all duration-300 hover:shadow-md hover:border-blue-500/50 group"
+          className="cursor-pointer border-[#E7E7E7] bg-white transition-all duration-300 hover:border-[#111111]/20 hover:shadow-[0_8px_24px_rgba(17,17,17,0.06)] group"
         >
           <CardContent className="p-8 text-center space-y-4">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 group-hover:scale-110 transition-transform">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-[#E7E7E7] bg-[#FAFAFA] text-[#111111] group-hover:scale-105 transition-transform">
               <UploadCloud className="h-8 w-8" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-[#081B2E]">Upload Custom Agreement</h3>
-              <p className="mt-2 text-sm text-slate-500">
-                Upload arbitrary PDF or DOCX files and route for signatures.
+              <p className="section-title">Upload custom agreement</p>
+              <p className="page-description mx-auto mt-2 max-w-md">
+                Upload PDF or DOCX files and route them for secure electronic signature.
               </p>
             </div>
           </CardContent>
@@ -480,20 +497,20 @@ export function SendDocumentPage() {
         className={cn(
           "flex min-h-[300px] flex-col items-center justify-center rounded-2xl border-2 border-dashed text-center p-8 transition-all duration-300",
           dragging 
-            ? "border-[#0D9F8C] bg-[#effcf7]/50" 
+            ? "border-[#111111] bg-[#FAFAFA]" 
             : uploadedFile 
-              ? "border-[#0D9F8C]/60 bg-emerald-50/10" 
-              : "border-slate-200 bg-[#F7FAF8]/40 hover:bg-[#F7FAF8]"
+              ? "border-[#111111]/60 bg-[#FAFAFA]/10" 
+              : "border-slate-200 bg-[#FAFAFA]/40 hover:bg-[#FAFAFA]"
         )}
       >
         {uploadedFile ? (
           <div className="space-y-4">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-b from-[#effcf7] to-[#ffffff] text-[#0D9F8C] border border-emerald-100 shadow-sm">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-[#FAFAFA] text-[#111111] border border-[#E7E7E7] shadow-sm">
               <FileCheck2 className="h-7 w-7" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-[#081B2E]">{uploadedFile.name}</h3>
-              <p className="text-xs text-slate-400 font-bold mt-1.5">{uploadedFile.size} • {uploadedFile.pages} Pages • {uploadedFile.type} Document</p>
+              <p className="font-sans-ui text-base font-semibold text-[#111111]">{uploadedFile.name}</p>
+              <p className="font-sans-ui text-xs text-[#5C5C5C] font-medium mt-1.5">{uploadedFile.size} · {uploadedFile.pages} pages · {uploadedFile.type}</p>
             </div>
             <div className="flex justify-center gap-3">
               <Button 
@@ -515,19 +532,19 @@ export function SendDocumentPage() {
               onChange={handleFileChange}
               accept=".pdf,.doc,.docx"
             />
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-[#0D9F8C] border border-emerald-100 animate-pulse">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#FAFAFA] text-[#111111] border border-[#E7E7E7] animate-pulse">
               <UploadCloud className="h-7 w-7" />
             </div>
             <div>
-              <h2 className="text-lg font-bold tracking-tight text-[#081B2E]">Drop PDF here</h2>
-              <p className="mt-1 text-xs text-slate-400 font-semibold max-w-sm mx-auto leading-relaxed">
+              <p className="section-title">Drop PDF here</p>
+              <p className="page-description mx-auto mt-2 max-w-sm text-xs">
                 Drag and drop your legal briefs, personal declaration packets, or visa templates up to 10MB here.
               </p>
             </div>
             <div>
               <Button 
                 onClick={() => fileInputRef.current?.click()} 
-                className="rounded-xl bg-[#0D9F8C] font-bold shadow-md hover:bg-[#0A5B52]"
+                className="rounded-xl bg-[#111111] font-bold shadow-md hover:bg-[#222222]"
               >
                 Choose File
               </Button>
@@ -547,7 +564,7 @@ export function SendDocumentPage() {
         <Button
           disabled={!uploadedFile?.file}
           onClick={() => setCurrentStep(2)}
-          className="rounded-xl bg-[#0D9F8C] font-bold px-6 shadow-md hover:bg-[#0A5B52] disabled:opacity-40 disabled:hover:bg-[#0D9F8C]"
+          className="rounded-xl bg-[#111111] font-bold px-6 shadow-md hover:bg-[#222222] disabled:opacity-40 disabled:hover:bg-[#111111]"
         >
           Assign Signers <ArrowRight className="h-4 w-4 ml-1.5" />
         </Button>
@@ -555,17 +572,17 @@ export function SendDocumentPage() {
     </div>
   )
 
-  const demoSignerEmail =
+  const previewSignerEmail =
     process.env.NEXT_PUBLIC_DEMO_SIGNER_EMAIL ||
     (process.env.NODE_ENV !== "production" ? "kartiksingh2829@gmail.com" : "")
 
   const fillDemoSigner = () => {
-    if (!demoSignerEmail) return
+    if (!previewSignerEmail) return
     setSignersList([
       {
         id: signersList[0]?.id || "S-1",
         name: "Kartik Singh",
-        email: demoSignerEmail,
+        email: previewSignerEmail,
         role: "Client",
         order: 1,
       },
@@ -574,14 +591,14 @@ export function SendDocumentPage() {
 
   const renderSignersStep = () => (
     <div className="space-y-6">
-      <div className="rounded-xl border border-emerald-100 bg-emerald-50/80 p-4 text-xs font-semibold text-emerald-900">
+      <div className="rounded-xl border border-[#E7E7E7] bg-[#FAFAFA]/80 p-4 text-xs font-semibold text-[#111111]">
         Your signature ({user?.name || 'sender'}) is applied automatically when you send. Only external recipients below receive SignWell signing requests.
       </div>
       <div className="space-y-4">
         <div className="flex justify-between items-center flex-wrap gap-2">
           <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">External recipients only</div>
           <div className="flex gap-2">
-            {demoSignerEmail && (
+            {previewSignerEmail && (
               <Button
                 type="button"
                 variant="outline"
@@ -596,7 +613,7 @@ export function SendDocumentPage() {
             variant="outline" 
             size="sm"
             onClick={addSigner}
-            className="h-9 rounded-xl border-slate-200 text-[#0D9F8C] font-bold text-xs hover:bg-[#F7FAF8]"
+            className="h-9 rounded-xl border-slate-200 text-[#111111] font-bold text-xs hover:bg-[#FAFAFA]"
           >
             <Plus className="h-4 w-4 mr-1" /> Add Recipient Signer
           </Button>
@@ -641,7 +658,7 @@ export function SendDocumentPage() {
                 <select 
                   value={signer.role}
                   onChange={(e) => handleSignerChange(signer.id, "role", e.target.value)}
-                  className="flex h-10 w-full rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]"
+                  className="flex h-10 w-full rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#111111]"
                 >
                   <option value="Primary Client (Signer)">Primary Client (Signer)</option>
                   <option value="Sponsor (Signer)">Sponsor (Signer)</option>
@@ -672,7 +689,7 @@ export function SendDocumentPage() {
         <Button 
           disabled={signersList.some(s => !s.name || !s.email)}
           onClick={() => setCurrentStep(3)}  
-          className="rounded-xl bg-[#0D9F8C] font-bold px-6 shadow-md hover:bg-[#0A5B52] disabled:opacity-40"
+          className="rounded-xl bg-[#111111] font-bold px-6 shadow-md hover:bg-[#222222] disabled:opacity-40"
         >
           Email Customise <ArrowRight className="h-4 w-4 ml-1.5" />
         </Button>
@@ -690,9 +707,9 @@ export function SendDocumentPage() {
             <select
               value={selectedTemplateId}
               onChange={(e) => handleTemplateChange(e.target.value)}
-              className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]"
+              className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#111111]"
             >
-              {mockEmailTemplates.map((t) => (
+              {defaultEmailTemplates.map((t) => (
                 <option key={t.id} value={t.id}>{t.name}</option>
               ))}
             </select>
@@ -714,7 +731,7 @@ export function SendDocumentPage() {
               value={emailMessage}
               onChange={(e) => setEmailMessage(e.target.value)}
               placeholder="Draft secure instructions..."
-              className="flex min-h-[140px] w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#0D9F8C]"
+              className="flex min-h-[140px] w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#111111]"
             />
           </div>
 
@@ -729,7 +746,7 @@ export function SendDocumentPage() {
                   type="checkbox"
                   checked={value}
                   onChange={(e) => set(e.target.checked)}
-                  className="h-4 w-4 rounded border-slate-300 text-[#0D9F8C] focus:ring-[#0D9F8C]"
+                  className="h-4 w-4 rounded border-slate-300 text-[#111111] focus:ring-[#111111]"
                 />
                 {label}
               </label>
@@ -748,14 +765,14 @@ export function SendDocumentPage() {
               <span className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-red-400" />
                 <span className="h-2 w-2 rounded-full bg-amber-400" />
-                <span className="h-2 w-2 rounded-full bg-[#0D9F8C]" />
+                <span className="h-2 w-2 rounded-full bg-[#111111]" />
               </span>
               <span>secure-mail-viewer</span>
             </div>
             
-            <div className="p-5 space-y-4 text-[11px] text-[#081B2E]">
+            <div className="p-5 space-y-4 text-[11px] text-[#111111]">
               <div className="space-y-1.5 border-b border-slate-100 pb-3">
-                <div><span className="text-slate-400 font-bold">From:</span> ImmiSign Custody <strong className="text-slate-700">deliveries@immisign.com.au</strong></div>
+                <div><span className="text-slate-400 font-bold">From:</span> ImmiMate <strong className="text-slate-700">support@immimate.app</strong></div>
                 <div><span className="text-slate-400 font-bold">To:</span> {signersList[0]?.name || "Client"} <strong className="text-slate-700">&lt;{signersList[0]?.email || "client@email.com"}&gt;</strong></div>
                 <div><span className="text-slate-400 font-bold">Subject:</span> <strong className="text-slate-700">{emailSubject}</strong></div>
               </div>
@@ -763,7 +780,7 @@ export function SendDocumentPage() {
               {/* Message body */}
               <div className="space-y-3 leading-relaxed font-semibold text-slate-600">
                 <div className="flex items-center gap-2 mb-4">
-                  <div className="flex h-7 w-7 items-center justify-center rounded bg-emerald-50 text-[#0D9F8C] border border-emerald-100">
+                  <div className="flex h-7 w-7 items-center justify-center rounded bg-[#FAFAFA] text-[#111111] border border-[#E7E7E7]">
                     <ShieldCheck className="h-4.5 w-4.5" />
                   </div>
                   <span className="text-xs font-black text-[#081b36] tracking-tight">Secure signature request</span>
@@ -795,7 +812,7 @@ export function SendDocumentPage() {
         <Button variant="outline" onClick={() => setCurrentStep(2)} className="rounded-xl border-slate-200 bg-white font-bold px-6">
           Back
         </Button>
-        <Button onClick={() => setCurrentStep(4)} className="rounded-xl bg-[#0D9F8C] font-bold px-6 shadow-md hover:bg-[#0A5B52]">
+        <Button onClick={() => setCurrentStep(4)} className="rounded-xl bg-[#111111] font-bold px-6 shadow-md hover:bg-[#222222]">
           Review Packet <ArrowRight className="h-4 w-4 ml-1.5" />
         </Button>
       </div>
@@ -839,7 +856,7 @@ export function SendDocumentPage() {
 
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
         {/* Verification Summary */}
-        <div className="space-y-5 text-xs text-[#081B2E]">
+        <div className="space-y-5 text-xs text-[#111111]">
           <div className="rounded-2xl border border-slate-200 bg-white p-5 space-y-4">
             <div className="font-bold text-sm text-[#081b36]">Intake File Summary</div>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -850,7 +867,7 @@ export function SendDocumentPage() {
               </div>
               <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-1">
                 <span className="text-[9px] text-slate-400 uppercase tracking-wider font-bold">Upload Details</span>
-                <div className="font-bold text-[#0D9F8C] truncate">{user?.name || "Current User"}</div>
+                <div className="font-bold text-[#111111] truncate">{user?.name || "Current User"}</div>
                 <div className="text-xs text-slate-400 font-bold">{new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
               </div>
             </div>
@@ -880,10 +897,10 @@ export function SendDocumentPage() {
         {/* Action Panel */}
         <div className="space-y-5">
           <Card className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-[0_1px_2px_rgba(8,27,46,0.01),0_8px_24px_rgba(8,27,46,0.02)]">
-            <div className="bg-gradient-to-r from-emerald-50 to-white px-5 py-4 border-b border-slate-100">
+            <div className="bg-gradient-to-r from-[#FAFAFA] to-white px-5 py-4 border-b border-[#E7E7E7]">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="h-5 w-5 text-[#0D9F8C]" />
-                <span className="font-bold text-[#081B2E]">Ready for Secure Dispatch</span>
+                <ShieldCheck className="h-5 w-5 text-[#111111]" />
+                <span className="font-bold text-[#111111]">Ready for Secure Dispatch</span>
               </div>
             </div>
             <div className="p-5 space-y-4">
@@ -891,9 +908,9 @@ export function SendDocumentPage() {
                 You are about to issue a legally binding signature request. This action will lock the attached document hashes and dispatch secure OTP links to all listed signers.
               </p>
               
-              <div className="rounded-lg bg-blue-50/50 border border-blue-100/50 p-3 flex gap-3">
-                <div className="mt-0.5 h-2 w-2 rounded-full bg-blue-400 shrink-0" />
-                <div className="text-[11px] text-blue-700 font-semibold">
+              <div className="rounded-lg bg-[#FAFAFA] border border-[#E7E7E7] p-3 flex gap-3">
+                <div className="mt-0.5 h-2 w-2 rounded-full bg-[#111111] shrink-0" />
+                <div className="text-[11px] text-[#5C5C5C] font-semibold">
                   Reminders will be automatically dispatched every 48 hours until executed.
                 </div>
               </div>
@@ -909,7 +926,7 @@ export function SendDocumentPage() {
         <Button
           disabled={!uploadedFile?.file || dispatchBusy}
           onClick={triggerDispatch}
-          className="rounded-xl bg-[#081B2E] text-white font-bold px-6 shadow-md hover:bg-slate-800 disabled:opacity-50"
+          className="rounded-xl bg-[#111111] text-white font-bold px-6 shadow-md hover:bg-slate-800 disabled:opacity-50"
         >
           Sign & Dispatch to Recipients <ArrowRight className="h-4 w-4 ml-1.5" />
         </Button>
@@ -936,7 +953,7 @@ export function SendDocumentPage() {
             <Button
               disabled={!uploadedFile?.file}
               onClick={() => void triggerDispatch()}
-              className="rounded-xl bg-[#0D9F8C] font-bold px-6"
+              className="rounded-xl bg-[#111111] font-bold px-6"
             >
               Send now
             </Button>
@@ -981,14 +998,14 @@ export function SendDocumentPage() {
           )}
           <div className="text-center space-y-2">
             <p className="text-xs font-mono text-slate-500">SignWell ID: {confirmedSignwellId}</p>
-            <p className="text-xs text-emerald-700 font-semibold">Database confirmation received.</p>
+            <p className="text-xs text-[#111111] font-semibold">Database confirmation received.</p>
           </div>
           <div className="flex justify-center gap-3">
             <Link href={`/workspace/${currentSlug}/documents`}>
               <Button variant="outline" className="rounded-xl border-slate-200 font-bold px-6">View Documents</Button>
             </Link>
             <Link href={`/workspace/${currentSlug}/dashboard`}>
-              <Button className="rounded-xl bg-[#0D9F8C] font-bold px-6 shadow-md hover:bg-[#0A5B52]">Return to Dashboard</Button>
+              <Button className="rounded-xl bg-[#111111] font-bold px-6 shadow-md hover:bg-[#222222]">Return to Dashboard</Button>
             </Link>
           </div>
         </div>
@@ -1007,33 +1024,36 @@ export function SendDocumentPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl">
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-[#081B2E]">Send Document for Signature</h1>
-          <p className="mt-2 text-sm text-slate-500 font-medium">Upload documents, assign recipients, and execute securely.</p>
-        </div>
-        <div className="flex items-center gap-3 text-xs font-bold text-slate-400">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            disabled={dispatchBusy}
-            onClick={startOver}
-            className="text-slate-500 font-bold"
-          >
-            Start over
-          </Button>
-          {saving ? (
-            <span className="flex items-center text-amber-500"><span className="h-1.5 w-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse" /> Saving...</span>
-          ) : (
-            <span>{lastSaved}</span>
-          )}
-        </div>
-      </div>
+    <div className="animate-enter mx-auto max-w-5xl space-y-8">
+      <PageHeader
+        eyebrow="Documents"
+        title="Send document for signature"
+        description="Upload documents, assign recipients, and execute securely from one guided workflow."
+        action={
+          <div className="flex items-center gap-3 text-xs font-bold text-[#5C5C5C]">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              disabled={dispatchBusy}
+              onClick={startOver}
+              className="text-[#5C5C5C] font-bold"
+            >
+              Start over
+            </Button>
+            {saving ? (
+              <span className="flex items-center text-amber-600">
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse" /> Saving...
+              </span>
+            ) : (
+              <span>{lastSaved}</span>
+            )}
+          </div>
+        }
+      />
 
-      <div className="mb-8 overflow-hidden rounded-2xl border border-slate-200/60 bg-white/60 shadow-[0_1px_2px_rgba(8,27,46,0.01),0_8px_24px_rgba(8,27,46,0.02)]">
-        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4 overflow-x-auto hide-scrollbar">
+      <div className="overflow-hidden rounded-2xl border border-[#E7E7E7] bg-white shadow-[0_1px_3px_rgba(17,17,17,0.06),0_8px_24px_rgba(17,17,17,0.04)]">
+        <div className="flex items-center justify-between border-b border-[#E7E7E7] px-6 py-4 overflow-x-auto immimate-scroll">
           {steps.map((step, index) => {
             const isActive = index === currentStep
             const isCompleted = index < currentStep
@@ -1051,20 +1071,20 @@ export function SendDocumentPage() {
                 >
                 <div className={cn(
                   "flex h-7 w-7 items-center justify-center rounded-full text-xs font-black transition-colors duration-300",
-                  isActive ? "bg-[#0D9F8C] text-white shadow-[0_4px_12px_rgba(13,159,140,0.2)]" :
-                  isCompleted ? "bg-emerald-50 text-[#0D9F8C] border border-emerald-100" :
-                  "bg-slate-100 text-slate-400"
+                  isActive ? "bg-[#111111] text-white shadow-[0_4px_12px_rgba(17,17,17,0.12)]" :
+                  isCompleted ? "bg-[#FAFAFA] text-[#111111] border border-[#E7E7E7]" :
+                  "bg-[#FAFAFA] text-[#5C5C5C] border border-[#E7E7E7]"
                 )}>
                   {isCompleted ? <Check className="h-3.5 w-3.5" /> : index + 1}
                 </div>
                 <span className={cn(
                   "text-xs font-bold uppercase tracking-wider mr-6",
-                  isActive ? "text-[#081B2E]" : isCompleted ? "text-[#0D9F8C]" : "text-slate-400"
+                  isActive ? "text-[#111111]" : isCompleted ? "text-[#111111]" : "text-[#5C5C5C]"
                 )}>
                   {step}
                 </span>
                 </button>
-                {index < steps.length - 1 && <ArrowRight className="h-3.5 w-3.5 text-slate-200 mr-6" />}
+                {index < steps.length - 1 && <ArrowRight className="h-3.5 w-3.5 text-[#E7E7E7] mr-6" />}
               </div>
             )
           })}

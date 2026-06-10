@@ -6,8 +6,9 @@ import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { WorkspaceShellSkeleton } from "@/components/ui/skeletons"
 import { PageTransition } from "./page-transition"
-import { CommandPalette } from "./command-palette"
+import { CommandPaletteProvider, GlobalSearchModal, useCommandPalette } from "./command-palette"
 import { NotificationCenter } from "@/components/notifications/notification-center"
 import { useAuthStore, User } from "@/store/authStore"
 import { useRequireWorkspace } from "@/lib/hooks/use-workspace"
@@ -25,9 +26,9 @@ import {
   FileSignature,
   FileCheck2,
   FileText,
+  ClipboardList,
   Send,
   FolderOpen,
-  BarChart,
   Settings,
   CreditCard,
   Search,
@@ -58,7 +59,7 @@ const rawSidebarNavItems = [
     icon: LayoutDashboard,
   },
   {
-    title: "Agreements",
+    title: "Service Agreements",
     href: "/agreements",
     icon: FileSignature,
   },
@@ -88,14 +89,9 @@ const rawSidebarNavItems = [
     icon: Users,
   },
   {
-    title: "Reports",
-    href: "/reports",
-    icon: FileText,
-  },
-  {
-    title: "Analytics",
-    href: "/analytics",
-    icon: BarChart,
+    title: "File Notes",
+    href: "/file-notes",
+    icon: ClipboardList,
   },
 ] satisfies SidebarNavItem[]
 
@@ -112,7 +108,38 @@ const rawSidebarBottomItems = [
   },
 ] satisfies SidebarNavItem[]
 
-export function DashboardShell({ children }: { children: React.ReactNode }) {
+function SearchTrigger() {
+  const { openPalette } = useCommandPalette()
+  return (
+    <>
+    <Button
+      variant="ghost"
+      size="icon"
+      className="md:hidden h-10 w-10 rounded-xl text-[#5C5C5C] hover:bg-[#FAFAFA]"
+      aria-label="Open search"
+      onClick={openPalette}
+    >
+      <Search className="h-5 w-5" />
+    </Button>
+    <div className="relative hidden w-full max-w-lg md:flex">
+      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#5C5C5C]" aria-hidden />
+      <button
+        type="button"
+        aria-label="Open ImmiMate Command Center"
+        onClick={openPalette}
+        className="flex h-9 w-full items-center justify-between rounded-xl border border-[#E7E7E7] bg-[#FAFAFA] pl-9 pr-3 text-sm font-medium text-[#5C5C5C] transition-colors duration-200 hover:border-[#111111]/15 hover:bg-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#111111]/20"
+      >
+        <span>Search clients, matters, documents, notes…</span>
+        <kbd className="hidden rounded border border-[#E7E7E7] bg-white px-1.5 font-mono text-[10px] font-semibold text-[#5C5C5C] sm:inline-block">
+          ⌘K
+        </kbd>
+      </button>
+    </div>
+    </>
+  )
+}
+
+function DashboardShellInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
   const [isCollapsed, setIsCollapsed] = React.useState(false)
@@ -131,11 +158,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const currentRole = user?.role || "Owner"
 
   if (!currentSlug) {
-    return (
-      <div className="flex min-h-screen items-center justify-center text-sm text-slate-500">
-        Loading workspace...
-      </div>
-    )
+    return <WorkspaceShellSkeleton />
   }
 
   const toggleSidebar = () => setIsCollapsed(!isCollapsed)
@@ -157,7 +180,12 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     href: `/workspace/${currentSlug}${item.href}`
   }))
 
-  const sidebarBottomItems = rawSidebarBottomItems.map(item => ({
+  const sidebarBottomItems = [
+    ...rawSidebarBottomItems,
+    ...(hasBillingAccess
+      ? [{ title: "System Health", href: "/admin/system-health", icon: ShieldAlert } satisfies SidebarNavItem]
+      : []),
+  ].map(item => ({
     ...item,
     href: `/workspace/${currentSlug}${item.href}`
   }))
@@ -199,15 +227,15 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         className={cn(
           "group relative flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors outline-none",
           isActive
-            ? "bg-emerald-50 text-[#0D9F8C]"
-            : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+            ? "bg-[#111111]/[0.06] text-[#111111] font-semibold"
+            : "text-[#5C5C5C] hover:bg-[#111111]/[0.04] hover:text-[#111111]"
         )}
       >
         <Icon 
           className={cn(
             "shrink-0 transition-colors", 
             isCollapsed ? "mr-0 h-5 w-5" : "mr-3 h-4 w-4", 
-            isActive ? "text-[#0D9F8C]" : "text-slate-400 group-hover:text-slate-600"
+            isActive ? "text-[#111111]" : "text-[#5C5C5C] group-hover:text-[#111111]"
           )} 
         />
         {!isCollapsed && <span className="transition-all duration-300">{item.title}</span>}
@@ -238,7 +266,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               style={{
                 backgroundColor: currentWorkspace?.logoUrl
                   ? "transparent"
-                  : currentWorkspace?.color || "#0D9F8C",
+                  : "#111111",
               }}
             >
               {currentWorkspace?.logoUrl ? (
@@ -275,7 +303,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             <div className="flex min-w-0 items-center gap-2">
               <div 
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
-                style={{ backgroundColor: currentWorkspace?.color || "#0D9F8C" }}
+                style={{ backgroundColor: "#111111" }}
               >
                 {user?.avatar || "JD"}
               </div>
@@ -314,22 +342,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               <Menu className="h-5 w-5" />
             </Button>
             
-            <div className="relative hidden w-full max-w-md md:flex">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <button
-                onClick={() => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }))}
-                className="flex h-9 w-full items-center justify-between rounded-md border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm font-medium text-slate-500 transition-colors hover:bg-white hover:border-slate-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#0D9F8C]"
-              >
-                <span>Search...</span>
-                <kbd className="hidden rounded border border-slate-200 bg-white px-1.5 font-mono text-xs font-medium text-slate-500 sm:inline-block">
-                  ⌘K
-                </kbd>
-              </button>
-            </div>
+            <SearchTrigger />
           </div>
           
           <div className="flex items-center gap-3">
-            <CommandPalette />
             <NotificationCenter />
             
             <span className="mx-1 hidden h-6 w-px bg-slate-200/80 sm:block"></span>
@@ -345,7 +361,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 <Button variant="ghost" className="relative h-9 w-9 rounded-full px-0 hover:bg-transparent ml-1">
                   <div 
                     className="flex h-full w-full items-center justify-center rounded-full text-xs font-bold text-white shadow-sm ring-2 ring-white"
-                    style={{ backgroundColor: currentWorkspace?.color || "#0D9F8C" }}
+                    style={{ backgroundColor: "#111111" }}
                   >
                     {user?.avatar || "JD"}
                   </div>
@@ -413,12 +429,12 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           <Link href={`/workspace/${currentSlug}/dashboard`} className="flex items-center gap-2">
             <div 
               className="flex h-8 w-8 items-center justify-center rounded-xl font-black text-white text-xs shadow-subtle shrink-0"
-              style={{ backgroundColor: currentWorkspace?.color || "#0D9F8C" }}
+              style={{ backgroundColor: "#111111" }}
             >
               {currentWorkspace?.initials || "AM"}
             </div>
             <span className="text-xl font-bold tracking-tight text-gray-900">
-              {currentWorkspace?.name || "ImmiSign"}
+              {currentWorkspace?.name || "ImmiMate"}
             </span>
           </Link>
           <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl text-gray-500 hover:bg-gray-100" onClick={toggleMobileMenu}>
@@ -438,11 +454,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 className={cn(
                   "flex items-center rounded-xl px-4 py-3 text-sm font-semibold transition-colors",
                   isActive
-                    ? "bg-emerald-50 text-[#0D9F8C]"
+                    ? "bg-[#FAFAFA] text-[#111111] border border-[#E7E7E7]"
                     : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                 )}
               >
-                <Icon className={cn("mr-3 h-5 w-5 shrink-0", isActive ? "text-[#0D9F8C]" : "text-gray-400")} />
+                <Icon className={cn("mr-3 h-5 w-5 shrink-0", isActive ? "text-[#111111]" : "text-gray-400")} />
                 {item.title}
               </Link>
             )
@@ -461,11 +477,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 className={cn(
                   "flex items-center rounded-xl px-4 py-3 text-sm font-semibold transition-colors",
                   isActive
-                    ? "bg-emerald-50 text-[#0D9F8C]"
+                    ? "bg-[#FAFAFA] text-[#111111] border border-[#E7E7E7]"
                     : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                 )}
               >
-                <Icon className={cn("mr-3 h-5 w-5 shrink-0", isActive ? "text-[#0D9F8C]" : "text-gray-400")} />
+                <Icon className={cn("mr-3 h-5 w-5 shrink-0", isActive ? "text-[#111111]" : "text-gray-400")} />
                 {item.title}
               </Link>
             )
@@ -473,5 +489,14 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         </div>
       </div>
     </div>
+  )
+}
+
+export function DashboardShell({ children }: { children: React.ReactNode }) {
+  return (
+    <CommandPaletteProvider>
+      <DashboardShellInner>{children}</DashboardShellInner>
+      <GlobalSearchModal />
+    </CommandPaletteProvider>
   )
 }

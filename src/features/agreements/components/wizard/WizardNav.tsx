@@ -37,7 +37,7 @@ export function WizardNav({
         type="button"
         disabled={continueDisabled}
         onClick={onContinue}
-        className="rounded-xl bg-[#0D9F8C] font-bold px-6 h-11 shadow-md hover:bg-[#0A5B52] disabled:opacity-40"
+        className="rounded-xl bg-[#111111] font-bold px-6 h-11 shadow-md hover:bg-[#222222] disabled:opacity-40"
       >
         {continueLabel}
         <ArrowRight className="h-4 w-4 ml-1.5" />

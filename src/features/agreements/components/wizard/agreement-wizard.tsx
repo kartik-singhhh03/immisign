@@ -20,6 +20,7 @@ import {
   mergeServerDispatchStages,
 } from "@/lib/dispatch/client-timeline"
 
+import { PageHeader } from "@/components/layout/PageHeader"
 import { ClientStep } from "./steps/ClientStep"
 
 import { MatterStep } from "./steps/MatterStep"
@@ -31,8 +32,11 @@ import { TermsStep } from "./steps/TermsStep"
 import { PreviewStep } from "./steps/PreviewStep"
 
 import { SendStep } from "./steps/SendStep"
+import { WizardSidebar } from "./WizardSidebar"
 
-import type { AgencySettings } from '@/lib/settings/types'
+import type { AgencySettings, MatterTypeConfig } from '@/lib/settings/types'
+import type { AgreementFeeItemDraft } from "../../types/wizard"
+import { normalizeFeeItemsFromForm } from "../../lib/fee-items"
 
 import { defaultSelectedClauseIds, resolveSelectedClauses } from '@/lib/settings/load-agency-settings'
 
@@ -47,6 +51,7 @@ type Props = {
   rmaOptions: RmaOption[]
   agencySettings: AgencySettings
   clients?: ClientPickerOption[]
+  initialClientId?: string
 }
 
 function resolveMatterTypeConfig(settings: AgencySettings, form: AgreementWizardFormData) {
@@ -63,7 +68,17 @@ function resolveMatterTypeConfig(settings: AgencySettings, form: AgreementWizard
 
 
 
-export function AgreementWizard({ agencyId, agencySlug, userId, agency, user, rmaOptions, agencySettings, clients = [] }: Props) {
+export function AgreementWizard({
+  agencyId,
+  agencySlug,
+  userId,
+  agency,
+  user,
+  rmaOptions,
+  agencySettings,
+  clients = [],
+  initialClientId,
+}: Props) {
 
   const [currentStep, setCurrentStep] = React.useState(0)
 
@@ -73,6 +88,10 @@ export function AgreementWizard({ agencyId, agencySlug, userId, agency, user, rm
   const [autosaveStatus, setAutosaveStatus] = React.useState<AutosaveStatus>("idle")
   const [lastSavedAt, setLastSavedAt] = React.useState<Date | null>(null)
   const saveTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+  const saveInFlightRef = React.useRef(false)
+  const pendingBlurSaveRef = React.useRef(false)
+
+  const [matterTypes, setMatterTypes] = React.useState<MatterTypeConfig[]>(agencySettings.matterTypes)
 
   const [dispatched, setDispatched] = React.useState(false)
 
@@ -102,6 +121,16 @@ export function AgreementWizard({ agencyId, agencySlug, userId, agency, user, rm
 
     if (defaultRma) initial.responsibleRma = defaultRma.id
 
+    if (initialClientId) {
+      const picked = clients.find((c) => c.id === initialClientId)
+      if (picked) {
+        initial.clientId = picked.id
+        initial.clientName = picked.name
+        initial.clientEmail = picked.email
+        initial.clientPhone = picked.phone || ''
+      }
+    }
+
     return initial
 
   })
@@ -124,21 +153,18 @@ export function AgreementWizard({ agencyId, agencySlug, userId, agency, user, rm
 
           if (!cancelled && draft?.form_data) {
 
-            setFormData((prev) => ({
-
-              ...prev,
-
-              ...draft.form_data,
-
-              matterFieldValues: draft.form_data.matterFieldValues || {},
-
-              selectedClauseIds: draft.form_data.selectedClauseIds?.length
-
-                ? draft.form_data.selectedClauseIds
-
-                : prev.selectedClauseIds,
-
-            }))
+            setFormData((prev) => {
+              const merged = {
+                ...prev,
+                ...draft.form_data,
+                matterFieldValues: draft.form_data.matterFieldValues || {},
+                selectedClauseIds: draft.form_data.selectedClauseIds?.length
+                  ? draft.form_data.selectedClauseIds
+                  : prev.selectedClauseIds,
+              }
+              merged.feeItems = normalizeFeeItemsFromForm(merged)
+              return merged
+            })
 
             if (typeof draft.current_step === 'number') setCurrentStep(draft.current_step)
 
@@ -161,31 +187,53 @@ export function AgreementWizard({ agencyId, agencySlug, userId, agency, user, rm
 
 
 
+  const persistDraft = React.useCallback(async () => {
+    if (dispatched || saveInFlightRef.current) return
+    saveInFlightRef.current = true
+    setAutosaveStatus("saving")
+    try {
+      const res = await fetch('/api/agreements/wizard-draft', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ formData, currentStep, agreementRef }),
+      })
+      if (res.ok) {
+        setAutosaveStatus("saved")
+        setLastSavedAt(new Date())
+      } else {
+        setAutosaveStatus("error")
+      }
+    } catch {
+      setAutosaveStatus("error")
+    } finally {
+      saveInFlightRef.current = false
+      if (pendingBlurSaveRef.current) {
+        pendingBlurSaveRef.current = false
+        void persistDraft()
+      }
+    }
+  }, [formData, currentStep, agreementRef, dispatched])
+
+  const handleBlurSave = React.useCallback(() => {
+    if (dispatched) return
+    if (saveInFlightRef.current) {
+      pendingBlurSaveRef.current = true
+      return
+    }
+    void persistDraft()
+  }, [dispatched, persistDraft])
+
   React.useEffect(() => {
     if (dispatched) return
     setAutosaveStatus("unsaved")
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
     saveTimerRef.current = setTimeout(() => {
-      setAutosaveStatus("saving")
-      fetch('/api/agreements/wizard-draft', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ formData, currentStep, agreementRef }),
-      })
-        .then((res) => {
-          if (res.ok) {
-            setAutosaveStatus("saved")
-            setLastSavedAt(new Date())
-          } else {
-            setAutosaveStatus("error")
-          }
-        })
-        .catch(() => setAutosaveStatus("error"))
-    }, 800)
+      void persistDraft()
+    }, 3000)
     return () => {
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
     }
-  }, [formData, currentStep, agreementRef, agencyId, dispatched])
+  }, [formData, currentStep, agreementRef, agencyId, dispatched, persistDraft])
 
 
 
@@ -202,20 +250,28 @@ export function AgreementWizard({ agencyId, agencySlug, userId, agency, user, rm
 
 
   const handleFieldChange = (
-
     field: keyof AgreementWizardFormData,
-
-    value: string | boolean | string[] | Record<string, string>
-
+    value: string | boolean | string[] | Record<string, string> | AgreementFeeItemDraft[],
   ) => {
-
     setFormData((prev) => ({ ...prev, [field]: value }))
-
   }
 
+  const handleMatterTypesUpdated = (list: MatterTypeConfig[], selectedId?: string) => {
+    setMatterTypes(list)
+    if (selectedId) {
+      const picked = list.find((m) => m.id === selectedId)
+      if (picked) {
+        setFormData((prev) => ({
+          ...prev,
+          matterTypeId: picked.id,
+          matterType: picked.name,
+          matterFieldValues: {},
+        }))
+      }
+    }
+  }
 
-
-  const matterTypeConfig = resolveMatterTypeConfig(agencySettings, formData)
+  const matterTypeConfig = resolveMatterTypeConfig({ ...agencySettings, matterTypes }, formData)
 
   const selectedClauses = resolveSelectedClauses(agencySettings, formData.selectedClauseIds).map((c) => ({
 
@@ -340,29 +396,27 @@ export function AgreementWizard({ agencyId, agencySlug, userId, agency, user, rm
 
   return (
 
-    <div className="animate-enter space-y-6 max-w-4xl mx-auto px-4 pb-10">
-
-      <div className="text-center sm:text-left">
-
-        <p className="text-xs font-bold uppercase tracking-widest text-[#0D9F8C]">New Agreement</p>
-
-        <h1 className="text-2xl font-black text-[#081B2E] mt-1">Agreement Setup Wizard</h1>
-
-        <p className="text-sm text-slate-500 mt-1">Create a MARA-compliant service agreement in six steps.</p>
-        {!dispatched && (
-          <div className="mt-3">
-            <AutosaveIndicator status={autosaveStatus} lastSavedAt={lastSavedAt} />
+    <div className="animate-enter px-4 pb-10 max-w-[1400px] mx-auto">
+      <div className="flex gap-8 items-start">
+        <div className="flex-1 min-w-0 space-y-6">
+          <div className="text-center sm:text-left">
+            <PageHeader
+              variant="wizard"
+              eyebrow="New Agreement"
+              title="Agreement setup"
+              description="Create a MARA-compliant service agreement in six steps."
+            />
+            {!dispatched && (
+              <div className="-mt-2">
+                <AutosaveIndicator status={autosaveStatus} lastSavedAt={lastSavedAt} />
+              </div>
+            )}
           </div>
-        )}
-      </div>
 
-      <WizardStepper currentStep={currentStep} hidden={dispatched} />
+          <WizardStepper currentStep={currentStep} hidden={dispatched} />
 
-
-
-      <Card className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-
-        <div className="p-6 sm:p-8">
+          <Card className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div className="p-6 sm:p-8 lg:p-10">
 
           {currentStep === 0 && (
 
@@ -383,21 +437,14 @@ export function AgreementWizard({ agencyId, agencySlug, userId, agency, user, rm
           {currentStep === 1 && (
 
             <MatterStep
-
               form={formData}
-
               rmaOptions={rmaOptions}
-
-              matterTypes={agencySettings.matterTypes}
-
-              agencySlug={agencySlug}
-
+              matterTypes={matterTypes}
               onChange={handleFieldChange}
-
+              onMatterTypesUpdated={handleMatterTypesUpdated}
+              onBlurSave={handleBlurSave}
               onBack={() => setCurrentStep(0)}
-
               onContinue={() => setCurrentStep(2)}
-
             />
 
           )}
@@ -405,19 +452,11 @@ export function AgreementWizard({ agencyId, agencySlug, userId, agency, user, rm
           {currentStep === 2 && (
 
             <FeesStep
-
               form={formData}
-
-              agencySlug={agencySlug}
-
-              paymentScheduleOptions={agencySettings.paymentSchedules}
-
               onChange={handleFieldChange}
-
+              onBlurSave={handleBlurSave}
               onBack={() => setCurrentStep(1)}
-
               onContinue={() => setCurrentStep(3)}
-
             />
 
           )}
@@ -499,10 +538,20 @@ export function AgreementWizard({ agencyId, agencySlug, userId, agency, user, rm
 
           )}
 
+            </div>
+          </Card>
         </div>
 
-      </Card>
-
+        <WizardSidebar
+          form={formData}
+          agreementRef={agreementRef}
+          rmaOptions={rmaOptions}
+          autosaveStatus={autosaveStatus}
+          lastSavedAt={lastSavedAt}
+          currentStep={currentStep}
+          dispatched={dispatched}
+        />
+      </div>
     </div>
 
   )

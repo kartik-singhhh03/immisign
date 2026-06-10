@@ -40,6 +40,12 @@ function categoryToFlags(category: NotificationCategory): {
       return { emailKey: 'email_approvals', inAppKey: 'in_app_approvals' };
     case 'document':
       return { emailKey: 'email_documents', inAppKey: 'in_app_documents' };
+    case 'sos':
+      return { emailKey: 'email_sos', inAppKey: 'in_app_sos' };
+    case 'file_note':
+      return { emailKey: 'email_file_notes', inAppKey: 'in_app_file_notes' };
+    case 'compliance':
+      return { emailKey: 'email_compliance', inAppKey: 'in_app_compliance' };
     case 'team':
       return { emailKey: 'email_team', inAppKey: 'in_app_team' };
     case 'task':

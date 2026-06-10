@@ -68,14 +68,14 @@ export function ApprovalDashboardWidgets({ agencySlug }: { agencySlug: string })
       value: widgets.readyToLodge,
       icon: FileCheck2,
       href: `/workspace/${agencySlug}/approvals?status=ready_to_lodge`,
-      color: "text-teal-600",
+      color: "text-[#5C5C5C]",
     },
     {
       label: "Recently approved (7d)",
       value: widgets.recentlyApproved,
       icon: CheckCircle2,
       href: `/workspace/${agencySlug}/approvals?status=approved`,
-      color: "text-emerald-600",
+      color: "text-[#5C5C5C]",
     },
     {
       label: "My assigned reviews",
@@ -88,14 +88,14 @@ export function ApprovalDashboardWidgets({ agencySlug }: { agencySlug: string })
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-black text-[#081B2E]">Application approvals</h2>
+      <h2 className="text-lg font-black text-[#111111]">Application approvals</h2>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         {items.map((item) => (
           <Link key={item.label} href={item.href}>
             <Card className="rounded-2xl border-slate-200/60 hover:shadow-md transition-shadow h-full">
               <CardContent className="p-4">
                 <item.icon className={`h-5 w-5 mb-2 ${item.color}`} />
-                <div className="text-2xl font-black text-[#081B2E]">{item.value}</div>
+                <div className="text-2xl font-black text-[#111111]">{item.value}</div>
                 <div className="text-[11px] font-bold text-slate-500 mt-1 leading-tight">{item.label}</div>
               </CardContent>
             </Card>

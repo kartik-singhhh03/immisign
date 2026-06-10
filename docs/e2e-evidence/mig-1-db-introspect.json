@@ -1,0 +1,170 @@
+{
+  "timestamp": "2026-06-10T07:46:35.071Z",
+  "tableCount": 58,
+  "criticalTables": {
+    "clients": true,
+    "agreements": true,
+    "agreement_fee_items": true,
+    "application_approvals": true,
+    "service_statements": true,
+    "file_notes": true,
+    "notifications": true,
+    "activity_events": true,
+    "webhook_events": true,
+    "document_audit_events": true,
+    "email_delivery_audit": true,
+    "matter_applicants": true,
+    "matter_financials": true,
+    "integration_health_logs": true
+  },
+  "requiredColumns": {
+    "notifications": {
+      "priority": true,
+      "scope": true,
+      "deleted_at": true,
+      "metadata": true
+    },
+    "user_notification_preferences": {
+      "email_digest_frequency": true,
+      "last_digest_sent_at": true
+    }
+  },
+  "rlsIssues": [
+    "webhook_events: no policies",
+    "integration_health_logs: no policies"
+  ],
+  "appliedMigrations": [
+    {
+      "filename": "00000000000000_base_schema.sql",
+      "applied_at": "2026-06-03T07:29:03.168Z"
+    },
+    {
+      "filename": "20260528000000_email_schema_update.sql",
+      "applied_at": "2026-06-03T07:29:03.365Z"
+    },
+    {
+      "filename": "20260528000001_signwell_schema_update.sql",
+      "applied_at": "2026-06-03T07:29:03.560Z"
+    },
+    {
+      "filename": "20260528000002_stripe_schema_update.sql",
+      "applied_at": "2026-06-03T07:29:03.757Z"
+    },
+    {
+      "filename": "20260529000000_tenant_rls_policies.sql",
+      "applied_at": "2026-06-03T07:29:03.952Z"
+    },
+    {
+      "filename": "20260529000001_agreement_domain.sql",
+      "applied_at": "2026-06-03T07:29:04.148Z"
+    },
+    {
+      "filename": "20260529000002_application_approvals.sql",
+      "applied_at": "2026-06-03T07:29:04.344Z"
+    },
+    {
+      "filename": "20260529000003_signwell_tables.sql",
+      "applied_at": "2026-06-03T07:29:04.537Z"
+    },
+    {
+      "filename": "20260529999999_storage_setup.sql",
+      "applied_at": "2026-06-03T07:29:04.728Z"
+    },
+    {
+      "filename": "20260530000000_agreement_template_engine.sql",
+      "applied_at": "2026-06-03T07:29:04.932Z"
+    },
+    {
+      "filename": "20260601000000_standalone_documents.sql",
+      "applied_at": "2026-06-03T07:29:05.124Z"
+    },
+    {
+      "filename": "20260601110000_role_template_permissions.sql",
+      "applied_at": "2026-06-03T07:29:05.317Z"
+    },
+    {
+      "filename": "20260601184107_matter_defaults_table.sql",
+      "applied_at": "2026-06-03T07:29:05.512Z"
+    },
+    {
+      "filename": "20260602181500_user_signatures.sql",
+      "applied_at": "2026-06-03T07:29:05.713Z"
+    },
+    {
+      "filename": "20260603100000_immisign_single_plan_billing.sql",
+      "applied_at": "2026-06-03T07:29:05.904Z"
+    },
+    {
+      "filename": "20260603120000_agreement_wizard_drafts.sql",
+      "applied_at": "2026-06-03T07:29:06.100Z"
+    },
+    {
+      "filename": "20260603140000_phase7_audit.sql",
+      "applied_at": "2026-06-03T07:29:06.292Z"
+    },
+    {
+      "filename": "20260603150000_auto_agent_signatures.sql",
+      "applied_at": "2026-06-03T07:29:06.485Z"
+    },
+    {
+      "filename": "20260603160000_settings_full_audit.sql",
+      "applied_at": "2026-06-03T07:29:06.684Z"
+    },
+    {
+      "filename": "20260603170000_phase11_1_hardening.sql",
+      "applied_at": "2026-06-03T07:29:06.880Z"
+    },
+    {
+      "filename": "20260603170000_phase85_settings_parity.sql",
+      "applied_at": "2026-06-03T07:29:07.078Z"
+    },
+    {
+      "filename": "20260603180000_phase11_2_schema_repair.sql",
+      "applied_at": "2026-06-03T07:29:08.244Z"
+    },
+    {
+      "filename": "20260604100000_phase12_application_approvals.sql",
+      "applied_at": "2026-06-03T08:14:10.120Z"
+    },
+    {
+      "filename": "20260604150000_agency_workspace_provision.sql",
+      "applied_at": "2026-06-09T17:18:48.864Z"
+    },
+    {
+      "filename": "20260604160000_input_validation_constraints.sql",
+      "applied_at": "2026-06-09T17:18:49.779Z"
+    },
+    {
+      "filename": "20260605100000_phase13_notifications_comms.sql",
+      "applied_at": "2026-06-03T08:28:30.792Z"
+    },
+    {
+      "filename": "20260606100000_phase16_security_foundation.sql",
+      "applied_at": "2026-06-03T20:35:39.165Z"
+    },
+    {
+      "filename": "20260607120000_phase17_signwell_signup_sync.sql",
+      "applied_at": "2026-06-03T21:53:17.117Z"
+    },
+    {
+      "filename": "20260608100000_phase16_9_workflow_integrity.sql",
+      "applied_at": "2026-06-04T07:41:52.379Z"
+    },
+    {
+      "filename": "20260613100000_rls_security_advisor_fix.sql",
+      "applied_at": "2026-06-09T17:20:43.079Z"
+    },
+    {
+      "filename": "20260614100000_onb_unified_onboarding.sql",
+      "applied_at": "2026-06-09T17:34:32.137Z"
+    },
+    {
+      "filename": "20260615100000_prod_precheck_hardening.sql",
+      "applied_at": "2026-06-09T17:47:09.678Z"
+    },
+    {
+      "filename": "99999999999999_reconciliation.sql",
+      "applied_at": "2026-06-10T07:45:55.596Z"
+    }
+  ]
+}

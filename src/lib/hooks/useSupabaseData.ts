@@ -437,10 +437,11 @@ export function useAgencyProfile() {
 
   const updateBranding = async (updates: any) => {
     if (!activeWorkspace?.id) return;
-    const res = await fetch('/api/settings/branding', {
+    const res = await globalThis.fetch('/api/settings/branding', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updates),
+      credentials: 'include',
     });
     const json = await res.json().catch(() => ({}));
     if (!res.ok) {
@@ -722,75 +723,51 @@ export function useTeamActivity() {
   return { data, loading, refetch: fetch };
 }
 
-export function useClientTimeline(clientId?: string) {
+export function useClientTimeline(
+  clientId?: string,
+  fileScope?: { file_source: string; file_id: string },
+) {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const supabase = useMemo(() => createClient(), []);
 
   const fetch = useCallback(async () => {
-    if (!clientId) { setLoading(false); return; }
+    if (!clientId || !fileScope?.file_source || !fileScope?.file_id) {
+      setData([]);
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
-      
-      const timeline: any[] = [];
-      
-      // 1. Client Created
-      const { data: client } = await supabase.from('clients').select('created_at').eq('id', clientId).single();
-      if (client?.created_at) {
-        timeline.push({ type: 'created', title: 'Client Profile Created', date: new Date(client.created_at) });
-      }
+      const params = new URLSearchParams({
+        file_source: fileScope.file_source,
+        file_id: fileScope.file_id,
+        limit: '50',
+      });
+      const res = await globalThis.fetch(`/api/clients/${clientId}/file-notes?${params}`, {
+        credentials: 'include',
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Failed to load timeline');
 
-      // 2. Agreements
-      const { data: agreements } = await supabase.from('agreements').select('created_at, sent_at, completed_at, status, title').eq('client_id', clientId);
-      if (agreements) {
-        agreements.forEach(ag => {
-          if (ag.created_at) timeline.push({ type: 'agreement_draft', title: `Drafted: ${ag.title}`, date: new Date(ag.created_at) });
-          if (ag.sent_at) timeline.push({ type: 'agreement_sent', title: `Sent for Signature: ${ag.title}`, date: new Date(ag.sent_at) });
-          if (ag.status === 'viewed') timeline.push({ type: 'agreement_viewed', title: `Client Viewed: ${ag.title}`, date: new Date() }); // approximated if no viewed_at
-          if (ag.completed_at || ag.status === 'signed') timeline.push({ type: 'agreement_signed', title: `Signed: ${ag.title}`, date: new Date(ag.completed_at || new Date()) });
-        });
-      }
+      const timeline = (json.notes || []).map((note: {
+        recorded_at: string;
+        body: string;
+        is_system_note: boolean;
+        note_type: string;
+      }) => ({
+        type: note.is_system_note ? 'system' : note.note_type,
+        title: note.body,
+        date: new Date(note.recorded_at),
+      }));
 
-      // 3. Approvals (schema: title, visa_subclass, approval_number — not application_type)
-      const { data: approvals, error: approvalsErr } = await supabase
-        .from('application_approvals')
-        .select('created_at, updated_at, status, title, visa_subclass, approval_number')
-        .eq('client_id', clientId)
-        .is('deleted_at', null);
-      if (!approvalsErr && approvals) {
-        approvals.forEach((ap) => {
-          const label =
-            ap.title || ap.approval_number || ap.visa_subclass || 'Application approval';
-          if (ap.created_at) {
-            timeline.push({
-              type: 'approval_submitted',
-              title: `Approval submitted: ${label}`,
-              date: new Date(ap.created_at),
-            });
-          }
-          if (ap.status === 'approved' && ap.updated_at) {
-            timeline.push({
-              type: 'approval_approved',
-              title: `Approved: ${label}`,
-              date: new Date(ap.updated_at),
-            });
-          }
-        });
-      }
-
-      // 4. Documents
-      // (Skipping complex document join for now, will rely on agreements and approvals as primary milestones)
-
-      // Sort descending
-      timeline.sort((a, b) => b.date.getTime() - a.date.getTime());
-      
       setData(timeline);
     } catch (e) {
       console.error(e);
+      setData([]);
     } finally {
       setLoading(false);
     }
-  }, [clientId, supabase]);
+  }, [clientId, fileScope?.file_source, fileScope?.file_id]);
 
   useEffect(() => { fetch() }, [fetch]);
   return { data, loading, refetch: fetch };

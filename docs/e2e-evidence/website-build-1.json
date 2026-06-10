@@ -1,0 +1,299 @@
+{
+  "generatedAt": "2026-06-10T13:17:24.035Z",
+  "baseUrl": "http://localhost:3001",
+  "summary": {
+    "routesChecked": 21,
+    "pass": 21,
+    "fail": 0,
+    "navLinksOk": true,
+    "footerLinksOk": true,
+    "verdict": "PASS"
+  },
+  "routes": [
+    {
+      "path": "/",
+      "url": "http://localhost:3001/",
+      "status": 200,
+      "pass": true,
+      "ms": 9971,
+      "size": 104663,
+      "error": null
+    },
+    {
+      "path": "/features",
+      "url": "http://localhost:3001/features",
+      "status": 200,
+      "pass": true,
+      "ms": 5298,
+      "size": 54063,
+      "error": null
+    },
+    {
+      "path": "/workflow",
+      "url": "http://localhost:3001/workflow",
+      "status": 200,
+      "pass": true,
+      "ms": 472,
+      "size": 44260,
+      "error": null
+    },
+    {
+      "path": "/for-agents",
+      "url": "http://localhost:3001/for-agents",
+      "status": 200,
+      "pass": true,
+      "ms": 371,
+      "size": 51511,
+      "error": null
+    },
+    {
+      "path": "/for-migration-agents",
+      "url": "http://localhost:3001/for-migration-agents",
+      "status": 200,
+      "pass": true,
+      "ms": 534,
+      "size": 49697,
+      "error": null
+    },
+    {
+      "path": "/pricing",
+      "url": "http://localhost:3001/pricing",
+      "status": 200,
+      "pass": true,
+      "ms": 570,
+      "size": 31183,
+      "error": null
+    },
+    {
+      "path": "/resources",
+      "url": "http://localhost:3001/resources",
+      "status": 200,
+      "pass": true,
+      "ms": 707,
+      "size": 29308,
+      "error": null
+    },
+    {
+      "path": "/resources/blog",
+      "url": "http://localhost:3001/resources/blog",
+      "status": 200,
+      "pass": true,
+      "ms": 1218,
+      "size": 24971,
+      "error": null
+    },
+    {
+      "path": "/resources/guides",
+      "url": "http://localhost:3001/resources/guides",
+      "status": 200,
+      "pass": true,
+      "ms": 701,
+      "size": 26065,
+      "error": null
+    },
+    {
+      "path": "/resources/docs",
+      "url": "http://localhost:3001/resources/docs",
+      "status": 200,
+      "pass": true,
+      "ms": 1559,
+      "size": 23165,
+      "error": null
+    },
+    {
+      "path": "/blog",
+      "url": "http://localhost:3001/blog",
+      "status": 200,
+      "pass": true,
+      "ms": 2303,
+      "size": 27535,
+      "error": null
+    },
+    {
+      "path": "/blog/omara-service-agreements",
+      "url": "http://localhost:3001/blog/omara-service-agreements",
+      "status": 200,
+      "pass": true,
+      "ms": 3831,
+      "size": 22091,
+      "error": null
+    },
+    {
+      "path": "/about",
+      "url": "http://localhost:3001/about",
+      "status": 200,
+      "pass": true,
+      "ms": 853,
+      "size": 25311,
+      "error": null
+    },
+    {
+      "path": "/contact",
+      "url": "http://localhost:3001/contact",
+      "status": 200,
+      "pass": true,
+      "ms": 913,
+      "size": 28700,
+      "error": null
+    },
+    {
+      "path": "/book-demo",
+      "url": "http://localhost:3001/book-demo",
+      "status": 200,
+      "pass": true,
+      "ms": 1071,
+      "size": 24408,
+      "error": null
+    },
+    {
+      "path": "/careers",
+      "url": "http://localhost:3001/careers",
+      "status": 200,
+      "pass": true,
+      "ms": 848,
+      "size": 24830,
+      "error": null
+    },
+    {
+      "path": "/privacy",
+      "url": "http://localhost:3001/privacy",
+      "status": 200,
+      "pass": true,
+      "ms": 706,
+      "size": 22843,
+      "error": null
+    },
+    {
+      "path": "/terms",
+      "url": "http://localhost:3001/terms",
+      "status": 200,
+      "pass": true,
+      "ms": 784,
+      "size": 23210,
+      "error": null
+    },
+    {
+      "path": "/cookies",
+      "url": "http://localhost:3001/cookies",
+      "status": 200,
+      "pass": true,
+      "ms": 1601,
+      "size": 21142,
+      "error": null
+    },
+    {
+      "path": "/security",
+      "url": "http://localhost:3001/security",
+      "status": 200,
+      "pass": true,
+      "ms": 641,
+      "size": 26361,
+      "error": null
+    },
+    {
+      "path": "/login",
+      "url": "http://localhost:3001/login",
+      "status": 200,
+      "pass": true,
+      "ms": 2072,
+      "size": 26361,
+      "error": null
+    }
+  ],
+  "nav": [
+    {
+      "path": "/features",
+      "covered": true
+    },
+    {
+      "path": "/workflow",
+      "covered": true
+    },
+    {
+      "path": "/for-agents",
+      "covered": true
+    },
+    {
+      "path": "/resources",
+      "covered": true
+    },
+    {
+      "path": "/resources/blog",
+      "covered": true
+    },
+    {
+      "path": "/resources/guides",
+      "covered": true
+    },
+    {
+      "path": "/resources/docs",
+      "covered": true
+    },
+    {
+      "path": "/pricing",
+      "covered": true
+    },
+    {
+      "path": "/login",
+      "covered": true
+    },
+    {
+      "path": "/book-demo",
+      "covered": true
+    }
+  ],
+  "footer": [
+    {
+      "path": "/features",
+      "covered": true
+    },
+    {
+      "path": "/workflow",
+      "covered": true
+    },
+    {
+      "path": "/pricing",
+      "covered": true
+    },
+    {
+      "path": "/about",
+      "covered": true
+    },
+    {
+      "path": "/contact",
+      "covered": true
+    },
+    {
+      "path": "/careers",
+      "covered": true
+    },
+    {
+      "path": "/resources/blog",
+      "covered": true
+    },
+    {
+      "path": "/resources/guides",
+      "covered": true
+    },
+    {
+      "path": "/resources/docs",
+      "covered": true
+    },
+    {
+      "path": "/privacy",
+      "covered": true
+    },
+    {
+      "path": "/terms",
+      "covered": true
+    },
+    {
+      "path": "/cookies",
+      "covered": true
+    },
+    {
+      "path": "/book-demo",
+      "covered": true
+    }
+  ]
+}

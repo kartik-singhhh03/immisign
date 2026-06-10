@@ -32,7 +32,7 @@ const config = {
           offwhite: "#FAFAFA",
           muted: "#6E6E6E",
           border: "#E7E7E7",
-          accent: "#3E7C6B",
+          accent: "#0F766E",
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

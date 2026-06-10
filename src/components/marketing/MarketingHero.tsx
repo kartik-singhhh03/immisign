@@ -199,15 +199,15 @@ export function MarketingHero() {
           {/* Left */}
           <div className="max-w-[520px]">
             <div className="flex items-center gap-3">
-              <span className="h-px w-8 bg-[#4F8C7A]" aria-hidden />
-              <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#4F8C7A]">
+              <span className="h-px w-8 bg-mate-accent" aria-hidden />
+              <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-mate-accent">
                 For registered migration agents
               </p>
             </div>
 
             <h1 className="mt-5 font-display text-[clamp(2.75rem,5.2vw,5.75rem)] font-semibold leading-[0.9] text-white">
               <span className="block">Everything</span>
-              <span className="block text-[#4F8C7A]">
+              <span className="block text-mate-accent">
                 Connected
               </span>
               <span className="block">To The Client.</span>
@@ -224,16 +224,16 @@ export function MarketingHero() {
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
               <Link
-                href="/contact"
-                className="hero-primary-cta inline-flex h-12 w-[168px] items-center justify-center rounded-2xl bg-white text-[14px] font-semibold text-[#0A0A0A] shadow-[0_2px_12px_rgba(0,0,0,0.2)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(0,0,0,0.28)]"
+                href="/book-demo"
+                className="hero-primary-cta inline-flex h-12 w-[168px] items-center justify-center rounded-2xl bg-white text-[14px] font-semibold text-mate-primary shadow-[0_2px_12px_rgba(0,0,0,0.2)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(0,0,0,0.28)]"
               >
                 Book a Demo
               </Link>
               <Link
-                href="#workflow"
+                href="/workflow"
                 className="hero-secondary-cta group inline-flex items-center gap-2 text-[15px] font-medium text-white/80 transition-colors hover:text-white"
               >
-                See The Workflow
+                Watch Workflow
                 <span className="transition-transform duration-300 group-hover:translate-x-0.5">
                   →
                 </span>

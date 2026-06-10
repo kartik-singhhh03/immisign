@@ -5,6 +5,8 @@ import { SignWellService } from '@/features/agreements/services/signwell.service
 import { Role } from '@/features/auth/types/roles';
 import { apiError, withApiRoute } from '@/lib/api/json-response';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
   return withApiRoute('POST /api/agreements/send', async () => {
     const ctx = await getWorkspaceApiContext();

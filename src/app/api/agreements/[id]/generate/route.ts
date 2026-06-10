@@ -3,6 +3,8 @@ import { getWorkspaceApiContext } from '@/lib/auth/workspace-api';
 import { DocumentGenerationService } from '@/features/agreements/services/document-generation.service';
 import { apiError, withApiRoute } from '@/lib/api/json-response';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(
   _req: Request,
   { params }: { params: { id: string } },

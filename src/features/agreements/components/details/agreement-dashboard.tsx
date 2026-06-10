@@ -10,8 +10,7 @@ import { Agreement, AuditEvent } from "../../types"
 import { useAuthStore } from "@/store/authStore"
 import { Role, canEdit, canDelete } from "@/features/auth/types/roles"
 
-import { sendAgreementForSignatureAction } from "@/features/agreements/actions/agreements"
-import { AgreementLifecycleTimeline, canSendAgreement } from "../AgreementLifecycleTimeline"
+import { AgreementLifecycleTimeline, canSendAgreement, sendAgreementButtonLabel } from "../AgreementLifecycleTimeline"
 
 export function AgreementDashboard({ 
   agreement, 
@@ -32,13 +31,27 @@ export function AgreementDashboard({
   const isDeleter = canDelete(role, 'agreements')
   const hasPdf = Boolean(documentUrl)
   const sendAllowed = canSendAgreement(agreement.status, hasPdf)
+  const sendLabel = sendAgreementButtonLabel(agreement.status)
+  const canRegenerate = isEditor && agreement.status !== 'signed' && agreement.status !== 'cancelled'
+
+  const parseApiError = async (res: Response) => {
+    const text = await res.text()
+    try {
+      const json = JSON.parse(text) as { error?: string }
+      return json.error || text || `Request failed (${res.status})`
+    } catch {
+      return text || `Request failed (${res.status})`
+    }
+  }
 
   const handleGenerate = async () => {
     try {
       setGenerating(true);
-      const res = await fetch(`/api/agreements/${agreement.id}/generate`, { method: 'POST' });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'PDF generation failed');
+      const res = await fetch(`/api/agreements/${agreement.id}/generate`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error(await parseApiError(res));
       window.location.reload();
     } catch (e) {
       console.error(e);
@@ -48,16 +61,41 @@ export function AgreementDashboard({
     }
   };
 
-  const handleSend = async () => {
+  const handleRegenerate = async () => {
+    if (!hasPdf) return handleGenerate();
     try {
-      setSending(true);
-      const dispatchRole = (user?.role || 'agency_admin') as Role;
-      await sendAgreementForSignatureAction(agreement.agency_id, agreement.created_by, dispatchRole, agreement.id);
-      alert('Agreement sent successfully!');
+      setGenerating(true);
+      const res = await fetch(`/api/agreements/${agreement.id}/regenerate`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error(await parseApiError(res));
       window.location.reload();
     } catch (e) {
       console.error(e);
-      alert('Failed to send agreement');
+      alert(e instanceof Error ? e.message : 'Failed to regenerate PDF');
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  const handleSend = async () => {
+    try {
+      setSending(true);
+      const res = await fetch('/api/agreements/send', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ agreementId: agreement.id }),
+      });
+      if (!res.ok) throw new Error(await parseApiError(res));
+      alert(agreement.status === 'sent' || agreement.status === 'viewed'
+        ? 'Signature request resent successfully!'
+        : 'Agreement sent successfully!');
+      window.location.reload();
+    } catch (e) {
+      console.error(e);
+      alert(e instanceof Error ? e.message : 'Failed to send agreement');
     } finally {
       setSending(false);
     }
@@ -89,12 +127,12 @@ export function AgreementDashboard({
             {isEditor && (
               <Button 
                 onClick={handleSend}
-                disabled={sending || agreement.status === 'signed' || !sendAllowed}
+                disabled={sending || !sendAllowed}
                 title={!sendAllowed ? 'Generate PDF before sending' : undefined}
                 className="rounded-xl bg-[#111111] font-bold shadow-sm hover:bg-[#222222] disabled:opacity-50"
               >
                 <Send className="h-4 w-4 mr-1.5" /> 
-                {sending ? 'Sending...' : 'Request Signature'}
+                {sending ? 'Sending...' : sendLabel}
               </Button>
             )}
           </div>
@@ -167,9 +205,16 @@ export function AgreementDashboard({
                 <h3 className="font-bold text-[#111111] text-sm">Generated Document</h3>
               </div>
               <div className="flex gap-2">
-                {isEditor && (
-                  <Button variant="ghost" size="sm" className="h-8 text-xs font-semibold rounded-lg text-slate-500 hover:text-slate-800">
-                    <RefreshCw className="h-3 w-3 mr-1.5" /> Regenerate
+                {isEditor && canRegenerate && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleRegenerate}
+                    disabled={generating}
+                    className="h-8 text-xs font-semibold rounded-lg text-slate-500 hover:text-slate-800 disabled:opacity-50"
+                  >
+                    <RefreshCw className={`h-3 w-3 mr-1.5 ${generating ? 'animate-spin' : ''}`} />
+                    {generating ? 'Regenerating...' : 'Regenerate'}
                   </Button>
                 )}
                 {documentUrl && (

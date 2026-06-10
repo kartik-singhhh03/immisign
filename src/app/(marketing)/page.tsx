@@ -10,14 +10,26 @@ import {
   Lock,
 } from "lucide-react"
 
-import {
-  PrimaryMarketingButton,
-  SecondaryMarketingButton,
-  TextLinkArrow,
-} from "@/components/marketing/MarketingButtons"
+import { TextLinkArrow } from "@/components/marketing/MarketingButtons"
 import { ComplianceStatsBar } from "@/components/marketing/ComplianceStatsBar"
+import {
+  FeatureGridSection,
+  HomeFinalCta,
+  MetricsSection,
+  TestimonialsSection,
+  TrustedBySection,
+} from "@/components/marketing/HomeSections"
+import { JsonLd } from "@/components/marketing/JsonLd"
 import { MarketingHero } from "@/components/marketing/MarketingHero"
 import { WorkflowTimeline } from "@/components/marketing/WorkflowTimeline"
+import { marketingMetadata } from "@/lib/marketing/seo"
+
+export const metadata = marketingMetadata({
+  title: "ImmiMate — Compliance Operating System for Migration Practices",
+  description:
+    "Manage clients, agreements, approvals, compliance obligations, and documents in one platform built for Australian migration agents.",
+  path: "/",
+})
 
 const FILE_NOTE_BULLETS = [
   "Append-only. Never editable. Never deletable.",
@@ -142,7 +154,9 @@ function FileNotesMockup() {
 export default function MarketingPage() {
   return (
     <div className="flex w-full flex-col">
+      <JsonLd />
       <MarketingHero />
+      <TrustedBySection />
 
       {/* ── Workflow ── */}
       <section id="workflow" className="app-grain bg-[#F9F9F9] py-24 md:py-32">
@@ -156,6 +170,8 @@ export default function MarketingPage() {
           <WorkflowTimeline />
         </div>
       </section>
+
+      <FeatureGridSection />
 
       {/* ── File Notes ── */}
       <section className="border-y border-mate-border bg-white py-24 md:py-32">
@@ -198,6 +214,9 @@ export default function MarketingPage() {
         </div>
       </section>
 
+      <MetricsSection />
+      <TestimonialsSection />
+
       {/* ── Trust ── */}
       <section className="border-t border-mate-border bg-white py-24 md:py-32">
         <div className="container mx-auto max-w-[1400px] px-6">
@@ -239,28 +258,7 @@ export default function MarketingPage() {
         </div>
       </section>
 
-      {/* ── Footer CTA ── */}
-      <section className="bg-[#F9F9F9] px-6 py-16 md:py-24">
-        <div className="container mx-auto max-w-[1400px]">
-          <div className="flex flex-col items-start justify-between gap-10 rounded-[2rem] bg-[#1a1a1a] px-8 py-12 text-white md:flex-row md:items-center md:px-14 md:py-14">
-            <div className="max-w-lg">
-              <h2 className="font-display text-[2rem] font-normal leading-[1.1] tracking-[-0.03em] md:text-[2.5rem]">
-                Experience ImmiMate for your practice.
-              </h2>
-              <p className="mt-4 text-sm leading-relaxed text-white/55">
-                Book a personalised demo and see how ImmiMate connects every compliance workflow to
-                the client.
-              </p>
-            </div>
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-              <PrimaryMarketingButton href="/contact">Book a Demo</PrimaryMarketingButton>
-              <SecondaryMarketingButton href="#workflow" variant="dark">
-                See the Workflow
-              </SecondaryMarketingButton>
-            </div>
-          </div>
-        </div>
-      </section>
+      <HomeFinalCta />
     </div>
   )
 }

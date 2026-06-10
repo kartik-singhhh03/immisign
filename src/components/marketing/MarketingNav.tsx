@@ -20,7 +20,7 @@ export function MarketingNav({ onNavigate }: { onNavigate?: () => void }) {
   }
 
   return (
-    <nav className="hidden items-center gap-1 xl:flex">
+    <nav className="hidden items-center gap-1 xl:flex" aria-label="Main navigation">
       {MARKETING_NAV_LINKS.map((link) => {
         const active = isLinkActive(link.href)
         const hasDropdown = Boolean(link.dropdown?.length)
@@ -31,7 +31,7 @@ export function MarketingNav({ onNavigate }: { onNavigate?: () => void }) {
               key={link.href}
               href={link.href}
               className={cn(
-                "inline-flex items-center gap-1 px-3 py-2 text-[13px] font-medium tracking-wide transition-colors",
+                "inline-flex items-center gap-1 px-3 py-2 text-[13px] font-medium tracking-wide transition-colors duration-200",
                 active ? "text-white" : "text-white/60 hover:text-white",
               )}
             >
@@ -39,6 +39,8 @@ export function MarketingNav({ onNavigate }: { onNavigate?: () => void }) {
             </Link>
           )
         }
+
+        const isMega = link.mega
 
         return (
           <div
@@ -50,14 +52,14 @@ export function MarketingNav({ onNavigate }: { onNavigate?: () => void }) {
             <Link
               href={link.href}
               className={cn(
-                "inline-flex items-center gap-1 px-3 py-2 text-[13px] font-medium tracking-wide transition-colors",
+                "inline-flex items-center gap-1 px-3 py-2 text-[13px] font-medium tracking-wide transition-colors duration-200",
                 active ? "text-white" : "text-white/60 hover:text-white",
               )}
             >
               {link.name}
               <ChevronDown
                 className={cn(
-                  "h-3.5 w-3.5 opacity-50 transition-transform",
+                  "h-3.5 w-3.5 opacity-50 transition-transform duration-200",
                   openDropdown === link.name && "rotate-180",
                 )}
                 strokeWidth={2}
@@ -65,20 +67,31 @@ export function MarketingNav({ onNavigate }: { onNavigate?: () => void }) {
             </Link>
 
             {openDropdown === link.name && (
-              <div className="absolute left-0 top-full z-50 w-64 pt-2">
-                <div className="overflow-hidden rounded-xl border border-white/10 bg-[#141414] py-2 shadow-[0_20px_50px_rgba(0,0,0,0.45)]">
+              <div
+                className={cn(
+                  "absolute left-0 top-full z-50 pt-2",
+                  isMega ? "w-[420px]" : "w-64",
+                )}
+              >
+                <div
+                  className={cn(
+                    "overflow-hidden rounded-xl border border-white/10 bg-mate-secondary py-2 shadow-[0_20px_50px_rgba(0,0,0,0.45)]",
+                    isMega && "grid grid-cols-2 gap-0 p-2",
+                  )}
+                >
                   {link.dropdown!.map((item) => (
                     <Link
                       key={item.href}
                       href={item.href}
                       onClick={onNavigate}
-                      className="block px-4 py-3 transition-colors hover:bg-white/5"
+                      className={cn(
+                        "block transition-colors hover:bg-white/5",
+                        isMega ? "rounded-lg px-4 py-3" : "px-4 py-3",
+                      )}
                     >
                       <span className="block text-sm font-medium text-white">{item.label}</span>
                       {item.description && (
-                        <span className="mt-0.5 block text-xs text-white/45">
-                          {item.description}
-                        </span>
+                        <span className="mt-0.5 block text-xs text-white/45">{item.description}</span>
                       )}
                     </Link>
                   ))}
@@ -103,9 +116,8 @@ export function MarketingMobileNav({ onNavigate }: { onNavigate: () => void }) {
             href={link.href}
             onClick={onNavigate}
             className={cn(
-              "block py-2 text-base font-medium transition-colors",
-              pathname?.startsWith(link.href.replace("/#", "/").split("#")[0]) &&
-                link.href !== "/#workflow"
+              "block py-2 text-base font-medium transition-colors duration-200",
+              pathname?.startsWith(link.href.replace("/#", "/").split("#")[0]) && link.href !== "/#workflow"
                 ? "text-white"
                 : "text-white/80 hover:text-white",
             )}

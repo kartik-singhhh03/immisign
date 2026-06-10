@@ -126,7 +126,7 @@ function CTA() {
             </p>
           </div>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-            <PrimaryMarketingButton href="/contact">Book a Demo</PrimaryMarketingButton>
+            <PrimaryMarketingButton href="/book-demo">Book a Demo</PrimaryMarketingButton>
             <SecondaryMarketingButton href="/pricing" variant="dark">
               View Pricing
             </SecondaryMarketingButton>
@@ -220,7 +220,7 @@ export function FeaturesPage() {
         subhead="Service Agreements, File Notes, Application Approvals, and Statements of Service — connected to every client record. Not document signing software. A compliance operating system."
       >
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-          <PrimaryMarketingButton href="/contact" className="bg-mate-primary text-white hover:bg-mate-charcoal">
+          <PrimaryMarketingButton href="/book-demo" className="bg-mate-primary text-white hover:bg-mate-charcoal">
             Book a Demo
           </PrimaryMarketingButton>
           <SecondaryMarketingButton href="/pricing" variant="light">
@@ -351,7 +351,7 @@ export function MigrationAgentsPage() {
         }
         subhead="Managing lodgement deadlines, client anxieties, and compliance reviews is demanding enough. Your compliance infrastructure should not add to the burden."
       >
-        <PrimaryMarketingButton href="/contact" className="bg-mate-primary text-white hover:bg-mate-charcoal">
+        <PrimaryMarketingButton href="/book-demo" className="bg-mate-primary text-white hover:bg-mate-charcoal">
           Book a Demo
         </PrimaryMarketingButton>
       </PageHero>

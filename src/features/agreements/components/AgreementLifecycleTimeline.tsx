@@ -70,5 +70,13 @@ export function AgreementLifecycleTimeline({
 
 export function canSendAgreement(status: string, hasPdf: boolean): boolean {
   const s = normalizeStatus(status)
-  return hasPdf && (s === "pending" || s === "generated")
+  if (!hasPdf) return false
+  if (s === "signed" || s === "completed" || s === "cancelled") return false
+  return ["pending", "generated", "sent", "viewed", "declined", "expired"].includes(s)
+}
+
+export function sendAgreementButtonLabel(status: string): string {
+  const s = normalizeStatus(status)
+  if (s === "sent" || s === "viewed") return "Resend Signature Request"
+  return "Request Signature"
 }

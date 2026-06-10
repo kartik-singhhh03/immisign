@@ -5,6 +5,8 @@ import { GlobalSearchService, buildQuickActions } from '@/features/search/servic
 import { SearchAnalyticsService } from '@/features/search/services/search-analytics.service'
 import type { SearchFilters } from '@/features/search/types/search.types'
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   return withApiRoute('GET /api/search', async () => {
     const ctx = await getWorkspaceApiContext()

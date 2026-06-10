@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { getWorkspaceApiContext } from '@/lib/auth/workspace-api';
 import { apiError, withApiRoute } from '@/lib/api/json-response';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   return withApiRoute('GET /api/notifications/unread', async () => {
     const ctx = await getWorkspaceApiContext();

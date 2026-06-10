@@ -3,6 +3,8 @@ import { getWorkspaceApiContext } from '@/lib/auth/workspace-api';
 import { apiError, withApiRoute } from '@/lib/api/json-response';
 import { listNotifications } from '@/lib/notifications/notification-query';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   return withApiRoute('GET /api/notifications', async () => {
     const ctx = await getWorkspaceApiContext();

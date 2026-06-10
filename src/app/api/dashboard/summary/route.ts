@@ -3,6 +3,8 @@ import { getWorkspaceApiContext } from '@/lib/auth/workspace-api';
 import { ApprovalService } from '@/features/approvals/services/approval.service';
 import { TaskService } from '@/lib/tasks/task.service';
 
+export const dynamic = 'force-dynamic';
+
 const EMPTY_SUMMARY = {
   approvalWidgets: {
     awaitingReview: 0,

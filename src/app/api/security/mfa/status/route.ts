@@ -2,6 +2,8 @@ import { apiError, apiJson, withApiRoute } from '@/lib/api/json-response';
 import { getWorkspaceApiContext } from '@/lib/auth/workspace-api';
 import { isMfaMandatoryForRole } from '@/lib/security/mfa-policy';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   return withApiRoute('security.mfa.status', async () => {
     const ctx = await getWorkspaceApiContext();

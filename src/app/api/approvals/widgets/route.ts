@@ -3,6 +3,8 @@ import { ApprovalService } from '@/features/approvals/services/approval.service'
 import { getApprovalApiContext } from '@/features/approvals/lib/api-context';
 import { apiError, withApiRoute } from '@/lib/api/json-response';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   return withApiRoute('GET /api/approvals/widgets', async () => {
     const ctx = await getApprovalApiContext();

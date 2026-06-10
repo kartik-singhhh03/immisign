@@ -6,6 +6,8 @@ import { getAgencySeatSnapshot } from '@/lib/stripe/seats';
 import { stripeService } from '@/lib/stripe/service';
 import { apiError, withApiRoute } from '@/lib/api/json-response';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   return withApiRoute('GET /api/stripe/billing', async () => {
     const ctx = await getWorkspaceApiContext();

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getWorkspaceApiContext } from '@/lib/auth/workspace-api';
 import { apiError, withApiRoute } from '@/lib/api/json-response';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   return withApiRoute('GET /api/activity', async () => {
   const ctx = await getWorkspaceApiContext();

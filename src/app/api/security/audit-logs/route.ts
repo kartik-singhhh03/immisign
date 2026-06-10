@@ -1,6 +1,8 @@
 import { apiError, apiJson, withApiRoute } from '@/lib/api/json-response';
 import { getWorkspaceApiContext } from '@/lib/auth/workspace-api';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: Request) {
   return withApiRoute('security.audit-logs', async () => {
     const ctx = await getWorkspaceApiContext();

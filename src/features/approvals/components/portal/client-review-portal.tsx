@@ -3,7 +3,7 @@
 import React, { useState } from "react"
 import { CheckCircle2, ShieldAlert, FileText, Send } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { clientApproveAction, clientRequestChangesAction } from "@/features/approvals/actions/approvals"
+import { clientApproveAction, clientRequestChangesAction } from "@/features/approvals/actions/client-portal-actions"
 import { pageHeaderTypography } from "@/components/layout/PageHeader"
 
 export function ClientReviewPortal({ approval, token, documentUrl }: { approval: { client_signed_at?: string; status: string; signwell_document_id?: string | null; client_sent_at?: string | null }, token: string, documentUrl: string }) {

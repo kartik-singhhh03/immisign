@@ -48,6 +48,15 @@ export class ConflictError extends AppError {
   }
 }
 
+export class GoneError extends AppError {
+  constructor(message: string) {
+    super(message, 'GONE', 410);
+  }
+}
+
+export const APPROVAL_ALREADY_COMPLETED_MESSAGE =
+  'Application approval already completed.';
+
 export class StateTransitionError extends AppError {
   constructor(message: string) {
     super(message, 'INVALID_STATE_TRANSITION', 422);

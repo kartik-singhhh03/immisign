@@ -12,7 +12,7 @@ export default async function NewAgreementPage({
   searchParams,
 }: {
   params: { agency: string };
-  searchParams?: { clientId?: string };
+  searchParams?: { clientId?: string; resume?: string };
 }) {
   const adminClient = createAdminClient();
 
@@ -131,6 +131,7 @@ export default async function NewAgreementPage({
       rmaOptions={rmaOptions}
       agencySettings={agencySettings}
       initialClientId={initialClientId}
+      resumeDraft={searchParams?.resume === '1'}
       clients={(clientRows || []).map((c: { id: string; name: string; email: string; phone?: string }) => ({
         id: c.id,
         name: c.name,

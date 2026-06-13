@@ -1,6 +1,6 @@
 "use client"
 
-import * as React from "react"
+import { motion } from "framer-motion"
 import { Check, Loader2, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { DispatchStageRecord, DispatchStageStatus } from "@/lib/dispatch/stage-tracker"
@@ -68,9 +68,12 @@ export function DispatchTimeline({
         )}
       </div>
       <ol className="space-y-2">
-        {stages.map((stage) => (
-          <li
+        {stages.map((stage, index) => (
+          <motion.li
             key={stage.id}
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.18, delay: index * 0.04 }}
             className={cn(
               "flex gap-3 rounded-xl border px-4 py-3",
               stage.status === "success" && "border-[#E7E7E7] bg-[#FAFAFA]/40",
@@ -95,7 +98,7 @@ export function DispatchTimeline({
                 )}
               </div>
             </div>
-          </li>
+          </motion.li>
         ))}
       </ol>
     </div>

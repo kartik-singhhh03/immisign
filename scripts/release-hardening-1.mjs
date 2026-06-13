@@ -340,6 +340,7 @@ walk('src');
 
 const ALLOWED_LOCALHOST = new Set([
   'src/lib/env.ts',
+  'src/lib/app-url.ts',
   'src/lib/email/transactional.ts',
   'src/lib/stripe/client.ts',
   'src/features/service-statements/services/service-statement.service.ts',

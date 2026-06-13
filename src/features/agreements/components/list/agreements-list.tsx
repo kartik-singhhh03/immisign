@@ -32,6 +32,8 @@ import { Role } from "@/features/auth/types/roles"
 import { notifyError, notifySuccess } from "@/lib/ux/feedback"
 import { PaginationBar } from "@/components/ui/pagination-bar"
 import { TableSkeleton } from "@/components/ui/skeletons"
+import { AgreementDashboardWidgets } from "../dashboard/agreement-widgets"
+import { useSearchParams } from "next/navigation"
 
 interface Agreement {
   /** Database UUID for navigation and mutations. */
@@ -44,12 +46,15 @@ interface Agreement {
   fee: string
   status: string
   date: string
+  signedDate?: string
+  signwellDocumentId?: string | null
   scope: string
   law: string
 }
 
 export function AgreementsList({ agencySlug }: { agencySlug: string }) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const user = useAuthStore((s) => s.user)
   const activeWorkspace = useAuthStore((s) => s.activeWorkspace)
   const [agreements, setAgreements] = React.useState<Agreement[]>([])
@@ -57,11 +62,23 @@ export function AgreementsList({ agencySlug }: { agencySlug: string }) {
   const [loading, setLoading] = React.useState(true)
   const [searchQuery, setSearchQuery] = React.useState("")
   const [debouncedSearch, setDebouncedSearch] = React.useState("")
-  const [activeFilter, setActiveFilter] = React.useState("All")
+  const [activeFilter, setActiveFilter] = React.useState(
+    () => searchParams.get("status")?.replace(/^./, (c) => c.toUpperCase()) || "All",
+  )
+  const [wizardDraft, setWizardDraft] = React.useState<{ current_step?: number; updated_at?: string } | null>(null)
   const [currentPage, setCurrentPage] = React.useState(1)
   const [previewAgreement, setPreviewAgreement] = React.useState<Agreement | null>(null)
   const [archivingId, setArchivingId] = React.useState<string | null>(null)
   const pageSize = 10
+
+  React.useEffect(() => {
+    fetch("/api/agreements/wizard-draft", { credentials: "include" })
+      .then(async (r) => {
+        const j = await r.json()
+        if (j.draft?.form_data) setWizardDraft(j.draft)
+      })
+      .catch(() => {})
+  }, [])
 
   React.useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(searchQuery), 300)
@@ -167,6 +184,22 @@ export function AgreementsList({ agencySlug }: { agencySlug: string }) {
         }
       />
 
+      {wizardDraft && (
+        <div className="flex flex-col gap-3 rounded-2xl border border-amber-200/80 bg-amber-50/60 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="text-sm font-semibold text-amber-900">
+            You have an agreement draft in progress
+            {typeof wizardDraft.current_step === "number"
+              ? ` (step ${wizardDraft.current_step + 1} of 6)`
+              : ""}
+          </div>
+          <Button asChild size="sm" className="rounded-xl bg-[#111111] font-bold">
+            <Link href={`/workspace/${agencySlug}/agreements/new?resume=1`}>Continue draft</Link>
+          </Button>
+        </div>
+      )}
+
+      <AgreementDashboardWidgets agencySlug={agencySlug} />
+
       <div className="rounded-2xl border border-slate-200/50 bg-white/60 px-5 py-4 text-sm font-semibold text-slate-600">
         {totalCount} agreement{totalCount === 1 ? "" : "s"} in workspace
         {activeFilter !== "All" ? ` · filtered by ${activeFilter}` : ""}
@@ -212,12 +245,13 @@ export function AgreementsList({ agencySlug }: { agencySlug: string }) {
         <TableSkeleton rows={6} cols={5} />
       ) : (
       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="grid grid-cols-[1.1fr_1.3fr_0.8fr_0.9fr_0.9fr_0.3fr] border-b border-slate-100 bg-slate-50/50 px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-400 max-lg:hidden">
+        <div className="grid grid-cols-[0.9fr_1fr_1fr_0.8fr_0.8fr_0.8fr_0.3fr] border-b border-slate-100 bg-slate-50/50 px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-400 max-lg:hidden">
+          <div>Reference</div>
           <div>Client</div>
-          <div>Matter Description</div>
-          <div>Professional Fee</div>
-          <div>Signing Status</div>
+          <div>Matter</div>
+          <div>Status</div>
           <div>Sent Date</div>
+          <div>Signed Date</div>
           <div />
         </div>
 
@@ -226,18 +260,19 @@ export function AgreementsList({ agencySlug }: { agencySlug: string }) {
             agreements.map((agreement) => (
               <div
                 key={agreement.id}
-                className="group grid gap-3 px-6 py-5 transition-all duration-200 hover:bg-slate-50/40 lg:grid-cols-[1.1fr_1.3fr_0.8fr_0.9fr_0.9fr_0.3fr] lg:items-center"
+                className="group grid gap-3 px-6 py-5 transition-all duration-200 hover:bg-slate-50/40 lg:grid-cols-[0.9fr_1fr_1fr_0.8fr_0.8fr_0.8fr_0.3fr] lg:items-center"
               >
+                <div className="font-mono text-xs font-bold text-slate-600">{agreement.ref || agreement.id}</div>
                 <div onClick={() => setPreviewAgreement(agreement)} className="cursor-pointer">
-                  <div className="font-bold text-[#111111] group-hover:text-[#111111] transition-colors">{agreement.client}</div>
-                  <div className="text-[11px] font-bold text-slate-400 mt-1">{agreement.ref || agreement.id} • {agreement.email}</div>
+                  <div className="font-bold text-[#111111]">{agreement.client}</div>
+                  <div className="text-[11px] font-bold text-slate-400 mt-1">{agreement.email}</div>
                 </div>
                 <div onClick={() => setPreviewAgreement(agreement)} className="text-xs font-bold text-slate-600 cursor-pointer">{agreement.matter}</div>
-                <div className="text-sm font-bold text-[#111111]">{agreement.fee}</div>
                 <div>
                   <StatusPill status={agreement.status} />
                 </div>
                 <div className="text-xs font-semibold text-slate-500">{agreement.date}</div>
+                <div className="text-xs font-semibold text-slate-500">{agreement.signedDate || "—"}</div>
                 <div className="flex justify-end">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -245,24 +280,45 @@ export function AgreementsList({ agencySlug }: { agencySlug: string }) {
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48 rounded-xl border-slate-200/60 p-1.5 shadow-md">
-                      <DropdownMenuItem onClick={() => setPreviewAgreement(agreement)} className="rounded-lg font-semibold text-xs cursor-pointer p-2 focus:bg-slate-50">
-                        View Agreement Preview
+                    <DropdownMenuContent align="end" className="w-52 rounded-xl border-slate-200/60 p-1.5 shadow-md">
+                      <DropdownMenuItem onClick={() => openWorkspace(agreement)} className="rounded-lg font-semibold text-xs cursor-pointer p-2 focus:bg-slate-50">
+                        View
                       </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className="rounded-lg font-semibold text-xs cursor-pointer p-2 focus:bg-slate-50"
-                        onClick={() => openWorkspace(agreement)}
-                      >
-                        Open Workspace
+                      {agreement.status.toLowerCase() === "draft" && (
+                        <DropdownMenuItem onClick={() => openWorkspace(agreement)} className="rounded-lg font-semibold text-xs cursor-pointer p-2 focus:bg-slate-50">
+                          Send
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuItem onClick={() => openWorkspace(agreement)} className="rounded-lg font-semibold text-xs cursor-pointer p-2 focus:bg-slate-50">
+                        Download PDF
                       </DropdownMenuItem>
+                      {agreement.signwellDocumentId && (
+                        <DropdownMenuItem
+                          onClick={() => window.open(`https://www.signwell.com/app/documents/${agreement.signwellDocumentId}`, "_blank")}
+                          className="rounded-lg font-semibold text-xs cursor-pointer p-2 focus:bg-slate-50"
+                        >
+                          Open SignWell
+                        </DropdownMenuItem>
+                      )}
                       <DropdownMenuSeparator className="bg-slate-100" />
-                      <DropdownMenuItem
-                        disabled={archivingId === (agreement.agreementUuid || agreement.id)}
-                        onClick={() => handleArchive(agreement)}
-                        className="rounded-lg font-semibold text-xs cursor-pointer p-2 text-red-600 focus:bg-red-50 focus:text-red-700"
-                      >
-                        {archivingId === (agreement.agreementUuid || agreement.id) ? "Archiving…" : "Archive Agreement"}
-                      </DropdownMenuItem>
+                      {agreement.status.toLowerCase() === "draft" && (
+                        <DropdownMenuItem
+                          disabled={archivingId === (agreement.agreementUuid || agreement.id)}
+                          onClick={() => handleArchive(agreement)}
+                          className="rounded-lg font-semibold text-xs cursor-pointer p-2 text-red-600 focus:bg-red-50 focus:text-red-700"
+                        >
+                          {archivingId === (agreement.agreementUuid || agreement.id) ? "Deleting…" : "Delete Draft"}
+                        </DropdownMenuItem>
+                      )}
+                      {agreement.status.toLowerCase() !== "draft" && (
+                        <DropdownMenuItem
+                          disabled={archivingId === (agreement.agreementUuid || agreement.id)}
+                          onClick={() => handleArchive(agreement)}
+                          className="rounded-lg font-semibold text-xs cursor-pointer p-2 text-red-600 focus:bg-red-50 focus:text-red-700"
+                        >
+                          {archivingId === (agreement.agreementUuid || agreement.id) ? "Archiving…" : "Archive Agreement"}
+                        </DropdownMenuItem>
+                      )}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>

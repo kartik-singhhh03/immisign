@@ -1,0 +1,1160 @@
+{
+  "task": "APPLICATION-APPROVAL-E2E-1",
+  "timestamp": "2026-06-13T20:21:06.499Z",
+  "baseUrl": "http://localhost:3010",
+  "agencySlug": "ritiklabs",
+  "overall": "PASS_WITH_WARNINGS",
+  "phases": {
+    "PHASE_1_DATABASE": [
+      {
+        "id": "TABLE_application_approvals",
+        "status": "PASS",
+        "msg": "exists",
+        "detail": {}
+      },
+      {
+        "id": "TABLE_application_approval_events",
+        "status": "PASS",
+        "msg": "exists",
+        "detail": {}
+      },
+      {
+        "id": "REBUILD_COLUMNS",
+        "status": "PASS",
+        "msg": "all present",
+        "detail": {
+          "missingCols": []
+        }
+      },
+      {
+        "id": "INDEX_idx_application_approvals_matter",
+        "status": "PASS",
+        "msg": "exists",
+        "detail": {}
+      },
+      {
+        "id": "INDEX_idx_application_approvals_token",
+        "status": "PASS",
+        "msg": "exists",
+        "detail": {}
+      },
+      {
+        "id": "INDEX_idx_application_approvals_agency_status_v2",
+        "status": "PASS",
+        "msg": "exists",
+        "detail": {}
+      },
+      {
+        "id": "INDEX_idx_app_approval_events_approval",
+        "status": "PASS",
+        "msg": "exists",
+        "detail": {}
+      },
+      {
+        "id": "RLS_application_approval_events",
+        "status": "PASS",
+        "msg": "enabled",
+        "detail": {}
+      },
+      {
+        "id": "RLS_application_approvals",
+        "status": "PASS",
+        "msg": "enabled",
+        "detail": {}
+      },
+      {
+        "id": "RLS_POLICIES",
+        "status": "PASS",
+        "msg": "5 policies",
+        "detail": {
+          "policies": [
+            {
+              "tablename": "application_approval_events",
+              "policyname": "app_approval_events_tenant"
+            },
+            {
+              "tablename": "application_approvals",
+              "policyname": "tenant_application_approvals_delete"
+            },
+            {
+              "tablename": "application_approvals",
+              "policyname": "tenant_application_approvals_insert"
+            },
+            {
+              "tablename": "application_approvals",
+              "policyname": "tenant_application_approvals_select"
+            },
+            {
+              "tablename": "application_approvals",
+              "policyname": "tenant_application_approvals_update"
+            }
+          ]
+        }
+      },
+      {
+        "id": "STORAGE_BUCKET",
+        "status": "PASS",
+        "msg": "exists public=false",
+        "detail": {
+          "bucket": {
+            "id": "application-approvals",
+            "name": "application-approvals",
+            "public": false
+          }
+        }
+      },
+      {
+        "id": "REBUILD_COLUMNS_POST",
+        "status": "PASS",
+        "msg": "all present after migration",
+        "detail": {}
+      },
+      {
+        "id": "TABLE_application_approval_events_POST",
+        "status": "PASS",
+        "msg": "exists",
+        "detail": {}
+      },
+      {
+        "id": "STORAGE_BUCKET_POST",
+        "status": "PASS",
+        "msg": "public=false",
+        "detail": {}
+      },
+      {
+        "id": "RLS_application_approval_events",
+        "status": "PASS",
+        "msg": "enabled",
+        "detail": {}
+      }
+    ],
+    "PHASE_2_AGENT_FLOW": [
+      {
+        "id": "DEV_SERVER",
+        "status": "PASS",
+        "msg": "Server reachable at http://localhost:3010",
+        "detail": {}
+      },
+      {
+        "id": "CLIENT_MATTER",
+        "status": "PASS",
+        "msg": "kartik singh / Application Approval — AGR-2026-0006",
+        "detail": {}
+      },
+      {
+        "id": "PAGE_LIST",
+        "status": "PASS",
+        "msg": "Approvals list loaded",
+        "detail": {
+          "hasNewButton": false
+        }
+      },
+      {
+        "id": "PAGE_WIZARD",
+        "status": "PASS",
+        "msg": "Wizard step 1",
+        "detail": {}
+      },
+      {
+        "id": "SELECT_CLIENT",
+        "status": "PASS",
+        "msg": "Selected kartik singh",
+        "detail": {}
+      },
+      {
+        "id": "SELECT_MATTER",
+        "status": "PASS",
+        "msg": "AGR-2026-0006visa",
+        "detail": {}
+      },
+      {
+        "id": "DRAFT_SAVED",
+        "status": "PASS",
+        "msg": "draft id=979c6c06-323d-469c-938b-c637dd714928",
+        "detail": {
+          "id": "979c6c06-323d-469c-938b-c637dd714928",
+          "status": "draft",
+          "matter_id": "652af0c6-9064-4ebf-8d8b-2e7010f31c8d"
+        }
+      },
+      {
+        "id": "UPLOAD_PDF_BROWSER",
+        "status": "PASS",
+        "msg": "File selected in browser",
+        "detail": {}
+      },
+      {
+        "id": "FILE_UPLOADED",
+        "status": "PASS",
+        "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/652af0c6-9064-4ebf-8d8b-2e7010f31c8d/sample.pdf",
+        "detail": {}
+      },
+      {
+        "id": "SEND_SUCCESS_UI",
+        "status": "PASS",
+        "msg": "Success screen (37s workflow)",
+        "detail": {
+          "under60s": true
+        }
+      },
+      {
+        "id": "WORKFLOW_SPEED",
+        "status": "PASS",
+        "msg": "37s to complete Create→Upload→Send",
+        "detail": {}
+      },
+      {
+        "id": "STATUS_SENT",
+        "status": "PASS",
+        "msg": "sent",
+        "detail": {}
+      },
+      {
+        "id": "TOKEN_GENERATED",
+        "status": "PASS",
+        "msg": "447cbe67-5ed1-4a14-9756-714cc18d11af",
+        "detail": {}
+      },
+      {
+        "id": "FILE_STORED",
+        "status": "PASS",
+        "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/652af0c6-9064-4ebf-8d8b-2e7010f31c8d/sample.pdf",
+        "detail": {}
+      },
+      {
+        "id": "TIMELINE_EVENTS",
+        "status": "PASS",
+        "msg": "2 events",
+        "detail": {
+          "events": [
+            {
+              "event_type": "approval_created",
+              "description": "Application approval created",
+              "created_at": "2026-06-13T20:21:35.449427+00:00"
+            },
+            {
+              "event_type": "approval_sent",
+              "description": "Application approval sent to kartiksingh37193@gmail.com",
+              "created_at": "2026-06-13T20:21:48.578956+00:00"
+            }
+          ]
+        }
+      },
+      {
+        "id": "STORAGE_FILE",
+        "status": "PASS",
+        "msg": "bucket list ok",
+        "detail": {
+          "files": [
+            "e2e-application-2.pdf",
+            "sample.pdf"
+          ]
+        }
+      }
+    ],
+    "PHASE_3_RESEND": [
+      {
+        "id": "EMAIL_AUDIT_ROW",
+        "status": "PASS",
+        "msg": "resend_id=5b0afd43-2de1-483a-bd44-ad123b304516 status=accepted",
+        "detail": {
+          "matchingEmail": {
+            "id": "ca023867-f04e-4eb2-90d9-aa8f75d53e98",
+            "provider": "resend",
+            "recipient": "kartiksingh37193@gmail.com",
+            "subject": "Application for Review & Approval — AGR-2026-0006",
+            "resend_id": "5b0afd43-2de1-483a-bd44-ad123b304516",
+            "status": "accepted",
+            "email_type": "application_approval_send",
+            "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+            "created_at": "2026-06-13T20:21:48.336415+00:00",
+            "delivered_at": null,
+            "error": null
+          },
+          "recent": [
+            {
+              "id": "ca023867-f04e-4eb2-90d9-aa8f75d53e98",
+              "provider": "resend",
+              "recipient": "kartiksingh37193@gmail.com",
+              "subject": "Application for Review & Approval — AGR-2026-0006",
+              "resend_id": "5b0afd43-2de1-483a-bd44-ad123b304516",
+              "status": "accepted",
+              "email_type": "application_approval_send",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "created_at": "2026-06-13T20:21:48.336415+00:00",
+              "delivered_at": null,
+              "error": null
+            },
+            {
+              "id": "11c4c13b-f4eb-46d3-b929-958a534e51f8",
+              "provider": "resend",
+              "recipient": "kartiksingh37193@gmail.com",
+              "subject": "Application for Review & Approval — AGR-2026-0006",
+              "resend_id": "8e0f54cf-6960-4d78-9b37-1d909060757b",
+              "status": "accepted",
+              "email_type": "application_approval_send",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "created_at": "2026-06-13T20:20:22.203953+00:00",
+              "delivered_at": null,
+              "error": null
+            },
+            {
+              "id": "0bd4ff17-4e63-421f-8563-d4ab45716976",
+              "provider": "resend",
+              "recipient": "kartiksingh37193@gmail.com",
+              "subject": "Application for Review & Approval — AGR-2026-0006",
+              "resend_id": "b66e9a23-aeef-42d1-a59e-374ed748f4f8",
+              "status": "accepted",
+              "email_type": "application_approval_send",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "created_at": "2026-06-13T20:17:58.066166+00:00",
+              "delivered_at": null,
+              "error": null
+            },
+            {
+              "id": "d19b3e0e-04cc-4aec-93c1-4ef5cdf9b39b",
+              "provider": "resend",
+              "recipient": "kartiksingh37193@gmail.com",
+              "subject": "Application for Review & Approval — AGR-2026-0006",
+              "resend_id": "f82c4c37-5740-4f15-a0d6-0889588bdb7f",
+              "status": "accepted",
+              "email_type": "application_approval_send",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "created_at": "2026-06-13T20:13:17.680251+00:00",
+              "delivered_at": null,
+              "error": null
+            },
+            {
+              "id": "764f612c-ed11-4544-867d-81dfe1880225",
+              "provider": "resend",
+              "recipient": "kartiksingh37193@gmail.com",
+              "subject": "Application for Review & Approval — AGR-2026-0006",
+              "resend_id": "14ab762a-6afb-431f-93ee-d83967843548",
+              "status": "accepted",
+              "email_type": "application_approval_send",
+              "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+              "created_at": "2026-06-13T20:12:29.733216+00:00",
+              "delivered_at": null,
+              "error": null
+            }
+          ]
+        }
+      },
+      {
+        "id": "RESEND_DASHBOARD",
+        "status": "PASS",
+        "msg": "last_event=delivered",
+        "detail": {
+          "resendJson": {
+            "object": "email",
+            "id": "5b0afd43-2de1-483a-bd44-ad123b304516",
+            "to": [
+              "kartiksingh37193@gmail.com"
+            ],
+            "from": "notifications@immimate.au",
+            "created_at": "2026-06-13 20:21:48.254465+00",
+            "subject": "Application for Review & Approval — AGR-2026-0006",
+            "bcc": [],
+            "cc": [],
+            "reply_to": [],
+            "last_event": "delivered",
+            "scheduled_at": null,
+            "html": "\n    <div style=\"font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;color:#111\">\n      <p style=\"font-size:12px;color:#5C5C5C;text-transform:uppercase;letter-spacing:0.08em\">Ritiklabs SETTINGS1 1781085718037</p>\n      <h1 style=\"font-size:22px;font-weight:600;margin:16px 0\">Application for Review &amp; Approval</h1>\n      <p style=\"font-size:14px;line-height:1.6;color:#333\">Dear kartik singh,<br/><br/>Please find attached your completed application for review.<br/><br/>Please review carefully.<br/><br/>If everything is correct, approve for lodgement.<br/><br/>Regards,<br/>ritik singh</p>\n      <p style=\"margin:28px 0\">\n        <a href=\"http://localhost:3000/approval/447cbe67-5ed1-4a14-9756-714cc18d11af\" style=\"display:inline-block;background:#111;color:#fff;padding:14px 24px;border-radius:12px;text-decoration:none;font-weight:600\">\n          Review Application\n        </a>\n      </p>\n      <p style=\"font-size:12px;color:#888\">Matter: AGR-2026-0006. This link expires in 90 days.</p>\n    </div>\n  ",
+            "text": "Ritiklabs SETTINGS1 1781085718037\n\n\nAPPLICATION FOR REVIEW & APPROVAL\n\nDear kartik singh,\n\nPlease find attached your completed application for review.\n\nPlease review carefully.\n\nIf everything is correct, approve for lodgement.\n\nRegards,\nritik singh\n\nReview Application http://localhost:3000/approval/447cbe67-5ed1-4a14-9756-714cc18d11af\n\nMatter: AGR-2026-0006. This link expires in 90 days."
+          }
+        }
+      }
+    ],
+    "PHASE_4_CLIENT_APPROVE": [
+      {
+        "id": "CLIENT_PAGE_LOAD",
+        "status": "PASS",
+        "msg": "Client portal rendered",
+        "detail": {}
+      },
+      {
+        "id": "PDF_DOWNLOAD",
+        "status": "PASS",
+        "msg": "HTTP 307",
+        "detail": {
+          "location": "https://wnohcmgmyhamsbmkiybc.supabase.co/storage/v1/object/sign/application-appr"
+        }
+      },
+      {
+        "id": "VIEWED_STATUS",
+        "status": "PASS",
+        "msg": "viewed viewed_at=2026-06-13T20:21:55.559+00:00",
+        "detail": {}
+      },
+      {
+        "id": "APPROVE_API",
+        "status": "PASS",
+        "msg": "HTTP 200",
+        "detail": {}
+      },
+      {
+        "id": "APPROVE_UI",
+        "status": "PASS",
+        "msg": "Approval success screen",
+        "detail": {}
+      },
+      {
+        "id": "APPROVED_AT",
+        "status": "PASS",
+        "msg": "2026-06-13T20:22:01.498+00:00",
+        "detail": {}
+      },
+      {
+        "id": "NAME_CONFIRMED",
+        "status": "PASS",
+        "msg": "kartik singh",
+        "detail": {}
+      },
+      {
+        "id": "CLIENT_IP",
+        "status": "PASS",
+        "msg": "::1",
+        "detail": {}
+      },
+      {
+        "id": "NOTIFICATION",
+        "status": "PASS",
+        "msg": "2 approval notifications",
+        "detail": {}
+      }
+    ],
+    "PHASE_5_CHANGE_REQUEST": [
+      {
+        "id": "CREATE_DRAFT_2",
+        "status": "PASS",
+        "msg": "b92bc1cc-a66e-48de-a8d1-2972ba70741e",
+        "detail": {}
+      },
+      {
+        "id": "SEND_2",
+        "status": "PASS",
+        "msg": "fc91bc40-c894-438e-aa72-42c051223678",
+        "detail": {}
+      },
+      {
+        "id": "STATUS_CHANGES",
+        "status": "PASS",
+        "msg": "changes_requested",
+        "detail": {}
+      },
+      {
+        "id": "REASON_STORED",
+        "status": "PASS",
+        "msg": "E2E: passport details need correction before lodgement.",
+        "detail": {}
+      },
+      {
+        "id": "TIMELINE_UPDATED",
+        "status": "PASS",
+        "msg": "client_requested_changes, client_viewed, approval_sent, approval_created",
+        "detail": {}
+      },
+      {
+        "id": "NOTIFICATION",
+        "status": "PASS",
+        "msg": "Client requested changes",
+        "detail": {}
+      }
+    ],
+    "PHASE_6_SECURITY": [
+      {
+        "id": "INVALID_TOKEN",
+        "status": "PASS",
+        "msg": "HTTP 404",
+        "detail": {}
+      },
+      {
+        "id": "REUSE_TOKEN",
+        "status": "PASS",
+        "msg": "HTTP 500 — should block re-approve after completion",
+        "detail": {}
+      },
+      {
+        "id": "EXPIRED_TOKEN",
+        "status": "PASS",
+        "msg": "HTTP 410",
+        "detail": {}
+      },
+      {
+        "id": "CROSS_AGENCY",
+        "status": "PASS",
+        "msg": "HTTP 404",
+        "detail": {}
+      },
+      {
+        "id": "SIGNED_URL_PRIVATE_BUCKET",
+        "status": "PASS",
+        "msg": "bucket public=false",
+        "detail": {}
+      }
+    ],
+    "PHASE_7_DASHBOARD": [
+      {
+        "id": "WIDGETS_API",
+        "status": "PASS",
+        "msg": "{\"pendingReview\":2,\"viewed\":3,\"approved\":2,\"changesRequested\":2}",
+        "detail": {}
+      },
+      {
+        "id": "WIDGETS_REAL_DB",
+        "status": "PASS",
+        "msg": "API pendingReview=2 DB sent=2",
+        "detail": {}
+      },
+      {
+        "id": "WIDGETS_UI",
+        "status": "WARN",
+        "msg": "Dashboard widget section visible",
+        "detail": {}
+      }
+    ]
+  },
+  "ids": {
+    "agencyId": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+    "userId": "2cab360f-fd21-461a-8a57-67573dee0530",
+    "agentEmail": "nayramalik1018@gmail.com",
+    "agentName": "ritik singh",
+    "clientId": "3463132e-212b-46a8-b175-7d46dcf47617",
+    "matterRef": "Application Approval — AGR-2026-0006",
+    "approval1Id": "979c6c06-323d-469c-938b-c637dd714928",
+    "approval1Token": "447cbe67-5ed1-4a14-9756-714cc18d11af",
+    "approval2Id": "b92bc1cc-a66e-48de-a8d1-2972ba70741e",
+    "approval2Token": "fc91bc40-c894-438e-aa72-42c051223678"
+  },
+  "screenshots": [
+    "docs\\e2e-evidence\\application-approval-screenshots\\01-approvals-list.png",
+    "docs\\e2e-evidence\\application-approval-screenshots\\02-wizard-step1-empty.png",
+    "docs\\e2e-evidence\\application-approval-screenshots\\03-wizard-search-results.png",
+    "docs\\e2e-evidence\\application-approval-screenshots\\04-wizard-client-matter-selected.png",
+    "docs\\e2e-evidence\\application-approval-screenshots\\05-wizard-upload-step.png",
+    "docs\\e2e-evidence\\application-approval-screenshots\\06-wizard-file-uploaded.png",
+    "docs\\e2e-evidence\\application-approval-screenshots\\07-wizard-message.png",
+    "docs\\e2e-evidence\\application-approval-screenshots\\08-wizard-preview.png",
+    "docs\\e2e-evidence\\application-approval-screenshots\\09-wizard-sent-success.png",
+    "docs\\e2e-evidence\\application-approval-screenshots\\09-client-portal.png",
+    "docs\\e2e-evidence\\application-approval-screenshots\\10-client-approved.png",
+    "docs\\e2e-evidence\\application-approval-screenshots\\11-client-changes-requested.png",
+    "docs\\e2e-evidence\\application-approval-screenshots\\12-dashboard-widgets.png"
+  ],
+  "workflowSeconds": 37,
+  "summary": {
+    "total": 56,
+    "pass": 55,
+    "fail": 0,
+    "warn": 1,
+    "failures": []
+  },
+  "results": [
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "TABLE_application_approvals",
+      "status": "PASS",
+      "msg": "exists",
+      "detail": {},
+      "ts": "2026-06-13T20:21:09.564Z"
+    },
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "TABLE_application_approval_events",
+      "status": "PASS",
+      "msg": "exists",
+      "detail": {},
+      "ts": "2026-06-13T20:21:09.874Z"
+    },
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "REBUILD_COLUMNS",
+      "status": "PASS",
+      "msg": "all present",
+      "detail": {
+        "missingCols": []
+      },
+      "ts": "2026-06-13T20:21:10.193Z"
+    },
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "INDEX_idx_application_approvals_matter",
+      "status": "PASS",
+      "msg": "exists",
+      "detail": {},
+      "ts": "2026-06-13T20:21:10.499Z"
+    },
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "INDEX_idx_application_approvals_token",
+      "status": "PASS",
+      "msg": "exists",
+      "detail": {},
+      "ts": "2026-06-13T20:21:10.499Z"
+    },
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "INDEX_idx_application_approvals_agency_status_v2",
+      "status": "PASS",
+      "msg": "exists",
+      "detail": {},
+      "ts": "2026-06-13T20:21:10.499Z"
+    },
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "INDEX_idx_app_approval_events_approval",
+      "status": "PASS",
+      "msg": "exists",
+      "detail": {},
+      "ts": "2026-06-13T20:21:10.499Z"
+    },
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "RLS_application_approval_events",
+      "status": "PASS",
+      "msg": "enabled",
+      "detail": {},
+      "ts": "2026-06-13T20:21:10.799Z"
+    },
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "RLS_application_approvals",
+      "status": "PASS",
+      "msg": "enabled",
+      "detail": {},
+      "ts": "2026-06-13T20:21:10.800Z"
+    },
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "RLS_POLICIES",
+      "status": "PASS",
+      "msg": "5 policies",
+      "detail": {
+        "policies": [
+          {
+            "tablename": "application_approval_events",
+            "policyname": "app_approval_events_tenant"
+          },
+          {
+            "tablename": "application_approvals",
+            "policyname": "tenant_application_approvals_delete"
+          },
+          {
+            "tablename": "application_approvals",
+            "policyname": "tenant_application_approvals_insert"
+          },
+          {
+            "tablename": "application_approvals",
+            "policyname": "tenant_application_approvals_select"
+          },
+          {
+            "tablename": "application_approvals",
+            "policyname": "tenant_application_approvals_update"
+          }
+        ]
+      },
+      "ts": "2026-06-13T20:21:11.115Z"
+    },
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "STORAGE_BUCKET",
+      "status": "PASS",
+      "msg": "exists public=false",
+      "detail": {
+        "bucket": {
+          "id": "application-approvals",
+          "name": "application-approvals",
+          "public": false
+        }
+      },
+      "ts": "2026-06-13T20:21:11.420Z"
+    },
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "REBUILD_COLUMNS_POST",
+      "status": "PASS",
+      "msg": "all present after migration",
+      "detail": {},
+      "ts": "2026-06-13T20:21:11.725Z"
+    },
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "TABLE_application_approval_events_POST",
+      "status": "PASS",
+      "msg": "exists",
+      "detail": {},
+      "ts": "2026-06-13T20:21:12.030Z"
+    },
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "STORAGE_BUCKET_POST",
+      "status": "PASS",
+      "msg": "public=false",
+      "detail": {},
+      "ts": "2026-06-13T20:21:12.329Z"
+    },
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "RLS_application_approval_events",
+      "status": "PASS",
+      "msg": "enabled",
+      "detail": {},
+      "ts": "2026-06-13T20:21:12.628Z"
+    },
+    {
+      "phase": "PHASE_2_AGENT_FLOW",
+      "id": "DEV_SERVER",
+      "status": "PASS",
+      "msg": "Server reachable at http://localhost:3010",
+      "detail": {},
+      "ts": "2026-06-13T20:21:13.436Z"
+    },
+    {
+      "phase": "PHASE_2_AGENT_FLOW",
+      "id": "CLIENT_MATTER",
+      "status": "PASS",
+      "msg": "kartik singh / Application Approval — AGR-2026-0006",
+      "detail": {},
+      "ts": "2026-06-13T20:21:19.834Z"
+    },
+    {
+      "phase": "PHASE_2_AGENT_FLOW",
+      "id": "PAGE_LIST",
+      "status": "PASS",
+      "msg": "Approvals list loaded",
+      "detail": {
+        "hasNewButton": false
+      },
+      "ts": "2026-06-13T20:21:23.361Z"
+    },
+    {
+      "phase": "PHASE_2_AGENT_FLOW",
+      "id": "PAGE_WIZARD",
+      "status": "PASS",
+      "msg": "Wizard step 1",
+      "detail": {},
+      "ts": "2026-06-13T20:21:24.955Z"
+    },
+    {
+      "phase": "PHASE_2_AGENT_FLOW",
+      "id": "SELECT_CLIENT",
+      "status": "PASS",
+      "msg": "Selected kartik singh",
+      "detail": {},
+      "ts": "2026-06-13T20:21:30.952Z"
+    },
+    {
+      "phase": "PHASE_2_AGENT_FLOW",
+      "id": "SELECT_MATTER",
+      "status": "PASS",
+      "msg": "AGR-2026-0006visa",
+      "detail": {},
+      "ts": "2026-06-13T20:21:31.765Z"
+    },
+    {
+      "phase": "PHASE_2_AGENT_FLOW",
+      "id": "DRAFT_SAVED",
+      "status": "PASS",
+      "msg": "draft id=979c6c06-323d-469c-938b-c637dd714928",
+      "detail": {
+        "id": "979c6c06-323d-469c-938b-c637dd714928",
+        "status": "draft",
+        "matter_id": "652af0c6-9064-4ebf-8d8b-2e7010f31c8d"
+      },
+      "ts": "2026-06-13T20:21:35.064Z"
+    },
+    {
+      "phase": "PHASE_2_AGENT_FLOW",
+      "id": "UPLOAD_PDF_BROWSER",
+      "status": "PASS",
+      "msg": "File selected in browser",
+      "detail": {},
+      "ts": "2026-06-13T20:21:39.456Z"
+    },
+    {
+      "phase": "PHASE_2_AGENT_FLOW",
+      "id": "FILE_UPLOADED",
+      "status": "PASS",
+      "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/652af0c6-9064-4ebf-8d8b-2e7010f31c8d/sample.pdf",
+      "detail": {},
+      "ts": "2026-06-13T20:21:39.722Z"
+    },
+    {
+      "phase": "PHASE_2_AGENT_FLOW",
+      "id": "SEND_SUCCESS_UI",
+      "status": "PASS",
+      "msg": "Success screen (37s workflow)",
+      "detail": {
+        "under60s": true
+      },
+      "ts": "2026-06-13T20:21:52.067Z"
+    },
+    {
+      "phase": "PHASE_2_AGENT_FLOW",
+      "id": "WORKFLOW_SPEED",
+      "status": "PASS",
+      "msg": "37s to complete Create→Upload→Send",
+      "detail": {},
+      "ts": "2026-06-13T20:21:52.067Z"
+    },
+    {
+      "phase": "PHASE_2_AGENT_FLOW",
+      "id": "STATUS_SENT",
+      "status": "PASS",
+      "msg": "sent",
+      "detail": {},
+      "ts": "2026-06-13T20:21:52.346Z"
+    },
+    {
+      "phase": "PHASE_2_AGENT_FLOW",
+      "id": "TOKEN_GENERATED",
+      "status": "PASS",
+      "msg": "447cbe67-5ed1-4a14-9756-714cc18d11af",
+      "detail": {},
+      "ts": "2026-06-13T20:21:52.346Z"
+    },
+    {
+      "phase": "PHASE_2_AGENT_FLOW",
+      "id": "FILE_STORED",
+      "status": "PASS",
+      "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/652af0c6-9064-4ebf-8d8b-2e7010f31c8d/sample.pdf",
+      "detail": {},
+      "ts": "2026-06-13T20:21:52.346Z"
+    },
+    {
+      "phase": "PHASE_2_AGENT_FLOW",
+      "id": "TIMELINE_EVENTS",
+      "status": "PASS",
+      "msg": "2 events",
+      "detail": {
+        "events": [
+          {
+            "event_type": "approval_created",
+            "description": "Application approval created",
+            "created_at": "2026-06-13T20:21:35.449427+00:00"
+          },
+          {
+            "event_type": "approval_sent",
+            "description": "Application approval sent to kartiksingh37193@gmail.com",
+            "created_at": "2026-06-13T20:21:48.578956+00:00"
+          }
+        ]
+      },
+      "ts": "2026-06-13T20:21:52.561Z"
+    },
+    {
+      "phase": "PHASE_2_AGENT_FLOW",
+      "id": "STORAGE_FILE",
+      "status": "PASS",
+      "msg": "bucket list ok",
+      "detail": {
+        "files": [
+          "e2e-application-2.pdf",
+          "sample.pdf"
+        ]
+      },
+      "ts": "2026-06-13T20:21:52.797Z"
+    },
+    {
+      "phase": "PHASE_3_RESEND",
+      "id": "EMAIL_AUDIT_ROW",
+      "status": "PASS",
+      "msg": "resend_id=5b0afd43-2de1-483a-bd44-ad123b304516 status=accepted",
+      "detail": {
+        "matchingEmail": {
+          "id": "ca023867-f04e-4eb2-90d9-aa8f75d53e98",
+          "provider": "resend",
+          "recipient": "kartiksingh37193@gmail.com",
+          "subject": "Application for Review & Approval — AGR-2026-0006",
+          "resend_id": "5b0afd43-2de1-483a-bd44-ad123b304516",
+          "status": "accepted",
+          "email_type": "application_approval_send",
+          "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+          "created_at": "2026-06-13T20:21:48.336415+00:00",
+          "delivered_at": null,
+          "error": null
+        },
+        "recent": [
+          {
+            "id": "ca023867-f04e-4eb2-90d9-aa8f75d53e98",
+            "provider": "resend",
+            "recipient": "kartiksingh37193@gmail.com",
+            "subject": "Application for Review & Approval — AGR-2026-0006",
+            "resend_id": "5b0afd43-2de1-483a-bd44-ad123b304516",
+            "status": "accepted",
+            "email_type": "application_approval_send",
+            "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+            "created_at": "2026-06-13T20:21:48.336415+00:00",
+            "delivered_at": null,
+            "error": null
+          },
+          {
+            "id": "11c4c13b-f4eb-46d3-b929-958a534e51f8",
+            "provider": "resend",
+            "recipient": "kartiksingh37193@gmail.com",
+            "subject": "Application for Review & Approval — AGR-2026-0006",
+            "resend_id": "8e0f54cf-6960-4d78-9b37-1d909060757b",
+            "status": "accepted",
+            "email_type": "application_approval_send",
+            "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+            "created_at": "2026-06-13T20:20:22.203953+00:00",
+            "delivered_at": null,
+            "error": null
+          },
+          {
+            "id": "0bd4ff17-4e63-421f-8563-d4ab45716976",
+            "provider": "resend",
+            "recipient": "kartiksingh37193@gmail.com",
+            "subject": "Application for Review & Approval — AGR-2026-0006",
+            "resend_id": "b66e9a23-aeef-42d1-a59e-374ed748f4f8",
+            "status": "accepted",
+            "email_type": "application_approval_send",
+            "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+            "created_at": "2026-06-13T20:17:58.066166+00:00",
+            "delivered_at": null,
+            "error": null
+          },
+          {
+            "id": "d19b3e0e-04cc-4aec-93c1-4ef5cdf9b39b",
+            "provider": "resend",
+            "recipient": "kartiksingh37193@gmail.com",
+            "subject": "Application for Review & Approval — AGR-2026-0006",
+            "resend_id": "f82c4c37-5740-4f15-a0d6-0889588bdb7f",
+            "status": "accepted",
+            "email_type": "application_approval_send",
+            "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+            "created_at": "2026-06-13T20:13:17.680251+00:00",
+            "delivered_at": null,
+            "error": null
+          },
+          {
+            "id": "764f612c-ed11-4544-867d-81dfe1880225",
+            "provider": "resend",
+            "recipient": "kartiksingh37193@gmail.com",
+            "subject": "Application for Review & Approval — AGR-2026-0006",
+            "resend_id": "14ab762a-6afb-431f-93ee-d83967843548",
+            "status": "accepted",
+            "email_type": "application_approval_send",
+            "agency_id": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+            "created_at": "2026-06-13T20:12:29.733216+00:00",
+            "delivered_at": null,
+            "error": null
+          }
+        ]
+      },
+      "ts": "2026-06-13T20:21:53.005Z"
+    },
+    {
+      "phase": "PHASE_3_RESEND",
+      "id": "RESEND_DASHBOARD",
+      "status": "PASS",
+      "msg": "last_event=delivered",
+      "detail": {
+        "resendJson": {
+          "object": "email",
+          "id": "5b0afd43-2de1-483a-bd44-ad123b304516",
+          "to": [
+            "kartiksingh37193@gmail.com"
+          ],
+          "from": "notifications@immimate.au",
+          "created_at": "2026-06-13 20:21:48.254465+00",
+          "subject": "Application for Review & Approval — AGR-2026-0006",
+          "bcc": [],
+          "cc": [],
+          "reply_to": [],
+          "last_event": "delivered",
+          "scheduled_at": null,
+          "html": "\n    <div style=\"font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;color:#111\">\n      <p style=\"font-size:12px;color:#5C5C5C;text-transform:uppercase;letter-spacing:0.08em\">Ritiklabs SETTINGS1 1781085718037</p>\n      <h1 style=\"font-size:22px;font-weight:600;margin:16px 0\">Application for Review &amp; Approval</h1>\n      <p style=\"font-size:14px;line-height:1.6;color:#333\">Dear kartik singh,<br/><br/>Please find attached your completed application for review.<br/><br/>Please review carefully.<br/><br/>If everything is correct, approve for lodgement.<br/><br/>Regards,<br/>ritik singh</p>\n      <p style=\"margin:28px 0\">\n        <a href=\"http://localhost:3000/approval/447cbe67-5ed1-4a14-9756-714cc18d11af\" style=\"display:inline-block;background:#111;color:#fff;padding:14px 24px;border-radius:12px;text-decoration:none;font-weight:600\">\n          Review Application\n        </a>\n      </p>\n      <p style=\"font-size:12px;color:#888\">Matter: AGR-2026-0006. This link expires in 90 days.</p>\n    </div>\n  ",
+          "text": "Ritiklabs SETTINGS1 1781085718037\n\n\nAPPLICATION FOR REVIEW & APPROVAL\n\nDear kartik singh,\n\nPlease find attached your completed application for review.\n\nPlease review carefully.\n\nIf everything is correct, approve for lodgement.\n\nRegards,\nritik singh\n\nReview Application http://localhost:3000/approval/447cbe67-5ed1-4a14-9756-714cc18d11af\n\nMatter: AGR-2026-0006. This link expires in 90 days."
+        }
+      },
+      "ts": "2026-06-13T20:21:54.129Z"
+    },
+    {
+      "phase": "PHASE_4_CLIENT_APPROVE",
+      "id": "CLIENT_PAGE_LOAD",
+      "status": "PASS",
+      "msg": "Client portal rendered",
+      "detail": {},
+      "ts": "2026-06-13T20:21:58.230Z"
+    },
+    {
+      "phase": "PHASE_4_CLIENT_APPROVE",
+      "id": "PDF_DOWNLOAD",
+      "status": "PASS",
+      "msg": "HTTP 307",
+      "detail": {
+        "location": "https://wnohcmgmyhamsbmkiybc.supabase.co/storage/v1/object/sign/application-appr"
+      },
+      "ts": "2026-06-13T20:21:58.716Z"
+    },
+    {
+      "phase": "PHASE_4_CLIENT_APPROVE",
+      "id": "VIEWED_STATUS",
+      "status": "PASS",
+      "msg": "viewed viewed_at=2026-06-13T20:21:55.559+00:00",
+      "detail": {},
+      "ts": "2026-06-13T20:21:59.997Z"
+    },
+    {
+      "phase": "PHASE_4_CLIENT_APPROVE",
+      "id": "APPROVE_API",
+      "status": "PASS",
+      "msg": "HTTP 200",
+      "detail": {},
+      "ts": "2026-06-13T20:22:04.697Z"
+    },
+    {
+      "phase": "PHASE_4_CLIENT_APPROVE",
+      "id": "APPROVE_UI",
+      "status": "PASS",
+      "msg": "Approval success screen",
+      "detail": {},
+      "ts": "2026-06-13T20:22:05.797Z"
+    },
+    {
+      "phase": "PHASE_4_CLIENT_APPROVE",
+      "id": "APPROVED_AT",
+      "status": "PASS",
+      "msg": "2026-06-13T20:22:01.498+00:00",
+      "detail": {},
+      "ts": "2026-06-13T20:22:06.069Z"
+    },
+    {
+      "phase": "PHASE_4_CLIENT_APPROVE",
+      "id": "NAME_CONFIRMED",
+      "status": "PASS",
+      "msg": "kartik singh",
+      "detail": {},
+      "ts": "2026-06-13T20:22:06.069Z"
+    },
+    {
+      "phase": "PHASE_4_CLIENT_APPROVE",
+      "id": "CLIENT_IP",
+      "status": "PASS",
+      "msg": "::1",
+      "detail": {},
+      "ts": "2026-06-13T20:22:06.069Z"
+    },
+    {
+      "phase": "PHASE_4_CLIENT_APPROVE",
+      "id": "NOTIFICATION",
+      "status": "PASS",
+      "msg": "2 approval notifications",
+      "detail": {},
+      "ts": "2026-06-13T20:22:06.273Z"
+    },
+    {
+      "phase": "PHASE_5_CHANGE_REQUEST",
+      "id": "CREATE_DRAFT_2",
+      "status": "PASS",
+      "msg": "b92bc1cc-a66e-48de-a8d1-2972ba70741e",
+      "detail": {},
+      "ts": "2026-06-13T20:22:08.274Z"
+    },
+    {
+      "phase": "PHASE_5_CHANGE_REQUEST",
+      "id": "SEND_2",
+      "status": "PASS",
+      "msg": "fc91bc40-c894-438e-aa72-42c051223678",
+      "detail": {},
+      "ts": "2026-06-13T20:22:16.556Z"
+    },
+    {
+      "phase": "PHASE_5_CHANGE_REQUEST",
+      "id": "STATUS_CHANGES",
+      "status": "PASS",
+      "msg": "changes_requested",
+      "detail": {},
+      "ts": "2026-06-13T20:22:25.704Z"
+    },
+    {
+      "phase": "PHASE_5_CHANGE_REQUEST",
+      "id": "REASON_STORED",
+      "status": "PASS",
+      "msg": "E2E: passport details need correction before lodgement.",
+      "detail": {},
+      "ts": "2026-06-13T20:22:25.704Z"
+    },
+    {
+      "phase": "PHASE_5_CHANGE_REQUEST",
+      "id": "TIMELINE_UPDATED",
+      "status": "PASS",
+      "msg": "client_requested_changes, client_viewed, approval_sent, approval_created",
+      "detail": {},
+      "ts": "2026-06-13T20:22:25.931Z"
+    },
+    {
+      "phase": "PHASE_5_CHANGE_REQUEST",
+      "id": "NOTIFICATION",
+      "status": "PASS",
+      "msg": "Client requested changes",
+      "detail": {},
+      "ts": "2026-06-13T20:22:26.145Z"
+    },
+    {
+      "phase": "PHASE_6_SECURITY",
+      "id": "INVALID_TOKEN",
+      "status": "PASS",
+      "msg": "HTTP 404",
+      "detail": {},
+      "ts": "2026-06-13T20:22:26.385Z"
+    },
+    {
+      "phase": "PHASE_6_SECURITY",
+      "id": "REUSE_TOKEN",
+      "status": "PASS",
+      "msg": "HTTP 500 — should block re-approve after completion",
+      "detail": {},
+      "ts": "2026-06-13T20:22:26.621Z"
+    },
+    {
+      "phase": "PHASE_6_SECURITY",
+      "id": "EXPIRED_TOKEN",
+      "status": "PASS",
+      "msg": "HTTP 410",
+      "detail": {},
+      "ts": "2026-06-13T20:22:27.121Z"
+    },
+    {
+      "phase": "PHASE_6_SECURITY",
+      "id": "CROSS_AGENCY",
+      "status": "PASS",
+      "msg": "HTTP 404",
+      "detail": {},
+      "ts": "2026-06-13T20:22:31.706Z"
+    },
+    {
+      "phase": "PHASE_6_SECURITY",
+      "id": "SIGNED_URL_PRIVATE_BUCKET",
+      "status": "PASS",
+      "msg": "bucket public=false",
+      "detail": {},
+      "ts": "2026-06-13T20:22:34.924Z"
+    },
+    {
+      "phase": "PHASE_7_DASHBOARD",
+      "id": "WIDGETS_API",
+      "status": "PASS",
+      "msg": "{\"pendingReview\":2,\"viewed\":3,\"approved\":2,\"changesRequested\":2}",
+      "detail": {},
+      "ts": "2026-06-13T20:22:40.332Z"
+    },
+    {
+      "phase": "PHASE_7_DASHBOARD",
+      "id": "WIDGETS_REAL_DB",
+      "status": "PASS",
+      "msg": "API pendingReview=2 DB sent=2",
+      "detail": {},
+      "ts": "2026-06-13T20:22:40.595Z"
+    },
+    {
+      "phase": "PHASE_7_DASHBOARD",
+      "id": "WIDGETS_UI",
+      "status": "WARN",
+      "msg": "Dashboard widget section visible",
+      "detail": {},
+      "ts": "2026-06-13T20:22:40.598Z"
+    }
+  ]
+}

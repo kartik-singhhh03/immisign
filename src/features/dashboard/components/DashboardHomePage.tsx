@@ -1,3 +1,3 @@
 "use client"
 
-export { ComplianceDashboardPage as DashboardHomePage } from "@/features/compliance/components/ComplianceDashboardPage"
+export { AgentDashboardPage as DashboardHomePage } from "./AgentDashboardPage"

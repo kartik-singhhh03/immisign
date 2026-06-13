@@ -264,7 +264,11 @@ export class AgreementsRepository {
       );
     }
     if (status && status !== 'all') {
-      query = query.eq('status', status.toLowerCase());
+      if (status === 'awaiting') {
+        query = query.in('status', ['sent', 'pending', 'viewed', 'awaiting_signature']);
+      } else {
+        query = query.eq('status', status.toLowerCase());
+      }
     }
 
     const { data, error, count } = await query;
@@ -276,6 +280,16 @@ export class AgreementsRepository {
         const schedule = Array.isArray(schedules) ? schedules[0] : schedules;
         const totalAmount = schedule?.total_amount ? parseFloat(schedule.total_amount) : Number(a.professional_fee) || 0;
         const statusLabel = a.status ? a.status.charAt(0).toUpperCase() + a.status.slice(1) : 'Draft';
+        const sentDate = a.sent_at
+          ? new Date(a.sent_at).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })
+          : '—';
+        const signedDate = (a.completed_at || a.signed_at)
+          ? new Date(a.completed_at || a.signed_at).toLocaleDateString('en-AU', {
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric',
+            })
+          : '—';
         return {
           id: a.id,
           agreementUuid: a.id,
@@ -286,11 +300,9 @@ export class AgreementsRepository {
           matter: a.metadata?.visa_category || a.description || 'General Service Agreement',
           fee: totalAmount > 0 ? `$${totalAmount.toLocaleString()}` : '$0.00',
           status: statusLabel,
-          date: new Date(a.created_at).toLocaleDateString('en-AU', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric',
-          }),
+          date: sentDate,
+          signedDate,
+          signwellDocumentId: a.signwell_document_id || null,
           scope: a.description || 'Standard agency representation services.',
           law: 'New South Wales (NSW)',
         };

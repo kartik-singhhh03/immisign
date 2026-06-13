@@ -11,7 +11,7 @@ import type { AgencyWizardContext, AgreementWizardFormData, ClientPickerOption, 
 import { createInitialWizardForm, generateProvisionalAgreementRef } from "../../types/wizard"
 
 import { WizardStepper } from "./WizardStepper"
-import { AutosaveIndicator, type AutosaveStatus, withGlobalTask } from "@/components/ui/standards"
+import { AutosaveIndicator, type AutosaveStatus } from "@/components/ui/standards"
 import { notifyError, notifySuccess } from "@/lib/ux/feedback"
 import type { DispatchStageRecord } from "@/lib/dispatch/stage-tracker"
 import {
@@ -19,6 +19,7 @@ import {
   markTimelineRunning,
   mergeServerDispatchStages,
 } from "@/lib/dispatch/client-timeline"
+import { animateTimelineCompletion } from "@/lib/dispatch/animate-timeline"
 
 import { PageHeader } from "@/components/layout/PageHeader"
 import { ClientStep } from "./steps/ClientStep"
@@ -52,6 +53,8 @@ type Props = {
   agencySettings: AgencySettings
   clients?: ClientPickerOption[]
   initialClientId?: string
+  /** When true, restore saved wizard draft step. Default false = always start Step 1. */
+  resumeDraft?: boolean
 }
 
 function resolveMatterTypeConfig(settings: AgencySettings, form: AgreementWizardFormData) {
@@ -78,9 +81,11 @@ export function AgreementWizard({
   agencySettings,
   clients = [],
   initialClientId,
+  resumeDraft = false,
 }: Props) {
 
   const [currentStep, setCurrentStep] = React.useState(0)
+  const [draftReady, setDraftReady] = React.useState(!resumeDraft)
 
   const [saving, setSaving] = React.useState(false)
   const [dispatchStages, setDispatchStages] = React.useState<DispatchStageRecord[]>([])
@@ -141,9 +146,18 @@ export function AgreementWizard({
 
     let cancelled = false
 
-    async function loadDraft() {
+    async function initDraft() {
 
       try {
+
+        if (!resumeDraft) {
+          await fetch('/api/agreements/wizard-draft', { method: 'DELETE' })
+          if (!cancelled) {
+            setCurrentStep(0)
+            setDraftReady(true)
+          }
+          return
+        }
 
         const res = await fetch('/api/agreements/wizard-draft')
 
@@ -166,9 +180,9 @@ export function AgreementWizard({
               return merged
             })
 
-            if (typeof draft.current_step === 'number') setCurrentStep(draft.current_step)
-
-            return
+            if (typeof draft.current_step === 'number') {
+              setCurrentStep(Math.min(Math.max(0, draft.current_step), 4))
+            }
 
           }
 
@@ -176,19 +190,21 @@ export function AgreementWizard({
 
       } catch {
         // Draft API unavailable — start fresh
+      } finally {
+        if (!cancelled) setDraftReady(true)
       }
     }
 
-    loadDraft()
+    void initDraft()
 
     return () => { cancelled = true }
 
-  }, [agencyId])
+  }, [agencyId, resumeDraft])
 
 
 
   const persistDraft = React.useCallback(async () => {
-    if (dispatched || saveInFlightRef.current) return
+    if (dispatched || saveInFlightRef.current || !draftReady) return
     saveInFlightRef.current = true
     setAutosaveStatus("saving")
     try {
@@ -212,7 +228,7 @@ export function AgreementWizard({
         void persistDraft()
       }
     }
-  }, [formData, currentStep, agreementRef, dispatched])
+  }, [formData, currentStep, agreementRef, dispatched, draftReady])
 
   const handleBlurSave = React.useCallback(() => {
     if (dispatched) return
@@ -224,7 +240,7 @@ export function AgreementWizard({
   }, [dispatched, persistDraft])
 
   React.useEffect(() => {
-    if (dispatched) return
+    if (dispatched || !draftReady) return
     setAutosaveStatus("unsaved")
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
     saveTimerRef.current = setTimeout(() => {
@@ -233,7 +249,7 @@ export function AgreementWizard({
     return () => {
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
     }
-  }, [formData, currentStep, agreementRef, agencyId, dispatched, persistDraft])
+  }, [formData, currentStep, agreementRef, agencyId, dispatched, persistDraft, draftReady])
 
 
 
@@ -294,8 +310,6 @@ export function AgreementWizard({
       stages = markTimelineRunning(stages, "agreement")
       setDispatchStages(stages)
 
-
-
       const payload = {
 
         agreementRef,
@@ -334,10 +348,7 @@ export function AgreementWizard({
 
 
 
-      const data = await withGlobalTask(
-        "agreement-send",
-        "Generating and sending agreement",
-        async () => {
+      const data = await (async () => {
           const res = await fetch("/api/agreements/standard", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -362,19 +373,17 @@ export function AgreementWizard({
             throw new Error("SignWell did not return a document id. Agreement was not sent.")
           }
           return json
-        },
-        { overlay: true },
-      )
+        })()
 
 
 
       if (data.supportRef) setDispatchSupportRef(data.supportRef)
-      if (data.stages?.length) {
-        stages = mergeServerDispatchStages(stages, data.stages)
-      } else {
-        stages = stages.map((s) => ({ ...s, status: "success" as const, completedAt: new Date().toISOString() }))
-      }
-      setDispatchStages(stages)
+      const merged = data.stages?.length
+        ? mergeServerDispatchStages(stages, data.stages)
+        : stages.map((s) => ({ ...s, status: "success" as const, completedAt: new Date().toISOString() }))
+
+      await animateTimelineCompletion(stages, merged, setDispatchStages)
+      await new Promise((r) => setTimeout(r, 400))
 
       fetch("/api/agreements/wizard-draft", { method: "DELETE" }).catch(() => {})
       setApiResponse(data)
@@ -415,6 +424,11 @@ export function AgreementWizard({
 
           <WizardStepper currentStep={currentStep} hidden={dispatched} />
 
+          {!draftReady ? (
+            <Card className="rounded-2xl border border-slate-200 bg-white shadow-sm p-10 text-center text-sm text-slate-500">
+              Preparing agreement wizard…
+            </Card>
+          ) : (
           <Card className="rounded-2xl border border-slate-200 bg-white shadow-sm">
             <div className="p-6 sm:p-8 lg:p-10">
 
@@ -540,6 +554,7 @@ export function AgreementWizard({
 
             </div>
           </Card>
+          )}
         </div>
 
         <WizardSidebar

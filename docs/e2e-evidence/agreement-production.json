@@ -1,0 +1,217 @@
+{
+  "task": "AGREEMENT-PRODUCTION-E2E",
+  "timestamp": "2026-06-13T22:01:25.037Z",
+  "baseUrl": "https://immisign.vercel.app",
+  "agencySlug": "ritiklabs",
+  "strictMode": true,
+  "productionMode": true,
+  "overall": "FAIL",
+  "ids": {
+    "agencyId": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+    "userId": "2cab360f-fd21-461a-8a57-67573dee0530",
+    "agentEmail": "nayramalik1018@gmail.com",
+    "agreementId": "6a904d90-3603-4bf6-8a20-514d8de0180b",
+    "clientId": "d333165c-e7e5-486e-86a3-c3ab504ebb9f",
+    "matterId": "4f782f79-d955-4ac5-965c-3dbfc5bae54a",
+    "testEmail": "agr.dash.e2e.1781388085036@immimate.au"
+  },
+  "screenshots": [
+    "docs\\e2e-evidence\\agreement-production-screenshots\\agreement-step1.png",
+    "docs\\e2e-evidence\\agreement-production-screenshots\\agreement-step2-resume.png"
+  ],
+  "phases": {
+    "PART1_WIZARD": [
+      {
+        "id": "DEV_SERVER",
+        "status": "PASS",
+        "msg": "https://immisign.vercel.app",
+        "detail": {}
+      },
+      {
+        "id": "NEW_OPENS_STEP1",
+        "status": "PASS",
+        "msg": "detected step index 0 (summary panel)",
+        "detail": {}
+      },
+      {
+        "id": "ADVANCE_TO_STEP2",
+        "status": "PASS",
+        "msg": "step=1",
+        "detail": {}
+      },
+      {
+        "id": "CONTINUE_DRAFT_STEP2",
+        "status": "PASS",
+        "msg": "resume step=1",
+        "detail": {}
+      },
+      {
+        "id": "NEW_AGAIN_STEP1",
+        "status": "FAIL",
+        "msg": "fresh new step=1",
+        "detail": {}
+      },
+      {
+        "id": "NEVER_JUMP_SEND",
+        "status": "PASS",
+        "msg": "did not auto-jump to Send",
+        "detail": {}
+      }
+    ],
+    "PART2_GENERATION": [
+      {
+        "id": "ONBOARDING",
+        "status": "PASS",
+        "msg": "6a904d90-3603-4bf6-8a20-514d8de0180b",
+        "detail": {}
+      },
+      {
+        "id": "AGREEMENTS_ROW",
+        "status": "PASS",
+        "msg": "draft",
+        "detail": {}
+      },
+      {
+        "id": "GENERATE_API",
+        "status": "FAIL",
+        "msg": "The input directory \"/var/task/node_modules/@sparticuz/chromium/bin\" does not exist. If you are using a bundler (esbuild, webpack, etc.), you must externalize @sparticuz/chromium so it is not relocated. See: https://github.com/Sparticuz/chromium#bundler-configuration",
+        "detail": {}
+      },
+      {
+        "id": "DOCUMENTS_ROW",
+        "status": "FAIL",
+        "msg": "none",
+        "detail": {}
+      },
+      {
+        "id": "STORAGE_OBJECT",
+        "status": "FAIL",
+        "msg": "no file_url",
+        "detail": {}
+      }
+    ],
+    "ERROR": [
+      {
+        "id": "UNHANDLED",
+        "status": "FAIL",
+        "msg": "Waiting for selector `input[placeholder=\"e.g. Jane Smith\"]` failed",
+        "detail": {
+          "stack": [
+            "TimeoutError: Waiting for selector `input[placeholder=\"e.g. Jane Smith\"]` failed",
+            "    at CSSQueryHandler.waitFor (file:///C:/Users/Lenovo/Desktop/immisign/node_modules/puppeteer-core/lib/puppeteer/common/QueryHandler.js:211:46)",
+            "    at async CdpFrame.waitForSelector (file:///C:/Users/Lenovo/Desktop/immisign/node_modules/puppeteer-core/lib/puppeteer/api/Frame.js:541:21)",
+            "    at async CdpPage.waitForSelector (file:///C:/Users/Lenovo/Desktop/immisign/node_modules/puppeteer-core/lib/puppeteer/api/Page.js:1387:20)"
+          ]
+        }
+      }
+    ]
+  },
+  "consoleErrors": [],
+  "consoleWarnings": [],
+  "dashboardLoadMs": null,
+  "results": [
+    {
+      "phase": "PART1_WIZARD",
+      "id": "DEV_SERVER",
+      "status": "PASS",
+      "msg": "https://immisign.vercel.app",
+      "detail": {},
+      "ts": "2026-06-13T22:01:25.302Z"
+    },
+    {
+      "phase": "PART1_WIZARD",
+      "id": "NEW_OPENS_STEP1",
+      "status": "PASS",
+      "msg": "detected step index 0 (summary panel)",
+      "detail": {},
+      "ts": "2026-06-13T22:01:37.192Z"
+    },
+    {
+      "phase": "PART1_WIZARD",
+      "id": "ADVANCE_TO_STEP2",
+      "status": "PASS",
+      "msg": "step=1",
+      "detail": {},
+      "ts": "2026-06-13T22:02:00.957Z"
+    },
+    {
+      "phase": "PART1_WIZARD",
+      "id": "CONTINUE_DRAFT_STEP2",
+      "status": "PASS",
+      "msg": "resume step=1",
+      "detail": {},
+      "ts": "2026-06-13T22:02:32.729Z"
+    },
+    {
+      "phase": "PART1_WIZARD",
+      "id": "NEW_AGAIN_STEP1",
+      "status": "FAIL",
+      "msg": "fresh new step=1",
+      "detail": {},
+      "ts": "2026-06-13T22:02:39.416Z"
+    },
+    {
+      "phase": "PART1_WIZARD",
+      "id": "NEVER_JUMP_SEND",
+      "status": "PASS",
+      "msg": "did not auto-jump to Send",
+      "detail": {},
+      "ts": "2026-06-13T22:02:39.416Z"
+    },
+    {
+      "phase": "PART2_GENERATION",
+      "id": "ONBOARDING",
+      "status": "PASS",
+      "msg": "6a904d90-3603-4bf6-8a20-514d8de0180b",
+      "detail": {},
+      "ts": "2026-06-13T22:02:48.086Z"
+    },
+    {
+      "phase": "PART2_GENERATION",
+      "id": "AGREEMENTS_ROW",
+      "status": "PASS",
+      "msg": "draft",
+      "detail": {},
+      "ts": "2026-06-13T22:02:48.356Z"
+    },
+    {
+      "phase": "PART2_GENERATION",
+      "id": "GENERATE_API",
+      "status": "FAIL",
+      "msg": "The input directory \"/var/task/node_modules/@sparticuz/chromium/bin\" does not exist. If you are using a bundler (esbuild, webpack, etc.), you must externalize @sparticuz/chromium so it is not relocated. See: https://github.com/Sparticuz/chromium#bundler-configuration",
+      "detail": {},
+      "ts": "2026-06-13T22:02:51.280Z"
+    },
+    {
+      "phase": "PART2_GENERATION",
+      "id": "DOCUMENTS_ROW",
+      "status": "FAIL",
+      "msg": "none",
+      "detail": {},
+      "ts": "2026-06-13T22:02:54.049Z"
+    },
+    {
+      "phase": "PART2_GENERATION",
+      "id": "STORAGE_OBJECT",
+      "status": "FAIL",
+      "msg": "no file_url",
+      "detail": {},
+      "ts": "2026-06-13T22:02:54.049Z"
+    },
+    {
+      "phase": "ERROR",
+      "id": "UNHANDLED",
+      "status": "FAIL",
+      "msg": "Waiting for selector `input[placeholder=\"e.g. Jane Smith\"]` failed",
+      "detail": {
+        "stack": [
+          "TimeoutError: Waiting for selector `input[placeholder=\"e.g. Jane Smith\"]` failed",
+          "    at CSSQueryHandler.waitFor (file:///C:/Users/Lenovo/Desktop/immisign/node_modules/puppeteer-core/lib/puppeteer/common/QueryHandler.js:211:46)",
+          "    at async CdpFrame.waitForSelector (file:///C:/Users/Lenovo/Desktop/immisign/node_modules/puppeteer-core/lib/puppeteer/api/Frame.js:541:21)",
+          "    at async CdpPage.waitForSelector (file:///C:/Users/Lenovo/Desktop/immisign/node_modules/puppeteer-core/lib/puppeteer/api/Page.js:1387:20)"
+        ]
+      },
+      "ts": "2026-06-13T22:03:15.516Z"
+    }
+  ]
+}

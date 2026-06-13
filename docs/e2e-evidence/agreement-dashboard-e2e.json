@@ -1,0 +1,720 @@
+{
+  "task": "AGREEMENT-DASHBOARD-E2E-1",
+  "timestamp": "2026-06-13T21:57:35.532Z",
+  "baseUrl": "http://localhost:3014",
+  "agencySlug": "ritiklabs",
+  "strictMode": true,
+  "productionMode": false,
+  "overall": "PASS",
+  "ids": {
+    "agencyId": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+    "userId": "2cab360f-fd21-461a-8a57-67573dee0530",
+    "agentEmail": "nayramalik1018@gmail.com",
+    "agreementId": "635a989b-56d4-4c05-86d6-ee79e6497d35",
+    "clientId": "811052dc-3a19-4218-8eb3-9ee50e0bce77",
+    "matterId": "5fef4471-c90d-4b1a-9d54-c5a4463d0644",
+    "testEmail": "agr.dash.e2e.1781387855531@immimate.au",
+    "wizardAgreementId": "eac42844-5078-498b-9697-2a0ec04a10d7",
+    "signwellDocumentId": "20e8b6cb-9820-4878-a681-441fd82c4b88"
+  },
+  "screenshots": [
+    "docs\\e2e-evidence\\agreement-dashboard-screenshots\\agreement-step1.png",
+    "docs\\e2e-evidence\\agreement-dashboard-screenshots\\agreement-step2-resume.png",
+    "docs\\e2e-evidence\\agreement-dashboard-screenshots\\agreement-send.png",
+    "docs\\e2e-evidence\\agreement-dashboard-screenshots\\agreement-success.png",
+    "docs\\e2e-evidence\\agreement-dashboard-screenshots\\agreement-signed.png",
+    "docs\\e2e-evidence\\agreement-dashboard-screenshots\\dashboard-home.png",
+    "docs\\e2e-evidence\\agreement-dashboard-screenshots\\dashboard-quick-actions.png"
+  ],
+  "phases": {
+    "PART1_WIZARD": [
+      {
+        "id": "DEV_SERVER",
+        "status": "PASS",
+        "msg": "http://localhost:3014",
+        "detail": {}
+      },
+      {
+        "id": "NEW_OPENS_STEP1",
+        "status": "PASS",
+        "msg": "detected step index 0 (summary panel)",
+        "detail": {}
+      },
+      {
+        "id": "ADVANCE_TO_STEP2",
+        "status": "PASS",
+        "msg": "step=1",
+        "detail": {}
+      },
+      {
+        "id": "CONTINUE_DRAFT_STEP2",
+        "status": "PASS",
+        "msg": "resume step=1",
+        "detail": {}
+      },
+      {
+        "id": "NEW_AGAIN_STEP1",
+        "status": "PASS",
+        "msg": "fresh new step=0",
+        "detail": {}
+      },
+      {
+        "id": "NEVER_JUMP_SEND",
+        "status": "PASS",
+        "msg": "did not auto-jump to Send",
+        "detail": {}
+      }
+    ],
+    "PART2_GENERATION": [
+      {
+        "id": "ONBOARDING",
+        "status": "PASS",
+        "msg": "635a989b-56d4-4c05-86d6-ee79e6497d35",
+        "detail": {}
+      },
+      {
+        "id": "AGREEMENTS_ROW",
+        "status": "PASS",
+        "msg": "pending",
+        "detail": {}
+      },
+      {
+        "id": "GENERATE_API",
+        "status": "PASS",
+        "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/agreements/635a989b-56d4-4c05-86d6-ee79e6497d35/agreement-AGR-2026-0031.pdf",
+        "detail": {}
+      },
+      {
+        "id": "DOCUMENTS_ROW",
+        "status": "PASS",
+        "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/agreements/635a989b-56d4-4c05-86d6-ee79e6497d35/agreement-AGR-2026-0031.pdf",
+        "detail": {}
+      },
+      {
+        "id": "STORAGE_OBJECT",
+        "status": "PASS",
+        "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/agreements/635a989b-56d4-4c05-86d6-ee79e6497d35/agreement-AGR-2026-0031.pdf",
+        "detail": {}
+      },
+      {
+        "id": "PDF_VALID",
+        "status": "PASS",
+        "msg": "100447 bytes",
+        "detail": {}
+      },
+      {
+        "id": "PDF_DOWNLOAD",
+        "status": "PASS",
+        "msg": "HTTP 200",
+        "detail": {}
+      }
+    ],
+    "PART3_SEND": [
+      {
+        "id": "WIZARD_REACHED_SEND",
+        "status": "PASS",
+        "msg": "step=5",
+        "detail": {}
+      },
+      {
+        "id": "TIMELINE_VISIBLE",
+        "status": "PASS",
+        "msg": "snapshots=27",
+        "detail": {}
+      },
+      {
+        "id": "STAGES_SEQUENTIAL",
+        "status": "PASS",
+        "msg": "Generating Agreement → Uploading Storage → Creating SignWell Draft → Sending Agreement",
+        "detail": {}
+      },
+      {
+        "id": "NO_FULL_OVERLAY",
+        "status": "PASS",
+        "msg": "inline timeline only",
+        "detail": {}
+      },
+      {
+        "id": "SUCCESS_CARD",
+        "status": "PASS",
+        "msg": "success visible",
+        "detail": {}
+      },
+      {
+        "id": "SEND_BROWSER",
+        "status": "PASS",
+        "msg": "20e8b6cb-9820-4878-a681-441fd82c4b88",
+        "detail": {}
+      },
+      {
+        "id": "ACTIVITY_AFTER_SEND",
+        "status": "PASS",
+        "msg": "1 entries",
+        "detail": {}
+      }
+    ],
+    "PART4_SIGNWELL": [
+      {
+        "id": "SIGNWELL_ID",
+        "status": "PASS",
+        "msg": "20e8b6cb-9820-4878-a681-441fd82c4b88",
+        "detail": {}
+      },
+      {
+        "id": "SIGNWELL_VISIBLE",
+        "status": "PASS",
+        "msg": "Sent",
+        "detail": {}
+      },
+      {
+        "id": "WEBHOOK_RECEIVED",
+        "status": "PASS",
+        "msg": "HTTP 200",
+        "detail": {}
+      },
+      {
+        "id": "PAYLOAD_HASH",
+        "status": "PASS",
+        "msg": "409ce62ba049c5e7",
+        "detail": {}
+      },
+      {
+        "id": "STATUS_TRANSITION",
+        "status": "PASS",
+        "msg": "signed",
+        "detail": {}
+      }
+    ],
+    "PART10_PERF": [
+      {
+        "id": "DASHBOARD_LOAD_MS",
+        "status": "PASS",
+        "msg": "3935ms",
+        "detail": {}
+      }
+    ],
+    "PART5_DASHBOARD": [
+      {
+        "id": "QA_NEW_SERVICE_AGREEMENT",
+        "status": "PASS",
+        "msg": "visible",
+        "detail": {}
+      },
+      {
+        "id": "QA_NEW_APPLICATION_APPROVAL",
+        "status": "PASS",
+        "msg": "visible",
+        "detail": {}
+      },
+      {
+        "id": "QA_SEND_DOCUMENT_FOR_SIGNATURE",
+        "status": "PASS",
+        "msg": "visible",
+        "detail": {}
+      },
+      {
+        "id": "QA_CREATE_FILE_NOTE",
+        "status": "PASS",
+        "msg": "visible",
+        "detail": {}
+      },
+      {
+        "id": "QA_CREATE_SOS",
+        "status": "PASS",
+        "msg": "visible",
+        "detail": {}
+      },
+      {
+        "id": "QA_NAV_NEW",
+        "status": "PASS",
+        "msg": "/workspace/ritiklabs/agreements/new",
+        "detail": {}
+      },
+      {
+        "id": "QA_NAV_NEW",
+        "status": "PASS",
+        "msg": "/workspace/ritiklabs/approvals/new",
+        "detail": {}
+      },
+      {
+        "id": "QA_NAV_SEND",
+        "status": "PASS",
+        "msg": "/workspace/ritiklabs/documents/send",
+        "detail": {}
+      }
+    ],
+    "PART7_PIPELINE": [
+      {
+        "id": "WIDGETS_API",
+        "status": "PASS",
+        "msg": "{\"pending\":3,\"sent\":14,\"awaitingSignature\":0,\"signed\":12}",
+        "detail": {}
+      },
+      {
+        "id": "WIDGETS_DB_DRAFT",
+        "status": "PASS",
+        "msg": "API=3 DB=3",
+        "detail": {}
+      },
+      {
+        "id": "WIDGETS_DB_SIGNED",
+        "status": "PASS",
+        "msg": "API=12 DB=12",
+        "detail": {}
+      },
+      {
+        "id": "WIDGET_FILTER_NAV",
+        "status": "PASS",
+        "msg": "widget click or filtered list",
+        "detail": {}
+      }
+    ],
+    "PART6_TODAY": [
+      {
+        "id": "SUMMARY_API",
+        "status": "PASS",
+        "msg": "dashboard summary",
+        "detail": {}
+      },
+      {
+        "id": "PENDING_SIG_COUNT",
+        "status": "PASS",
+        "msg": "UI~0 DB~null",
+        "detail": {}
+      },
+      {
+        "id": "APPROVAL_WIDGETS",
+        "status": "PASS",
+        "msg": "{\"pendingReview\":2,\"viewed\":3,\"approved\":3,\"changesRequested\":2}",
+        "detail": {}
+      },
+      {
+        "id": "RECENT_ACTIVITY",
+        "status": "PASS",
+        "msg": "UI=0 DB=171",
+        "detail": {}
+      }
+    ],
+    "PART8_NOTIFICATIONS": [
+      {
+        "id": "NOTIFICATIONS_10",
+        "status": "PASS",
+        "msg": "UI=0 DB=88",
+        "detail": {}
+      }
+    ],
+    "PART9_CLIENTS": [
+      {
+        "id": "RECENT_CLIENTS_DB",
+        "status": "PASS",
+        "msg": "5 clients",
+        "detail": {}
+      },
+      {
+        "id": "RECENT_CLIENTS_ORDER",
+        "status": "PASS",
+        "msg": "fresh client in top 5",
+        "detail": {}
+      }
+    ],
+    "PART11_CONSOLE": [
+      {
+        "id": "CONSOLE_ERRORS",
+        "status": "PASS",
+        "msg": "0 errors",
+        "detail": {
+          "errors": []
+        }
+      },
+      {
+        "id": "CONSOLE_WARNINGS",
+        "status": "PASS",
+        "msg": "0 warnings",
+        "detail": {}
+      }
+    ]
+  },
+  "consoleErrors": [],
+  "consoleWarnings": [],
+  "dashboardLoadMs": 3935,
+  "results": [
+    {
+      "phase": "PART1_WIZARD",
+      "id": "DEV_SERVER",
+      "status": "PASS",
+      "msg": "http://localhost:3014",
+      "detail": {},
+      "ts": "2026-06-13T21:57:35.566Z"
+    },
+    {
+      "phase": "PART1_WIZARD",
+      "id": "NEW_OPENS_STEP1",
+      "status": "PASS",
+      "msg": "detected step index 0 (summary panel)",
+      "detail": {},
+      "ts": "2026-06-13T21:57:42.730Z"
+    },
+    {
+      "phase": "PART1_WIZARD",
+      "id": "ADVANCE_TO_STEP2",
+      "status": "PASS",
+      "msg": "step=1",
+      "detail": {},
+      "ts": "2026-06-13T21:58:06.595Z"
+    },
+    {
+      "phase": "PART1_WIZARD",
+      "id": "CONTINUE_DRAFT_STEP2",
+      "status": "PASS",
+      "msg": "resume step=1",
+      "detail": {},
+      "ts": "2026-06-13T21:58:34.829Z"
+    },
+    {
+      "phase": "PART1_WIZARD",
+      "id": "NEW_AGAIN_STEP1",
+      "status": "PASS",
+      "msg": "fresh new step=0",
+      "detail": {},
+      "ts": "2026-06-13T21:58:39.745Z"
+    },
+    {
+      "phase": "PART1_WIZARD",
+      "id": "NEVER_JUMP_SEND",
+      "status": "PASS",
+      "msg": "did not auto-jump to Send",
+      "detail": {},
+      "ts": "2026-06-13T21:58:39.745Z"
+    },
+    {
+      "phase": "PART2_GENERATION",
+      "id": "ONBOARDING",
+      "status": "PASS",
+      "msg": "635a989b-56d4-4c05-86d6-ee79e6497d35",
+      "detail": {},
+      "ts": "2026-06-13T21:58:50.353Z"
+    },
+    {
+      "phase": "PART2_GENERATION",
+      "id": "AGREEMENTS_ROW",
+      "status": "PASS",
+      "msg": "pending",
+      "detail": {},
+      "ts": "2026-06-13T21:58:50.623Z"
+    },
+    {
+      "phase": "PART2_GENERATION",
+      "id": "GENERATE_API",
+      "status": "PASS",
+      "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/agreements/635a989b-56d4-4c05-86d6-ee79e6497d35/agreement-AGR-2026-0031.pdf",
+      "detail": {},
+      "ts": "2026-06-13T21:58:56.025Z"
+    },
+    {
+      "phase": "PART2_GENERATION",
+      "id": "DOCUMENTS_ROW",
+      "status": "PASS",
+      "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/agreements/635a989b-56d4-4c05-86d6-ee79e6497d35/agreement-AGR-2026-0031.pdf",
+      "detail": {},
+      "ts": "2026-06-13T21:58:58.798Z"
+    },
+    {
+      "phase": "PART2_GENERATION",
+      "id": "STORAGE_OBJECT",
+      "status": "PASS",
+      "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/agreements/635a989b-56d4-4c05-86d6-ee79e6497d35/agreement-AGR-2026-0031.pdf",
+      "detail": {},
+      "ts": "2026-06-13T21:58:59.090Z"
+    },
+    {
+      "phase": "PART2_GENERATION",
+      "id": "PDF_VALID",
+      "status": "PASS",
+      "msg": "100447 bytes",
+      "detail": {},
+      "ts": "2026-06-13T21:59:00.237Z"
+    },
+    {
+      "phase": "PART2_GENERATION",
+      "id": "PDF_DOWNLOAD",
+      "status": "PASS",
+      "msg": "HTTP 200",
+      "detail": {},
+      "ts": "2026-06-13T21:59:00.237Z"
+    },
+    {
+      "phase": "PART3_SEND",
+      "id": "WIZARD_REACHED_SEND",
+      "status": "PASS",
+      "msg": "step=5",
+      "detail": {},
+      "ts": "2026-06-13T21:59:43.978Z"
+    },
+    {
+      "phase": "PART3_SEND",
+      "id": "TIMELINE_VISIBLE",
+      "status": "PASS",
+      "msg": "snapshots=27",
+      "detail": {},
+      "ts": "2026-06-13T22:00:13.393Z"
+    },
+    {
+      "phase": "PART3_SEND",
+      "id": "STAGES_SEQUENTIAL",
+      "status": "PASS",
+      "msg": "Generating Agreement → Uploading Storage → Creating SignWell Draft → Sending Agreement",
+      "detail": {},
+      "ts": "2026-06-13T22:00:13.393Z"
+    },
+    {
+      "phase": "PART3_SEND",
+      "id": "NO_FULL_OVERLAY",
+      "status": "PASS",
+      "msg": "inline timeline only",
+      "detail": {},
+      "ts": "2026-06-13T22:00:13.393Z"
+    },
+    {
+      "phase": "PART3_SEND",
+      "id": "SUCCESS_CARD",
+      "status": "PASS",
+      "msg": "success visible",
+      "detail": {},
+      "ts": "2026-06-13T22:00:13.393Z"
+    },
+    {
+      "phase": "PART3_SEND",
+      "id": "SEND_BROWSER",
+      "status": "PASS",
+      "msg": "20e8b6cb-9820-4878-a681-441fd82c4b88",
+      "detail": {},
+      "ts": "2026-06-13T22:00:13.838Z"
+    },
+    {
+      "phase": "PART3_SEND",
+      "id": "ACTIVITY_AFTER_SEND",
+      "status": "PASS",
+      "msg": "1 entries",
+      "detail": {},
+      "ts": "2026-06-13T22:00:14.048Z"
+    },
+    {
+      "phase": "PART4_SIGNWELL",
+      "id": "SIGNWELL_ID",
+      "status": "PASS",
+      "msg": "20e8b6cb-9820-4878-a681-441fd82c4b88",
+      "detail": {},
+      "ts": "2026-06-13T22:00:14.048Z"
+    },
+    {
+      "phase": "PART4_SIGNWELL",
+      "id": "SIGNWELL_VISIBLE",
+      "status": "PASS",
+      "msg": "Sent",
+      "detail": {},
+      "ts": "2026-06-13T22:00:15.710Z"
+    },
+    {
+      "phase": "PART4_SIGNWELL",
+      "id": "WEBHOOK_RECEIVED",
+      "status": "PASS",
+      "msg": "HTTP 200",
+      "detail": {},
+      "ts": "2026-06-13T22:00:27.162Z"
+    },
+    {
+      "phase": "PART4_SIGNWELL",
+      "id": "PAYLOAD_HASH",
+      "status": "PASS",
+      "msg": "409ce62ba049c5e7",
+      "detail": {},
+      "ts": "2026-06-13T22:00:29.521Z"
+    },
+    {
+      "phase": "PART4_SIGNWELL",
+      "id": "STATUS_TRANSITION",
+      "status": "PASS",
+      "msg": "signed",
+      "detail": {},
+      "ts": "2026-06-13T22:00:29.728Z"
+    },
+    {
+      "phase": "PART10_PERF",
+      "id": "DASHBOARD_LOAD_MS",
+      "status": "PASS",
+      "msg": "3935ms",
+      "detail": {},
+      "ts": "2026-06-13T22:00:33.857Z"
+    },
+    {
+      "phase": "PART5_DASHBOARD",
+      "id": "QA_NEW_SERVICE_AGREEMENT",
+      "status": "PASS",
+      "msg": "visible",
+      "detail": {},
+      "ts": "2026-06-13T22:00:33.857Z"
+    },
+    {
+      "phase": "PART5_DASHBOARD",
+      "id": "QA_NEW_APPLICATION_APPROVAL",
+      "status": "PASS",
+      "msg": "visible",
+      "detail": {},
+      "ts": "2026-06-13T22:00:33.857Z"
+    },
+    {
+      "phase": "PART5_DASHBOARD",
+      "id": "QA_SEND_DOCUMENT_FOR_SIGNATURE",
+      "status": "PASS",
+      "msg": "visible",
+      "detail": {},
+      "ts": "2026-06-13T22:00:33.857Z"
+    },
+    {
+      "phase": "PART5_DASHBOARD",
+      "id": "QA_CREATE_FILE_NOTE",
+      "status": "PASS",
+      "msg": "visible",
+      "detail": {},
+      "ts": "2026-06-13T22:00:33.857Z"
+    },
+    {
+      "phase": "PART5_DASHBOARD",
+      "id": "QA_CREATE_SOS",
+      "status": "PASS",
+      "msg": "visible",
+      "detail": {},
+      "ts": "2026-06-13T22:00:33.858Z"
+    },
+    {
+      "phase": "PART5_DASHBOARD",
+      "id": "QA_NAV_NEW",
+      "status": "PASS",
+      "msg": "/workspace/ritiklabs/agreements/new",
+      "detail": {},
+      "ts": "2026-06-13T22:00:33.967Z"
+    },
+    {
+      "phase": "PART5_DASHBOARD",
+      "id": "QA_NAV_NEW",
+      "status": "PASS",
+      "msg": "/workspace/ritiklabs/approvals/new",
+      "detail": {},
+      "ts": "2026-06-13T22:00:33.969Z"
+    },
+    {
+      "phase": "PART5_DASHBOARD",
+      "id": "QA_NAV_SEND",
+      "status": "PASS",
+      "msg": "/workspace/ritiklabs/documents/send",
+      "detail": {},
+      "ts": "2026-06-13T22:00:33.971Z"
+    },
+    {
+      "phase": "PART7_PIPELINE",
+      "id": "WIDGETS_API",
+      "status": "PASS",
+      "msg": "{\"pending\":3,\"sent\":14,\"awaitingSignature\":0,\"signed\":12}",
+      "detail": {},
+      "ts": "2026-06-13T22:00:35.049Z"
+    },
+    {
+      "phase": "PART7_PIPELINE",
+      "id": "WIDGETS_DB_DRAFT",
+      "status": "PASS",
+      "msg": "API=3 DB=3",
+      "detail": {},
+      "ts": "2026-06-13T22:00:35.710Z"
+    },
+    {
+      "phase": "PART7_PIPELINE",
+      "id": "WIDGETS_DB_SIGNED",
+      "status": "PASS",
+      "msg": "API=12 DB=12",
+      "detail": {},
+      "ts": "2026-06-13T22:00:35.710Z"
+    },
+    {
+      "phase": "PART7_PIPELINE",
+      "id": "WIDGET_FILTER_NAV",
+      "status": "PASS",
+      "msg": "widget click or filtered list",
+      "detail": {},
+      "ts": "2026-06-13T22:00:41.740Z"
+    },
+    {
+      "phase": "PART6_TODAY",
+      "id": "SUMMARY_API",
+      "status": "PASS",
+      "msg": "dashboard summary",
+      "detail": {},
+      "ts": "2026-06-13T22:00:43.230Z"
+    },
+    {
+      "phase": "PART6_TODAY",
+      "id": "PENDING_SIG_COUNT",
+      "status": "PASS",
+      "msg": "UI~0 DB~null",
+      "detail": {},
+      "ts": "2026-06-13T22:00:43.599Z"
+    },
+    {
+      "phase": "PART6_TODAY",
+      "id": "APPROVAL_WIDGETS",
+      "status": "PASS",
+      "msg": "{\"pendingReview\":2,\"viewed\":3,\"approved\":3,\"changesRequested\":2}",
+      "detail": {},
+      "ts": "2026-06-13T22:00:45.260Z"
+    },
+    {
+      "phase": "PART6_TODAY",
+      "id": "RECENT_ACTIVITY",
+      "status": "PASS",
+      "msg": "UI=0 DB=171",
+      "detail": {},
+      "ts": "2026-06-13T22:00:45.518Z"
+    },
+    {
+      "phase": "PART8_NOTIFICATIONS",
+      "id": "NOTIFICATIONS_10",
+      "status": "PASS",
+      "msg": "UI=0 DB=88",
+      "detail": {},
+      "ts": "2026-06-13T22:00:45.792Z"
+    },
+    {
+      "phase": "PART9_CLIENTS",
+      "id": "RECENT_CLIENTS_DB",
+      "status": "PASS",
+      "msg": "5 clients",
+      "detail": {},
+      "ts": "2026-06-13T22:00:46.047Z"
+    },
+    {
+      "phase": "PART9_CLIENTS",
+      "id": "RECENT_CLIENTS_ORDER",
+      "status": "PASS",
+      "msg": "fresh client in top 5",
+      "detail": {},
+      "ts": "2026-06-13T22:00:46.047Z"
+    },
+    {
+      "phase": "PART11_CONSOLE",
+      "id": "CONSOLE_ERRORS",
+      "status": "PASS",
+      "msg": "0 errors",
+      "detail": {
+        "errors": []
+      },
+      "ts": "2026-06-13T22:00:46.047Z"
+    },
+    {
+      "phase": "PART11_CONSOLE",
+      "id": "CONSOLE_WARNINGS",
+      "status": "PASS",
+      "msg": "0 warnings",
+      "detail": {},
+      "ts": "2026-06-13T22:00:46.047Z"
+    }
+  ]
+}

@@ -43,7 +43,8 @@ import {
   ChevronDown,
   ShieldAlert,
   Sliders,
-  Check
+  Check,
+  ScrollText,
 } from "lucide-react"
 
 type SidebarNavItem = {
@@ -64,24 +65,24 @@ const rawSidebarNavItems = [
     icon: FileSignature,
   },
   {
-    title: "App Approvals",
+    title: "Application Approvals",
     href: "/approvals",
     icon: FileCheck2,
   },
   {
-    title: "Send Document",
+    title: "Document Sign",
     href: "/documents/send",
     icon: Send,
   },
   {
-    title: "Document Library",
-    href: "/documents/library",
-    icon: FolderOpen,
+    title: "File Notes",
+    href: "/file-notes",
+    icon: ClipboardList,
   },
   {
-    title: "Templates",
-    href: "/templates",
-    icon: FileText,
+    title: "SOS",
+    href: "/service-statements/new",
+    icon: ScrollText,
   },
   {
     title: "Clients",
@@ -89,9 +90,9 @@ const rawSidebarNavItems = [
     icon: Users,
   },
   {
-    title: "File Notes",
-    href: "/file-notes",
-    icon: ClipboardList,
+    title: "Document Library",
+    href: "/documents/library",
+    icon: FolderOpen,
   },
 ] satisfies SidebarNavItem[]
 

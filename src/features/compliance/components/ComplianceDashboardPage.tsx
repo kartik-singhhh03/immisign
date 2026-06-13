@@ -32,6 +32,7 @@ import { PageHeader } from "@/components/ui/page-header"
 import { ImmiMateTable } from "@/components/ui/immimate-table"
 import { ProfessionalEmptyState } from "@/components/ui/professional-empty-state"
 import { DashboardSkeleton } from "@/components/ui/skeletons"
+import { ApprovalDashboardWidgets } from "@/features/approvals/components/dashboard/approval-widgets"
 
 const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   FileSignature,
@@ -338,9 +339,9 @@ export function ComplianceDashboardPage() {
     },
     { label: "Add File Note", href: `/workspace/${slug}/file-notes`, icon: StickyNote },
     {
-      label: "Start Application Preparation",
+      label: "New Application Approval",
       href: `/workspace/${slug}/approvals/new`,
-      icon: ClipboardCheck,
+      icon: FileCheck2,
     },
     {
       label: "Create SOS",
@@ -450,6 +451,8 @@ export function ComplianceDashboardPage() {
           ))}
         </div>
       </section>
+
+      <ApprovalDashboardWidgets agencySlug={slug} />
 
       <section className="grid gap-4 sm:grid-cols-2">
         <div className="rounded-lg border border-[#E7E7E7] bg-white p-5">

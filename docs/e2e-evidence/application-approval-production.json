@@ -1,0 +1,407 @@
+{
+  "task": "APPLICATION-APPROVAL-PRODUCTION-E2E",
+  "timestamp": "2026-06-13T22:03:55.529Z",
+  "baseUrl": "https://immisign.vercel.app",
+  "agencySlug": "ritiklabs",
+  "strictMode": true,
+  "productionMode": true,
+  "overall": "FAIL",
+  "phases": {
+    "PHASE_1_DATABASE": [
+      {
+        "id": "TABLE_application_approvals",
+        "status": "PASS",
+        "msg": "exists",
+        "detail": {}
+      },
+      {
+        "id": "TABLE_application_approval_events",
+        "status": "PASS",
+        "msg": "exists",
+        "detail": {}
+      },
+      {
+        "id": "REBUILD_COLUMNS",
+        "status": "PASS",
+        "msg": "all present",
+        "detail": {
+          "missingCols": []
+        }
+      },
+      {
+        "id": "INDEX_idx_application_approvals_matter",
+        "status": "PASS",
+        "msg": "exists",
+        "detail": {}
+      },
+      {
+        "id": "INDEX_idx_application_approvals_token",
+        "status": "PASS",
+        "msg": "exists",
+        "detail": {}
+      },
+      {
+        "id": "INDEX_idx_application_approvals_agency_status_v2",
+        "status": "PASS",
+        "msg": "exists",
+        "detail": {}
+      },
+      {
+        "id": "INDEX_idx_app_approval_events_approval",
+        "status": "PASS",
+        "msg": "exists",
+        "detail": {}
+      },
+      {
+        "id": "RLS_application_approval_events",
+        "status": "PASS",
+        "msg": "enabled",
+        "detail": {}
+      },
+      {
+        "id": "RLS_application_approvals",
+        "status": "PASS",
+        "msg": "enabled",
+        "detail": {}
+      },
+      {
+        "id": "RLS_POLICIES",
+        "status": "PASS",
+        "msg": "5 policies",
+        "detail": {
+          "policies": [
+            {
+              "tablename": "application_approval_events",
+              "policyname": "app_approval_events_tenant"
+            },
+            {
+              "tablename": "application_approvals",
+              "policyname": "tenant_application_approvals_delete"
+            },
+            {
+              "tablename": "application_approvals",
+              "policyname": "tenant_application_approvals_insert"
+            },
+            {
+              "tablename": "application_approvals",
+              "policyname": "tenant_application_approvals_select"
+            },
+            {
+              "tablename": "application_approvals",
+              "policyname": "tenant_application_approvals_update"
+            }
+          ]
+        }
+      },
+      {
+        "id": "STORAGE_BUCKET",
+        "status": "PASS",
+        "msg": "exists public=false",
+        "detail": {
+          "bucket": {
+            "id": "application-approvals",
+            "name": "application-approvals",
+            "public": false
+          }
+        }
+      },
+      {
+        "id": "REBUILD_COLUMNS_POST",
+        "status": "PASS",
+        "msg": "all present after migration",
+        "detail": {}
+      },
+      {
+        "id": "TABLE_application_approval_events_POST",
+        "status": "PASS",
+        "msg": "exists",
+        "detail": {}
+      },
+      {
+        "id": "STORAGE_BUCKET_POST",
+        "status": "PASS",
+        "msg": "public=false",
+        "detail": {}
+      },
+      {
+        "id": "RLS_application_approval_events",
+        "status": "PASS",
+        "msg": "enabled",
+        "detail": {}
+      }
+    ],
+    "PHASE_2_AGENT_FLOW": [
+      {
+        "id": "DEV_SERVER",
+        "status": "PASS",
+        "msg": "Server reachable at https://immisign.vercel.app",
+        "detail": {}
+      },
+      {
+        "id": "CLIENT_MATTER",
+        "status": "PASS",
+        "msg": "kartik singh / Application Approval — Application Approval — AGR-2026-0006",
+        "detail": {}
+      },
+      {
+        "id": "PAGE_LIST",
+        "status": "PASS",
+        "msg": "Approvals list loaded",
+        "detail": {
+          "hasNewButton": false
+        }
+      },
+      {
+        "id": "PAGE_WIZARD",
+        "status": "PASS",
+        "msg": "Wizard step 1",
+        "detail": {}
+      }
+    ],
+    "ERROR": [
+      {
+        "id": "UNHANDLED",
+        "status": "FAIL",
+        "msg": "Waiting for selector `input[placeholder*=\"Search\"]` failed",
+        "detail": {
+          "stack": [
+            "TimeoutError: Waiting for selector `input[placeholder*=\"Search\"]` failed",
+            "    at CSSQueryHandler.waitFor (file:///C:/Users/Lenovo/Desktop/immisign/node_modules/puppeteer-core/lib/puppeteer/common/QueryHandler.js:211:46)",
+            "    at async CdpFrame.waitForSelector (file:///C:/Users/Lenovo/Desktop/immisign/node_modules/puppeteer-core/lib/puppeteer/api/Frame.js:541:21)",
+            "    at async CdpPage.waitForSelector (file:///C:/Users/Lenovo/Desktop/immisign/node_modules/puppeteer-core/lib/puppeteer/api/Page.js:1387:20)",
+            "    at async runBrowserE2E (file:///C:/Users/Lenovo/Desktop/immisign/scripts/application-approval-e2e.mjs:469:5)"
+          ]
+        }
+      }
+    ]
+  },
+  "ids": {
+    "agencyId": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+    "userId": "2cab360f-fd21-461a-8a57-67573dee0530",
+    "agentEmail": "nayramalik1018@gmail.com",
+    "agentName": "ritik singh",
+    "clientId": "3463132e-212b-46a8-b175-7d46dcf47617",
+    "matterRef": "Application Approval — Application Approval — AGR-2026-0006"
+  },
+  "screenshots": [
+    "docs\\e2e-evidence\\application-approval-production-screenshots\\01-approvals-list.png",
+    "docs\\e2e-evidence\\application-approval-production-screenshots\\02-wizard-step1-empty.png"
+  ],
+  "workflowSeconds": null,
+  "summary": {
+    "total": 20,
+    "pass": 19,
+    "fail": 1,
+    "warn": 0,
+    "failures": [
+      {
+        "phase": "ERROR",
+        "id": "UNHANDLED",
+        "msg": "Waiting for selector `input[placeholder*=\"Search\"]` failed"
+      }
+    ]
+  },
+  "results": [
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "TABLE_application_approvals",
+      "status": "PASS",
+      "msg": "exists",
+      "detail": {},
+      "ts": "2026-06-13T22:03:58.696Z"
+    },
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "TABLE_application_approval_events",
+      "status": "PASS",
+      "msg": "exists",
+      "detail": {},
+      "ts": "2026-06-13T22:03:58.999Z"
+    },
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "REBUILD_COLUMNS",
+      "status": "PASS",
+      "msg": "all present",
+      "detail": {
+        "missingCols": []
+      },
+      "ts": "2026-06-13T22:03:59.356Z"
+    },
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "INDEX_idx_application_approvals_matter",
+      "status": "PASS",
+      "msg": "exists",
+      "detail": {},
+      "ts": "2026-06-13T22:03:59.669Z"
+    },
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "INDEX_idx_application_approvals_token",
+      "status": "PASS",
+      "msg": "exists",
+      "detail": {},
+      "ts": "2026-06-13T22:03:59.669Z"
+    },
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "INDEX_idx_application_approvals_agency_status_v2",
+      "status": "PASS",
+      "msg": "exists",
+      "detail": {},
+      "ts": "2026-06-13T22:03:59.669Z"
+    },
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "INDEX_idx_app_approval_events_approval",
+      "status": "PASS",
+      "msg": "exists",
+      "detail": {},
+      "ts": "2026-06-13T22:03:59.669Z"
+    },
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "RLS_application_approval_events",
+      "status": "PASS",
+      "msg": "enabled",
+      "detail": {},
+      "ts": "2026-06-13T22:03:59.980Z"
+    },
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "RLS_application_approvals",
+      "status": "PASS",
+      "msg": "enabled",
+      "detail": {},
+      "ts": "2026-06-13T22:03:59.980Z"
+    },
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "RLS_POLICIES",
+      "status": "PASS",
+      "msg": "5 policies",
+      "detail": {
+        "policies": [
+          {
+            "tablename": "application_approval_events",
+            "policyname": "app_approval_events_tenant"
+          },
+          {
+            "tablename": "application_approvals",
+            "policyname": "tenant_application_approvals_delete"
+          },
+          {
+            "tablename": "application_approvals",
+            "policyname": "tenant_application_approvals_insert"
+          },
+          {
+            "tablename": "application_approvals",
+            "policyname": "tenant_application_approvals_select"
+          },
+          {
+            "tablename": "application_approvals",
+            "policyname": "tenant_application_approvals_update"
+          }
+        ]
+      },
+      "ts": "2026-06-13T22:04:00.311Z"
+    },
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "STORAGE_BUCKET",
+      "status": "PASS",
+      "msg": "exists public=false",
+      "detail": {
+        "bucket": {
+          "id": "application-approvals",
+          "name": "application-approvals",
+          "public": false
+        }
+      },
+      "ts": "2026-06-13T22:04:00.722Z"
+    },
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "REBUILD_COLUMNS_POST",
+      "status": "PASS",
+      "msg": "all present after migration",
+      "detail": {},
+      "ts": "2026-06-13T22:04:01.040Z"
+    },
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "TABLE_application_approval_events_POST",
+      "status": "PASS",
+      "msg": "exists",
+      "detail": {},
+      "ts": "2026-06-13T22:04:01.356Z"
+    },
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "STORAGE_BUCKET_POST",
+      "status": "PASS",
+      "msg": "public=false",
+      "detail": {},
+      "ts": "2026-06-13T22:04:01.693Z"
+    },
+    {
+      "phase": "PHASE_1_DATABASE",
+      "id": "RLS_application_approval_events",
+      "status": "PASS",
+      "msg": "enabled",
+      "detail": {},
+      "ts": "2026-06-13T22:04:02.006Z"
+    },
+    {
+      "phase": "PHASE_2_AGENT_FLOW",
+      "id": "DEV_SERVER",
+      "status": "PASS",
+      "msg": "Server reachable at https://immisign.vercel.app",
+      "detail": {},
+      "ts": "2026-06-13T22:04:02.500Z"
+    },
+    {
+      "phase": "PHASE_2_AGENT_FLOW",
+      "id": "CLIENT_MATTER",
+      "status": "PASS",
+      "msg": "kartik singh / Application Approval — Application Approval — AGR-2026-0006",
+      "detail": {},
+      "ts": "2026-06-13T22:04:10.857Z"
+    },
+    {
+      "phase": "PHASE_2_AGENT_FLOW",
+      "id": "PAGE_LIST",
+      "status": "PASS",
+      "msg": "Approvals list loaded",
+      "detail": {
+        "hasNewButton": false
+      },
+      "ts": "2026-06-13T22:04:13.102Z"
+    },
+    {
+      "phase": "PHASE_2_AGENT_FLOW",
+      "id": "PAGE_WIZARD",
+      "status": "PASS",
+      "msg": "Wizard step 1",
+      "detail": {},
+      "ts": "2026-06-13T22:04:16.738Z"
+    },
+    {
+      "phase": "ERROR",
+      "id": "UNHANDLED",
+      "status": "FAIL",
+      "msg": "Waiting for selector `input[placeholder*=\"Search\"]` failed",
+      "detail": {
+        "stack": [
+          "TimeoutError: Waiting for selector `input[placeholder*=\"Search\"]` failed",
+          "    at CSSQueryHandler.waitFor (file:///C:/Users/Lenovo/Desktop/immisign/node_modules/puppeteer-core/lib/puppeteer/common/QueryHandler.js:211:46)",
+          "    at async CdpFrame.waitForSelector (file:///C:/Users/Lenovo/Desktop/immisign/node_modules/puppeteer-core/lib/puppeteer/api/Frame.js:541:21)",
+          "    at async CdpPage.waitForSelector (file:///C:/Users/Lenovo/Desktop/immisign/node_modules/puppeteer-core/lib/puppeteer/api/Page.js:1387:20)",
+          "    at async runBrowserE2E (file:///C:/Users/Lenovo/Desktop/immisign/scripts/application-approval-e2e.mjs:469:5)"
+        ]
+      },
+      "ts": "2026-06-13T22:04:31.746Z"
+    }
+  ]
+}

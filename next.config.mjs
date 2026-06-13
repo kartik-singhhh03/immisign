@@ -31,6 +31,15 @@ const nextConfig = {
       '/api/agreements/standard': [
         './node_modules/@sparticuz/chromium/**',
       ],
+      '/api/agreements/[id]/generate': [
+        './node_modules/@sparticuz/chromium/**',
+      ],
+      '/api/agreements/[id]/regenerate': [
+        './node_modules/@sparticuz/chromium/**',
+      ],
+      '/api/agreements/preview-pdf': [
+        './node_modules/@sparticuz/chromium/**',
+      ],
       '/api/poc/generate-pdf': [
         './node_modules/@sparticuz/chromium/**',
       ],

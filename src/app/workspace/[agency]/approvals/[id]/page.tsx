@@ -1,8 +1,7 @@
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { ApprovalService } from '@/features/approvals/services/approval.service';
-import { ApprovalDetailPage } from '@/features/approvals/components/details/approval-detail-page';
-import type { DbRole } from '@/lib/auth/db-roles';
+import { ApplicationApprovalRebuildService } from '@/features/approvals/services/application-approval-rebuild.service';
+import { ApprovalDetailRebuild } from '@/features/approvals/components/details/approval-detail-rebuild';
 
 export default async function ApprovalDetailsPage({
   params,
@@ -11,37 +10,29 @@ export default async function ApprovalDetailsPage({
 }) {
   const supabase = await createClient();
 
-  const { data: agency } = await supabase.from('agencies').select('id, slug').eq('slug', params.agency).single();
+  const { data: agency } = await supabase
+    .from('agencies')
+    .select('id, slug')
+    .eq('slug', params.agency)
+    .single();
   if (!agency) return notFound();
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return notFound();
+  const svc = new ApplicationApprovalRebuildService(supabase);
+  const approval = await svc.getById(agency.id, params.id);
+  if (!approval) return notFound();
 
-  const { data: profile } = await supabase
-    .from('users')
-    .select('role')
-    .eq('id', user.id)
-    .single();
+  const { data: events } = await supabase
+    .from('application_approval_events')
+    .select('id, event_type, description, created_at')
+    .eq('approval_id', params.id)
+    .eq('agency_id', agency.id)
+    .order('created_at', { ascending: false });
 
-  if (!profile) return notFound();
-
-  const service = new ApprovalService(supabase);
-
-  try {
-    const detail = await service.getDetail(
-      agency.id,
-      params.id,
-      profile.role as DbRole,
-      user.id,
-    );
-    return (
-      <ApprovalDetailPage
-        initial={detail}
-        agencySlug={params.agency}
-        agencyId={agency.id}
-      />
-    );
-  } catch {
-    return notFound();
-  }
+  return (
+    <ApprovalDetailRebuild
+      approval={approval}
+      events={events || []}
+      agencySlug={params.agency}
+    />
+  );
 }

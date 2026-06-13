@@ -2,111 +2,102 @@
 
 import React, { useEffect, useState } from "react"
 import Link from "next/link"
-import {
-  AlertCircle,
-  CheckCircle2,
-  ClipboardList,
-  FileCheck2,
-  Send,
-  UserCheck,
-} from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { AlertCircle, CheckCircle2, Eye, Send } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 
 type WidgetData = {
-  awaitingReview: number
-  awaitingApproval: number
+  pendingReview: number
+  viewed: number
+  approved: number
   changesRequested: number
-  readyToLodge: number
-  recentlyApproved: number
-  myAssignedReviews: number
-  openChecklistItems: number
+}
+
+function WidgetSkeleton() {
+  return (
+    <Card className="h-full rounded-2xl border-slate-200/60">
+      <CardContent className="p-4">
+        <Skeleton className="mb-2 h-5 w-5 rounded-md" />
+        <Skeleton className="h-8 w-12" />
+        <Skeleton className="mt-2 h-3 w-24" />
+      </CardContent>
+    </Card>
+  )
 }
 
 export function ApprovalDashboardWidgets({ agencySlug }: { agencySlug: string }) {
   const [widgets, setWidgets] = useState<WidgetData | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch("/api/approvals/widgets")
+    let cancelled = false
+    fetch("/api/approvals/widgets", { credentials: "include" })
       .then(async (r) => {
-        const text = await r.text()
-        try {
-          const j = text ? JSON.parse(text) : {}
-          if (j.success && j.widgets) setWidgets(j.widgets)
-        } catch {
-          /* ignore parse errors */
-        }
+        const j = await r.json()
+        if (!cancelled && j.success && j.widgets) setWidgets(j.widgets)
       })
       .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
   }, [])
 
-  if (!widgets) return null
-
-  const items = [
-    {
-      label: "Awaiting review",
-      value: widgets.awaitingReview,
-      icon: Send,
-      href: `/workspace/${agencySlug}/approvals?status=submitted,under_review`,
-      color: "text-amber-600",
-    },
-    {
-      label: "Awaiting approval",
-      value: widgets.awaitingApproval,
-      icon: UserCheck,
-      href: `/workspace/${agencySlug}/approvals?status=under_review`,
-      color: "text-blue-600",
-    },
-    {
-      label: "Changes requested",
-      value: widgets.changesRequested,
-      icon: AlertCircle,
-      href: `/workspace/${agencySlug}/approvals?status=changes_requested`,
-      color: "text-red-600",
-    },
-    {
-      label: "Ready to lodge",
-      value: widgets.readyToLodge,
-      icon: FileCheck2,
-      href: `/workspace/${agencySlug}/approvals?status=ready_to_lodge`,
-      color: "text-[#5C5C5C]",
-    },
-    {
-      label: "Recently approved (7d)",
-      value: widgets.recentlyApproved,
-      icon: CheckCircle2,
-      href: `/workspace/${agencySlug}/approvals?status=approved`,
-      color: "text-[#5C5C5C]",
-    },
-    {
-      label: "My assigned reviews",
-      value: widgets.myAssignedReviews,
-      icon: ClipboardList,
-      href: `/workspace/${agencySlug}/approvals`,
-      color: "text-indigo-600",
-    },
-  ]
+  const items = widgets
+    ? [
+        {
+          label: "Pending Review",
+          value: widgets.pendingReview,
+          icon: Send,
+          href: `/workspace/${agencySlug}/approvals?status=sent`,
+          color: "text-amber-600",
+        },
+        {
+          label: "Viewed",
+          value: widgets.viewed,
+          icon: Eye,
+          href: `/workspace/${agencySlug}/approvals?status=viewed`,
+          color: "text-blue-600",
+        },
+        {
+          label: "Approved",
+          value: widgets.approved,
+          icon: CheckCircle2,
+          href: `/workspace/${agencySlug}/approvals?status=approved`,
+          color: "text-emerald-600",
+        },
+        {
+          label: "Changes Requested",
+          value: widgets.changesRequested,
+          icon: AlertCircle,
+          href: `/workspace/${agencySlug}/approvals?status=changes_requested`,
+          color: "text-red-600",
+        },
+      ]
+    : []
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-lg font-black text-[#111111]">Application approvals</h2>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-        {items.map((item) => (
-          <Link key={item.label} href={item.href}>
-            <Card className="rounded-2xl border-slate-200/60 hover:shadow-md transition-shadow h-full">
-              <CardContent className="p-4">
-                <item.icon className={`h-5 w-5 mb-2 ${item.color}`} />
-                <div className="text-2xl font-black text-[#111111]">{item.value}</div>
-                <div className="text-[11px] font-bold text-slate-500 mt-1 leading-tight">{item.label}</div>
-              </CardContent>
-            </Card>
-          </Link>
-        ))}
+    <div className="space-y-4" data-testid="approval-dashboard-widgets">
+      <h2 className="text-lg font-black text-[#111111]">Application Approvals</h2>
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        {loading
+          ? Array.from({ length: 4 }).map((_, i) => <WidgetSkeleton key={i} />)
+          : items.map((item) => (
+              <Link key={item.label} href={item.href}>
+                <Card className="h-full rounded-2xl border-slate-200/60 transition-shadow hover:shadow-md">
+                  <CardContent className="p-4">
+                    <item.icon className={`mb-2 h-5 w-5 ${item.color}`} />
+                    <div className="text-2xl font-black text-[#111111]">{item.value}</div>
+                    <div className="mt-1 text-[11px] font-bold leading-tight text-slate-500">
+                      {item.label}
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
       </div>
-      {widgets.openChecklistItems > 0 && (
-        <p className="text-xs font-semibold text-slate-500">
-          {widgets.openChecklistItems} open checklist items across active applications
-        </p>
-      )}
     </div>
   )
 }

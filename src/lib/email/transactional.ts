@@ -1,6 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/admin';
 import { APP_NAME } from '@/lib/brand';
-import { resolveAppUrl } from '@/lib/env';
+import { resolveAppUrlForEmail } from '@/lib/app-url';
 import { getResendFromEmail, sendEmailWithForensicLogging } from './resend';
 
 export async function sendTransactionalEmail(params: {
@@ -41,7 +41,7 @@ export function buildApprovalEmailHtml(params: {
   actionUrl: string;
   agencyName?: string;
 }): string {
-  const appUrl = resolveAppUrl(false) || 'http://localhost:3000';
+  const appUrl = resolveAppUrlForEmail();
   const href = params.actionUrl.startsWith('http')
     ? params.actionUrl
     : `${appUrl}${params.actionUrl}`;

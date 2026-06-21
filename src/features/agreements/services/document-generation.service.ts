@@ -469,12 +469,18 @@ export class DocumentGenerationService {
     return { storagePath, size };
   }
 
-  private resolveAgentSignaturePreview(agreement: {
-    agent_signed_at?: string | null;
-    agent_signature_url?: string | null;
-    agent_signature_text?: string | null;
-    metadata?: unknown;
-  }, user: { full_name: string } | null, rma: { mara_number?: string } | null): AgentSignaturePreview | null {
+  private async resolveAgentSignaturePreview(
+    agencyId: string,
+    agreement: {
+      created_by?: string;
+      agent_signed_at?: string | null;
+      agent_signature_url?: string | null;
+      agent_signature_text?: string | null;
+      metadata?: unknown;
+    },
+    user: { full_name: string } | null,
+    rma: { mara_number?: string } | null,
+  ): Promise<AgentSignaturePreview | null> {
     const metaDisplay = (agreement.metadata as { agent_signature_display?: AgentSignaturePreview })
       ?.agent_signature_display;
 
@@ -488,7 +494,25 @@ export class DocumentGenerationService {
       };
     }
 
-    return null;
+    if (!agreement.agent_signed_at) return null;
+
+    const responsibleRmaId =
+      (agreement.metadata as { responsible_rma_id?: string })?.responsible_rma_id ||
+      agreement.created_by;
+    if (!responsibleRmaId) return null;
+
+    const { loadRmaSignatureForUser } = await import('@/lib/signatures/rma-signature');
+    const signature = await loadRmaSignatureForUser(this.supabase, agencyId, responsibleRmaId);
+    if (!signature) return null;
+
+    return {
+      name: metaDisplay?.name || signature.fullName || user?.full_name || '',
+      marn: metaDisplay?.marn ?? signature.marn ?? rma?.mara_number,
+      signedAt:
+        metaDisplay?.signedAt || formatDisplayDateForSignature(agreement.agent_signed_at),
+      imageHtml: signature.imageHtml,
+      completed: true,
+    };
   }
 
   private async renderWizardAgreementPdf(
@@ -517,7 +541,12 @@ export class DocumentGenerationService {
     const matterTypeConfigMeta =
       (agreement.metadata as { matter_type_config?: unknown })?.matter_type_config || null;
 
-    const agentSignature = this.resolveAgentSignaturePreview(agreement, user, rma);
+    const agentSignature = await this.resolveAgentSignaturePreview(
+      agencyId,
+      agreement,
+      user,
+      rma,
+    );
     const agreementStatus = (agreement as { status?: string }).status;
     const statusLabel = this.resolveAgreementStatusLabel(agreementStatus, Boolean(agentSignature));
     const clientSigned = nativeSign?.clientSigned ?? agreementStatus === AgreementStatus.SIGNED;

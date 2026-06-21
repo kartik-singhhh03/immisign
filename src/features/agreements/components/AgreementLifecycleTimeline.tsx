@@ -40,6 +40,9 @@ export function AgreementLifecycleTimeline({
   if (normalized === "draft" && hasPdf) {
     currentIndex = 1
   }
+  if (normalized === "completed") {
+    currentIndex = LIFECYCLE_STEPS.length
+  }
 
   return (
     <div className={cn("flex flex-wrap items-center gap-2", className)}>

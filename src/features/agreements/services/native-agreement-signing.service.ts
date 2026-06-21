@@ -364,35 +364,16 @@ export class NativeAgreementSigningService {
       .update({
         client_signature_storage_path: sigPath,
         signature_hash: signatureHash,
-        metadata: {
-          ...(agreement.metadata || {}),
-          native_client_signature_data_url: signatureDataUrl,
-          declarations_accepted: params.declarations,
-        },
-        updated_at: now,
-      })
-      .eq('id', agreement.id);
-
-    const gen = new DocumentGenerationService(admin);
-    const { storagePath: signedPdfPath, size: signedSize } = await gen.regenerateSignedNativePdf(
-      agreement.agency_id,
-      agreement.created_by,
-      agreement.id,
-      signatureDataUrl,
-    );
-
-    let signedPdfHash: string | null = null;
-
-    await admin
-      .from('agreements')
-      .update({
         status: 'signed',
         signed_at: now,
         client_name_confirmed: params.clientName.trim(),
         client_ip: params.ip || null,
         client_user_agent: params.userAgent || null,
-        signed_pdf_storage_path: signedPdfPath,
-        signed_pdf_hash: signedPdfHash,
+        metadata: {
+          ...(agreement.metadata || {}),
+          native_client_signature_data_url: signatureDataUrl,
+          declarations_accepted: params.declarations,
+        },
         updated_at: now,
       })
       .eq('id', agreement.id);
@@ -405,39 +386,142 @@ export class NativeAgreementSigningService {
         action: 'agreement_signed',
         user_agent: params.userAgent || null,
         signature_hash: signatureHash,
-        signed_pdf_hash: signedPdfHash,
-        signed_pdf_storage_path: signedPdfPath,
-        signed_pdf_size: signedSize,
+        client_signature_storage_path: sigPath,
       },
     });
 
-    await recordAgreementSigningAudit(admin, this.auditContext(agreement), 'acknowledged', {
-      eventTimestamp: now,
-      actorName: params.clientName.trim(),
-      ipAddress: params.ip || null,
-      metadata: {
-        action: 'agreement_completed',
-        user_agent: params.userAgent || null,
-        declarations_confirmed: true,
-      },
+    const postSign = this.finalizeNativeSign({
+      agreement,
+      token: params.token,
+      clientName: params.clientName.trim(),
+      signatureDataUrl,
+      ip: params.ip,
+      userAgent: params.userAgent,
+      signedAt: now,
     });
-
-    const completedAt = new Date().toISOString();
-    await admin
-      .from('agreements')
-      .update({ status: 'completed', completed_at: completedAt, updated_at: completedAt })
-      .eq('id', agreement.id);
-
-    const postSign = this.runPostSignEnhancements(
-      admin,
-      agreement.id,
-      params.token,
-      params.clientName,
-      params.ip,
-    );
 
     const updated = await this.getByToken(params.token);
     return { agreement: updated!, postSign };
+  }
+
+  private async syncDocumentPdfPath(
+    admin: ReturnType<typeof createAdminClient>,
+    agreementId: string,
+    agencyId: string,
+    storagePath: string,
+    fileSize: number,
+    uploadedBy: string,
+  ) {
+    const fileName = storagePath.split('/').pop() || 'signed-agreement.pdf';
+    const now = new Date().toISOString();
+    const { data: existingDoc } = await admin
+      .from('documents')
+      .select('id')
+      .eq('agreement_id', agreementId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (existingDoc?.id) {
+      await admin
+        .from('documents')
+        .update({
+          file_url: storagePath,
+          file_size: fileSize,
+          updated_at: now,
+        })
+        .eq('id', existingDoc.id);
+      return;
+    }
+
+    await admin.from('documents').insert({
+      agency_id: agencyId,
+      agreement_id: agreementId,
+      uploaded_by: uploadedBy,
+      file_name: fileName,
+      original_name: fileName,
+      file_url: storagePath,
+      file_size: fileSize,
+      mime_type: 'application/pdf',
+    });
+  }
+
+  private async finalizeNativeSign(params: {
+    agreement: {
+      id: string;
+      agency_id: string;
+      created_by: string;
+      client_id: string | null;
+      matter_id: string | null;
+      metadata?: Record<string, unknown> | null;
+    };
+    token: string;
+    clientName: string;
+    signatureDataUrl: string;
+    ip?: string;
+    userAgent?: string;
+    signedAt: string;
+  }) {
+    const admin = this.admin();
+    try {
+      const gen = new DocumentGenerationService(admin);
+      const { storagePath: signedPdfPath, size: signedSize } = await gen.regenerateSignedNativePdf(
+        params.agreement.agency_id,
+        params.agreement.created_by,
+        params.agreement.id,
+        params.signatureDataUrl,
+      );
+
+      await admin
+        .from('agreements')
+        .update({
+          signed_pdf_storage_path: signedPdfPath,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', params.agreement.id);
+
+      await this.syncDocumentPdfPath(
+        admin,
+        params.agreement.id,
+        params.agreement.agency_id,
+        signedPdfPath,
+        signedSize,
+        params.agreement.created_by,
+      );
+
+      const completedAt = new Date().toISOString();
+      await admin
+        .from('agreements')
+        .update({ status: 'completed', completed_at: completedAt, updated_at: completedAt })
+        .eq('id', params.agreement.id);
+
+      await recordAgreementSigningAudit(
+        admin,
+        this.auditContext(params.agreement as NativeAgreementRow),
+        'acknowledged',
+        {
+        eventTimestamp: completedAt,
+        actorName: params.clientName,
+        ipAddress: params.ip || null,
+        metadata: {
+          action: 'agreement_completed',
+          user_agent: params.userAgent || null,
+          declarations_confirmed: true,
+          signed_pdf_storage_path: signedPdfPath,
+        },
+      });
+
+      await this.runPostSignEnhancements(
+        admin,
+        params.agreement.id,
+        params.token,
+        params.clientName,
+        params.ip,
+      );
+    } catch (err) {
+      console.error('NATIVE_SIGN_FINALIZE_FAILED', err);
+      throw err;
+    }
   }
 
   private async computeAuditHash(admin: ReturnType<typeof createAdminClient>, agreementId: string) {

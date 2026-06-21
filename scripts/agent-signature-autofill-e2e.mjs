@@ -432,17 +432,17 @@ async function main() {
     process.exit(1);
   }
 
-  // Client sign
+  // Client sign — use label clicks so React onChange fires
   await page.goto(`${baseUrl}/agreement/sign/${signingToken}`, { waitUntil: 'networkidle2', timeout: 120000 });
   await sleep(2000);
   await shot(page, '05-client-portal.png');
 
   await page.evaluate(() => {
-    for (const cb of document.querySelectorAll('input[type=checkbox]')) {
-      if (!(cb instanceof HTMLInputElement)) continue;
-      cb.checked = true;
-      cb.dispatchEvent(new Event('change', { bubbles: true }));
-      cb.dispatchEvent(new Event('input', { bubbles: true }));
+    for (const label of document.querySelectorAll('label')) {
+      const cb = label.querySelector('input[type=checkbox]');
+      if (cb instanceof HTMLInputElement && !cb.checked) {
+        label.click();
+      }
     }
   });
   await sleep(300);
@@ -488,8 +488,13 @@ async function main() {
 
   await browser.close();
 
-  await sleep(15000);
-  const { data: finalRow } = await admin.from('agreements').select('*').eq('id', agreementId).single();
+  let finalRow = null;
+  for (let i = 0; i < 24; i++) {
+    const { data } = await admin.from('agreements').select('*').eq('id', agreementId).single();
+    finalRow = data;
+    if (data?.status === 'completed' && data?.signed_pdf_storage_path) break;
+    await sleep(5000);
+  }
   record(P6, 'status_completed', finalRow?.status === 'completed' ? 'PASS' : 'FAIL', finalRow?.status || 'unknown');
 
   if (finalRow?.signed_pdf_storage_path) {

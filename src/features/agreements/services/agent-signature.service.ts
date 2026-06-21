@@ -1,5 +1,4 @@
 import { loadRmaSignatureForUser } from '@/lib/signatures/rma-signature';
-import { userHasUploadedProfessionalSignature } from '@/lib/signatures/professional-signature';
 import { recordAgreementSigningAudit } from '@/features/agreements/lib/agreement-signing-audit';
 import { formatDisplayDateForSignature } from '@/features/agreements/lib/agreement-preview-html';
 import { DocumentGenerationService } from '@/features/agreements/services/document-generation.service';
@@ -41,12 +40,6 @@ export class AgentSignatureService {
       (agreement.metadata as { responsible_rma_id?: string })?.responsible_rma_id ||
       agreement.created_by;
 
-    const hasUploaded = await userHasUploadedProfessionalSignature(
-      this.supabase,
-      agencyId,
-      responsibleUserId,
-    );
-
     const signature = await loadRmaSignatureForUser(
       this.supabase,
       agencyId,
@@ -55,7 +48,11 @@ export class AgentSignatureService {
 
     const signedAt = new Date().toISOString();
     const displayDate = formatDisplayDateForSignature(signedAt);
-    const signatureEmbedded = hasUploaded && signature?.mode === 'upload' && Boolean(signature.signatureUrl);
+    const hasUploadImage =
+      signature?.mode === 'upload' &&
+      Boolean(signature.signatureUrl) &&
+      signature.imageHtml.includes('<img');
+    const signatureEmbedded = hasUploadImage;
 
     const metadata = {
       ...((agreement.metadata as Record<string, unknown>) || {}),
@@ -67,7 +64,7 @@ export class AgentSignatureService {
             name: signature.fullName,
             marn: signature.marn,
             signedAt: displayDate,
-            imageHtml: signatureEmbedded ? signature.imageHtml : null,
+            imageHtml: hasUploadImage ? signature.imageHtml : null,
             mode: signature.mode,
           }
         : null,

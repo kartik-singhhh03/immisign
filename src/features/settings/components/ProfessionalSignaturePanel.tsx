@@ -44,11 +44,12 @@ export function ProfessionalSignaturePanel({ onToast }: Props) {
     try {
       const res = await fetch("/api/signatures/professional")
       const payload = await res.json()
-      if (res.ok) {
-        setSignature(payload.signature || null)
+      if (!res.ok) {
+        throw new Error(payload.error || `Failed to load signature (${res.status})`)
       }
-    } catch {
-      onToast("Could not load professional signature.")
+      setSignature(payload.signature || null)
+    } catch (e) {
+      onToast(e instanceof Error ? e.message : "Could not load professional signature.")
     } finally {
       setLoading(false)
     }

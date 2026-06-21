@@ -32,7 +32,9 @@ export function AgreementDashboard({
   const hasPdf = Boolean(documentUrl)
   const sendAllowed = canSendAgreement(agreement.status, hasPdf)
   const sendLabel = sendAgreementButtonLabel(agreement.status)
-  const canRegenerate = isEditor && agreement.status !== 'signed' && agreement.status !== 'cancelled'
+  const canRegenerate =
+    isEditor &&
+    !['signed', 'completed', 'cancelled'].includes(agreement.status)
 
   const parseApiError = async (res: Response) => {
     const text = await res.text()

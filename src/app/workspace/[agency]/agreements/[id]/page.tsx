@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { AgreementService } from '@/features/agreements/services/agreements.service';
 import { AuditRepository } from '@/features/agreements/repositories/audit.repository';
 import { AgreementDashboard } from '@/features/agreements/components/details/agreement-dashboard';
@@ -23,10 +24,30 @@ export default async function AgreementDetailsPage({ params }: { params: { agenc
     const agreementUuid = agreement.id;
     auditLogs = await auditRepo.listForAgreement(agreementUuid);
 
-    const { data: docs } = await supabase.from('documents').select('*').eq('agreement_id', agreementUuid).order('created_at', { ascending: false }).limit(1);
-    if (docs && docs.length > 0) {
-      const { data: urlData } = await supabase.storage.from('secure_documents').createSignedUrl(docs[0].file_url, 3600);
-      documentUrl = urlData?.signedUrl;
+    const admin = createAdminClient();
+    const { data: agreementRow } = await admin
+      .from('agreements')
+      .select('signed_pdf_storage_path')
+      .eq('id', agreementUuid)
+      .single();
+
+    let storagePath = agreementRow?.signed_pdf_storage_path ?? null;
+
+    if (!storagePath) {
+      const { data: docs } = await admin
+        .from('documents')
+        .select('file_url')
+        .eq('agreement_id', agreementUuid)
+        .order('created_at', { ascending: false })
+        .limit(1);
+      storagePath = docs?.[0]?.file_url ?? null;
+    }
+
+    if (storagePath) {
+      const { data: urlData } = await admin.storage
+        .from('secure_documents')
+        .createSignedUrl(storagePath, 3600);
+      documentUrl = urlData?.signedUrl ?? null;
     }
   } catch (err) {
     console.error('[agreement-detail]', params.id, err);

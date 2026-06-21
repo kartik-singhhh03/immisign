@@ -1,0 +1,512 @@
+{
+  "task": "AGENT-SIGNATURE-AUTOFILL-E2E-1",
+  "timestamp": "2026-06-21T16:48:13.112Z",
+  "baseUrl": "https://immisign.vercel.app",
+  "agencySlug": "ritiklabs",
+  "overall": "NOT PASS",
+  "phases": {
+    "PHASE1_MIGRATION": [
+      {
+        "id": "migration_report",
+        "status": "PASS",
+        "msg": "AGENT_SIGNATURE_MIGRATION_REPORT.md",
+        "detail": {}
+      },
+      {
+        "id": "user_columns",
+        "status": "PASS",
+        "msg": "signature_storage_path columns",
+        "detail": {}
+      },
+      {
+        "id": "delete_sync_trigger",
+        "status": "PASS",
+        "msg": "clear trigger on delete",
+        "detail": {}
+      },
+      {
+        "id": "migration_gate",
+        "status": "PASS",
+        "msg": "All migrations applied",
+        "detail": {}
+      }
+    ],
+    "PHASE2_BROWSER": [
+      {
+        "id": "profile_page",
+        "status": "PASS",
+        "msg": "Professional Signature section",
+        "detail": {}
+      },
+      {
+        "id": "checkerboard_hint",
+        "status": "PASS",
+        "msg": "UI copy present",
+        "detail": {}
+      },
+      {
+        "id": "upload_browser",
+        "status": "PASS",
+        "msg": "PNG uploaded via UI",
+        "detail": {}
+      },
+      {
+        "id": "preview_visible",
+        "status": "FAIL",
+        "msg": "Signature preview image",
+        "detail": {}
+      },
+      {
+        "id": "uploaded_date",
+        "status": "FAIL",
+        "msg": "Uploaded date label",
+        "detail": {}
+      },
+      {
+        "id": "replace",
+        "status": "PASS",
+        "msg": "Replace signature via UI",
+        "detail": {}
+      },
+      {
+        "id": "delete",
+        "status": "FAIL",
+        "msg": "Delete signature via UI",
+        "detail": {}
+      },
+      {
+        "id": "reupload_after_delete",
+        "status": "PASS",
+        "msg": "Re-upload after delete",
+        "detail": {}
+      },
+      {
+        "id": "console_errors",
+        "status": "FAIL",
+        "msg": "2 console errors",
+        "detail": {}
+      }
+    ],
+    "PHASE3_STORAGE": [
+      {
+        "id": "db_storage_path",
+        "status": "PASS",
+        "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/2cab360f-fd21-461a-8a57-67573dee0530/default-signature.png",
+        "detail": {}
+      },
+      {
+        "id": "db_uploaded_at",
+        "status": "PASS",
+        "msg": "2026-06-21T16:48:55.152867+00:00",
+        "detail": {}
+      },
+      {
+        "id": "storage_file",
+        "status": "PASS",
+        "msg": "signatures/3cd3a307-b7e5-4984-82d4-bf757e834afd/2cab360f-fd21-461a-8a57-67573dee0530/default-signature.png (6235 bytes)",
+        "detail": {}
+      },
+      {
+        "id": "storage_bucket",
+        "status": "PASS",
+        "msg": "signatures bucket path",
+        "detail": {}
+      }
+    ],
+    "PHASE5_SEND": [
+      {
+        "id": "send_http",
+        "status": "PASS",
+        "msg": "HTTP 200",
+        "detail": {}
+      },
+      {
+        "id": "native_provider",
+        "status": "PASS",
+        "msg": "native",
+        "detail": {}
+      },
+      {
+        "id": "signing_url",
+        "status": "PASS",
+        "msg": "https://immisign.vercel.app/agreement/sign/f9734593-a937-4db4-a51c-dd7408409f88",
+        "detail": {}
+      },
+      {
+        "id": "pdf_generated",
+        "status": "PASS",
+        "msg": "Sent agreement PDF exists",
+        "detail": {}
+      }
+    ],
+    "PHASE4_PDF": [
+      {
+        "id": "agent_signed_at",
+        "status": "PASS",
+        "msg": "2026-06-21T16:49:21.037+00:00",
+        "detail": {}
+      },
+      {
+        "id": "agent_signature_url",
+        "status": "PASS",
+        "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/2cab360f-fd21-461a-8a57-67573dee0530/default-signature.png",
+        "detail": {}
+      },
+      {
+        "id": "metadata_embedded",
+        "status": "PASS",
+        "msg": "true",
+        "detail": {}
+      },
+      {
+        "id": "metadata_image_html",
+        "status": "PASS",
+        "msg": "imageHtml in metadata",
+        "detail": {}
+      },
+      {
+        "id": "pdf_valid",
+        "status": "PASS",
+        "msg": "56937 bytes",
+        "detail": {}
+      },
+      {
+        "id": "pdf_has_images",
+        "status": "PASS",
+        "msg": "Embedded image XObject in PDF",
+        "detail": {}
+      },
+      {
+        "id": "agent_name_in_pdf",
+        "status": "WARN",
+        "msg": "Agent name bytes in PDF",
+        "detail": {}
+      }
+    ],
+    "PHASE6_CLIENT_SIGN": [
+      {
+        "id": "sign_button_enabled",
+        "status": "FAIL",
+        "msg": "Sign Agreement button enabled",
+        "detail": {}
+      },
+      {
+        "id": "client_sign_ui",
+        "status": "FAIL",
+        "msg": "Success page",
+        "detail": {}
+      },
+      {
+        "id": "status_completed",
+        "status": "FAIL",
+        "msg": "viewed",
+        "detail": {}
+      }
+    ],
+    "PHASE7_AUDIT": [
+      {
+        "id": "audit_embedded",
+        "status": "PASS",
+        "msg": "2026-06-21T16:49:21.037+00:00",
+        "detail": {}
+      },
+      {
+        "id": "audit_agreement_id",
+        "status": "PASS",
+        "msg": "920fa964-b5ea-41b3-b22f-4332c1be1614",
+        "detail": {}
+      },
+      {
+        "id": "audit_user_id",
+        "status": "PASS",
+        "msg": "2cab360f-fd21-461a-8a57-67573dee0530",
+        "detail": {}
+      },
+      {
+        "id": "audit_storage_path",
+        "status": "PASS",
+        "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/2cab360f-fd21-461a-8a57-67573dee0530/default-signature.png",
+        "detail": {}
+      }
+    ],
+    "PHASE9_PRODUCTION": [
+      {
+        "id": "production_url",
+        "status": "PASS",
+        "msg": "https://immisign.vercel.app",
+        "detail": {}
+      }
+    ]
+  },
+  "checks": [
+    {
+      "phase": "PHASE1_MIGRATION",
+      "id": "migration_report",
+      "status": "PASS",
+      "msg": "AGENT_SIGNATURE_MIGRATION_REPORT.md",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE1_MIGRATION",
+      "id": "user_columns",
+      "status": "PASS",
+      "msg": "signature_storage_path columns",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE1_MIGRATION",
+      "id": "delete_sync_trigger",
+      "status": "PASS",
+      "msg": "clear trigger on delete",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE1_MIGRATION",
+      "id": "migration_gate",
+      "status": "PASS",
+      "msg": "All migrations applied",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE2_BROWSER",
+      "id": "profile_page",
+      "status": "PASS",
+      "msg": "Professional Signature section",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE2_BROWSER",
+      "id": "checkerboard_hint",
+      "status": "PASS",
+      "msg": "UI copy present",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE2_BROWSER",
+      "id": "upload_browser",
+      "status": "PASS",
+      "msg": "PNG uploaded via UI",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE2_BROWSER",
+      "id": "preview_visible",
+      "status": "FAIL",
+      "msg": "Signature preview image",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE2_BROWSER",
+      "id": "uploaded_date",
+      "status": "FAIL",
+      "msg": "Uploaded date label",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE2_BROWSER",
+      "id": "replace",
+      "status": "PASS",
+      "msg": "Replace signature via UI",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE2_BROWSER",
+      "id": "delete",
+      "status": "FAIL",
+      "msg": "Delete signature via UI",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE2_BROWSER",
+      "id": "reupload_after_delete",
+      "status": "PASS",
+      "msg": "Re-upload after delete",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE2_BROWSER",
+      "id": "console_errors",
+      "status": "FAIL",
+      "msg": "2 console errors",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE3_STORAGE",
+      "id": "db_storage_path",
+      "status": "PASS",
+      "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/2cab360f-fd21-461a-8a57-67573dee0530/default-signature.png",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE3_STORAGE",
+      "id": "db_uploaded_at",
+      "status": "PASS",
+      "msg": "2026-06-21T16:48:55.152867+00:00",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE3_STORAGE",
+      "id": "storage_file",
+      "status": "PASS",
+      "msg": "signatures/3cd3a307-b7e5-4984-82d4-bf757e834afd/2cab360f-fd21-461a-8a57-67573dee0530/default-signature.png (6235 bytes)",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE3_STORAGE",
+      "id": "storage_bucket",
+      "status": "PASS",
+      "msg": "signatures bucket path",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE5_SEND",
+      "id": "send_http",
+      "status": "PASS",
+      "msg": "HTTP 200",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE5_SEND",
+      "id": "native_provider",
+      "status": "PASS",
+      "msg": "native",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE5_SEND",
+      "id": "signing_url",
+      "status": "PASS",
+      "msg": "https://immisign.vercel.app/agreement/sign/f9734593-a937-4db4-a51c-dd7408409f88",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE4_PDF",
+      "id": "agent_signed_at",
+      "status": "PASS",
+      "msg": "2026-06-21T16:49:21.037+00:00",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE4_PDF",
+      "id": "agent_signature_url",
+      "status": "PASS",
+      "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/2cab360f-fd21-461a-8a57-67573dee0530/default-signature.png",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE4_PDF",
+      "id": "metadata_embedded",
+      "status": "PASS",
+      "msg": "true",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE4_PDF",
+      "id": "metadata_image_html",
+      "status": "PASS",
+      "msg": "imageHtml in metadata",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE4_PDF",
+      "id": "pdf_valid",
+      "status": "PASS",
+      "msg": "56937 bytes",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE4_PDF",
+      "id": "pdf_has_images",
+      "status": "PASS",
+      "msg": "Embedded image XObject in PDF",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE4_PDF",
+      "id": "agent_name_in_pdf",
+      "status": "WARN",
+      "msg": "Agent name bytes in PDF",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE5_SEND",
+      "id": "pdf_generated",
+      "status": "PASS",
+      "msg": "Sent agreement PDF exists",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE6_CLIENT_SIGN",
+      "id": "sign_button_enabled",
+      "status": "FAIL",
+      "msg": "Sign Agreement button enabled",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE6_CLIENT_SIGN",
+      "id": "client_sign_ui",
+      "status": "FAIL",
+      "msg": "Success page",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE6_CLIENT_SIGN",
+      "id": "status_completed",
+      "status": "FAIL",
+      "msg": "viewed",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE7_AUDIT",
+      "id": "audit_embedded",
+      "status": "PASS",
+      "msg": "2026-06-21T16:49:21.037+00:00",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE7_AUDIT",
+      "id": "audit_agreement_id",
+      "status": "PASS",
+      "msg": "920fa964-b5ea-41b3-b22f-4332c1be1614",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE7_AUDIT",
+      "id": "audit_user_id",
+      "status": "PASS",
+      "msg": "2cab360f-fd21-461a-8a57-67573dee0530",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE7_AUDIT",
+      "id": "audit_storage_path",
+      "status": "PASS",
+      "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/2cab360f-fd21-461a-8a57-67573dee0530/default-signature.png",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE9_PRODUCTION",
+      "id": "production_url",
+      "status": "PASS",
+      "msg": "https://immisign.vercel.app",
+      "detail": {}
+    }
+  ],
+  "ids": {
+    "agencyId": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+    "userId": "2cab360f-fd21-461a-8a57-67573dee0530",
+    "agreementId": "920fa964-b5ea-41b3-b22f-4332c1be1614"
+  },
+  "screenshots": [
+    "docs\\e2e-evidence\\agent-signature-screenshots\\01-profile-settings.png",
+    "docs\\e2e-evidence\\agent-signature-screenshots\\02-signature-preview.png",
+    "docs\\e2e-evidence\\agent-signature-screenshots\\03-after-reupload.png",
+    "docs\\e2e-evidence\\agent-signature-screenshots\\05-client-portal.png",
+    "docs\\e2e-evidence\\agent-signature-screenshots\\05b-before-submit.png",
+    "docs\\e2e-evidence\\agent-signature-screenshots\\06-client-signed.png"
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 500 ()",
+    "Failed to load resource: the server responded with a status of 500 ()"
+  ]
+}

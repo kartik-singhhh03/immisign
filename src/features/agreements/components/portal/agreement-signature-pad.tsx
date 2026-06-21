@@ -4,6 +4,8 @@ import * as React from "react"
 import ReactSignatureCanvas from "react-signature-canvas"
 import { cn } from "@/lib/utils"
 
+const PAD_HEIGHT = 160
+
 export type AgreementSignaturePadHandle = {
   isEmpty: () => boolean
   getDataUrl: () => string
@@ -15,24 +17,26 @@ type Props = {
   onSignatureChange?: (hasSignature: boolean) => void
 }
 
+/** Export signature PNG — never call getTrimmedCanvas (broken in alpha build). */
 function readSignatureDataUrl(pad: ReactSignatureCanvas): string {
-  const asAny = pad as ReactSignatureCanvas & {
-    getTrimmedCanvas?: () => HTMLCanvasElement
-    toDataURL?: (type?: string) => string
-  }
-  if (typeof asAny.getTrimmedCanvas === "function") {
-    return asAny.getTrimmedCanvas().toDataURL("image/png")
-  }
-  if (typeof asAny.toDataURL === "function") {
-    return asAny.toDataURL("image/png")
+  const extended = pad as ReactSignatureCanvas & { toDataURL?: (type?: string) => string }
+  if (typeof extended.toDataURL === "function") {
+    return extended.toDataURL("image/png")
   }
   return pad.getCanvas().toDataURL("image/png")
 }
 
-/** Ref-forwarding signature pad — avoids next/dynamic breaking refs. */
+/** Ref-forwarding signature pad with 1:1 canvas coordinates (no CSS scale offset). */
 export const AgreementSignaturePad = React.forwardRef<AgreementSignaturePadHandle, Props>(
   function AgreementSignaturePad({ className, onSignatureChange }, ref) {
+    const containerRef = React.useRef<HTMLDivElement | null>(null)
     const padRef = React.useRef<ReactSignatureCanvas | null>(null)
+    const [canvasWidth, setCanvasWidth] = React.useState(0)
+
+    React.useLayoutEffect(() => {
+      const width = containerRef.current?.clientWidth ?? 0
+      if (width > 0) setCanvasWidth(width)
+    }, [])
 
     const syncHasSignature = React.useCallback(() => {
       const has = !(padRef.current?.isEmpty() ?? true)
@@ -55,22 +59,32 @@ export const AgreementSignaturePad = React.forwardRef<AgreementSignaturePadHandl
     }))
 
     return (
-      <div className={cn("rounded-xl border border-slate-200 bg-white overflow-hidden", className)}>
-        <ReactSignatureCanvas
-          ref={padRef}
-          penColor="#111111"
-          minWidth={1.5}
-          maxWidth={2.5}
-          clearOnResize={false}
-          onEnd={syncHasSignature}
-          canvasProps={{
-            className: "touch-none block w-full",
-            width: 560,
-            height: 160,
-            style: { width: "100%", height: "160px" },
-          }}
-          backgroundColor="rgba(255,255,255,1)"
-        />
+      <div
+        ref={containerRef}
+        className={cn("rounded-xl border border-slate-200 bg-white overflow-hidden w-full", className)}
+        style={{ height: PAD_HEIGHT }}
+      >
+        {canvasWidth > 0 ? (
+          <ReactSignatureCanvas
+            ref={padRef}
+            penColor="#111111"
+            minWidth={1.5}
+            maxWidth={2.5}
+            clearOnResize={false}
+            onEnd={syncHasSignature}
+            canvasProps={{
+              width: canvasWidth,
+              height: PAD_HEIGHT,
+              className: "touch-none block",
+              style: { width: canvasWidth, height: PAD_HEIGHT },
+            }}
+            backgroundColor="#ffffff"
+          />
+        ) : (
+          <div className="h-full flex items-center justify-center text-xs text-slate-400">
+            Loading signature pad…
+          </div>
+        )}
       </div>
     )
   },

@@ -481,36 +481,57 @@ export class DocumentGenerationService {
     user: { full_name: string } | null,
     rma: { mara_number?: string } | null,
   ): Promise<AgentSignaturePreview | null> {
-    const metaDisplay = (agreement.metadata as { agent_signature_display?: AgentSignaturePreview })
-      ?.agent_signature_display;
+    const meta = (agreement.metadata || {}) as {
+      agent_signature_applied?: boolean;
+      agent_signature_applied_at?: string;
+      agent_signature_display?: AgentSignaturePreview & { storagePath?: string | null; mode?: string };
+      responsible_rma_id?: string;
+    };
 
-    if (agreement.agent_signed_at && metaDisplay?.imageHtml) {
-      return {
-        name: metaDisplay.name || user?.full_name || '',
-        marn: metaDisplay.marn ?? rma?.mara_number,
-        signedAt: metaDisplay.signedAt || formatDisplayDateForSignature(agreement.agent_signed_at),
-        imageHtml: metaDisplay.imageHtml,
-        completed: true,
-      };
+    const agentSignedAt =
+      agreement.agent_signed_at || meta.agent_signature_applied_at || null;
+    const signatureApplied = Boolean(agentSignedAt || meta.agent_signature_applied);
+
+    if (!signatureApplied) return null;
+
+    const metaDisplay = meta.agent_signature_display;
+    const responsibleRmaId = meta.responsible_rma_id || agreement.created_by;
+    const storagePath =
+      agreement.agent_signature_url ||
+      metaDisplay?.storagePath ||
+      null;
+
+    const { buildSignatureImageHtml, loadRmaSignatureForUser } = await import(
+      '@/lib/signatures/rma-signature'
+    );
+
+    let imageHtml = metaDisplay?.imageHtml || '';
+
+    if (storagePath) {
+      imageHtml = await buildSignatureImageHtml(
+        this.supabase,
+        'upload',
+        storagePath,
+        null,
+        metaDisplay?.name || user?.full_name || '',
+        { embedForPdf: true },
+      );
+    } else if (responsibleRmaId) {
+      const signature = await loadRmaSignatureForUser(this.supabase, agencyId, responsibleRmaId);
+      if (signature?.imageHtml) {
+        imageHtml = signature.imageHtml;
+      }
     }
 
-    if (!agreement.agent_signed_at) return null;
+    if (!imageHtml) return null;
 
-    const responsibleRmaId =
-      (agreement.metadata as { responsible_rma_id?: string })?.responsible_rma_id ||
-      agreement.created_by;
-    if (!responsibleRmaId) return null;
-
-    const { loadRmaSignatureForUser } = await import('@/lib/signatures/rma-signature');
-    const signature = await loadRmaSignatureForUser(this.supabase, agencyId, responsibleRmaId);
-    if (!signature) return null;
+    const signedAtIso = agentSignedAt || new Date().toISOString();
 
     return {
-      name: metaDisplay?.name || signature.fullName || user?.full_name || '',
-      marn: metaDisplay?.marn ?? signature.marn ?? rma?.mara_number,
-      signedAt:
-        metaDisplay?.signedAt || formatDisplayDateForSignature(agreement.agent_signed_at),
-      imageHtml: signature.imageHtml,
+      name: metaDisplay?.name || user?.full_name || '',
+      marn: metaDisplay?.marn ?? rma?.mara_number,
+      signedAt: formatDisplayDateForSignature(signedAtIso),
+      imageHtml,
       completed: true,
     };
   }

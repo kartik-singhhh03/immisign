@@ -64,6 +64,7 @@ export class AgentSignatureService {
             name: signature.fullName,
             marn: signature.marn,
             signedAt: displayDate,
+            storagePath: signature.signatureUrl,
             imageHtml: hasUploadImage ? signature.imageHtml : null,
             mode: signature.mode,
           }

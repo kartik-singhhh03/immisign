@@ -36,7 +36,7 @@ export async function loadRmaSignatureForUser(
 ): Promise<ResolvedRmaSignature | null> {
   const { data: user } = await supabase
     .from('users')
-    .select('full_name, email')
+    .select('full_name, email, signature_storage_path')
     .eq('id', userId)
     .eq('agency_id', agencyId)
     .single();
@@ -63,10 +63,15 @@ export async function loadRmaSignatureForUser(
   let signatureUrl = rma?.signature_url || null;
   let signatureText = rma?.signature_text || null;
 
-  // Professional PNG upload always takes precedence for agreement PDF embedding
-  if (defaultSig?.signature_type === 'upload' && defaultSig.storage_path) {
+  // Professional PNG upload (My Profile) always takes precedence for agreement PDF embedding
+  const professionalPath =
+    (defaultSig?.signature_type === 'upload' && defaultSig.storage_path) ||
+    user.signature_storage_path ||
+    null;
+
+  if (professionalPath) {
     mode = 'upload';
-    signatureUrl = defaultSig.storage_path;
+    signatureUrl = professionalPath;
     signatureText = null;
   } else if (!mode && defaultSig) {
     if (defaultSig.signature_type === 'type' && defaultSig.typed_name) {
@@ -132,7 +137,8 @@ export async function buildSignatureImageHtml(
     if (!src) {
       return `<div class="sig-typed" style="font-family:'Brush Script MT', cursive; font-size:28px;">${escapeHtml(fallbackName)}</div>`;
     }
-    return `<img src="${escapeHtml(src)}" alt="Signature" style="max-height:48px; max-width:220px; object-fit:contain; display:block;" />`;
+    const safeSrc = src.replace(/"/g, '&quot;');
+    return `<img src="${safeSrc}" alt="Signature" style="max-height:48px; max-width:220px; object-fit:contain; display:block;" />`;
   }
 
   return `<div class="sig-typed" style="font-family:'Brush Script MT', cursive; font-size:28px;">${escapeHtml(fallbackName)}</div>`;

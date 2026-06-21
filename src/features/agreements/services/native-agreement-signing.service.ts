@@ -390,7 +390,7 @@ export class NativeAgreementSigningService {
       },
     });
 
-    const postSign = this.finalizeNativeSign({
+    await this.finalizeNativeSign({
       agreement,
       token: params.token,
       clientName: params.clientName.trim(),
@@ -401,7 +401,7 @@ export class NativeAgreementSigningService {
     });
 
     const updated = await this.getByToken(params.token);
-    return { agreement: updated!, postSign };
+    return { agreement: updated! };
   }
 
   private async syncDocumentPdfPath(
@@ -525,14 +525,21 @@ export class NativeAgreementSigningService {
   }
 
   private async computeAuditHash(admin: ReturnType<typeof createAdminClient>, agreementId: string) {
-    const audit = new DocumentAuditService(admin);
-    const events = await admin
+    const { data: events, error } = await admin
       .from('document_audit_events')
-      .select('*')
+      .select('id, event_type, event_timestamp, metadata')
       .eq('document_id', agreementId)
       .eq('document_type', 'service_agreement')
       .order('event_timestamp', { ascending: true });
-    const canonical = JSON.stringify(events.data || []);
+    if (error) throw new Error(`Audit events query failed: ${error.message}`);
+    const canonical = JSON.stringify(
+      (events || []).map((e) => ({
+        id: e.id,
+        event_type: e.event_type,
+        event_timestamp: e.event_timestamp,
+        metadata: e.metadata,
+      })),
+    );
     return createHash('sha256').update(canonical).digest('hex');
   }
 
@@ -556,186 +563,185 @@ export class NativeAgreementSigningService {
     clientName: string,
     ip?: string,
   ) {
-    try {
-      let fresh = await this.getByToken(token);
-      if (!fresh || fresh.status !== 'completed') return;
+    let fresh = await this.getByToken(token);
+    if (!fresh || fresh.status !== 'completed') return;
 
-      const [{ data: agency }, { data: agent }, { data: client }] = await Promise.all([
-        admin.from('agencies').select('name').eq('id', fresh.agency_id).single(),
-        admin.from('users').select('full_name, email').eq('id', fresh.created_by).single(),
-        admin.from('clients').select('name, email').eq('id', fresh.client_id!).maybeSingle(),
-      ]);
+    const [{ data: agency }, { data: agent }, { data: client }] = await Promise.all([
+      admin.from('agencies').select('name').eq('id', fresh.agency_id).single(),
+      admin.from('users').select('full_name, email').eq('id', fresh.created_by).single(),
+      admin.from('clients').select('name, email').eq('id', fresh.client_id!).maybeSingle(),
+    ]);
 
-      const recordSvc = new AgreementSigningRecordService(admin);
+    const recordSvc = new AgreementSigningRecordService(admin);
+    const recordCtx = {
+      agencyName: agency?.name || APP_NAME,
+      agentName: agent?.full_name || 'Agent',
+      agentEmail: agent?.email || '',
+      clientName: client?.name || clientName,
+      clientEmail: client?.email || fresh.client_email || '',
+      token,
+      declarations: (fresh.metadata?.declarations_accepted as Record<string, boolean>) || {},
+    };
 
-      const [signedPdfBuf, recordResult] = await Promise.all([
-        this.loadSignedPdfBuffer(admin, fresh.signed_pdf_storage_path),
-        recordSvc.generate(fresh.agency_id, fresh.created_by, fresh, {
-          agencyName: agency?.name || APP_NAME,
-          agentName: agent?.full_name || 'Agent',
-          agentEmail: agent?.email || '',
+    const signedPdfBuf = await this.loadSignedPdfBuffer(admin, fresh.signed_pdf_storage_path);
+    if (signedPdfBuf) {
+      const signedPdfHash = createHash('sha256').update(signedPdfBuf).digest('hex');
+      await admin.from('agreements').update({ signed_pdf_hash: signedPdfHash }).eq('id', agreementId);
+      fresh = { ...fresh, signed_pdf_hash: signedPdfHash };
+    }
+
+    const auditHash = await this.computeAuditHash(admin, agreementId);
+    await admin.from('agreements').update({ audit_hash: auditHash }).eq('id', agreementId);
+    fresh = { ...fresh, audit_hash: auditHash };
+
+    const pass1 = await recordSvc.generate(fresh.agency_id, fresh.created_by, fresh, recordCtx);
+    const signingRecordHash = createHash('sha256').update(pass1.pdfBuffer).digest('hex');
+    fresh = { ...fresh, signing_record_hash: signingRecordHash };
+
+    const recordResult = await recordSvc.generate(fresh.agency_id, fresh.created_by, fresh, recordCtx);
+    const { storagePath: recordPath, pdfBuffer: recordBuf, generatedAt } = recordResult;
+
+    await admin
+      .from('agreements')
+      .update({
+        signing_record_storage_path: recordPath,
+        signing_record_hash: signingRecordHash,
+      })
+      .eq('id', agreementId);
+    fresh = { ...fresh, signing_record_storage_path: recordPath };
+
+    await recordAgreementSigningAudit(admin, this.auditContext(fresh), 'generated', {
+      eventTimestamp: generatedAt,
+      provider: AGREEMENT_NATIVE_PORTAL_PROVIDER,
+      metadata: {
+        action: 'agreement_record_generated',
+        signing_record_storage_path: recordPath,
+        signing_record_hash: signingRecordHash,
+        audit_hash: auditHash,
+      },
+    });
+
+    const signedAtLabel = formatSydneyDateTime(fresh.signed_at || new Date().toISOString());
+    const signedAttachment = signedPdfBuf
+      ? [{ filename: 'signed-agreement.pdf', content: signedPdfBuf }]
+      : undefined;
+
+    const clientEmail = client?.email || fresh.client_email;
+    if (!clientEmail) {
+      console.error('AGREEMENT_CLIENT_NOTIFY_SKIPPED', 'No client email on agreement', agreementId);
+    }
+    if (!agent?.email) {
+      console.error('AGREEMENT_AGENT_NOTIFY_SKIPPED', 'No agent email', agreementId);
+    }
+    await Promise.all([
+      clientEmail
+        ? sendEmailWithForensicLogging(
+            {
+              from: formatBrandedSender(agent?.full_name || 'Agent', agency?.name || APP_NAME),
+              to: clientEmail,
+              subject: 'Agreement Successfully Signed',
+              html: buildClientAgreementSignedNotificationHtml({
+                clientName: client?.name || clientName,
+                agreementRef: fresh.agreement_number || '—',
+                signedAt: signedAtLabel,
+              }),
+              attachments: signedAttachment,
+            },
+            { emailType: 'agreement_native_client_signed', agencyId: fresh.agency_id },
+          )
+            .then(async (clientEmailResult) => {
+              const resendId = (clientEmailResult as { data?: { id?: string } })?.data?.id ?? null;
+              await recordAgreementSigningAudit(admin, this.auditContext(fresh), 'completed', {
+                eventTimestamp: new Date().toISOString(),
+                provider: AGREEMENT_EMAIL_PROVIDER,
+                metadata: { action: 'client_notified', resend_id: resendId, recipient: clientEmail },
+              });
+            })
+            .catch((err) => {
+              console.error('AGREEMENT_CLIENT_NOTIFY_FAILED', err);
+              throw err;
+            })
+        : Promise.resolve(),
+      agent?.email
+        ? sendEmailWithForensicLogging(
+            {
+              from: formatBrandedSender(APP_NAME, agency?.name || APP_NAME),
+              to: agent.email,
+              subject: `Agreement Signed By Client — ${fresh.agreement_number || fresh.client_name}`,
+              html: buildAgentAgreementSignedNotificationHtml({
+                clientName: client?.name || clientName,
+                agreementRef: fresh.agreement_number || '—',
+                signedAt: signedAtLabel,
+                confirmedName: fresh.client_name_confirmed || clientName,
+                clientIp: fresh.client_ip || ip || null,
+              }),
+              attachments: [
+                ...(signedAttachment || []),
+                { filename: 'agreement-signing-record.pdf', content: recordBuf },
+              ],
+            },
+            { emailType: 'agreement_native_agent_notify', agencyId: fresh.agency_id },
+          )
+            .then(async (agentEmailResult) => {
+              const resendId = (agentEmailResult as { data?: { id?: string } })?.data?.id ?? null;
+              await recordAgreementSigningAudit(admin, this.auditContext(fresh), 'completed', {
+                eventTimestamp: new Date().toISOString(),
+                provider: AGREEMENT_EMAIL_PROVIDER,
+                metadata: { action: 'agent_notified', resend_id: resendId, recipient: agent.email },
+              });
+            })
+            .catch((err) => {
+              console.error('AGREEMENT_AGENT_NOTIFY_FAILED', err);
+              throw err;
+            })
+        : Promise.resolve(),
+    ]);
+
+    const { data: existingNote } = await admin
+      .from('file_notes')
+      .select('id')
+      .eq('agency_id', fresh.agency_id)
+      .eq('reference_type', 'agreement')
+      .eq('reference_id', fresh.id)
+      .eq('is_system_note', true)
+      .ilike('body', '%Agreement Signed%')
+      .limit(1)
+      .maybeSingle();
+
+    if (!existingNote && fresh.client_id) {
+      await recordClientSystemNote(admin, {
+        agencyId: fresh.agency_id,
+        clientId: fresh.client_id,
+        actorUserId: fresh.created_by,
+        fileSource: 'agreement',
+        fileId: fresh.id,
+        referenceType: 'agreement',
+        referenceId: fresh.id,
+        noteType: 'system',
+        recordedAt: fresh.signed_at || generatedAt,
+        body: buildAgreementSignedFileNoteBody({
           clientName: client?.name || clientName,
-          clientEmail: client?.email || fresh.client_email || '',
+          agreementRef: fresh.agreement_number || fresh.id,
+          signedAt: fresh.signed_at || generatedAt,
+          confirmedName: fresh.client_name_confirmed || clientName,
+          clientIp: fresh.client_ip,
           token,
-          declarations: (fresh.metadata?.declarations_accepted as Record<string, boolean>) || {},
+          signingRecordPath: recordPath,
         }),
-      ]);
-
-      const { storagePath: recordPath, pdfBuffer: recordBuf, generatedAt } = recordResult;
-
-      if (signedPdfBuf) {
-        const signedPdfHash = createHash('sha256').update(signedPdfBuf).digest('hex');
-        await admin.from('agreements').update({ signed_pdf_hash: signedPdfHash }).eq('id', agreementId);
-        fresh = { ...fresh, signed_pdf_hash: signedPdfHash };
-      }
-
-      const signedAtLabel = formatSydneyDateTime(fresh.signed_at || new Date().toISOString());
-      const signedAttachment = signedPdfBuf
-        ? [{ filename: 'signed-agreement.pdf', content: signedPdfBuf }]
-        : undefined;
-
-      const signingRecordHash = createHash('sha256').update(recordBuf).digest('hex');
-      await admin
-        .from('agreements')
-        .update({
-          signing_record_storage_path: recordPath,
-          signing_record_hash: signingRecordHash,
-        })
-        .eq('id', agreementId);
-
-      let auditHash: string | null = null;
-      try {
-        auditHash = await this.computeAuditHash(admin, agreementId);
-        await admin.from('agreements').update({ audit_hash: auditHash }).eq('id', agreementId);
-      } catch (hashErr) {
-        console.error('AGREEMENT_AUDIT_HASH_FAILED', hashErr);
-      }
-      fresh = { ...fresh, audit_hash: auditHash, signing_record_storage_path: recordPath };
-
-      await recordAgreementSigningAudit(admin, this.auditContext(fresh), 'generated', {
-        eventTimestamp: generatedAt,
-        provider: AGREEMENT_NATIVE_PORTAL_PROVIDER,
         metadata: {
-          action: 'agreement_record_generated',
-          signing_record_storage_path: recordPath,
-          signing_record_hash: signingRecordHash,
-          audit_hash: auditHash,
+          title: 'Agreement Signed',
+          type: 'Compliance',
+          category: 'Service Agreement',
+          agreement_id: fresh.id,
         },
       });
 
-      const clientEmail = client?.email || fresh.client_email;
-      if (!clientEmail) {
-        console.error('AGREEMENT_CLIENT_NOTIFY_SKIPPED', 'No client email on agreement', agreementId);
-      }
-      if (!agent?.email) {
-        console.error('AGREEMENT_AGENT_NOTIFY_SKIPPED', 'No agent email', agreementId);
-      }
-      await Promise.all([
-        clientEmail
-          ? sendEmailWithForensicLogging(
-              {
-                from: formatBrandedSender(agent?.full_name || 'Agent', agency?.name || APP_NAME),
-                to: clientEmail,
-                subject: 'Agreement Successfully Signed',
-                html: buildClientAgreementSignedNotificationHtml({
-                  clientName: client?.name || clientName,
-                  agreementRef: fresh.agreement_number || '—',
-                  signedAt: signedAtLabel,
-                }),
-                attachments: signedAttachment,
-              },
-              { emailType: 'agreement_native_client_signed', agencyId: fresh.agency_id },
-            )
-              .then(async (clientEmailResult) => {
-                const resendId = (clientEmailResult as { data?: { id?: string } })?.data?.id ?? null;
-                await recordAgreementSigningAudit(admin, this.auditContext(fresh), 'completed', {
-                  eventTimestamp: new Date().toISOString(),
-                  provider: AGREEMENT_EMAIL_PROVIDER,
-                  metadata: { action: 'client_notified', resend_id: resendId, recipient: clientEmail },
-                });
-              })
-              .catch((err) => console.error('AGREEMENT_CLIENT_NOTIFY_FAILED', err))
-          : Promise.resolve(),
-        agent?.email
-          ? sendEmailWithForensicLogging(
-              {
-                from: formatBrandedSender(APP_NAME, agency?.name || APP_NAME),
-                to: agent.email,
-                subject: `Agreement Signed By Client — ${fresh.agreement_number || fresh.client_name}`,
-                html: buildAgentAgreementSignedNotificationHtml({
-                  clientName: client?.name || clientName,
-                  agreementRef: fresh.agreement_number || '—',
-                  signedAt: signedAtLabel,
-                  confirmedName: fresh.client_name_confirmed || clientName,
-                  clientIp: fresh.client_ip || ip || null,
-                }),
-                attachments: [
-                  ...(signedAttachment || []),
-                  { filename: 'agreement-signing-record.pdf', content: recordBuf },
-                ],
-              },
-              { emailType: 'agreement_native_agent_notify', agencyId: fresh.agency_id },
-            )
-              .then(async (agentEmailResult) => {
-                const resendId = (agentEmailResult as { data?: { id?: string } })?.data?.id ?? null;
-                await recordAgreementSigningAudit(admin, this.auditContext(fresh), 'completed', {
-                  eventTimestamp: new Date().toISOString(),
-                  provider: AGREEMENT_EMAIL_PROVIDER,
-                  metadata: { action: 'agent_notified', resend_id: resendId, recipient: agent.email },
-                });
-              })
-              .catch((err) => console.error('AGREEMENT_AGENT_NOTIFY_FAILED', err))
-          : Promise.resolve(),
-      ]);
-
-      const { data: existingNote } = await admin
-        .from('file_notes')
-        .select('id')
-        .eq('agency_id', fresh.agency_id)
-        .eq('reference_type', 'agreement')
-        .eq('reference_id', fresh.id)
-        .eq('is_system_note', true)
-        .ilike('body', '%Agreement Signed%')
-        .limit(1)
-        .maybeSingle();
-
-      if (!existingNote && fresh.client_id) {
-        await recordClientSystemNote(admin, {
-          agencyId: fresh.agency_id,
-          clientId: fresh.client_id,
-          actorUserId: fresh.created_by,
-          fileSource: 'agreement',
-          fileId: fresh.id,
-          referenceType: 'agreement',
-          referenceId: fresh.id,
-          noteType: 'system',
-          recordedAt: fresh.signed_at || generatedAt,
-          body: buildAgreementSignedFileNoteBody({
-            clientName: client?.name || clientName,
-            agreementRef: fresh.agreement_number || fresh.id,
-            signedAt: fresh.signed_at || generatedAt,
-            confirmedName: fresh.client_name_confirmed || clientName,
-            clientIp: fresh.client_ip,
-            token,
-            signingRecordPath: recordPath,
-          }),
-          metadata: {
-            title: 'Agreement Signed',
-            type: 'Compliance',
-            category: 'Service Agreement',
-            agreement_id: fresh.id,
-          },
-        });
-
-        await recordAgreementSigningAudit(admin, this.auditContext(fresh), 'completed', {
-          eventTimestamp: generatedAt,
-          metadata: { action: 'file_note_created' },
-        });
-      } else if (!fresh.client_id) {
-        console.error('AGREEMENT_FILE_NOTE_SKIPPED', 'Agreement has no client_id', agreementId);
-      }
-    } catch (err) {
-      console.error('NATIVE_AGREEMENT_POST_SIGN_FAILED', err);
+      await recordAgreementSigningAudit(admin, this.auditContext(fresh), 'completed', {
+        eventTimestamp: generatedAt,
+        metadata: { action: 'file_note_created' },
+      });
+    } else if (!fresh.client_id) {
+      console.error('AGREEMENT_FILE_NOTE_SKIPPED', 'Agreement has no client_id', agreementId);
     }
   }
 }

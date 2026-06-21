@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { waitUntil } from '@vercel/functions';
 import { NativeAgreementSigningService } from '@/features/agreements/services/native-agreement-signing.service';
 import { apiError, withApiRoute } from '@/lib/api/json-response';
 import { checkRateLimit } from '@/lib/rate-limit';
@@ -56,7 +55,7 @@ export async function POST(
       if (!body.clientName?.trim()) return apiError('Full legal name required', 400);
       if (!body.signaturePngBase64) return apiError('Signature required', 400);
       try {
-        const { agreement, postSign } = await svc.signByToken({
+        const { agreement } = await svc.signByToken({
           token: params.token,
           clientName: body.clientName.trim(),
           signaturePngBase64: body.signaturePngBase64,
@@ -64,7 +63,6 @@ export async function POST(
           ip: clientIp(req),
           userAgent: req.headers.get('user-agent') || undefined,
         });
-        waitUntil(postSign.catch((err) => console.error('AGREEMENT_POST_SIGN_BACKGROUND_FAILED', err)));
         return NextResponse.json({ agreement, completed: true });
       } catch (e) {
         if (e instanceof ConflictError) {

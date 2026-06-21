@@ -104,6 +104,51 @@ function pdfHasEmbeddedImages(buf) {
   return /\/Subtype\s*\/Image/.test(s) || /\/Type\s*\/XObject/.test(s);
 }
 
+function pdfContainsHash(buf, hash) {
+  if (!hash || hash.length < 16) return false;
+  return buf.toString('latin1').includes(hash);
+}
+
+async function pollPostSignComplete(admin, agreementId, maxAttempts = 48, intervalMs = 5000) {
+  let row = null;
+  let auditEvents = [];
+  for (let i = 0; i < maxAttempts; i++) {
+    const [{ data }, { data: events }] = await Promise.all([
+      admin.from('agreements').select('*').eq('id', agreementId).single(),
+      admin
+        .from('document_audit_events')
+        .select('event_type, metadata')
+        .eq('document_id', agreementId)
+        .eq('document_type', 'service_agreement'),
+    ]);
+    row = data;
+    auditEvents = events || [];
+    const hasClientNotified = auditEvents.some(
+      (e) => e.event_type === 'completed' && e.metadata?.action === 'client_notified',
+    );
+    const hasAgentNotified = auditEvents.some(
+      (e) => e.event_type === 'completed' && e.metadata?.action === 'agent_notified',
+    );
+    const hasFileNoteCreated = auditEvents.some(
+      (e) => e.event_type === 'completed' && e.metadata?.action === 'file_note_created',
+    );
+    if (
+      row?.status === 'completed' &&
+      row?.signing_record_storage_path &&
+      row?.signed_pdf_hash &&
+      row?.audit_hash &&
+      row?.signing_record_hash &&
+      hasClientNotified &&
+      hasAgentNotified &&
+      hasFileNoteCreated
+    ) {
+      return { row, auditEvents };
+    }
+    await sleep(intervalMs);
+  }
+  return { row, auditEvents };
+}
+
 async function createTestPng(page, outPath) {
   const base64 = await page.evaluate(() => {
     const c = document.createElement('canvas');
@@ -125,8 +170,10 @@ async function createTestPng(page, outPath) {
 
 function writeReport() {
   const failed = evidence.checks.filter((c) => c.status === 'FAIL');
+  const warned = evidence.checks.filter((c) => c.status === 'WARN');
   const passed = evidence.checks.filter((c) => c.status === 'PASS');
-  evidence.overall = failed.length === 0 && passed.length > 0 ? 'PASS' : 'NOT PASS';
+  evidence.overall =
+    failed.length === 0 && warned.length === 0 && passed.length > 0 ? 'PASS' : 'NOT PASS';
   fs.writeFileSync(outJson, JSON.stringify(evidence, null, 2));
   const md = `# Native Agreement Signing — Production Closure Report
 
@@ -136,11 +183,12 @@ Agency: ${evidence.agencySlug}
 
 ## Overall: **${evidence.overall}**
 
-| PASS | FAIL |
-|------|------|
-| ${passed.length} | ${failed.length} |
+| PASS | FAIL | WARN |
+|------|------|------|
+| ${passed.length} | ${failed.length} | ${warned.length} |
 
 ${failed.length ? `### Failures\n${failed.map((f) => `- [${f.phase}] ${f.id}: ${f.msg}`).join('\n')}\n` : ''}
+${warned.length ? `### Warnings\n${warned.map((w) => `- [${w.phase}] ${w.id}: ${w.msg}`).join('\n')}\n` : ''}
 
 ### Evidence
 ${evidence.screenshots.map((s) => `- ${s}`).join('\n')}
@@ -390,22 +438,21 @@ async function main() {
   await shot(page, '06-client-signed.png');
   record(P3, 'client_sign_ui', /Agreement Signed/i.test(await page.evaluate(() => document.body.innerText)) ? 'PASS' : 'FAIL', 'Success page');
 
-  // Poll for completion + post-sign (wait for audit_hash — written after signing_record path)
-  let finalRow = null;
-  for (let i = 0; i < 36; i++) {
-    const { data } = await admin.from('agreements').select('*').eq('id', agreementId).single();
-    finalRow = data;
-    if (
-      data?.status === 'completed' &&
-      data?.signing_record_storage_path &&
-      data?.signed_pdf_hash &&
-      data?.audit_hash
-    ) {
-      break;
-    }
-    await sleep(5000);
-  }
+  const { row: finalRow, auditEvents } = await pollPostSignComplete(admin, agreementId);
   record(P8, 'status_completed', finalRow?.status === 'completed' ? 'PASS' : 'FAIL', finalRow?.status || 'unknown');
+
+  const clientNotifiedEvent = auditEvents.find(
+    (e) => e.event_type === 'completed' && e.metadata?.action === 'client_notified',
+  );
+  const agentNotifiedEvent = auditEvents.find(
+    (e) => e.event_type === 'completed' && e.metadata?.action === 'agent_notified',
+  );
+  const fileNoteCreatedEvent = auditEvents.find(
+    (e) => e.event_type === 'completed' && e.metadata?.action === 'file_note_created',
+  );
+  record(P6, 'db_client_notified', clientNotifiedEvent ? 'PASS' : 'FAIL', 'document_audit_events client_notified');
+  record(P6, 'db_agent_notified', agentNotifiedEvent ? 'PASS' : 'FAIL', 'document_audit_events agent_notified');
+  record(P6, 'db_file_note_created', fileNoteCreatedEvent ? 'PASS' : 'FAIL', 'document_audit_events file_note_created');
 
   if (finalRow?.signed_pdf_storage_path) {
     const { data: signedBlob } = await admin.storage.from('secure_documents').download(finalRow.signed_pdf_storage_path);
@@ -453,6 +500,7 @@ async function main() {
   record(P7, 'record_signature_hash', finalRow?.signature_hash ? 'PASS' : 'FAIL', 'signature_hash');
   record(P7, 'record_signed_pdf_hash', finalRow?.signed_pdf_hash ? 'PASS' : 'FAIL', 'signed_pdf_hash');
   record(P7, 'record_audit_hash', finalRow?.audit_hash ? 'PASS' : 'FAIL', 'audit_hash');
+  record(P7, 'record_signing_record_hash', finalRow?.signing_record_hash ? 'PASS' : 'FAIL', 'signing_record_hash');
 
   if (finalRow?.signing_record_storage_path) {
     let blob = null;
@@ -467,18 +515,50 @@ async function main() {
       const recBuf = Buffer.from(await blob.arrayBuffer());
       fs.writeFileSync(path.join(screenshotDir, '08-signing-record.pdf'), recBuf);
       record(P7, 'record_pdf', recBuf.slice(0, 4).toString() === '%PDF' ? 'PASS' : 'FAIL', `${recBuf.length} bytes`);
+      record(
+        P7,
+        'record_pdf_hash_pdf',
+        pdfContainsHash(recBuf, finalRow.pdf_hash) ? 'PASS' : 'FAIL',
+        'pdf_hash in signing record PDF',
+      );
+      record(
+        P7,
+        'record_signed_pdf_hash_pdf',
+        pdfContainsHash(recBuf, finalRow.signed_pdf_hash) ? 'PASS' : 'FAIL',
+        'signed_pdf_hash in signing record PDF',
+      );
+      record(
+        P7,
+        'record_signature_hash_pdf',
+        pdfContainsHash(recBuf, finalRow.signature_hash) ? 'PASS' : 'FAIL',
+        'signature_hash in signing record PDF',
+      );
+      record(
+        P7,
+        'record_audit_hash_pdf',
+        pdfContainsHash(recBuf, finalRow.audit_hash) ? 'PASS' : 'FAIL',
+        'audit_hash in signing record PDF',
+      );
+      record(
+        P7,
+        'record_signing_record_hash_pdf',
+        pdfContainsHash(recBuf, finalRow.signing_record_hash) ? 'PASS' : 'FAIL',
+        'signing_record_hash in signing record PDF',
+      );
     } else {
       record(P7, 'record_pdf', 'FAIL', 'Could not download signing record PDF');
     }
   }
 
-  // ── PHASE 6: Audit panel (browser) ──
+  // ── PHASE 6: Audit panel (browser) — reload after DB confirms events ──
   if (finalRow?.client_id) {
     await page.goto(`${baseUrl}/workspace/${agencySlug}/clients/${finalRow.client_id}`, {
       waitUntil: 'networkidle2',
       timeout: 120000,
     });
-    await sleep(3000);
+    await sleep(2000);
+    await page.reload({ waitUntil: 'networkidle2' });
+    await sleep(2000);
     await shot(page, '09-client-audit-panel.png');
     const auditText = await page.evaluate(() => document.body.innerText);
     for (const label of ['Sent At', 'Viewed At', 'Signed At', 'Generated At']) {

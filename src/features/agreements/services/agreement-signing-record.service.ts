@@ -69,12 +69,16 @@ function buildAgreementSigningRecordHtml(
   agreement: NativeAgreementRow,
   ctx: AgreementSigningRecordContext,
 ): string {
+  const sentAt = agreement.sent_at ? new Date(agreement.sent_at).toLocaleString('en-AU') : '—';
   const signedAt = agreement.signed_at
     ? new Date(agreement.signed_at).toLocaleString('en-AU')
     : '—';
   const viewedAt = agreement.viewed_at ? new Date(agreement.viewed_at).toLocaleString('en-AU') : '—';
   const downloadedAt = agreement.downloaded_at
     ? new Date(agreement.downloaded_at).toLocaleString('en-AU')
+    : '—';
+  const completedAt = agreement.completed_at
+    ? new Date(agreement.completed_at).toLocaleString('en-AU')
     : '—';
   const generatedAt = new Date().toLocaleString('en-AU');
 
@@ -113,9 +117,11 @@ function buildAgreementSigningRecordHtml(
   <p><strong>Client Email:</strong> ${escapeHtml(ctx.clientEmail)}</p>
   <p><strong>Confirmed Name:</strong> ${escapeHtml(agreement.client_name_confirmed || ctx.clientName)}</p>
   <h2>Timestamps</h2>
-  <p><strong>Signed At:</strong> ${escapeHtml(signedAt)}</p>
+  <p><strong>Sent At:</strong> ${escapeHtml(sentAt)}</p>
   <p><strong>Viewed At:</strong> ${escapeHtml(viewedAt)}</p>
   <p><strong>Downloaded At:</strong> ${escapeHtml(downloadedAt)}</p>
+  <p><strong>Signed At:</strong> ${escapeHtml(signedAt)}</p>
+  <p><strong>Completed At:</strong> ${escapeHtml(completedAt)}</p>
   <h2>Forensic Evidence</h2>
   <p><strong>IP Address:</strong> ${escapeHtml(agreement.client_ip || '—')}</p>
   <p><strong>User Agent:</strong> ${escapeHtml(agreement.client_user_agent || '—')}</p>
@@ -125,6 +131,7 @@ function buildAgreementSigningRecordHtml(
   <p><strong>Signed PDF Hash:</strong><br/><span class="hash">${escapeHtml(agreement.signed_pdf_hash || '—')}</span></p>
   <p><strong>Signature PNG Hash:</strong><br/><span class="hash">${escapeHtml(agreement.signature_hash || '—')}</span></p>
   <p><strong>Audit Chain Hash:</strong><br/><span class="hash">${escapeHtml(agreement.audit_hash || '—')}</span></p>
+  <p><strong>Signing Record Hash:</strong><br/><span class="hash">${escapeHtml(agreement.signing_record_hash || '—')}</span></p>
   <h2>Declarations Accepted</h2>
   <div class="box">${declLines.length ? declLines.map((d) => `<p>✓ ${escapeHtml(d)}</p>`).join('') : '<p>—</p>'}</div>
   <p class="muted">Generated: ${escapeHtml(generatedAt)} · ${APP_NAME} compliance record · Legal source of truth: signed-agreement.pdf</p>

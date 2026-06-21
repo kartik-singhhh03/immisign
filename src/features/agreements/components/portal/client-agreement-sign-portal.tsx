@@ -1,11 +1,11 @@
 "use client"
 
 import * as React from "react"
-import dynamic from "next/dynamic"
 import { CheckCircle2, Download, FileText, PenLine, Shield } from "lucide-react"
-import { cn } from "@/lib/utils"
-
-const SignatureCanvas = dynamic(() => import("react-signature-canvas"), { ssr: false })
+import {
+  AgreementSignaturePad,
+  type AgreementSignaturePadHandle,
+} from "./agreement-signature-pad"
 
 type AgreementPortalRow = {
   id: string
@@ -44,8 +44,14 @@ export function ClientAgreementSignPortal({
 
   const [declarations, setDeclarations] = React.useState<Record<string, boolean>>({})
   const [fullName, setFullName] = React.useState("")
+  const [hasSignature, setHasSignature] = React.useState(false)
   const [submitting, setSubmitting] = React.useState(false)
-  const sigRef = React.useRef<InstanceType<typeof SignatureCanvas> | null>(null)
+  const sigRef = React.useRef<AgreementSignaturePadHandle | null>(null)
+
+  const handleDownloadPdf = (e: React.MouseEvent) => {
+    e.preventDefault()
+    window.open(`/api/public/agreement-sign/${token}/download`, "_blank", "noopener,noreferrer")
+  }
 
   React.useEffect(() => {
     fetch(`/api/public/agreement-sign/${token}`)
@@ -69,13 +75,13 @@ export function ClientAgreementSignPortal({
       alert("Please accept all declarations and enter your full legal name.")
       return
     }
-    if (!sigRef.current || sigRef.current.isEmpty()) {
+    const signaturePngBase64 = sigRef.current?.getDataUrl() || ""
+    if (!hasSignature || !signaturePngBase64) {
       alert("Please draw your signature.")
       return
     }
     setSubmitting(true)
     try {
-      const signaturePngBase64 = sigRef.current.getCanvas().toDataURL("image/png")
       const res = await fetch(`/api/public/agreement-sign/${token}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -162,13 +168,14 @@ export function ClientAgreementSignPortal({
               <p className="text-sm text-slate-500">Client: {clientName}</p>
             </div>
           </div>
-          <a
-            href={`/api/public/agreement-sign/${token}/download`}
+          <button
+            type="button"
+            onClick={handleDownloadPdf}
             className="inline-flex items-center gap-2 text-sm font-bold text-[#111111] underline underline-offset-2"
           >
             <Download className="h-4 w-4" />
             Download agreement PDF
-          </a>
+          </button>
         </div>
 
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
@@ -200,17 +207,10 @@ export function ClientAgreementSignPortal({
 
           <div>
             <span className="text-sm font-bold text-slate-700 block mb-2">Draw your signature</span>
-            <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
-              <SignatureCanvas
-                ref={sigRef}
-                penColor="#111111"
-                canvasProps={{
-                  className: cn("w-full h-40 touch-none"),
-                  style: { width: "100%", height: "160px" },
-                }}
-                backgroundColor="rgba(0,0,0,0)"
-              />
-            </div>
+            <AgreementSignaturePad
+              ref={sigRef}
+              onSignatureChange={setHasSignature}
+            />
             <button
               type="button"
               onClick={() => sigRef.current?.clear()}
@@ -222,7 +222,7 @@ export function ClientAgreementSignPortal({
 
           <button
             type="button"
-            disabled={submitting || !allDecls || !fullName.trim()}
+            disabled={submitting || !allDecls || !fullName.trim() || !hasSignature}
             onClick={handleSign}
             className="w-full h-12 rounded-xl bg-[#111111] text-white font-black flex items-center justify-center gap-2 disabled:opacity-50"
           >

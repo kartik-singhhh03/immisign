@@ -274,6 +274,7 @@ export class NativeAgreementSigningService {
       await recordAgreementSigningAudit(admin, this.auditContext(agreement), 'viewed', {
         eventTimestamp: now,
         ipAddress: ip || null,
+        provider: AGREEMENT_NATIVE_PORTAL_PROVIDER,
         metadata: { action: 'agreement_viewed', user_agent: userAgent || null },
       });
     } else if (agreement.status === 'viewed' && !agreement.viewed_at) {
@@ -304,6 +305,7 @@ export class NativeAgreementSigningService {
     await recordAgreementSigningAudit(admin, this.auditContext(agreement), 'completed', {
       eventTimestamp: now,
       ipAddress: ip || null,
+      provider: AGREEMENT_NATIVE_PORTAL_PROVIDER,
       metadata: { action: 'agreement_downloaded', user_agent: userAgent || null },
     });
   }
@@ -409,6 +411,7 @@ export class NativeAgreementSigningService {
       ipAddress: params.ip || null,
       metadata: {
         action: 'agreement_signed',
+        user_agent: params.userAgent || null,
         signature_hash: signatureHash,
         signed_pdf_hash: signedPdfHash,
         signed_pdf_storage_path: signedPdfPath,
@@ -420,7 +423,11 @@ export class NativeAgreementSigningService {
       eventTimestamp: now,
       actorName: params.clientName.trim(),
       ipAddress: params.ip || null,
-      metadata: { action: 'agreement_completed', declarations_confirmed: true },
+      metadata: {
+        action: 'agreement_completed',
+        user_agent: params.userAgent || null,
+        declarations_confirmed: true,
+      },
     });
 
     const completedAt = new Date().toISOString();

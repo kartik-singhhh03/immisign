@@ -102,7 +102,7 @@ export function ClientAuditPanel({ clientId }: { clientId: string }) {
   const [loading, setLoading] = React.useState(true)
 
   React.useEffect(() => {
-    fetch(`/api/clients/${clientId}/audit-events`)
+    fetch(`/api/clients/${clientId}/audit-events`, { credentials: "include", cache: "no-store" })
       .then((r) => r.json())
       .then((j) => {
         if (j.success) setRows(j.events || [])

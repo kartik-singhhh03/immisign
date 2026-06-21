@@ -104,9 +104,81 @@ function pdfHasEmbeddedImages(buf) {
   return /\/Subtype\s*\/Image/.test(s) || /\/Type\s*\/XObject/.test(s);
 }
 
-function pdfContainsHash(buf, hash) {
+function pdfTextIncludesHash(pdfText, hash) {
   if (!hash || hash.length < 16) return false;
-  return buf.toString('latin1').includes(hash);
+  const compact = (pdfText || '').replace(/\s+/g, '');
+  return compact.includes(hash);
+}
+
+async function extractPdfTextViaPdfJs(browser, pdfBuffer) {
+  const pdfPage = await browser.newPage();
+  try {
+    await pdfPage.goto('about:blank', { waitUntil: 'domcontentloaded' });
+    await pdfPage.addScriptTag({
+      url: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
+    });
+    return await pdfPage.evaluate(async (b64) => {
+      // @ts-ignore
+      pdfjsLib.GlobalWorkerOptions.workerSrc =
+        'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      // @ts-ignore
+      const data = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+      // @ts-ignore
+      const pdf = await pdfjsLib.getDocument({ data }).promise;
+      let text = '';
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const p = await pdf.getPage(i);
+        const content = await p.getTextContent();
+        text += content.items.map((it) => it.str).join(' ') + '\n';
+      }
+      return text;
+    }, pdfBuffer.toString('base64'));
+  } finally {
+    await pdfPage.close();
+  }
+}
+
+async function waitForAuditPanelReady(page, clientId, timeout = 120000) {
+  await page.waitForFunction(
+    () => !document.body.innerText.includes('Loading audit trail'),
+    { timeout },
+  );
+  await page.waitForFunction(
+    async (cid) => {
+      const r = await fetch(`/api/clients/${cid}/audit-events`, {
+        credentials: 'include',
+        cache: 'no-store',
+      });
+      const j = await r.json();
+      if (!j.success) return false;
+      const actions = (j.events || [])
+        .filter((e) => e.event_type === 'completed')
+        .map((e) => e.metadata?.action);
+      return (
+        actions.includes('client_notified') &&
+        actions.includes('agent_notified') &&
+        actions.includes('file_note_created')
+      );
+    },
+    { timeout },
+    clientId,
+  );
+  await page.reload({ waitUntil: 'networkidle2' });
+  await page.waitForFunction(
+    () => !document.body.innerText.includes('Loading audit trail'),
+    { timeout: 60000 },
+  );
+  await page.waitForFunction(
+    () => {
+      const text = document.body.innerText;
+      return (
+        text.includes('Client Notified') &&
+        text.includes('Agent Notified') &&
+        text.includes('File Note Created')
+      );
+    },
+    { timeout: 60000 },
+  );
 }
 
 async function pollPostSignComplete(admin, agreementId, maxAttempts = 48, intervalMs = 5000) {
@@ -138,6 +210,7 @@ async function pollPostSignComplete(admin, agreementId, maxAttempts = 48, interv
       row?.signed_pdf_hash &&
       row?.audit_hash &&
       row?.signing_record_hash &&
+      row?.pdf_hash &&
       hasClientNotified &&
       hasAgentNotified &&
       hasFileNoteCreated
@@ -498,6 +571,7 @@ async function main() {
   record(P7, 'record_ip_db', finalRow?.client_ip ? 'PASS' : 'FAIL', finalRow?.client_ip || 'missing');
   record(P7, 'record_user_agent_db', finalRow?.client_user_agent ? 'PASS' : 'FAIL', 'client_user_agent on agreement');
   record(P7, 'record_signature_hash', finalRow?.signature_hash ? 'PASS' : 'FAIL', 'signature_hash');
+  record(P7, 'record_pdf_hash', finalRow?.pdf_hash ? 'PASS' : 'FAIL', 'pdf_hash');
   record(P7, 'record_signed_pdf_hash', finalRow?.signed_pdf_hash ? 'PASS' : 'FAIL', 'signed_pdf_hash');
   record(P7, 'record_audit_hash', finalRow?.audit_hash ? 'PASS' : 'FAIL', 'audit_hash');
   record(P7, 'record_signing_record_hash', finalRow?.signing_record_hash ? 'PASS' : 'FAIL', 'signing_record_hash');
@@ -513,36 +587,38 @@ async function main() {
     }
     if (blob) {
       const recBuf = Buffer.from(await blob.arrayBuffer());
-      fs.writeFileSync(path.join(screenshotDir, '08-signing-record.pdf'), recBuf);
+      const recPath = path.join(screenshotDir, '08-signing-record.pdf');
+      fs.writeFileSync(recPath, recBuf);
       record(P7, 'record_pdf', recBuf.slice(0, 4).toString() === '%PDF' ? 'PASS' : 'FAIL', `${recBuf.length} bytes`);
+      const pdfText = await extractPdfTextViaPdfJs(browser, recBuf);
       record(
         P7,
         'record_pdf_hash_pdf',
-        pdfContainsHash(recBuf, finalRow.pdf_hash) ? 'PASS' : 'FAIL',
+        pdfTextIncludesHash(pdfText, finalRow.pdf_hash) ? 'PASS' : 'FAIL',
         'pdf_hash in signing record PDF',
       );
       record(
         P7,
         'record_signed_pdf_hash_pdf',
-        pdfContainsHash(recBuf, finalRow.signed_pdf_hash) ? 'PASS' : 'FAIL',
+        pdfTextIncludesHash(pdfText, finalRow.signed_pdf_hash) ? 'PASS' : 'FAIL',
         'signed_pdf_hash in signing record PDF',
       );
       record(
         P7,
         'record_signature_hash_pdf',
-        pdfContainsHash(recBuf, finalRow.signature_hash) ? 'PASS' : 'FAIL',
+        pdfTextIncludesHash(pdfText, finalRow.signature_hash) ? 'PASS' : 'FAIL',
         'signature_hash in signing record PDF',
       );
       record(
         P7,
         'record_audit_hash_pdf',
-        pdfContainsHash(recBuf, finalRow.audit_hash) ? 'PASS' : 'FAIL',
+        pdfTextIncludesHash(pdfText, finalRow.audit_hash) ? 'PASS' : 'FAIL',
         'audit_hash in signing record PDF',
       );
       record(
         P7,
         'record_signing_record_hash_pdf',
-        pdfContainsHash(recBuf, finalRow.signing_record_hash) ? 'PASS' : 'FAIL',
+        pdfTextIncludesHash(pdfText, finalRow.signing_record_hash) ? 'PASS' : 'FAIL',
         'signing_record_hash in signing record PDF',
       );
     } else {
@@ -556,9 +632,12 @@ async function main() {
       waitUntil: 'networkidle2',
       timeout: 120000,
     });
-    await sleep(2000);
-    await page.reload({ waitUntil: 'networkidle2' });
-    await sleep(2000);
+    await waitForAuditPanelReady(page, finalRow.client_id);
+    await page.evaluate(() => {
+      const audit = [...document.querySelectorAll('h2')].find((h) => h.textContent === 'Audit');
+      audit?.scrollIntoView({ block: 'center' });
+    });
+    await sleep(1000);
     await shot(page, '09-client-audit-panel.png');
     const auditText = await page.evaluate(() => document.body.innerText);
     for (const label of ['Sent At', 'Viewed At', 'Signed At', 'Generated At']) {

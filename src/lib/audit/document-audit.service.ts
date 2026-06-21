@@ -52,7 +52,7 @@ export class DocumentAuditService {
     }
   }
 
-  async listForClient(agencyId: string, clientId: string, limit = 50) {
+  async listForClient(agencyId: string, clientId: string, limit = 200) {
     const { data, error } = await this.supabase
       .from('document_audit_events')
       .select('*')

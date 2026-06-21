@@ -153,10 +153,19 @@ export class NativeAgreementSigningService {
 
     let pdfHash: string | null = null;
     if (doc?.file_url) {
-      const { data: signed } = await supabase.storage.from('secure_documents').createSignedUrl(doc.file_url, 300);
-      if (signed?.signedUrl) {
-        const buf = Buffer.from(await (await fetch(signed.signedUrl)).arrayBuffer());
-        pdfHash = createHash('sha256').update(buf).digest('hex');
+      for (const bucket of ['secure_documents', 'documents'] as const) {
+        const { data: blob, error: downloadErr } = await supabase.storage.from(bucket).download(doc.file_url);
+        if (!downloadErr && blob) {
+          const buf = Buffer.from(await blob.arrayBuffer());
+          pdfHash = createHash('sha256').update(buf).digest('hex');
+          break;
+        }
+        const { data: signed } = await supabase.storage.from(bucket).createSignedUrl(doc.file_url, 300);
+        if (signed?.signedUrl) {
+          const buf = Buffer.from(await (await fetch(signed.signedUrl)).arrayBuffer());
+          pdfHash = createHash('sha256').update(buf).digest('hex');
+          break;
+        }
       }
     }
 

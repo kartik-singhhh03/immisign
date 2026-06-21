@@ -93,6 +93,15 @@ export const AGREEMENT_SEND_STAGES = [
   { id: 'confirm', label: 'Waiting Confirmation' },
 ] as const;
 
+/** Native ImmiSign portal dispatch (no SignWell). */
+export const NATIVE_AGREEMENT_SEND_STAGES = [
+  { id: 'agreement', label: 'Generating Agreement' },
+  { id: 'pdf', label: 'Creating PDF' },
+  { id: 'storage', label: 'Uploading Storage' },
+  { id: 'native_send', label: 'Sending Signing Link' },
+  { id: 'confirm', label: 'Waiting Confirmation' },
+] as const;
+
 /** SignWell must return signing links (or sent status) for email stage to pass in production. */
 export function signwellEmailDispatched(
   sentDoc: { status?: string; signers?: Array<{ signing_url?: string; email?: string }> },

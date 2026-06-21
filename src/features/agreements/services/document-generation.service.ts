@@ -416,6 +416,59 @@ export class DocumentGenerationService {
     );
   }
 
+  /** Generate executed PDF with embedded native client signature (legal source of truth). */
+  async regenerateSignedNativePdf(
+    agencyId: string,
+    userId: string,
+    agreementId: string,
+    clientSignatureDataUrl: string,
+  ): Promise<{ storagePath: string; size: number }> {
+    const agreement = await this.agreementRepo.getById(agreementId);
+    if (!agreement || agreement.agency_id !== agencyId) throw new Error('Agreement not found');
+
+    const wizardForm = (agreement.metadata as { wizard_form?: unknown })?.wizard_form;
+    if (!wizardForm) throw new Error('PDF regeneration is only supported for wizard-generated agreements');
+
+    const { data: agency } = await this.supabase.from('agencies').select('*').eq('id', agencyId).single();
+    const responsibleRmaId =
+      (agreement.metadata as { responsible_rma_id?: string })?.responsible_rma_id ||
+      agreement.created_by;
+    const { data: user } = await this.supabase.from('users').select('*').eq('id', responsibleRmaId).single();
+    const { data: rma } = await this.supabase
+      .from('rmas')
+      .select('*')
+      .eq('user_id', responsibleRmaId)
+      .maybeSingle();
+
+    const clientSignatureImageHtml = `<img src="${clientSignatureDataUrl}" alt="Client signature" />`;
+
+    const { storagePath, size } = await this.renderWizardAgreementPdf(
+      agencyId,
+      userId,
+      { ...agreement, status: AgreementStatus.SIGNED },
+      agency,
+      user,
+      rma,
+      responsibleRmaId,
+      wizardForm,
+      true,
+      { clientSigned: true, clientSignatureImageHtml },
+    );
+
+    const signedPath = `${agencyId}/agreements/${agreementId}/signed-agreement.pdf`;
+    const { data: existingSigned } = await this.supabase.storage.from('secure_documents').download(storagePath);
+    if (existingSigned) {
+      const buf = Buffer.from(await existingSigned.arrayBuffer());
+      await this.supabase.storage.from('secure_documents').upload(signedPath, buf, {
+        contentType: 'application/pdf',
+        upsert: true,
+      });
+      return { storagePath: signedPath, size: buf.length };
+    }
+
+    return { storagePath, size };
+  }
+
   private resolveAgentSignaturePreview(agreement: {
     agent_signed_at?: string | null;
     agent_signature_url?: string | null;
@@ -448,7 +501,8 @@ export class DocumentGenerationService {
     responsibleRmaId: string,
     wizardForm: unknown,
     upsertOnly: boolean,
-  ): Promise<{ storagePath: string; size: number }> {
+    nativeSign?: { clientSigned?: boolean; clientSignatureImageHtml?: string },
+  ): Promise<{ storagePath: string; size: number; pageCount?: number }> {
     const agencySnapshot = (agreement.metadata as { agency_snapshot?: Record<string, unknown> })?.agency_snapshot;
     const { data: principalUser } = await this.supabase
       .from('users')
@@ -466,6 +520,7 @@ export class DocumentGenerationService {
     const agentSignature = this.resolveAgentSignaturePreview(agreement, user, rma);
     const agreementStatus = (agreement as { status?: string }).status;
     const statusLabel = this.resolveAgreementStatusLabel(agreementStatus, Boolean(agentSignature));
+    const clientSigned = nativeSign?.clientSigned ?? agreementStatus === AgreementStatus.SIGNED;
 
     const compiledHtml = buildAgreementPreviewHtml({
       form: wizardForm as Parameters<typeof buildAgreementPreviewHtml>[0]['form'],
@@ -499,7 +554,8 @@ export class DocumentGenerationService {
       agreementRef:
         (agreement.metadata as { agreement_ref?: string })?.agreement_ref || agreement.agreement_number,
       statusLabel,
-      clientSigned: agreementStatus === AgreementStatus.SIGNED,
+      clientSigned,
+      clientSignatureImageHtml: nativeSign?.clientSignatureImageHtml || null,
       matterTypeConfig: matterTypeConfigMeta as Parameters<typeof buildAgreementPreviewHtml>[0]['matterTypeConfig'],
       selectedClauses: selectedClausesMeta as Parameters<typeof buildAgreementPreviewHtml>[0]['selectedClauses'],
       agentSignature,

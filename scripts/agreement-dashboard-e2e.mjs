@@ -127,20 +127,25 @@ async function api(path, opts = {}) {
   return { res, json, ok: res.ok };
 }
 
-/** Read active wizard step from summary panel (avoids sidebar "TERMS" false match). */
+/** Read active wizard step from summary panel (Active Step: N/6 or sidebar Step label). */
 async function detectWizardStep(page) {
   return page.evaluate(() => {
     const text = document.body.innerText;
+    const active = text.match(/Active Step:\s*(\d+)\s*\/\s*6/i);
+    if (active) {
+      const n = parseInt(active[1], 10);
+      if (n >= 1 && n <= 6) return n - 1;
+    }
     const m = text.match(/Step:\s*(Client|Matter|Fees|Terms|Preview|Send)\b/i);
     if (m) {
       const map = { client: 0, matter: 1, fees: 2, terms: 3, preview: 4, send: 5 };
       return map[m[1].toLowerCase()] ?? -1;
     }
-    if (/send agreement for signature/i.test(text)) return 5;
+    if (/send agreement for signature|execution & send/i.test(text)) return 5;
     if (/document review|review full agreement|generating pdf preview/i.test(text)) return 4;
-    if (/^Fees$/m.test(text) || /Build your fee structure/i.test(text)) return 2;
-    if (/matter details/i.test(text)) return 1;
-    if (/client details/i.test(text)) return 0;
+    if (/professional fees|add block/i.test(text)) return 2;
+    if (/matter details|visa stream|select matter type/i.test(text)) return 1;
+    if (/select the client|client from library|client name \(reference\)/i.test(text)) return 0;
     return -1;
   });
 }
@@ -148,11 +153,11 @@ async function detectWizardStep(page) {
 const STEP_LABELS = ['Client', 'Matter', 'Fees', 'Terms', 'Preview', 'Send'];
 
 async function waitForWizardStep(page, stepIndex, timeout = 20000) {
-  const label = STEP_LABELS[stepIndex];
+  const stepNum = stepIndex + 1;
   await page.waitForFunction(
-    (lbl) => new RegExp(`Step:\\s*${lbl}\\b`, 'i').test(document.body.innerText),
+    (n) => new RegExp(`Active Step:\\s*${n}\\s*/\\s*6`, 'i').test(document.body.innerText),
     { timeout },
-    label,
+    stepNum,
   );
   await sleep(400);
 }
@@ -169,7 +174,7 @@ async function waitForDashboard(page, timeout = 60000) {
 
 async function waitForWizard(page, timeout = 60000) {
   await page.waitForFunction(
-    () => /client details|agreement setup|matter details|send agreement/i.test(document.body.innerText),
+    () => /select the client|agreement setup|matter details|execution & send|send agreement/i.test(document.body.innerText),
     { timeout },
   );
 }
@@ -189,12 +194,46 @@ async function selectLibraryClient(page, clientName) {
   await sleep(800);
 }
 
-async function fillNewClient(page, name, email) {
+async function fillNewClient(page, name) {
   await page.waitForSelector('input[placeholder="e.g. Jane Smith"]', { timeout: 15000 });
   await page.click('input[placeholder="e.g. Jane Smith"]', { clickCount: 3 });
   await page.type('input[placeholder="e.g. Jane Smith"]', name, { delay: 25 });
-  await page.click('input[placeholder="client@email.com"]', { clickCount: 3 });
-  await page.type('input[placeholder="client@email.com"]', email, { delay: 25 });
+  await sleep(500);
+}
+
+async function fillExecutionStep(page, name, email) {
+  const parts = name.trim().split(/\s+/);
+  const first = parts[0] || 'Test';
+  const last = parts.length > 1 ? parts[parts.length - 1] : 'Client';
+  await page.waitForSelector('input[type="email"]', { timeout: 15000 });
+  const inputs = await page.$$('input:not([type="checkbox"])');
+  for (const input of inputs) {
+    const type = await input.evaluate((el) => el.type);
+    const val = await input.evaluate((el) => el.value);
+    if (type === 'email' && !val) {
+      await input.click({ clickCount: 3 });
+      await input.type(email, { delay: 15 });
+      continue;
+    }
+    if (type === 'date' && !val) {
+      await input.click({ clickCount: 3 });
+      await input.type('1990-01-15', { delay: 15 });
+      continue;
+    }
+    if (type === 'text' || type === '') {
+      const labelText = await input.evaluate((el) => {
+        const label = el.closest('label');
+        return (label?.textContent || '').toLowerCase();
+      });
+      if (labelText.includes('first name') && !val) {
+        await input.click({ clickCount: 3 });
+        await input.type(first, { delay: 15 });
+      } else if (labelText.includes('last name') && !val) {
+        await input.click({ clickCount: 3 });
+        await input.type(last, { delay: 15 });
+      }
+    }
+  }
   await sleep(500);
 }
 
@@ -219,14 +258,14 @@ async function selectMatterTypeById(page, matterTypeId, matterTypeName) {
 
 async function fillFeesStep(page) {
   await page.evaluate(() => {
-    const btn = [...document.querySelectorAll('button')].find((b) => /add row/i.test(b.textContent || ''));
+    const btn = [...document.querySelectorAll('button')].find((b) => /add block/i.test(b.textContent || ''));
     btn?.click();
   });
   await sleep(800);
   try {
-    await page.waitForSelector('input[placeholder="e.g. Professional Fee"]', { timeout: 8000 });
-    await page.click('input[placeholder="e.g. Professional Fee"]');
-    await page.type('input[placeholder="e.g. Professional Fee"]', 'Professional migration fees', { delay: 15 });
+    await page.waitForSelector('input[placeholder*="Initial Consultation"]', { timeout: 8000 });
+    await page.click('input[placeholder*="Initial Consultation"]');
+    await page.type('input[placeholder*="Initial Consultation"]', 'Initial consultation and file preparation', { delay: 15 });
     const amountInput = await page.$('input[placeholder="0.00"]');
     if (amountInput) {
       await amountInput.click({ clickCount: 3 });
@@ -235,10 +274,10 @@ async function fillFeesStep(page) {
   } catch {
     await page.evaluate(() => {
       const inputs = [...document.querySelectorAll('input')];
-      const desc = inputs.find((i) => /professional fee/i.test(i.placeholder || ''));
+      const desc = inputs.find((i) => /consultation|description/i.test(i.placeholder || ''));
       const amt = inputs.find((i) => i.placeholder === '0.00');
       if (desc) {
-        desc.value = 'Professional migration fees';
+        desc.value = 'Initial consultation and file preparation';
         desc.dispatchEvent(new Event('input', { bubbles: true }));
       }
       if (amt) {
@@ -388,7 +427,7 @@ try {
 
   // Fill client manually so draft has data
   const draftClient = `Wizard Draft ${stamp}`;
-  await fillNewClient(page, draftClient, `draft.${stamp}@immimate.au`);
+  await fillNewClient(page, draftClient);
   await clickContinue(page);
   try {
     await waitForWizardStep(page, 1);
@@ -499,7 +538,7 @@ try {
   await page.goto(`${baseUrl}/workspace/${agencySlug}/agreements/new`, { waitUntil: 'networkidle2', timeout: 120000 });
   await waitForWizard(page);
   await sleep(1200);
-  await fillNewClient(page, sendClient, sendEmail);
+  await fillNewClient(page, sendClient);
   await clickContinue(page);
   try {
     await waitForWizardStep(page, 1);
@@ -507,6 +546,9 @@ try {
     /* continue */
   }
   step = await advanceWizardToSend(page, matterTypeRow);
+  if (step === 5) {
+    await fillExecutionStep(page, sendClient, sendEmail);
+  }
   await shot(page, 'agreement-send.png');
   record(P3, 'WIZARD_REACHED_SEND', step === 5 ? 'PASS' : 'FAIL', `step=${step}`);
 

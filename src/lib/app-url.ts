@@ -89,6 +89,12 @@ export function buildApprovalUrl(token: string): string {
   return `${base}/approval/${token}`;
 }
 
+/** Native agreement signing portal link for emails. */
+export function buildAgreementSignUrl(token: string): string {
+  const base = resolveAppUrlForEmail().replace(/\/$/, '');
+  return `${base}/agreement/sign/${token}`;
+}
+
 /** Throws when a production email would contain localhost, loopback, or ngrok. */
 export function assertSafeEmailUrl(url: string, context = 'email link'): void {
   if (isProductionBuild() && isUnsafeEmailUrl(url)) {

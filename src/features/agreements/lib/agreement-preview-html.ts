@@ -27,6 +27,7 @@ export type AgreementPreviewContext = {
   agreementRef?: string
   statusLabel?: string
   clientSigned?: boolean
+  clientSignatureImageHtml?: string | null
   matterTypeConfig?: MatterTypeConfig | null
   selectedClauses?: Array<{ title: string; content: string; orderIndex?: number }>
   agentSignature?: AgentSignaturePreview | null
@@ -308,18 +309,16 @@ function buildDocumentStyles(agency: AgencyWizardContext): string {
   }
   .sig-name { font-weight: 800; font-size: 10.5pt; color: #111111; margin: 0 0 2px; }
   .sig-meta { font-size: 9pt; color: #64748b; margin: 0 0 16px; }
-  .sig-box {
-    height: 56px;
-    border: 1px dashed #94a3b8;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #94a3b8;
-    font-size: 9pt;
-    font-style: italic;
-    margin-bottom: 12px;
-    background: #fff;
+  .sig-applied-img img {
+    max-height: 48px;
+    max-width: 220px;
+    object-fit: contain;
+    display: block;
+    margin: 0 0 8px;
+  }
+  .native-client-sig img {
+    max-height: 40px;
+    max-width: 220px;
   }
   .sig-date {
     border-top: 1px solid #cbd5e1;
@@ -548,19 +547,19 @@ export function buildAgreementPreviewHtml(ctx: AgreementPreviewContext): string 
       <div class="sig-grid">
         <div class="sig-card sig-completed">
           <h3>Agent</h3>
+          ${ctx.agentSignature?.imageHtml ? `<div class="sig-applied-img">${ctx.agentSignature.imageHtml}</div>` : ''}
           <p class="sig-name">${escapeHtml(agentName || '—')}</p>
           ${agentMarn ? `<p class="sig-meta">MARN: ${escapeHtml(agentMarn)}</p>` : '<p class="sig-meta">&nbsp;</p>'}
           <p class="sig-meta">${escapeHtml(agencyDisplayName)}</p>
-          <div class="sig-date">Date: ${escapeHtml(formatDisplayDateForSignature(form.agreementDate || new Date()))}</div>
+          <div class="sig-date">Date: ${escapeHtml(formatDisplayDateForSignature(ctx.agentSignature?.signedAt || form.agreementDate || new Date()))}</div>
         </div>
         <div class="sig-card ${ctx.clientSigned ? 'sig-completed' : ''}">
           <h3>Client Signature</h3>
           <p class="sig-name">${escapeHtml(clientName || '—')}</p>
-          <p class="sig-meta">&nbsp;</p>
-          ${ctx.clientSigned
-            ? '<p class="sig-label">Signature</p><div class="sig-applied" style="font-size:11pt;font-weight:700;color:#222222;">Signed electronically via SignWell</div>'
-            : '<div class="sig-box">Sign here</div>'}
-          <div class="sig-date">Date Signed: ${ctx.clientSigned ? escapeHtml(formatDisplayDateForSignature(new Date())) : '_______________________________'}</div>
+          ${ctx.clientSigned && ctx.clientSignatureImageHtml
+            ? `<div class="sig-applied-img native-client-sig">${ctx.clientSignatureImageHtml}</div>`
+            : '<p class="sig-meta">&nbsp;</p>'}
+          <div class="sig-date">Date: ${ctx.clientSigned ? escapeHtml(formatDisplayDateForSignature(new Date())) : '_______________________________'}</div>
         </div>
       </div>
     </section>

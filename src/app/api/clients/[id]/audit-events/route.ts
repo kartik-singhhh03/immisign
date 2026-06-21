@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getWorkspaceApiContext } from '@/lib/auth/workspace-api';
 import { DocumentAuditService } from '@/lib/audit/document-audit.service';
 import { enrichApplicationApprovalAuditEvents } from '@/features/approvals/lib/application-approval-audit';
+import { enrichAgreementSigningAuditEvents } from '@/features/agreements/lib/agreement-signing-audit';
 
 export async function GET(
   _req: NextRequest,
@@ -15,11 +16,17 @@ export async function GET(
   const service = new DocumentAuditService(ctx.supabase);
   try {
     const events = await service.listForClient(ctx.agencyId, params.id);
-    const enriched = await enrichApplicationApprovalAuditEvents(
+    const enrichedApprovals = await enrichApplicationApprovalAuditEvents(
       ctx.supabase,
       ctx.agencyId,
       params.id,
       events as Parameters<typeof enrichApplicationApprovalAuditEvents>[3],
+    );
+    const enriched = await enrichAgreementSigningAuditEvents(
+      ctx.supabase,
+      ctx.agencyId,
+      params.id,
+      enrichedApprovals as Parameters<typeof enrichAgreementSigningAuditEvents>[3],
     );
     return NextResponse.json({ success: true, events: enriched });
   } catch (e: unknown) {

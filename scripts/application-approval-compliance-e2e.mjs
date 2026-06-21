@@ -134,7 +134,7 @@ async function main() {
     .eq('event_type', 'sent')
     .maybeSingle();
   record('audit_sent', sentAudit ? 'PASS' : 'FAIL', sentAudit?.event_timestamp || 'missing');
-  record('audit_sent_provider', sentAudit?.provider === 'Immimate Approval Portal' ? 'PASS' : 'FAIL', sentAudit?.provider || 'missing');
+  record('audit_sent_provider', sentAudit?.provider === 'Resend' ? 'PASS' : 'FAIL', sentAudit?.provider || 'missing');
   record('audit_resend_id', sentAudit?.metadata?.resend_id ? 'PASS' : 'WARN', String(sentAudit?.metadata?.resend_id || 'none'));
 
   await fetch(`${baseUrl}/api/public/approval/${approvalToken}`);
@@ -193,11 +193,21 @@ async function main() {
   const auditJson = await auditApi.json();
   const cardEvents = (auditJson.events || []).filter((e) => e.document_id === approvalId);
   const enrichedSent = cardEvents.find((e) => e.event_type === 'sent');
-  const enrichedProvider = cardEvents.every(
-    (e) => e.document_id !== approvalId || e.provider === 'Immimate Approval Portal',
-  );
+  const expectedProvider = (e) => {
+    if (e.event_type === 'sent') return 'Resend';
+    if (e.event_type === 'completed' && e.metadata?.action === 'agent_notified') return 'Resend';
+    return 'Immimate Approval Portal';
+  };
+  const badProviders = cardEvents.filter((e) => e.provider !== expectedProvider(e));
+  const enrichedProvider = badProviders.length === 0;
   record('audit_api_sent', enrichedSent ? 'PASS' : 'FAIL', enrichedSent?.event_timestamp);
-  record('audit_api_provider', enrichedProvider ? 'PASS' : 'FAIL', 'all Immimate Approval Portal');
+  record(
+    'audit_api_provider',
+    enrichedProvider ? 'PASS' : 'FAIL',
+    enrichedProvider
+      ? 'sent=Resend, agent_notified=Resend, others=Immimate Approval Portal'
+      : badProviders.map((e) => `${e.event_type}:${e.provider}`).join(', '),
+  );
 
   const recordDl = await fetch(`${baseUrl}/api/application-approvals/${approvalId}/record`, {
     headers: { Authorization: `Bearer ${token}` },

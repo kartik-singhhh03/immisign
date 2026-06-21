@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import { getWorkspaceApiContext } from '@/lib/auth/workspace-api';
 import { dbRoleToUi } from '@/lib/auth/db-roles';
-import { SignWellService } from '@/features/agreements/services/signwell.service';
 import { Role } from '@/features/auth/types/roles';
 import { apiError, withApiRoute } from '@/lib/api/json-response';
+import { createAgreementSigningProvider } from '@/lib/signing/provider-factory';
+import { getSigningProvider } from '@/lib/signing/config';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,7 +21,10 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { agreementId } = body as { agreementId?: string };
+    const { agreementId, dispatchOptions } = body as {
+      agreementId?: string;
+      dispatchOptions?: Record<string, unknown>;
+    };
 
     if (!agreementId) {
       return apiError('Missing agreementId', 400);
@@ -30,19 +34,30 @@ export async function POST(req: Request) {
     const signwellRole =
       Object.values(Role).find((r) => r === uiRole) ?? Role.MIGRATION_AGENT;
 
-    const swService = new SignWellService(ctx.supabase);
-    const result = await swService.sendForSignature(
-      ctx.agencyId,
-      ctx.userId,
-      signwellRole,
+    const providerName = getSigningProvider();
+    const provider = createAgreementSigningProvider(ctx.supabase, providerName);
+    const result = await provider.sendForSignature({
+      agencyId: ctx.agencyId,
+      userId: ctx.userId,
+      role: signwellRole,
       agreementId,
-    );
+      dispatchOptions,
+    });
+
+    if (providerName === 'native') {
+      return NextResponse.json({
+        message: 'Successfully sent agreement via ImmiSign native signing portal.',
+        signingProvider: 'native',
+        signingUrl: result.signingUrl,
+        signingToken: result.signingToken,
+      });
+    }
 
     return NextResponse.json({
       message:
         'Successfully sent agreement. Agent signature applied automatically; external signers notified via SignWell.',
-      signwellDocId: result.id,
-      status: result.status,
+      signingProvider: 'signwell',
+      signwellDocId: result.signwellDocumentId,
     });
   });
 }

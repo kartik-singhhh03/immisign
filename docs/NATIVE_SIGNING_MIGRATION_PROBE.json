@@ -1,0 +1,95 @@
+{
+  "migration": "20260623100000_native_agreement_signing.sql",
+  "timestamp": "2026-06-21T13:16:48.404Z",
+  "allApplied": true,
+  "agreements": [
+    {
+      "column": "signing_provider",
+      "exists": true,
+      "error": null
+    },
+    {
+      "column": "signing_token",
+      "exists": true,
+      "error": null
+    },
+    {
+      "column": "token_expires_at",
+      "exists": true,
+      "error": null
+    },
+    {
+      "column": "signed_pdf_storage_path",
+      "exists": true,
+      "error": null
+    },
+    {
+      "column": "signing_record_storage_path",
+      "exists": true,
+      "error": null
+    },
+    {
+      "column": "client_signature_storage_path",
+      "exists": true,
+      "error": null
+    },
+    {
+      "column": "downloaded_at",
+      "exists": true,
+      "error": null
+    },
+    {
+      "column": "client_ip",
+      "exists": true,
+      "error": null
+    },
+    {
+      "column": "client_user_agent",
+      "exists": true,
+      "error": null
+    },
+    {
+      "column": "client_name_confirmed",
+      "exists": true,
+      "error": null
+    },
+    {
+      "column": "pdf_hash",
+      "exists": true,
+      "error": null
+    },
+    {
+      "column": "signed_pdf_hash",
+      "exists": true,
+      "error": null
+    },
+    {
+      "column": "signature_hash",
+      "exists": true,
+      "error": null
+    },
+    {
+      "column": "audit_hash",
+      "exists": true,
+      "error": null
+    },
+    {
+      "column": "signing_record_hash",
+      "exists": true,
+      "error": null
+    }
+  ],
+  "users": [
+    {
+      "column": "signature_storage_path",
+      "exists": true,
+      "error": null
+    },
+    {
+      "column": "signature_uploaded_at",
+      "exists": true,
+      "error": null
+    }
+  ],
+  "missing": []
+}

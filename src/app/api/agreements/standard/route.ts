@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createClient as createRawClient } from '@supabase/supabase-js';
 import { DocumentGenerationService } from '@/features/agreements/services/document-generation.service';
-import { SignWellService } from '@/features/agreements/services/signwell.service';
+import { createAgreementSigningProvider } from '@/lib/signing/provider-factory';
+import { getSigningProvider } from '@/lib/signing/config';
 import { allocateAgreementReference } from '@/features/agreements/lib/agreement-reference';
 import { buildSignersFromWizard } from '@/features/agreements/lib/wizard-signers';
 import { isUuid } from '@/lib/validation/uuid';
@@ -15,6 +16,7 @@ import {
 } from '@/lib/signwell/recipient-validation';
 import {
   AGREEMENT_SEND_STAGES,
+  NATIVE_AGREEMENT_SEND_STAGES,
   DispatchStageTracker,
 } from '@/lib/dispatch/stage-tracker';
 import { formatZodError } from '@/lib/validations/fields';
@@ -31,7 +33,10 @@ function agreementSupportRef() {
 }
 
 export async function POST(req: NextRequest) {
-  const tracker = new DispatchStageTracker([...AGREEMENT_SEND_STAGES]);
+  const signingProviderName = getSigningProvider();
+  const stageDefs =
+    signingProviderName === 'native' ? [...NATIVE_AGREEMENT_SEND_STAGES] : [...AGREEMENT_SEND_STAGES];
+  const tracker = new DispatchStageTracker(stageDefs);
   const supportRef = agreementSupportRef();
 
   try {
@@ -333,6 +338,123 @@ export async function POST(req: NextRequest) {
     tracker.start('storage');
     tracker.complete('storage');
 
+    tracker.complete('storage');
+
+    const signingProvider = createAgreementSigningProvider(supabase as any, signingProviderName);
+
+    if (signingProviderName === 'native') {
+      tracker.start('native_send');
+      let nativeResult: { signingToken?: string | null; signingUrl?: string | null } | null = null;
+      try {
+        nativeResult = await signingProvider.sendForSignature({
+          agencyId,
+          userId,
+          role: 'owner' as any,
+          agreementId,
+          dispatchOptions: dispatchOptions || {},
+        });
+        tracker.complete('native_send');
+      } catch (nativeError: any) {
+        const message = nativeError?.message || 'Native signing dispatch failed';
+        await (supabase as any).from('agreements').update({
+          status: 'draft',
+          metadata: {
+            ...agreementMetadata,
+            last_dispatch_error: message,
+            last_dispatch_failed_at: new Date().toISOString(),
+          },
+        }).eq('id', agreementId).eq('agency_id', agencyId);
+        tracker.fail('native_send', message);
+        return NextResponse.json({
+          success: false,
+          stage: 'native_dispatch_failed',
+          error: message,
+          agreementId,
+          result,
+          stages: tracker.snapshot(),
+          supportRef,
+        }, { status: 502 });
+      }
+
+      tracker.start('confirm');
+      const { data: verifiedNative } = await (supabase as any)
+        .from('agreements')
+        .select('signing_token, signing_provider')
+        .eq('id', agreementId)
+        .eq('agency_id', agencyId)
+        .single();
+      if (!verifiedNative?.signing_token || verifiedNative.signing_provider !== 'native') {
+        tracker.fail('confirm', 'signing_token was not persisted on agreement');
+        return NextResponse.json({
+          success: false,
+          error: 'Native agreement dispatch could not be confirmed in the database',
+          agreementId,
+          stages: tracker.snapshot(),
+          supportRef,
+        }, { status: 500 });
+      }
+      tracker.complete('confirm');
+
+      await (supabase as any).from('activity_logs').insert({
+        id: crypto.randomUUID(),
+        agency_id: agencyId,
+        user_id: userId,
+        type: 'agreement',
+        title: 'Agreement Dispatched',
+        description: `Service Agreement for ${formData.clientName} sent for native signing.`,
+        reference_id: agreementId,
+        reference_type: 'agreement',
+      });
+
+      await recordComplianceEvent(supabase as any, {
+        agencyId,
+        clientId: clientId ?? null,
+        eventType: 'agreement_sent',
+        fileSource: 'agreement',
+        fileId: agreementId,
+        actorUserId: userId,
+        metadata: { agreement_number: agreementNumber, signing_provider: 'native' },
+      });
+
+      const { data: agencyMeta } = await supabase.from('agencies').select('slug').eq('id', agencyId).single();
+      const notify = new NotificationService(supabase as any);
+      await notify.notify({
+        agencyId,
+        userId,
+        type: 'agreement',
+        title: 'Agreement sent for signature',
+        message: `Service agreement for ${formData.clientName} was sent via ImmiSign native signing.`,
+        actionUrl: buildWorkspaceActionUrl(agencyMeta?.slug || 'workspace', `/agreements/${agreementId}`),
+        entityType: 'agreement',
+        entityId: agreementId,
+        actorId: userId,
+      });
+
+      if (clientId) {
+        const admin = createAdminClient();
+        await recordClientSystemNote(admin, {
+          agencyId,
+          clientId,
+          actorUserId: userId,
+          body: `Service Agreement ${agreementNumber} sent to ${formData.clientName} for native signing.`,
+          referenceType: 'agreement',
+          referenceId: agreementId,
+        });
+      }
+
+      return NextResponse.json({
+        success: true,
+        agreementId,
+        result,
+        signingProvider: 'native',
+        signingUrl: nativeResult?.signingUrl,
+        signingToken: nativeResult?.signingToken,
+        stages: tracker.snapshot(),
+        supportRef,
+      });
+    }
+
+    // ── SignWell path (unchanged) ───────────────────────────────────────────
     // 6. Validate signer emails before SignWell (avoid 422 duplicate recipient / CC).
     const wizardSignersForValidation = buildSignersFromWizard(formData);
     const signerEmails = wizardSignersForValidation.map((s) => s.email);
@@ -360,16 +482,20 @@ export async function POST(req: NextRequest) {
     // 7. Push to SignWell. If the external provider rejects the request,
     // keep the generated PDF and DB rows, but do not pretend dispatch worked.
     console.log("Step 6: Pushing to SignWell");
-    const swService = new SignWellService(supabase);
+    const swService = createAgreementSigningProvider(supabase as any, 'signwell');
     let swResult: any = null;
     try {
-      swResult = await swService.sendForSignature(agencyId, userId, 'owner' as any, agreementId);
+      swResult = await swService.sendForSignature({
+        agencyId,
+        userId,
+        role: 'owner' as any,
+        agreementId,
+        dispatchOptions: dispatchOptions || {},
+      });
       tracker.complete('signwell_draft');
       console.log("SignWell Result:", redactSensitiveValue({
-        id: swResult?.id,
-        status: swResult?.status,
-        recipientCount: Array.isArray(swResult?.recipients) ? swResult.recipients.length : 0,
-        simulated: swResult?.simulated,
+        id: swResult?.signwellDocumentId,
+        signingUrl: swResult?.signingUrl,
       }));
     } catch (signwellError: any) {
       const rawMessage = signwellError?.message || 'SignWell dispatch failed';
@@ -412,7 +538,7 @@ export async function POST(req: NextRequest) {
     }
 
     tracker.start('signwell_send');
-    if (!swResult?.id) {
+    if (!swResult?.signwellDocumentId) {
       tracker.fail('signwell_send', 'SignWell did not return a document id');
       return NextResponse.json({
         success: false,

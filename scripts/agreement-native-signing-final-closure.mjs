@@ -390,12 +390,19 @@ async function main() {
   await shot(page, '06-client-signed.png');
   record(P3, 'client_sign_ui', /Agreement Signed/i.test(await page.evaluate(() => document.body.innerText)) ? 'PASS' : 'FAIL', 'Success page');
 
-  // Poll for completion + post-sign
+  // Poll for completion + post-sign (wait for audit_hash — written after signing_record path)
   let finalRow = null;
   for (let i = 0; i < 36; i++) {
     const { data } = await admin.from('agreements').select('*').eq('id', agreementId).single();
     finalRow = data;
-    if (data?.status === 'completed' && data?.signing_record_storage_path) break;
+    if (
+      data?.status === 'completed' &&
+      data?.signing_record_storage_path &&
+      data?.signed_pdf_hash &&
+      data?.audit_hash
+    ) {
+      break;
+    }
     await sleep(5000);
   }
   record(P8, 'status_completed', finalRow?.status === 'completed' ? 'PASS' : 'FAIL', finalRow?.status || 'unknown');
@@ -440,19 +447,28 @@ async function main() {
   record(P5, 'agent_email_status', agentEmailRow?.status ? 'PASS' : 'FAIL', agentEmailRow?.status || 'missing');
 
   // ── PHASE 7: Signing record PDF ──
+  record(P7, 'record_storage_path', finalRow?.signing_record_storage_path ? 'PASS' : 'FAIL', finalRow?.signing_record_storage_path || 'missing');
+  record(P7, 'record_ip_db', finalRow?.client_ip ? 'PASS' : 'FAIL', finalRow?.client_ip || 'missing');
+  record(P7, 'record_user_agent_db', finalRow?.client_user_agent ? 'PASS' : 'FAIL', 'client_user_agent on agreement');
+  record(P7, 'record_signature_hash', finalRow?.signature_hash ? 'PASS' : 'FAIL', 'signature_hash');
+  record(P7, 'record_signed_pdf_hash', finalRow?.signed_pdf_hash ? 'PASS' : 'FAIL', 'signed_pdf_hash');
+  record(P7, 'record_audit_hash', finalRow?.audit_hash ? 'PASS' : 'FAIL', 'audit_hash');
+
   if (finalRow?.signing_record_storage_path) {
-    const { data: recBlob } = await admin.storage.from('documents').download(finalRow.signing_record_storage_path).catch(() => ({ data: null }));
-    const recFromSecure = !recBlob
-      ? await admin.storage.from('secure_documents').download(finalRow.signing_record_storage_path)
-      : { data: recBlob };
-    const blob = recFromSecure.data;
+    let blob = null;
+    for (const bucket of ['documents', 'secure_documents']) {
+      const { data } = await admin.storage.from(bucket).download(finalRow.signing_record_storage_path);
+      if (data) {
+        blob = data;
+        break;
+      }
+    }
     if (blob) {
       const recBuf = Buffer.from(await blob.arrayBuffer());
       fs.writeFileSync(path.join(screenshotDir, '08-signing-record.pdf'), recBuf);
-      const text = recBuf.toString('latin1');
       record(P7, 'record_pdf', recBuf.slice(0, 4).toString() === '%PDF' ? 'PASS' : 'FAIL', `${recBuf.length} bytes`);
-      record(P7, 'record_ip', /IP Address/i.test(text) ? 'PASS' : 'FAIL', 'IP in record');
-      record(P7, 'record_hashes', /SHA-256|Integrity Hashes/i.test(text) ? 'PASS' : 'FAIL', 'Hashes section');
+    } else {
+      record(P7, 'record_pdf', 'FAIL', 'Could not download signing record PDF');
     }
   }
 

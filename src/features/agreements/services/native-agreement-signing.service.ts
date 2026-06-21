@@ -603,8 +603,13 @@ export class NativeAgreementSigningService {
         })
         .eq('id', agreementId);
 
-      const auditHash = await this.computeAuditHash(admin, agreementId);
-      await admin.from('agreements').update({ audit_hash: auditHash }).eq('id', agreementId);
+      let auditHash: string | null = null;
+      try {
+        auditHash = await this.computeAuditHash(admin, agreementId);
+        await admin.from('agreements').update({ audit_hash: auditHash }).eq('id', agreementId);
+      } catch (hashErr) {
+        console.error('AGREEMENT_AUDIT_HASH_FAILED', hashErr);
+      }
       fresh = { ...fresh, audit_hash: auditHash, signing_record_storage_path: recordPath };
 
       await recordAgreementSigningAudit(admin, this.auditContext(fresh), 'generated', {
@@ -619,6 +624,12 @@ export class NativeAgreementSigningService {
       });
 
       const clientEmail = client?.email || fresh.client_email;
+      if (!clientEmail) {
+        console.error('AGREEMENT_CLIENT_NOTIFY_SKIPPED', 'No client email on agreement', agreementId);
+      }
+      if (!agent?.email) {
+        console.error('AGREEMENT_AGENT_NOTIFY_SKIPPED', 'No agent email', agreementId);
+      }
       await Promise.all([
         clientEmail
           ? sendEmailWithForensicLogging(
@@ -720,6 +731,8 @@ export class NativeAgreementSigningService {
           eventTimestamp: generatedAt,
           metadata: { action: 'file_note_created' },
         });
+      } else if (!fresh.client_id) {
+        console.error('AGREEMENT_FILE_NOTE_SKIPPED', 'Agreement has no client_id', agreementId);
       }
     } catch (err) {
       console.error('NATIVE_AGREEMENT_POST_SIGN_FAILED', err);

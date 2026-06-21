@@ -120,78 +120,76 @@ export function ProfessionalSignaturePanel({ onToast }: Props) {
         </p>
       </div>
 
-      {loading ? (
-        <p className="text-xs text-slate-400 animate-pulse">Loading signature…</p>
-      ) : (
-        <>
-          <div className="space-y-2">
-            <Label className="text-xs font-bold text-slate-500">Current signature</Label>
-            <div
-              className="relative flex min-h-[120px] items-center justify-center rounded-xl border border-slate-200 p-4"
-              style={{
-                backgroundImage:
-                  "linear-gradient(45deg, #e2e8f0 25%, transparent 25%), linear-gradient(-45deg, #e2e8f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e2e8f0 75%), linear-gradient(-45deg, transparent 75%, #e2e8f0 75%)",
-                backgroundSize: "16px 16px",
-                backgroundPosition: "0 0, 0 8px, 8px -8px, -8px 0",
-                backgroundColor: "#f8fafc",
-              }}
-            >
-              {signature?.previewUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={signature.previewUrl}
-                  alt="Professional signature preview"
-                  className="max-h-16 max-w-full object-contain"
-                />
-              ) : (
-                <p className="text-xs font-semibold text-slate-400">No signature uploaded yet</p>
-              )}
-            </div>
-            {uploadedLabel && (
-              <p className="text-[11px] text-slate-500 font-semibold">Uploaded: {uploadedLabel}</p>
-            )}
-          </div>
-
-          {validationError && (
-            <p className="text-xs font-semibold text-rose-600">{validationError}</p>
-          )}
-
-          <div className="flex flex-wrap gap-2">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/png,.png"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0]
-                if (file) void uploadFile(file)
-              }}
+      <div className="space-y-2">
+        <Label className="text-xs font-bold text-slate-500">Current signature</Label>
+        <div
+          className="relative flex min-h-[120px] items-center justify-center rounded-xl border border-slate-200 p-4"
+          style={{
+            backgroundImage:
+              "linear-gradient(45deg, #e2e8f0 25%, transparent 25%), linear-gradient(-45deg, #e2e8f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e2e8f0 75%), linear-gradient(-45deg, transparent 75%, #e2e8f0 75%)",
+            backgroundSize: "16px 16px",
+            backgroundPosition: "0 0, 0 8px, 8px -8px, -8px 0",
+            backgroundColor: "#f8fafc",
+          }}
+        >
+          {loading ? (
+            <p className="text-xs text-slate-400 animate-pulse">Loading signature…</p>
+          ) : signature?.previewUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={signature.previewUrl}
+              alt="Professional signature preview"
+              className="max-h-16 max-w-full object-contain"
             />
-            <Button
-              type="button"
-              variant="outline"
-              disabled={uploading}
-              onClick={() => fileInputRef.current?.click()}
-              className="h-9 rounded-xl text-xs font-bold"
-            >
-              <Upload className="mr-1.5 h-3.5 w-3.5" />
-              {signature ? "Replace signature" : "Upload signature"}
-            </Button>
-            {signature && (
-              <Button
-                type="button"
-                variant="ghost"
-                disabled={deleting}
-                onClick={() => void handleDelete()}
-                className="h-9 rounded-xl text-xs font-bold text-red-600 hover:bg-red-50 hover:text-red-700"
-              >
-                <Trash2 className="mr-1.5 h-3.5 w-3.5" />
-                Delete
-              </Button>
-            )}
-          </div>
-        </>
+          ) : signature?.storagePath ? (
+            <p className="text-xs font-semibold text-slate-500">Signature on file (refresh preview)</p>
+          ) : (
+            <p className="text-xs font-semibold text-slate-400">No signature uploaded yet</p>
+          )}
+        </div>
+        {uploadedLabel && (
+          <p className="text-[11px] text-slate-500 font-semibold">Uploaded: {uploadedLabel}</p>
+        )}
+      </div>
+
+      {validationError && (
+        <p className="text-xs font-semibold text-rose-600">{validationError}</p>
       )}
+
+      <div className="flex flex-wrap gap-2">
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/png,.png"
+          className="hidden"
+          onChange={(e) => {
+            const file = e.target.files?.[0]
+            if (file) void uploadFile(file)
+          }}
+        />
+        <Button
+          type="button"
+          variant="outline"
+          disabled={uploading || loading}
+          onClick={() => fileInputRef.current?.click()}
+          className="h-9 rounded-xl text-xs font-bold"
+        >
+          <Upload className="mr-1.5 h-3.5 w-3.5" />
+          {signature ? "Replace signature" : "Upload signature"}
+        </Button>
+        {signature && (
+          <Button
+            type="button"
+            variant="ghost"
+            disabled={deleting || loading}
+            onClick={() => void handleDelete()}
+            className="h-9 rounded-xl text-xs font-bold text-red-600 hover:bg-red-50 hover:text-red-700"
+          >
+            <Trash2 className="mr-1.5 h-3.5 w-3.5" />
+            Delete
+          </Button>
+        )}
+      </div>
     </div>
   )
 }

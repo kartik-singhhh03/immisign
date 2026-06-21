@@ -290,12 +290,21 @@ async function main() {
   record(P2, 'upload_browser', up1.ok ? 'PASS' : 'FAIL', up1.ok ? 'PNG uploaded via UI' : up1.error || 'failed');
 
   await page.reload({ waitUntil: 'networkidle2' });
-  await sleep(2000);
+  await page.waitForFunction(
+    () => {
+      const loading = document.body.innerText.includes('Loading signature');
+      const img = document.querySelector('img[alt="Professional signature preview"]');
+      const noSig = document.body.innerText.includes('No signature uploaded yet');
+      return !loading && (Boolean(img) || noSig);
+    },
+    { timeout: 60000 },
+  ).catch(() => null);
+  await sleep(1000);
   await shot(page, '02-signature-preview.png');
 
   const hasPreview = await page.evaluate(() => {
     const img = document.querySelector('img[alt="Professional signature preview"]');
-    return Boolean(img && img.src && img.naturalWidth > 0);
+    return Boolean(img && img.src && img.complete && img.naturalWidth > 0);
   });
   record(P2, 'preview_visible', hasPreview ? 'PASS' : 'FAIL', 'Signature preview image');
   record(P2, 'uploaded_date', /Uploaded:/i.test(await page.evaluate(() => document.body.innerText)) ? 'PASS' : 'FAIL', 'Uploaded date label');
@@ -307,7 +316,11 @@ async function main() {
     const btn = [...document.querySelectorAll('button')].find((b) => /Delete/i.test(b.textContent || ''));
     btn?.click();
   });
-  await sleep(3000);
+  await page.waitForFunction(
+    () => !document.body.innerText.includes('Uploaded:') || document.body.innerText.includes('No signature uploaded yet'),
+    { timeout: 30000 },
+  ).catch(() => null);
+  await sleep(1000);
   record(P2, 'delete', !(await page.evaluate(() => document.body.innerText)).includes('Uploaded:') ? 'PASS' : 'FAIL', 'Delete signature via UI');
 
   const up3 = await uploadViaBrowser();

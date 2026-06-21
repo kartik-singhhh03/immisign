@@ -138,43 +138,18 @@ async function extractPdfTextViaPdfJs(browser, pdfBuffer) {
   }
 }
 
-async function waitForAuditPanelReady(page, clientId, timeout = 120000) {
+async function waitForAuditPanelReady(page, timeout = 120000) {
   await page.waitForFunction(
     () => !document.body.innerText.includes('Loading audit trail'),
     { timeout },
-  );
-  await page.waitForFunction(
-    async (cid) => {
-      const r = await fetch(`/api/clients/${cid}/audit-events`, {
-        credentials: 'include',
-        cache: 'no-store',
-      });
-      const j = await r.json();
-      if (!j.success) return false;
-      const actions = (j.events || [])
-        .filter((e) => e.event_type === 'completed')
-        .map((e) => e.metadata?.action);
-      return (
-        actions.includes('client_notified') &&
-        actions.includes('agent_notified') &&
-        actions.includes('file_note_created')
-      );
-    },
-    { timeout },
-    clientId,
-  );
-  await page.reload({ waitUntil: 'networkidle2' });
-  await page.waitForFunction(
-    () => !document.body.innerText.includes('Loading audit trail'),
-    { timeout: 60000 },
   );
   await page.waitForFunction(
     () => {
       const text = document.body.innerText;
       return (
-        text.includes('Client Notified') &&
-        text.includes('Agent Notified') &&
-        text.includes('File Note Created')
+        /Client Notified/i.test(text) &&
+        /Agent Notified/i.test(text) &&
+        /File Note Created/i.test(text)
       );
     },
     { timeout: 60000 },
@@ -628,11 +603,38 @@ async function main() {
 
   // ── PHASE 6: Audit panel (browser) — reload after DB confirms events ──
   if (finalRow?.client_id) {
+    const auditResponse = page.waitForResponse(
+      (r) => r.url().includes(`/api/clients/${finalRow.client_id}/audit-events`) && r.ok(),
+      { timeout: 120000 },
+    );
     await page.goto(`${baseUrl}/workspace/${agencySlug}/clients/${finalRow.client_id}`, {
-      waitUntil: 'networkidle2',
+      waitUntil: 'domcontentloaded',
       timeout: 120000,
     });
-    await waitForAuditPanelReady(page, finalRow.client_id);
+    const auditRes = await auditResponse;
+    const auditJson = await auditRes.json();
+    const browserActions = (auditJson.events || [])
+      .filter((e) => e.event_type === 'completed')
+      .map((e) => e.metadata?.action);
+    record(
+      P6,
+      'browser_api_client_notified',
+      browserActions.includes('client_notified') ? 'PASS' : 'FAIL',
+      'browser audit-events API',
+    );
+    record(
+      P6,
+      'browser_api_agent_notified',
+      browserActions.includes('agent_notified') ? 'PASS' : 'FAIL',
+      'browser audit-events API',
+    );
+    record(
+      P6,
+      'browser_api_file_note_created',
+      browserActions.includes('file_note_created') ? 'PASS' : 'FAIL',
+      'browser audit-events API',
+    );
+    await waitForAuditPanelReady(page);
     await page.evaluate(() => {
       const audit = [...document.querySelectorAll('h2')].find((h) => h.textContent === 'Audit');
       audit?.scrollIntoView({ block: 'center' });

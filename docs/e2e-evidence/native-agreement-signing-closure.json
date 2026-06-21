@@ -1,0 +1,423 @@
+{
+  "task": "AGREEMENT-NATIVE-SIGNING-FINAL-PRODUCTION-CLOSURE",
+  "timestamp": "2026-06-21T18:25:51.133Z",
+  "baseUrl": "https://immisign.vercel.app",
+  "agencySlug": "ritiklabs",
+  "overall": "PASS",
+  "checks": [
+    {
+      "phase": "PHASE1_UI",
+      "id": "upload",
+      "status": "PASS",
+      "msg": "Upload via browser",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE1_UI",
+      "id": "refresh_1_preview",
+      "status": "PASS",
+      "msg": "Preview after refresh 1",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE1_UI",
+      "id": "refresh_1_date",
+      "status": "PASS",
+      "msg": "Uploaded date after refresh 1",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE1_UI",
+      "id": "refresh_2_preview",
+      "status": "PASS",
+      "msg": "Preview after refresh 2",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE1_UI",
+      "id": "refresh_2_date",
+      "status": "PASS",
+      "msg": "Uploaded date after refresh 2",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE1_UI",
+      "id": "refresh_3_preview",
+      "status": "PASS",
+      "msg": "Preview after refresh 3",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE1_UI",
+      "id": "refresh_3_date",
+      "status": "PASS",
+      "msg": "Uploaded date after refresh 3",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE1_UI",
+      "id": "replace",
+      "status": "PASS",
+      "msg": "Replace signature",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE1_UI",
+      "id": "delete_http",
+      "status": "PASS",
+      "msg": "HTTP 200",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE1_UI",
+      "id": "delete_ui",
+      "status": "PASS",
+      "msg": "UI shows no signature after delete",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE1_UI",
+      "id": "reupload",
+      "status": "PASS",
+      "msg": "Re-upload after delete",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE1_UI",
+      "id": "reupload_refresh",
+      "status": "PASS",
+      "msg": "Preview after re-upload refresh",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE1_UI",
+      "id": "console_errors",
+      "status": "PASS",
+      "msg": "0 errors",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE8_PRODUCTION",
+      "id": "send",
+      "status": "PASS",
+      "msg": "Agreement sent",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE2_AGENT_PDF",
+      "id": "sent_pdf_valid",
+      "status": "PASS",
+      "msg": "60898 bytes",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE2_AGENT_PDF",
+      "id": "sent_pdf_images",
+      "status": "PASS",
+      "msg": "Agent PNG embedded in sent PDF",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE2_AGENT_PDF",
+      "id": "agent_signed_at",
+      "status": "PASS",
+      "msg": "2026-06-21T18:26:34.128+00:00",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE3_CLIENT_PDF",
+      "id": "client_sign_ui",
+      "status": "PASS",
+      "msg": "Success page",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE8_PRODUCTION",
+      "id": "status_completed",
+      "status": "PASS",
+      "msg": "completed",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE6_AUDIT_PANEL",
+      "id": "db_client_notified",
+      "status": "PASS",
+      "msg": "document_audit_events client_notified",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE6_AUDIT_PANEL",
+      "id": "db_agent_notified",
+      "status": "PASS",
+      "msg": "document_audit_events agent_notified",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE6_AUDIT_PANEL",
+      "id": "db_file_note_created",
+      "status": "PASS",
+      "msg": "document_audit_events file_note_created",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE3_CLIENT_PDF",
+      "id": "final_pdf_images",
+      "status": "PASS",
+      "msg": "Both signatures as embedded images",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE3_CLIENT_PDF",
+      "id": "client_sig_path",
+      "status": "PASS",
+      "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/agreements/be53b553-58ca-4385-92b4-e938062c9f9b/client-signature.png",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE4_FILE_NOTE",
+      "id": "file_note_row",
+      "status": "PASS",
+      "msg": "b104dc15-6a4e-44d2-a37c-e05cd6d0c8c6",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE4_FILE_NOTE",
+      "id": "note_agreement_ref",
+      "status": "PASS",
+      "msg": "Agreement reference in body",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE4_FILE_NOTE",
+      "id": "note_client",
+      "status": "PASS",
+      "msg": "Client in body",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE4_FILE_NOTE",
+      "id": "note_timestamp",
+      "status": "PASS",
+      "msg": "Timestamp in body",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE5_EMAILS",
+      "id": "client_email",
+      "status": "PASS",
+      "msg": "1b31fee4-d6cd-4f13-887b-646724ac03f2",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE5_EMAILS",
+      "id": "client_email_status",
+      "status": "PASS",
+      "msg": "accepted",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE5_EMAILS",
+      "id": "agent_email",
+      "status": "PASS",
+      "msg": "e4058796-8a6d-4633-99d0-13d33f32f2cb",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE5_EMAILS",
+      "id": "agent_email_status",
+      "status": "PASS",
+      "msg": "accepted",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE7_SIGNING_RECORD",
+      "id": "record_storage_path",
+      "status": "PASS",
+      "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/agreements/be53b553-58ca-4385-92b4-e938062c9f9b/agreement-signing-record.pdf",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE7_SIGNING_RECORD",
+      "id": "record_ip_db",
+      "status": "PASS",
+      "msg": "152.59.89.144",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE7_SIGNING_RECORD",
+      "id": "record_user_agent_db",
+      "status": "PASS",
+      "msg": "client_user_agent on agreement",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE7_SIGNING_RECORD",
+      "id": "record_signature_hash",
+      "status": "PASS",
+      "msg": "signature_hash",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE7_SIGNING_RECORD",
+      "id": "record_pdf_hash",
+      "status": "PASS",
+      "msg": "pdf_hash",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE7_SIGNING_RECORD",
+      "id": "record_signed_pdf_hash",
+      "status": "PASS",
+      "msg": "signed_pdf_hash",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE7_SIGNING_RECORD",
+      "id": "record_audit_hash",
+      "status": "PASS",
+      "msg": "audit_hash",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE7_SIGNING_RECORD",
+      "id": "record_signing_record_hash",
+      "status": "PASS",
+      "msg": "signing_record_hash",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE7_SIGNING_RECORD",
+      "id": "record_pdf",
+      "status": "PASS",
+      "msg": "38539 bytes",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE7_SIGNING_RECORD",
+      "id": "record_pdf_hash_pdf",
+      "status": "PASS",
+      "msg": "pdf_hash in signing record PDF",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE7_SIGNING_RECORD",
+      "id": "record_signed_pdf_hash_pdf",
+      "status": "PASS",
+      "msg": "signed_pdf_hash in signing record PDF",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE7_SIGNING_RECORD",
+      "id": "record_signature_hash_pdf",
+      "status": "PASS",
+      "msg": "signature_hash in signing record PDF",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE7_SIGNING_RECORD",
+      "id": "record_audit_hash_pdf",
+      "status": "PASS",
+      "msg": "audit_hash in signing record PDF",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE7_SIGNING_RECORD",
+      "id": "record_signing_record_hash_pdf",
+      "status": "PASS",
+      "msg": "signing_record_hash in signing record PDF",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE6_AUDIT_PANEL",
+      "id": "browser_api_client_notified",
+      "status": "PASS",
+      "msg": "browser audit-events API",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE6_AUDIT_PANEL",
+      "id": "browser_api_agent_notified",
+      "status": "PASS",
+      "msg": "browser audit-events API",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE6_AUDIT_PANEL",
+      "id": "browser_api_file_note_created",
+      "status": "PASS",
+      "msg": "browser audit-events API",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE6_AUDIT_PANEL",
+      "id": "sent_at",
+      "status": "PASS",
+      "msg": "Sent At",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE6_AUDIT_PANEL",
+      "id": "viewed_at",
+      "status": "PASS",
+      "msg": "Viewed At",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE6_AUDIT_PANEL",
+      "id": "signed_at",
+      "status": "PASS",
+      "msg": "Signed At",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE6_AUDIT_PANEL",
+      "id": "generated_at",
+      "status": "PASS",
+      "msg": "Generated At",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE6_AUDIT_PANEL",
+      "id": "client_notified",
+      "status": "PASS",
+      "msg": "Client Notified row",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE6_AUDIT_PANEL",
+      "id": "agent_notified",
+      "status": "PASS",
+      "msg": "Agent Notified row",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE6_AUDIT_PANEL",
+      "id": "file_note_created",
+      "status": "PASS",
+      "msg": "File Note Created row",
+      "detail": {}
+    },
+    {
+      "phase": "PHASE8_PRODUCTION",
+      "id": "production_url",
+      "status": "PASS",
+      "msg": "https://immisign.vercel.app",
+      "detail": {}
+    }
+  ],
+  "ids": {
+    "agencyId": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
+    "userId": "2cab360f-fd21-461a-8a57-67573dee0530",
+    "agreementId": "be53b553-58ca-4385-92b4-e938062c9f9b",
+    "clientId": "251f6791-2304-4f11-9f7b-486062dfb877"
+  },
+  "screenshots": [
+    "docs\\e2e-evidence\\native-signing-closure\\01-after-upload.png",
+    "docs\\e2e-evidence\\native-signing-closure\\02-preview-after-refresh.png",
+    "docs\\e2e-evidence\\native-signing-closure\\03-after-delete.png",
+    "docs\\e2e-evidence\\native-signing-closure\\05-client-portal.png",
+    "docs\\e2e-evidence\\native-signing-closure\\06-client-signed.png",
+    "docs\\e2e-evidence\\native-signing-closure\\09-client-audit-panel.png"
+  ],
+  "consoleErrors": []
+}

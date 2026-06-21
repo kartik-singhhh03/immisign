@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import {
   clearUserSignaturePath,
+  loadProfessionalSignaturePreviewUrl,
   logSignatureActivity,
   professionalSignatureStoragePath,
   validateProfessionalSignaturePng,
@@ -29,16 +30,6 @@ async function resolveProfile() {
   }
 
   return { user, profile, supabase };
-}
-
-async function signedPreviewUrl(storagePath: string): Promise<string | null> {
-  const admin = createAdminClient();
-  const { data, error } = await admin.storage.from('signatures').createSignedUrl(storagePath, 3600);
-  if (error) {
-    console.error('SIGNATURE_PREVIEW_URL_FAILED', error.message);
-    return null;
-  }
-  return data?.signedUrl ?? null;
 }
 
 export async function GET() {
@@ -69,7 +60,7 @@ export async function GET() {
 
     let previewUrl: string | null = null;
     if (storagePath) {
-      previewUrl = await signedPreviewUrl(storagePath);
+      previewUrl = await loadProfessionalSignaturePreviewUrl(storagePath);
     }
 
     const signature = storagePath
@@ -85,10 +76,13 @@ export async function GET() {
         }
       : null;
 
-    return NextResponse.json({
-      signature,
-      hasUploadedSignature: Boolean(storagePath),
-    });
+    return NextResponse.json(
+      {
+        signature,
+        hasUploadedSignature: Boolean(storagePath),
+      },
+      { headers: { 'Cache-Control': 'no-store, max-age=0' } },
+    );
   } catch (err) {
     console.error('PROFESSIONAL_SIGNATURE_GET_FAILED', err);
     return NextResponse.json(
@@ -206,7 +200,7 @@ export async function POST(req: Request) {
       storagePath: objectPath,
     });
 
-    const previewUrl = await signedPreviewUrl(objectPath);
+    const previewUrl = await loadProfessionalSignaturePreviewUrl(objectPath);
 
     return NextResponse.json({
       success: true,
@@ -232,7 +226,11 @@ export async function DELETE() {
     if ('error' in resolved && resolved.error) return resolved.error;
     const { user, profile } = resolved as {
       user: { id: string };
-      profile: { agency_id: string; id: string };
+      profile: {
+        agency_id: string;
+        id: string;
+        signature_storage_path: string | null;
+      };
     };
 
     const admin = createAdminClient();
@@ -244,22 +242,33 @@ export async function DELETE() {
       .eq('is_default', true)
       .maybeSingle();
 
-    if (!defaultSig) {
+    const storagePath =
+      defaultSig?.storage_path || profile.signature_storage_path || null;
+
+    if (!storagePath) {
       return NextResponse.json({ error: 'No professional signature to delete' }, { status: 404 });
     }
 
-    if (defaultSig.storage_path) {
-      await admin.storage.from('signatures').remove([defaultSig.storage_path]);
+    await admin.storage.from('signatures').remove([storagePath]);
+
+    if (defaultSig?.id) {
+      await admin.from('user_signatures').delete().eq('id', defaultSig.id);
     }
 
-    await admin.from('user_signatures').delete().eq('id', defaultSig.id);
+    await admin
+      .from('user_signatures')
+      .update({ is_default: false, updated_at: new Date().toISOString() })
+      .eq('agency_id', profile.agency_id)
+      .eq('user_id', user.id);
+
     await clearUserSignaturePath(user.id);
 
     await logSignatureActivity(admin, {
       agencyId: profile.agency_id,
       userId: user.id,
       action: 'deleted',
-      signatureId: defaultSig.id,
+      signatureId: defaultSig?.id ?? null,
+      storagePath,
     });
 
     return NextResponse.json({ success: true });

@@ -86,6 +86,24 @@ export async function clearUserSignaturePath(userId: string) {
     .eq('id', userId);
 }
 
+/** Inline data URI avoids signed-URL expiry and img cache issues in Settings preview. */
+export async function loadProfessionalSignaturePreviewUrl(storagePath: string): Promise<string | null> {
+  const admin = createAdminClient();
+  const { data, error } = await admin.storage.from('signatures').download(storagePath);
+  if (!error && data) {
+    const buf = Buffer.from(await data.arrayBuffer());
+    return `data:image/png;base64,${buf.toString('base64')}`;
+  }
+  const { data: signed, error: signErr } = await admin.storage
+    .from('signatures')
+    .createSignedUrl(storagePath, 3600);
+  if (signErr) {
+    console.error('SIGNATURE_PREVIEW_URL_FAILED', signErr.message);
+    return null;
+  }
+  return signed?.signedUrl ?? null;
+}
+
 export async function userHasUploadedProfessionalSignature(
   supabase: SupabaseClient,
   agencyId: string,

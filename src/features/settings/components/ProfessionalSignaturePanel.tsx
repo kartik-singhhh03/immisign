@@ -42,7 +42,10 @@ export function ProfessionalSignaturePanel({ onToast }: Props) {
   const loadSignature = React.useCallback(async () => {
     setLoading(true)
     try {
-      const res = await fetch("/api/signatures/professional")
+      const res = await fetch("/api/signatures/professional", {
+        credentials: "include",
+        cache: "no-store",
+      })
       const payload = await res.json()
       if (!res.ok) {
         throw new Error(payload.error || `Failed to load signature (${res.status})`)
@@ -71,7 +74,11 @@ export function ProfessionalSignaturePanel({ onToast }: Props) {
     try {
       const form = new FormData()
       form.set("file", file)
-      const res = await fetch("/api/signatures/professional", { method: "POST", body: form })
+      const res = await fetch("/api/signatures/professional", {
+        method: "POST",
+        credentials: "include",
+        body: form,
+      })
       const payload = await res.json()
       if (!res.ok) throw new Error(payload.error || "Upload failed")
       setSignature(payload.signature)
@@ -88,11 +95,15 @@ export function ProfessionalSignaturePanel({ onToast }: Props) {
     if (!signature) return
     setDeleting(true)
     try {
-      const res = await fetch("/api/signatures/professional", { method: "DELETE" })
+      const res = await fetch("/api/signatures/professional", {
+        method: "DELETE",
+        credentials: "include",
+      })
       const payload = await res.json()
       if (!res.ok) throw new Error(payload.error || "Delete failed")
       setSignature(null)
       onToast("Professional signature removed.")
+      await loadSignature()
     } catch (e: unknown) {
       onToast(e instanceof Error ? e.message : "Delete failed")
     } finally {
@@ -140,6 +151,9 @@ export function ProfessionalSignaturePanel({ onToast }: Props) {
               src={signature.previewUrl}
               alt="Professional signature preview"
               className="max-h-16 max-w-full object-contain"
+              onError={() => {
+                void loadSignature()
+              }}
             />
           ) : signature?.storagePath ? (
             <p className="text-xs font-semibold text-slate-500">Signature on file (refresh preview)</p>

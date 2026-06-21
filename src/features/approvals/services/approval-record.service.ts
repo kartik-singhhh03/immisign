@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { PDFService } from '@/features/agreements/services/pdf.service';
+import { APP_NAME } from '@/lib/brand';
 import type { ApplicationApprovalRecord } from '../types/rebuild';
 
 const APPROVAL_DECLARATION = `By approving this application the client confirmed that they have downloaded and read the full application attached to the notice, authorise lodgement, and understand that the application cannot be amended once lodged. This approval is legally significant and was recorded with a timestamp and IP address.`;
@@ -101,7 +102,7 @@ export function buildApprovalFileNoteBody(params: {
     '',
     `Approval Token: ${params.token}`,
     '',
-    'Generated automatically by ImmiSign.',
+    `Generated automatically by ${APP_NAME}.`,
   );
   return lines.join('\n');
 }
@@ -151,7 +152,7 @@ function buildApprovalRecordHtml(
   <p><strong>Approval Token:</strong> ${escapeHtml(ctx.token)}</p>
   <h2>Declaration</h2>
   <div class="box">${escapeHtml(APPROVAL_DECLARATION)}</div>
-  <p class="muted">Generated: ${escapeHtml(generatedAt)} · ImmiSign compliance record</p>
+  <p class="muted">Generated: ${escapeHtml(generatedAt)} · ${APP_NAME} compliance record</p>
 </body>
 </html>`;
 }

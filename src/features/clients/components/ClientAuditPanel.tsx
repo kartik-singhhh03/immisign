@@ -2,6 +2,8 @@
 
 import * as React from "react"
 import { Card, CardContent } from "@/components/ui/card"
+import { formatSydneyDateTime } from "@/lib/datetime/sydney"
+import { APP_NAME } from "@/lib/brand"
 
 type AuditRow = {
   id: string
@@ -18,11 +20,7 @@ type AuditRow = {
 
 function formatTs(ts: string | null | undefined): string {
   if (!ts) return "Not Provided"
-  try {
-    return new Date(ts).toLocaleString("en-AU", { timeZone: "Australia/Sydney" })
-  } catch {
-    return ts
-  }
+  return formatSydneyDateTime(ts)
 }
 
 function docLabel(type: string): string {
@@ -65,11 +63,19 @@ function pickCompletedAction(events: AuditRow[], action: string): AuditRow | und
     )[0]
 }
 
-const APPROVAL_PROVIDER = "Immimate Approval Portal"
+const APPROVAL_PROVIDER = `${APP_NAME} Approval Portal`
+const AGREEMENT_PROVIDER = `${APP_NAME} Native Signing Portal`
 
 function providerLabel(row: AuditRow, events: AuditRow[]): string {
   if (row.document_type === "application_approval") {
     return row.provider || APPROVAL_PROVIDER
+  }
+  if (row.document_type === "service_agreement") {
+    const raw =
+      row.provider ||
+      events.find((e) => e.provider)?.provider ||
+      AGREEMENT_PROVIDER
+    return raw.replace(/ImmiSign/gi, APP_NAME)
   }
   const signed = events.find((e) => e.event_type === "signed" || e.event_type === "completed")
   return signed?.provider || row.provider || events.find((e) => e.provider)?.provider || APPROVAL_PROVIDER
@@ -120,6 +126,7 @@ export function ClientAuditPanel({ clientId }: { clientId: string }) {
         <h2 className="text-lg font-bold text-[#111111] mb-1">Audit</h2>
         <p className="text-xs text-slate-500 mb-5 font-medium">
           Document events from webhooks and system actions. Signature dates are never manually entered.
+          Times shown in Australian Eastern time (Sydney).
         </p>
 
         {loading && <p className="text-sm text-slate-400 animate-pulse">Loading audit trail…</p>}
@@ -142,9 +149,12 @@ export function ClientAuditPanel({ clientId }: { clientId: string }) {
                 e.metadata?.action === "changes_requested",
             )
             const downloaded = pickCompletedAction(events, "application_downloaded")
+            const agreementDownloaded = pickCompletedAction(events, "agreement_downloaded")
             const fileNoteCreated = pickCompletedAction(events, "file_note_created")
             const agentNotified = pickCompletedAction(events, "agent_notified")
+            const clientNotified = pickCompletedAction(events, "client_notified")
             const isApproval = sample.document_type === "application_approval"
+            const isAgreement = sample.document_type === "service_agreement"
             const attached = attachedFilename(events)
             const signedLabel = isApproval ? "Approved At" : "Signed At"
             const signedByLabel = isApproval ? "Approved By" : "Signed By"
@@ -168,13 +178,25 @@ export function ClientAuditPanel({ clientId }: { clientId: string }) {
                   {isApproval && downloaded && (
                     <div><dt className="text-slate-400 font-bold uppercase">Downloaded At</dt><dd className="font-semibold">{formatTs(downloaded.event_timestamp)}</dd></div>
                   )}
+                  {isAgreement && agreementDownloaded && (
+                    <div><dt className="text-slate-400 font-bold uppercase">Downloaded At</dt><dd className="font-semibold">{formatTs(agreementDownloaded.event_timestamp)}</dd></div>
+                  )}
                   <div><dt className="text-slate-400 font-bold uppercase">{signedLabel}</dt><dd className="font-semibold">{formatTs(signed?.event_timestamp)}</dd></div>
                   <div><dt className="text-slate-400 font-bold uppercase">Acknowledged At</dt><dd className="font-semibold">{formatTs(acknowledged?.event_timestamp)}</dd></div>
                   <div><dt className="text-slate-400 font-bold uppercase">Generated At</dt><dd className="font-semibold">{formatTs(generated?.event_timestamp)}</dd></div>
                   {isApproval && fileNoteCreated && (
                     <div><dt className="text-slate-400 font-bold uppercase">File Note Created</dt><dd className="font-semibold">{formatTs(fileNoteCreated.event_timestamp)}</dd></div>
                   )}
+                  {isAgreement && fileNoteCreated && (
+                    <div><dt className="text-slate-400 font-bold uppercase">File Note Created</dt><dd className="font-semibold">{formatTs(fileNoteCreated.event_timestamp)}</dd></div>
+                  )}
                   {isApproval && agentNotified && (
+                    <div><dt className="text-slate-400 font-bold uppercase">Agent Notified</dt><dd className="font-semibold">{formatTs(agentNotified.event_timestamp)}</dd></div>
+                  )}
+                  {isAgreement && clientNotified && (
+                    <div><dt className="text-slate-400 font-bold uppercase">Client Notified</dt><dd className="font-semibold">{formatTs(clientNotified.event_timestamp)}</dd></div>
+                  )}
+                  {isAgreement && agentNotified && (
                     <div><dt className="text-slate-400 font-bold uppercase">Agent Notified</dt><dd className="font-semibold">{formatTs(agentNotified.event_timestamp)}</dd></div>
                   )}
                   {changesRequested && (

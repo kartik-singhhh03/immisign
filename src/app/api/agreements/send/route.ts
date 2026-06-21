@@ -5,6 +5,7 @@ import { Role } from '@/features/auth/types/roles';
 import { apiError, withApiRoute } from '@/lib/api/json-response';
 import { createAgreementSigningProvider } from '@/lib/signing/provider-factory';
 import { getSigningProvider } from '@/lib/signing/config';
+import { APP_NAME } from '@/lib/brand';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,7 +47,7 @@ export async function POST(req: Request) {
 
     if (providerName === 'native') {
       return NextResponse.json({
-        message: 'Successfully sent agreement via ImmiSign native signing portal.',
+        message: `Successfully sent agreement via ${APP_NAME} native signing portal.`,
         signingProvider: 'native',
         signingUrl: result.signingUrl,
         signingToken: result.signingToken,

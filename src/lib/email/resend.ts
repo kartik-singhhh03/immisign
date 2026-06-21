@@ -1,5 +1,6 @@
 import { Resend } from 'resend';
 import { recordEmailDelivery } from './delivery-audit';
+import { APP_NAME } from '@/lib/brand';
 
 const RESEND_KEY_PREFIX = 're_';
 const TEST_FROM_FALLBACK = 'onboarding@resend.dev';
@@ -13,7 +14,7 @@ export type ResendSendPayload = {
   replyTo?: string | string[];
   attachments?: Array<{
     filename: string;
-    content: string;
+    content: string | Buffer;
     contentType?: string;
   }>;
   tags?: Array<{ name: string; value: string }>;
@@ -23,7 +24,7 @@ export type ResendSendPayload = {
 export function formatBrandedSender(agentName: string, agencyName: string): string {
   const fromEmail = getResendFromEmail();
   const safeAgent = (agentName || 'Agent').replace(/"/g, "'");
-  const safeAgency = (agencyName || 'ImmiSign').replace(/"/g, "'");
+  const safeAgency = (agencyName || APP_NAME).replace(/"/g, "'");
   return `${safeAgent} - ${safeAgency} <${fromEmail}>`;
 }
 

@@ -3,10 +3,11 @@ import {
   DocumentAuditService,
   type DocumentAuditEventType,
 } from '@/lib/audit/document-audit.service';
+import { APP_NAME } from '@/lib/brand';
 
-export const AGREEMENT_NATIVE_PORTAL_PROVIDER = 'ImmiSign Native Signing Portal';
+export const AGREEMENT_NATIVE_PORTAL_PROVIDER = `${APP_NAME} Native Signing Portal`;
 export const AGREEMENT_EMAIL_PROVIDER = 'Resend';
-export const AGREEMENT_SYSTEM_PROVIDER = 'ImmiSign';
+export const AGREEMENT_SYSTEM_PROVIDER = APP_NAME;
 
 export type AgreementAuditEventRow = {
   id: string;
@@ -134,6 +135,15 @@ export async function enrichAgreementSigningAuditEvents(
           ...fileMeta,
           actor_name: agreement.client_name_confirmed,
         }),
+      );
+    }
+    if (agreement.signing_record_storage_path && !has('generated')) {
+      synthetic.push(
+        makeSynthetic(agreement.id, 'generated', agreement.completed_at || agreement.signed_at || new Date().toISOString(), {
+          ...fileMeta,
+          action: 'agreement_record_generated',
+          signing_record_storage_path: agreement.signing_record_storage_path,
+        }, AGREEMENT_SYSTEM_PROVIDER),
       );
     }
   }

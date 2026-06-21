@@ -17,6 +17,7 @@ import { AgreementLifecycleTimeline } from "../../AgreementLifecycleTimeline"
 import React from "react"
 import { isAgreementDispatchSuccess } from "@/lib/signing/dispatch-result"
 import { isNativeSigningClient } from "@/lib/signing/client-config"
+import { APP_NAME } from "@/lib/brand"
 
 function FieldLabel({ children, required }: { children: React.ReactNode; required?: boolean }) {
   return (
@@ -93,7 +94,7 @@ export function SendStep({
             <p className="mt-3 text-slate-600 text-sm text-center max-w-md mx-auto">
               The agreement has been generated with the responsible agent details applied automatically.
               {nativeSigning
-                ? " The client will receive an ImmiSign signing link by email."
+                ? ` The client will receive an ${APP_NAME} signing link by email.`
                 : " Only client signers were sent the external signing request."}
             </p>
             <div className="mt-6 text-xs font-semibold text-slate-600 space-y-2 border-y border-[#E7E7E7] py-4">
@@ -265,7 +266,7 @@ export function SendStep({
             <p>
               <strong>{selectedRma?.name || "The responsible agent"}</strong> — name, MARN and agency are applied automatically on the PDF.
               {nativeSigning
-                ? "Only the client signs electronically via the ImmiSign signing portal."
+                ? `Only the client signs electronically via the ${APP_NAME} signing portal.`
                 : "Only the client signs electronically via the external signing provider."}
             </p>
           </div>

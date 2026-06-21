@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { PDFService } from '@/features/agreements/services/pdf.service';
+import { APP_NAME } from '@/lib/brand';
 import type { NativeAgreementRow } from './native-agreement-signing.service';
 
 export type AgreementSigningRecordContext = {
@@ -98,7 +99,7 @@ function buildAgreementSigningRecordHtml(
 <body>
   <h1>Agreement Signing Record</h1>
   <p><strong>Category:</strong> Agreement Signing Record</p>
-  <p><strong>Provider:</strong> ImmiSign Native Signing</p>
+  <p><strong>Provider:</strong> ${APP_NAME} Native Signing</p>
   <h2>Agreement</h2>
   <p><strong>Agreement ID:</strong> ${escapeHtml(agreement.id)}</p>
   <p><strong>Agreement Reference:</strong> ${escapeHtml(agreement.agreement_number || '—')}</p>
@@ -126,7 +127,7 @@ function buildAgreementSigningRecordHtml(
   <p><strong>Audit Chain Hash:</strong><br/><span class="hash">${escapeHtml(agreement.audit_hash || '—')}</span></p>
   <h2>Declarations Accepted</h2>
   <div class="box">${declLines.length ? declLines.map((d) => `<p>✓ ${escapeHtml(d)}</p>`).join('') : '<p>—</p>'}</div>
-  <p class="muted">Generated: ${escapeHtml(generatedAt)} · ImmiSign compliance record · Legal source of truth: signed-agreement.pdf</p>
+  <p class="muted">Generated: ${escapeHtml(generatedAt)} · ${APP_NAME} compliance record · Legal source of truth: signed-agreement.pdf</p>
 </body>
 </html>`;
 }
@@ -154,7 +155,7 @@ export function buildAgreementSignedFileNoteBody(params: {
     '',
     `Signing Token: ${params.token}`,
     '',
-    'Generated automatically by ImmiSign.',
+    `Generated automatically by ${APP_NAME}.`,
   ]
     .filter(Boolean)
     .join('\n');

@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { randomUUID } from 'crypto';
 import { assertSafeEmailUrl, buildApprovalUrl } from '@/lib/app-url';
+import { APP_NAME } from '@/lib/brand';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { getResendFromEmail, sendEmailWithForensicLogging, formatBrandedSender } from '@/lib/email/resend';
 import { recordClientSystemNote } from '@/features/file-notes/services/file-notes.service';
@@ -188,7 +189,7 @@ export class ApplicationApprovalRebuildService {
       .single();
 
     const agentName = agent?.full_name || 'Your migration agent';
-    const agencyName = agency?.name || 'ImmiSign';
+    const agencyName = agency?.name || APP_NAME;
 
     const emailResult = await sendEmailWithForensicLogging(
       {
@@ -407,7 +408,7 @@ export class ApplicationApprovalRebuildService {
         admin.from('clients').select('name, email').eq('id', fresh.client_id).single(),
       ]);
 
-      const agencyName = agency?.name || 'ImmiSign';
+      const agencyName = agency?.name || APP_NAME;
       const agentName = agent?.full_name || 'Agent';
       const clientDisplay = client?.name || clientName;
       const approvedAt = fresh.approved_at || new Date().toISOString();
@@ -611,7 +612,7 @@ export class ApplicationApprovalRebuildService {
       ]);
       const recordSvc = new ApprovalRecordService(admin);
       const generated = await recordSvc.generate(approval.agency_id, approval.created_by, approval, {
-        agencyName: agency?.name || 'ImmiSign',
+        agencyName: agency?.name || APP_NAME,
         agentName: agent?.full_name || 'Agent',
         agentEmail: agent?.email || '',
         clientName: client?.name || approval.client_name_confirmed || 'Client',

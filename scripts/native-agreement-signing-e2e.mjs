@@ -196,8 +196,11 @@ async function main() {
     executablePath: chrome,
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    protocolTimeout: 300000,
   });
   const page = await browser.newPage();
+  page.setDefaultTimeout(120000);
+  page.setDefaultNavigationTimeout(120000);
   await page.setViewport({ width: 1280, height: 900 });
 
   await page.goto(`${baseUrl}/agreement/sign/${signingToken}`, { waitUntil: 'networkidle2', timeout: 120000 });
@@ -248,7 +251,14 @@ async function main() {
     const btn = [...document.querySelectorAll('button')].find((b) => /Sign Agreement/i.test(b.textContent || ''));
     btn?.click();
   });
-  await sleep(8000);
+  try {
+    await page.waitForFunction(
+      () => /Agreement Signed|signed successfully/i.test(document.body.innerText),
+      { timeout: 120000 },
+    );
+  } catch {
+    await sleep(15000);
+  }
   await shot(page, '04-signed-success.png');
 
   const signedText = await page.evaluate(() => document.body.innerText);

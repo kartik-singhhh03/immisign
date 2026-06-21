@@ -93,7 +93,7 @@ export const AGREEMENT_SEND_STAGES = [
   { id: 'confirm', label: 'Waiting Confirmation' },
 ] as const;
 
-/** Native ImmiSign portal dispatch (no SignWell). */
+/** Native ImmiMate portal dispatch (no SignWell). */
 export const NATIVE_AGREEMENT_SEND_STAGES = [
   { id: 'agreement', label: 'Generating Agreement' },
   { id: 'pdf', label: 'Creating PDF' },

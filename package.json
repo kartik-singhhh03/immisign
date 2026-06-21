@@ -28,6 +28,7 @@
     "@stripe/stripe-js": "^9.7.0",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.106.2",
+    "@vercel/functions": "^3.7.2",
     "autoprefixer": "^10.5.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",

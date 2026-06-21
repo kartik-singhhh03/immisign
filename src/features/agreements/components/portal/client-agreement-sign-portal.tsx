@@ -146,7 +146,7 @@ export function ClientAgreementSignPortal({
             Thank you, {agreement?.client_name_confirmed || fullName || clientName}. Your service agreement{" "}
             <strong>{agreementRef}</strong> has been signed successfully.
           </p>
-          <p className="text-xs text-slate-400">A copy will be emailed to you shortly.</p>
+        <p className="text-xs text-slate-400">A copy will be emailed to you and your agent shortly.</p>
         </div>
       </div>
     )

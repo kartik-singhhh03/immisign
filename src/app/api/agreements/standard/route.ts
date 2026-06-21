@@ -27,6 +27,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { recordComplianceEvent } from '@/lib/compliance/compliance-events.service';
 import { calculateFeeTotals, normalizeFeeItemsFromForm } from '@/features/agreements/lib/fee-items';
 import { composeClientFullName } from '@/features/agreements/types/wizard';
+import { APP_NAME } from '@/lib/brand';
 
 function agreementSupportRef() {
   return `AGR-${Date.now().toString(36).toUpperCase()}`;
@@ -423,7 +424,7 @@ export async function POST(req: NextRequest) {
         userId,
         type: 'agreement',
         title: 'Agreement sent for signature',
-        message: `Service agreement for ${formData.clientName} was sent via ImmiSign native signing.`,
+        message: `Service agreement for ${formData.clientName} was sent via ${APP_NAME} native signing.`,
         actionUrl: buildWorkspaceActionUrl(agencyMeta?.slug || 'workspace', `/agreements/${agreementId}`),
         entityType: 'agreement',
         entityId: agreementId,

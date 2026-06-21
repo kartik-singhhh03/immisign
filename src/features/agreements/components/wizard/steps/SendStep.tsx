@@ -272,6 +272,9 @@ export function SendStep({
 
           <label className="grid gap-2">
             <span className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Email Message</span>
+            <p className="text-xs text-slate-500 -mt-1">
+              Your personal note appears in the email. A secure signing button and link are added automatically.
+            </p>
             <textarea
               className="flex min-h-[140px] w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm font-medium leading-relaxed focus:outline-none focus:ring-1 focus:ring-[#111111] resize-y"
               value={form.emailMessage}

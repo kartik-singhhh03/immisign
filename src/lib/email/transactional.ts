@@ -56,3 +56,74 @@ export function buildApprovalEmailHtml(params: {
     </div>
   `;
 }
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/** Branded agreement signing email — always includes the portal CTA link. */
+export function buildAgreementSigningEmailHtml(params: {
+  agencyName: string;
+  clientName: string;
+  agreementTitle: string;
+  agentName?: string;
+  messageBody?: string;
+  signUrl: string;
+  expiresAt?: string;
+}): string {
+  const agency = escapeHtml(params.agencyName);
+  const client = escapeHtml(params.clientName);
+  const title = escapeHtml(params.agreementTitle);
+  const agent = escapeHtml(params.agentName || params.agencyName);
+  const signUrl = params.signUrl;
+
+  const intro = params.messageBody?.trim()
+    ? `<p style="font-size:14px;line-height:1.6;color:#333;margin:16px 0">${escapeHtml(params.messageBody).replace(/\n/g, '<br/>')}</p>`
+    : `<p style="font-size:14px;line-height:1.6;color:#333;margin:16px 0">Please review and sign your service agreement securely online. This takes less than 2 minutes on any device.</p>`;
+
+  const expiry = params.expiresAt
+    ? `<p style="font-size:12px;color:#888;margin-top:16px">This signing link expires on ${escapeHtml(params.expiresAt)}.</p>`
+    : '';
+
+  return `
+    <div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;color:#111">
+      <p style="font-size:12px;color:#5C5C5C;text-transform:uppercase;letter-spacing:0.08em">${agency}</p>
+      <h1 style="font-size:22px;font-weight:600;margin:16px 0">Service Agreement — Signature Required</h1>
+      <p style="font-size:14px;line-height:1.6;color:#333">Hi ${client},</p>
+      <p style="font-size:14px;line-height:1.6;color:#333"><strong>${agent}</strong> has requested your signature on <strong>${title}</strong>.</p>
+      ${intro}
+      <p style="margin:28px 0">
+        <a href="${signUrl}" style="display:inline-block;background:#111;color:#fff;padding:14px 24px;border-radius:12px;text-decoration:none;font-weight:600">
+          Review &amp; Sign Agreement
+        </a>
+      </p>
+      <p style="font-size:12px;color:#888">If the button does not work, copy and paste this link into your browser:<br/><a href="${signUrl}" style="color:#111;word-break:break-all">${signUrl}</a></p>
+      ${expiry}
+    </div>
+  `;
+}
+
+export function buildAgreementSigningEmailText(params: {
+  clientName: string;
+  agreementTitle: string;
+  agentName?: string;
+  agencyName: string;
+  messageBody?: string;
+  signUrl: string;
+}): string {
+  const agent = params.agentName || params.agencyName;
+  const lines = [
+    `Hi ${params.clientName},`,
+    '',
+    `${agent} has requested your signature on ${params.agreementTitle}.`,
+    '',
+    params.messageBody?.trim() || 'Please review and sign your service agreement securely online.',
+    '',
+    `Sign here: ${params.signUrl}`,
+  ];
+  return lines.join('\n');
+}

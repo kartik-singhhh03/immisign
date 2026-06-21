@@ -3,7 +3,11 @@ import { createHash } from 'crypto';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { ConflictError, GoneError, NotFoundError } from '@/lib/utils/errors';
 import { sendEmailWithForensicLogging, formatBrandedSender } from '@/lib/email/resend';
-import { buildAgreementSignUrl } from '@/lib/app-url';
+import {
+  buildAgreementSigningEmailHtml,
+  buildAgreementSigningEmailText,
+} from '@/lib/email/transactional';
+import { buildAgreementSignUrl, assertSafeEmailUrl } from '@/lib/app-url';
 import { recordClientSystemNote } from '@/features/file-notes/services/file-notes.service';
 import {
   AGREEMENT_EMAIL_PROVIDER,
@@ -183,6 +187,7 @@ export class NativeAgreementSigningService {
     });
 
     const portalUrl = buildAgreementSignUrl(signingToken);
+    assertSafeEmailUrl(portalUrl, 'agreement signing link');
     const clientEmail = agreement.client_email;
     if (clientEmail) {
       const [{ data: agency }, { data: agent }] = await Promise.all([
@@ -190,17 +195,44 @@ export class NativeAgreementSigningService {
         supabase.from('users').select('full_name, email').eq('id', userId).single(),
       ]);
 
-      const message =
-        (dispatchOptions?.emailMessage as string) ||
-        `Please review and sign your service agreement.<br/><br/><a href="${portalUrl}">${portalUrl}</a>`;
+      const agencyName = agency?.name || 'ImmiSign';
+      const agentName = agent?.full_name || 'Your migration agent';
+      const agreementTitle =
+        agreement.title || agreement.agreement_number || 'Service Agreement';
+      const customMessage = (dispatchOptions?.emailMessage as string | undefined)?.trim();
+      const expiresLabel = new Date(tokenExpiresAt).toLocaleDateString('en-AU', {
+        dateStyle: 'long',
+      });
+
+      const html = buildAgreementSigningEmailHtml({
+        agencyName,
+        clientName: agreement.client_name || 'Client',
+        agreementTitle,
+        agentName,
+        messageBody: customMessage,
+        signUrl: portalUrl,
+        expiresAt: expiresLabel,
+      });
+
+      const text = buildAgreementSigningEmailText({
+        agencyName,
+        clientName: agreement.client_name || 'Client',
+        agreementTitle,
+        agentName,
+        messageBody: customMessage,
+        signUrl: portalUrl,
+      });
 
       const emailResult = await sendEmailWithForensicLogging(
         {
-          from: formatBrandedSender(agent?.full_name || 'Your Agent', agency?.name || 'ImmiSign'),
+          from: formatBrandedSender(agentName, agencyName),
+          replyTo: agent?.email || undefined,
           to: clientEmail,
           subject:
-            (dispatchOptions?.emailSubject as string) || `Service Agreement — ${agency?.name || 'ImmiSign'}`,
-          html: message.includes('<') ? message : message.replace(/\n/g, '<br/>'),
+            (dispatchOptions?.emailSubject as string) ||
+            `Service Agreement — ${agencyName}`,
+          html,
+          text,
         },
         { emailType: 'agreement_native_send', agencyId },
       );

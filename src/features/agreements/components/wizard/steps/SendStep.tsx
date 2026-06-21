@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { CheckCircle2, FileText, Lock, PenLine } from "lucide-react"
+import { AlertTriangle, CheckCircle2, FileText, Lock, PenLine } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -76,6 +76,20 @@ export function SendStep({
 
   const dispatchSucceeded = dispatched && isAgreementDispatchSuccess(apiResponse || {})
   const nativeSigning = isNativeSigningClient() || apiResponse?.signingProvider === "native"
+
+  const [agentHasSignature, setAgentHasSignature] = React.useState<boolean | null>(null)
+  React.useEffect(() => {
+    const userId = form.responsibleRma || selectedRma?.id
+    if (!userId) return
+    fetch(`/api/signatures/agent-status?userId=${encodeURIComponent(userId)}`)
+      .then((r) => r.json())
+      .then((j) => {
+        if (typeof j.hasUploadedSignature === "boolean") {
+          setAgentHasSignature(j.hasUploadedSignature)
+        }
+      })
+      .catch(() => setAgentHasSignature(null))
+  }, [form.responsibleRma, selectedRma?.id])
 
   return (
     <AnimatePresence mode="wait">
@@ -190,6 +204,26 @@ export function SendStep({
           </div>
 
           <AgreementLifecycleTimeline status="pending" hasPdf className="py-1" />
+
+          {agentHasSignature === false && (
+            <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
+              <AlertTriangle className="h-5 w-5 shrink-0 text-amber-600 mt-0.5" />
+              <div>
+                <p className="font-bold">No agent signature uploaded.</p>
+                <p className="mt-1 text-amber-900/90">
+                  The agreement will show agent name, MARN, agency and date without a handwritten signature image.
+                  You can still send. Upload a signature in{" "}
+                  <Link
+                    href={`/workspace/${agencySlug}/settings?section=Profile`}
+                    className="font-bold underline underline-offset-2"
+                  >
+                    Settings → My Profile
+                  </Link>
+                  .
+                </p>
+              </div>
+            </div>
+          )}
 
           <div className="rounded-2xl border border-slate-200 p-5 space-y-5">
             <div>

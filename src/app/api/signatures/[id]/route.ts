@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
+import { clearUserSignaturePath, logSignatureActivity } from '@/lib/signatures/professional-signature';
 
 export async function DELETE(
   _req: Request,
@@ -15,7 +17,7 @@ export async function DELETE(
 
   const { data: signature, error: fetchErr } = await supabase
     .from('user_signatures')
-    .select('id,storage_path,agency_id,user_id')
+    .select('id,storage_path,agency_id,user_id,is_default')
     .eq('id', params.id)
     .eq('agency_id', profile.agency_id)
     .eq('user_id', user.id)
@@ -31,5 +33,18 @@ export async function DELETE(
 
   const { error } = await supabase.from('user_signatures').delete().eq('id', signature.id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  if (signature.is_default) {
+    await clearUserSignaturePath(user.id);
+    const admin = createAdminClient();
+    await logSignatureActivity(admin, {
+      agencyId: profile.agency_id,
+      userId: user.id,
+      action: 'deleted',
+      signatureId: signature.id,
+      storagePath: signature.storage_path,
+    });
+  }
+
   return NextResponse.json({ success: true });
 }

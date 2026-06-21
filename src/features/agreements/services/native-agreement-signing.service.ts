@@ -143,9 +143,6 @@ export class NativeAgreementSigningService {
     const agentSig = new AgentSignatureService(supabase);
     await agentSig.applyAgentSignatureOnSend(agencyId, userId, agreementId);
 
-    const gen = new DocumentGenerationService(supabase);
-    await gen.regenerateAgreementPdf(agencyId, userId, agreementId);
-
     const { data: doc } = await supabase
       .from('documents')
       .select('file_url')

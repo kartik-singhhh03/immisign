@@ -1,14 +1,17 @@
-import { SupabaseClient } from '@supabase/supabase-js';
 import { loadRmaSignatureForUser } from '@/lib/signatures/rma-signature';
-import { DocumentGenerationService } from './document-generation.service';
-import { AuditService } from './audit.service';
+import { userHasUploadedProfessionalSignature } from '@/lib/signatures/professional-signature';
+import { recordAgreementSigningAudit } from '@/features/agreements/lib/agreement-signing-audit';
 import { formatDisplayDateForSignature } from '@/features/agreements/lib/agreement-preview-html';
+import { DocumentGenerationService } from '@/features/agreements/services/document-generation.service';
+import { AuditService } from '@/features/agreements/services/audit.service';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 export type AgentSignatureApplyResult = {
   responsibleUserId: string;
   agentSignedAt: string;
   agentSignatureUrl: string | null;
   agentSignatureText: string | null;
+  signatureEmbedded: boolean;
 };
 
 export class AgentSignatureService {
@@ -27,7 +30,7 @@ export class AgentSignatureService {
   ): Promise<AgentSignatureApplyResult> {
     const { data: agreement, error } = await this.supabase
       .from('agreements')
-      .select('id, agency_id, created_by, metadata')
+      .select('id, agency_id, client_id, matter_id, created_by, metadata')
       .eq('id', agreementId)
       .eq('agency_id', agencyId)
       .single();
@@ -38,40 +41,44 @@ export class AgentSignatureService {
       (agreement.metadata as { responsible_rma_id?: string })?.responsible_rma_id ||
       agreement.created_by;
 
+    const hasUploaded = await userHasUploadedProfessionalSignature(
+      this.supabase,
+      agencyId,
+      responsibleUserId,
+    );
+
     const signature = await loadRmaSignatureForUser(
       this.supabase,
       agencyId,
       responsibleUserId,
     );
 
-    if (!signature) {
-      throw new Error(
-        'Responsible migration agent has no signature configured. Set up signature in RMA Team settings.',
-      );
-    }
-
     const signedAt = new Date().toISOString();
     const displayDate = formatDisplayDateForSignature(signedAt);
+    const signatureEmbedded = hasUploaded && signature?.mode === 'upload' && Boolean(signature.signatureUrl);
 
     const metadata = {
       ...((agreement.metadata as Record<string, unknown>) || {}),
       agent_signature_applied: true,
       agent_signature_applied_at: signedAt,
-      agent_signature_display: {
-        name: signature.fullName,
-        marn: signature.marn,
-        signedAt: displayDate,
-        imageHtml: signature.imageHtml,
-        mode: signature.mode,
-      },
+      agent_signature_embedded: signatureEmbedded,
+      agent_signature_display: signature
+        ? {
+            name: signature.fullName,
+            marn: signature.marn,
+            signedAt: displayDate,
+            imageHtml: signatureEmbedded ? signature.imageHtml : null,
+            mode: signature.mode,
+          }
+        : null,
     };
 
     await this.supabase
       .from('agreements')
       .update({
         agent_signed_at: signedAt,
-        agent_signature_url: signature.signatureUrl,
-        agent_signature_text: signature.signatureText,
+        agent_signature_url: signature?.signatureUrl ?? null,
+        agent_signature_text: signature?.signatureText ?? null,
         agent_signer_user_id: responsibleUserId,
         metadata,
       })
@@ -79,23 +86,44 @@ export class AgentSignatureService {
 
     await this.docService.regenerateAgreementPdf(agencyId, userId, agreementId);
 
+    if (signatureEmbedded && signature?.signatureUrl) {
+      await recordAgreementSigningAudit(this.supabase, {
+        id: agreementId,
+        agency_id: agencyId,
+        client_id: agreement.client_id,
+        matter_id: agreement.matter_id,
+      }, 'completed', {
+        eventTimestamp: signedAt,
+        metadata: {
+          action: 'agent_signature_embedded',
+          user_id: responsibleUserId,
+          signature_storage_path: signature.signatureUrl,
+          agreement_id: agreementId,
+        },
+      });
+    }
+
     await this.auditService.logEvent(
       agencyId,
       userId,
       agreementId,
-      'Agent signature automatically applied at send time.',
+      signatureEmbedded
+        ? 'Agent signature image embedded in agreement PDF at send time.'
+        : 'Agreement sent without uploaded agent signature image (name/MARN/date fallback).',
       {
         responsible_user_id: responsibleUserId,
         agent_signed_at: signedAt,
-        signature_mode: signature.mode,
+        signature_mode: signature?.mode ?? null,
+        signature_embedded: signatureEmbedded,
       },
     );
 
     return {
       responsibleUserId,
       agentSignedAt: signedAt,
-      agentSignatureUrl: signature.signatureUrl,
-      agentSignatureText: signature.signatureText,
+      agentSignatureUrl: signature?.signatureUrl ?? null,
+      agentSignatureText: signature?.signatureText ?? null,
+      signatureEmbedded,
     };
   }
 }

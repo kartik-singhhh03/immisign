@@ -50,31 +50,31 @@ export async function loadRmaSignatureForUser(
     .eq('user_id', userId)
     .maybeSingle();
 
+  const admin = createAdminClient();
+  const { data: defaultSig } = await (admin as SupabaseClient)
+    .from('user_signatures')
+    .select('signature_type, storage_path, typed_name, draw_data')
+    .eq('agency_id', agencyId)
+    .eq('user_id', userId)
+    .eq('is_default', true)
+    .maybeSingle();
+
   let mode = (rma?.signature_mode as RmaSignatureMode | null) || null;
   let signatureUrl = rma?.signature_url || null;
   let signatureText = rma?.signature_text || null;
 
-  if (!mode) {
-    const admin = createAdminClient();
-    const { data: defaultSig } = await (admin as SupabaseClient)
-      .from('user_signatures')
-      .select('signature_type, storage_path, typed_name, draw_data')
-      .eq('agency_id', agencyId)
-      .eq('user_id', userId)
-      .eq('is_default', true)
-      .maybeSingle();
-
-    if (defaultSig) {
-      if (defaultSig.signature_type === 'upload' && defaultSig.storage_path) {
-        mode = 'upload';
-        signatureUrl = defaultSig.storage_path;
-      } else if (defaultSig.signature_type === 'type' && defaultSig.typed_name) {
-        mode = 'typed';
-        signatureText = defaultSig.typed_name;
-      } else if (defaultSig.signature_type === 'draw' && defaultSig.draw_data) {
-        mode = 'upload';
-        signatureUrl = defaultSig.draw_data;
-      }
+  // Professional PNG upload always takes precedence for agreement PDF embedding
+  if (defaultSig?.signature_type === 'upload' && defaultSig.storage_path) {
+    mode = 'upload';
+    signatureUrl = defaultSig.storage_path;
+    signatureText = null;
+  } else if (!mode && defaultSig) {
+    if (defaultSig.signature_type === 'type' && defaultSig.typed_name) {
+      mode = 'typed';
+      signatureText = defaultSig.typed_name;
+    } else if (defaultSig.signature_type === 'draw' && defaultSig.draw_data) {
+      mode = 'upload';
+      signatureUrl = defaultSig.draw_data;
     }
   }
 
@@ -89,6 +89,7 @@ export async function loadRmaSignatureForUser(
     signatureUrl,
     signatureText,
     user.full_name,
+    { embedForPdf: true },
   );
 
   return {
@@ -109,6 +110,7 @@ export async function buildSignatureImageHtml(
   signatureUrl: string | null,
   signatureText: string | null,
   fallbackName: string,
+  options?: { embedForPdf?: boolean },
 ): Promise<string> {
   if (mode === 'typed' && signatureText?.trim()) {
     return `<div class="sig-typed" style="font-family:'Brush Script MT', 'Segoe Script', cursive; font-size:28px; color:#0f172a;">${escapeHtml(signatureText.trim())}</div>`;
@@ -117,16 +119,34 @@ export async function buildSignatureImageHtml(
   if (mode === 'upload' && signatureUrl) {
     let src = signatureUrl;
     if (!signatureUrl.startsWith('http') && !signatureUrl.startsWith('data:')) {
-      const admin = createAdminClient();
-      const { data: signed } = await admin.storage
-        .from('signatures')
-        .createSignedUrl(signatureUrl, 3600);
-      if (signed?.signedUrl) src = signed.signedUrl;
+      if (options?.embedForPdf) {
+        src = await loadSignatureDataUri(signatureUrl);
+      } else {
+        const admin = createAdminClient();
+        const { data: signed } = await admin.storage
+          .from('signatures')
+          .createSignedUrl(signatureUrl, 3600);
+        if (signed?.signedUrl) src = signed.signedUrl;
+      }
     }
-    return `<img src="${escapeHtml(src)}" alt="Signature" style="max-height:64px; max-width:220px; object-fit:contain; display:block;" />`;
+    if (!src) {
+      return `<div class="sig-typed" style="font-family:'Brush Script MT', cursive; font-size:28px;">${escapeHtml(fallbackName)}</div>`;
+    }
+    return `<img src="${escapeHtml(src)}" alt="Signature" style="max-height:48px; max-width:220px; object-fit:contain; display:block;" />`;
   }
 
   return `<div class="sig-typed" style="font-family:'Brush Script MT', cursive; font-size:28px;">${escapeHtml(fallbackName)}</div>`;
+}
+
+async function loadSignatureDataUri(storagePath: string): Promise<string> {
+  const admin = createAdminClient();
+  const { data, error } = await admin.storage.from('signatures').download(storagePath);
+  if (error || !data) {
+    const { data: signed } = await admin.storage.from('signatures').createSignedUrl(storagePath, 3600);
+    return signed?.signedUrl || '';
+  }
+  const buf = Buffer.from(await data.arrayBuffer());
+  return `data:image/png;base64,${buf.toString('base64')}`;
 }
 
 function escapeHtml(text: string): string {

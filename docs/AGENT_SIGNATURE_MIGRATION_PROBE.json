@@ -1,0 +1,38 @@
+{
+  "timestamp": "2026-06-21T16:23:44.239Z",
+  "supabaseUrl": "https://wnohcmgmyhamsbmkiybc.supabase.co",
+  "migrations": {
+    "20260623100000_native_agreement_signing.sql": {
+      "label": "users.signature_storage_path + sync trigger",
+      "userColumns": [
+        {
+          "column": "signature_storage_path",
+          "exists": true,
+          "error": null
+        },
+        {
+          "column": "signature_uploaded_at",
+          "exists": true,
+          "error": null
+        }
+      ],
+      "userColumnsOk": true,
+      "syncFunctionExists": true,
+      "applied": true
+    },
+    "20260608100000_agent_signature_sync_on_delete.sql": {
+      "label": "clear_user_default_signature_path trigger on delete",
+      "clearFunctionExists": false,
+      "deleteTriggerExists": false,
+      "applied": false
+    }
+  },
+  "triggerProbe": {
+    "method": "postgres",
+    "clearFunctionExists": false,
+    "deleteTriggerExists": false,
+    "syncFunctionExists": true
+  },
+  "allApplied": false,
+  "verdict": "NOT PASS"
+}

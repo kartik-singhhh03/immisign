@@ -15,11 +15,24 @@ type Props = {
   onSignatureChange?: (hasSignature: boolean) => void
 }
 
+function readSignatureDataUrl(pad: ReactSignatureCanvas): string {
+  const asAny = pad as ReactSignatureCanvas & {
+    getTrimmedCanvas?: () => HTMLCanvasElement
+    toDataURL?: (type?: string) => string
+  }
+  if (typeof asAny.getTrimmedCanvas === "function") {
+    return asAny.getTrimmedCanvas().toDataURL("image/png")
+  }
+  if (typeof asAny.toDataURL === "function") {
+    return asAny.toDataURL("image/png")
+  }
+  return pad.getCanvas().toDataURL("image/png")
+}
+
 /** Ref-forwarding signature pad — avoids next/dynamic breaking refs. */
 export const AgreementSignaturePad = React.forwardRef<AgreementSignaturePadHandle, Props>(
   function AgreementSignaturePad({ className, onSignatureChange }, ref) {
     const padRef = React.useRef<ReactSignatureCanvas | null>(null)
-    const containerRef = React.useRef<HTMLDivElement | null>(null)
 
     const syncHasSignature = React.useCallback(() => {
       const has = !(padRef.current?.isEmpty() ?? true)
@@ -33,7 +46,7 @@ export const AgreementSignaturePad = React.forwardRef<AgreementSignaturePadHandl
       },
       getDataUrl() {
         if (!padRef.current || padRef.current.isEmpty()) return ""
-        return padRef.current.getTrimmedCanvas().toDataURL("image/png")
+        return readSignatureDataUrl(padRef.current)
       },
       clear() {
         padRef.current?.clear()
@@ -41,39 +54,22 @@ export const AgreementSignaturePad = React.forwardRef<AgreementSignaturePadHandl
       },
     }))
 
-    React.useEffect(() => {
-      const pad = padRef.current
-      const container = containerRef.current
-      if (!pad || !container) return
-
-      const resize = () => {
-        const canvas = pad.getCanvas()
-        const width = Math.max(container.clientWidth, 280)
-        const height = 160
-        canvas.width = width
-        canvas.height = height
-        canvas.style.width = "100%"
-        canvas.style.height = `${height}px`
-      }
-
-      resize()
-      window.addEventListener("resize", resize)
-      return () => window.removeEventListener("resize", resize)
-    }, [])
-
     return (
-      <div ref={containerRef} className={cn("rounded-xl border border-slate-200 bg-white overflow-hidden", className)}>
+      <div className={cn("rounded-xl border border-slate-200 bg-white overflow-hidden", className)}>
         <ReactSignatureCanvas
           ref={padRef}
           penColor="#111111"
           minWidth={1.5}
           maxWidth={2.5}
+          clearOnResize={false}
           onEnd={syncHasSignature}
           canvasProps={{
             className: "touch-none block w-full",
-            style: { height: "160px" },
+            width: 560,
+            height: 160,
+            style: { width: "100%", height: "160px" },
           }}
-          backgroundColor="rgba(0,0,0,0)"
+          backgroundColor="rgba(255,255,255,1)"
         />
       </div>
     )

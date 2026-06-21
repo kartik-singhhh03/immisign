@@ -75,7 +75,14 @@ export function ClientAgreementSignPortal({
       alert("Please accept all declarations and enter your full legal name.")
       return
     }
-    const signaturePngBase64 = sigRef.current?.getDataUrl() || ""
+    let signaturePngBase64 = ""
+    try {
+      signaturePngBase64 = sigRef.current?.getDataUrl() || ""
+    } catch (e) {
+      console.error("SIGNATURE_EXPORT_FAILED", e)
+      alert("Could not read your signature. Please clear and draw again.")
+      return
+    }
     if (!hasSignature || !signaturePngBase64) {
       alert("Please draw your signature.")
       return

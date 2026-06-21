@@ -15,6 +15,8 @@ import { composeClientFullName } from "../../../types/wizard"
 import { calculateFeeTotals, formatCurrencyAud, formatMatterDisplayLine } from "../../../lib/fee-items"
 import { AgreementLifecycleTimeline } from "../../AgreementLifecycleTimeline"
 import React from "react"
+import { isAgreementDispatchSuccess } from "@/lib/signing/dispatch-result"
+import { isNativeSigningClient } from "@/lib/signing/client-config"
 
 function FieldLabel({ children, required }: { children: React.ReactNode; required?: boolean }) {
   return (
@@ -71,9 +73,12 @@ export function SendStep({
     Boolean(form.clientEmail.trim()) &&
     Boolean(form.clientDob.trim())
 
+  const dispatchSucceeded = dispatched && isAgreementDispatchSuccess(apiResponse || {})
+  const nativeSigning = isNativeSigningClient() || apiResponse?.signingProvider === "native"
+
   return (
     <AnimatePresence mode="wait">
-      {dispatched && apiResponse?.signwellResult?.id ? (
+      {dispatchSucceeded ? (
         <motion.div
           key="success"
           initial={{ opacity: 0, y: 12 }}
@@ -86,13 +91,19 @@ export function SendStep({
             </div>
             <h2 className="section-title text-2xl text-center">Agreement sent for signature</h2>
             <p className="mt-3 text-slate-600 text-sm text-center max-w-md mx-auto">
-              The agreement has been generated with the responsible agent details applied automatically. Only client signers were sent via SignWell.
+              The agreement has been generated with the responsible agent details applied automatically.
+              {nativeSigning
+                ? " The client will receive an ImmiSign signing link by email."
+                : " Only client signers were sent the external signing request."}
             </p>
             <div className="mt-6 text-xs font-semibold text-slate-600 space-y-2 border-y border-[#E7E7E7] py-4">
               <div className="flex justify-between"><span className="text-slate-400">Agreement Ref</span><span className="font-mono">{agreementRef}</span></div>
               <div className="flex justify-between"><span className="text-slate-400">Agreement ID</span><span className="font-mono">{apiResponse.agreementId}</span></div>
+              {apiResponse.signingUrl && (
+                <div className="flex justify-between gap-4"><span className="text-slate-400 shrink-0">Signing Link</span><span className="font-mono text-right break-all">{apiResponse.signingUrl}</span></div>
+              )}
               {apiResponse.signwellResult?.id && (
-                <div className="flex justify-between"><span className="text-slate-400">SignWell ID</span><span className="font-mono">{apiResponse.signwellResult.id}</span></div>
+                <div className="flex justify-between"><span className="text-slate-400">External Doc ID</span><span className="font-mono">{apiResponse.signwellResult.id}</span></div>
               )}
             </div>
             <div className="mt-6 flex justify-center">
@@ -113,9 +124,9 @@ export function SendStep({
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-white text-amber-700 border border-amber-200 mb-6">
               <FileText className="h-10 w-10" />
             </div>
-            <h2 className="section-title text-2xl text-center">Agreement saved — SignWell dispatch failed</h2>
+            <h2 className="section-title text-2xl text-center">Agreement saved — signing dispatch failed</h2>
             <p className="mt-3 text-slate-700 text-sm text-center max-w-lg mx-auto">
-              Your agreement PDF was generated and saved. No data was lost. SignWell could not send the signing request
+              Your agreement PDF was generated and saved. No data was lost. The signing request could not be sent
               {apiError ? `: ${apiError}` : '.'}
             </p>
             <div className="mt-6 text-xs font-semibold text-slate-600 space-y-2 border-y border-amber-200/60 py-4">
@@ -127,7 +138,7 @@ export function SendStep({
             </div>
             <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
               <Button onClick={onSend} className="rounded-xl font-bold bg-[#111111] hover:bg-[#222222]">
-                Retry SignWell Dispatch
+                Retry Signing Dispatch
               </Button>
               <Button asChild variant="outline" className="rounded-xl font-bold">
                 <Link href={`/workspace/${agencySlug}/agreements/${apiResponse.agreementId}`}>Open Agreement</Link>
@@ -154,7 +165,7 @@ export function SendStep({
           )}
           {apiError && !dispatchPartialSuccess && (
             <ProfessionalErrorPanel
-              kind="signwell_failure"
+              kind="signing_dispatch_failure"
               detail={apiError}
               supportRef={dispatchSupportRef || undefined}
               onRetry={onSend}
@@ -253,7 +264,9 @@ export function SendStep({
             <Lock className="h-5 w-5 shrink-0 text-[#111111] mt-0.5" />
             <p>
               <strong>{selectedRma?.name || "The responsible agent"}</strong> — name, MARN and agency are applied automatically on the PDF.
-              Only the client signs electronically via SignWell.
+              {nativeSigning
+                ? "Only the client signs electronically via the ImmiSign signing portal."
+                : "Only the client signs electronically via the external signing provider."}
             </p>
           </div>
 

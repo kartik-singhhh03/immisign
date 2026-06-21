@@ -176,12 +176,23 @@ export function AgreementDashboard({
                 <div className="text-xs text-slate-400 mt-0.5">{(agreement as any).client_email || ""}</div>
               </div>
               <div>
-                <div className="text-xs font-bold uppercase tracking-wider text-slate-400">SignWell</div>
-                <div className="text-xs font-mono font-semibold text-[#111111] mt-1 break-all">
-                  {(agreement as any).signwell_document_id || "Not dispatched"}
+                <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Signing</div>
+                <div className="text-xs font-semibold text-[#111111] mt-1 capitalize">
+                  {(agreement as any).signing_provider || "native"}
                 </div>
-                {(agreement as any).signwell_status && (
-                  <div className="text-xs text-slate-500 mt-0.5">{(agreement as any).signwell_status}</div>
+                {(agreement as any).signing_provider === "native" ? (
+                  <div className="text-xs font-mono text-slate-500 mt-0.5 break-all">
+                    {(agreement as any).signing_token ? `Token: ${(agreement as any).signing_token}` : "Not dispatched"}
+                  </div>
+                ) : (
+                  <>
+                    <div className="text-xs font-mono font-semibold text-[#111111] mt-1 break-all">
+                      {(agreement as any).signwell_document_id || "Not dispatched"}
+                    </div>
+                    {(agreement as any).signwell_status && (
+                      <div className="text-xs text-slate-500 mt-0.5">{(agreement as any).signwell_status}</div>
+                    )}
+                  </>
                 )}
               </div>
               <div>

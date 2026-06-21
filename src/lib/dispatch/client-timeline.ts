@@ -4,7 +4,9 @@ import {
   DOCUMENT_SEND_CLIENT_UPLOAD,
   DOCUMENT_SEND_SUCCESS,
   DOCUMENT_SEND_STAGES,
+  NATIVE_AGREEMENT_SEND_STAGES,
 } from "./stage-tracker"
+import { isNativeSigningClient } from "@/lib/signing/client-config"
 
 export function createDocumentSendTimeline(): DispatchStageRecord[] {
   return [
@@ -50,7 +52,8 @@ export function markTimelineFailed(
 }
 
 export function createAgreementSendTimeline(): DispatchStageRecord[] {
-  return AGREEMENT_SEND_STAGES.map((s) => ({
+  const defs = isNativeSigningClient() ? NATIVE_AGREEMENT_SEND_STAGES : AGREEMENT_SEND_STAGES
+  return defs.map((s) => ({
     id: s.id,
     label: s.label,
     status: "pending" as DispatchStageStatus,
@@ -62,8 +65,13 @@ export function mergeServerDispatchStages(
   serverStages: DispatchStageRecord[] | undefined,
 ): DispatchStageRecord[] {
   if (!serverStages?.length) return stages
-  return stages.map((s) => {
-    const remote = serverStages.find((r) => r.id === s.id)
-    return remote ? { ...s, ...remote } : s
-  })
+  const merged = new Map(stages.map((s) => [s.id, { ...s }]))
+  for (const remote of serverStages) {
+    merged.set(remote.id, { ...(merged.get(remote.id) ?? remote), ...remote })
+  }
+  const order = serverStages.map((s) => s.id)
+  for (const s of stages) {
+    if (!order.includes(s.id)) order.push(s.id)
+  }
+  return order.map((id) => merged.get(id)!)
 }

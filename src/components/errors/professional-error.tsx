@@ -12,6 +12,7 @@ export type ProfessionalErrorKind =
   | "permission_denied"
   | "data_load_failed"
   | "network_failure"
+  | "signing_dispatch_failure"
   | "signwell_failure"
   | "email_delivery_failure"
   | "generic"
@@ -45,15 +46,20 @@ const COPY: Record<
     description: "The request did not complete. This is usually temporary.",
     recovery: "Retry when your connection is stable.",
   },
+  signing_dispatch_failure: {
+    title: "Signing dispatch failed",
+    description: "The agreement PDF was saved but the signing request could not be sent.",
+    recovery: "Review client email and try dispatch again.",
+  },
   signwell_failure: {
-    title: "SignWell dispatch failed",
-    description: "The document was not sent for electronic signature.",
-    recovery: "Review signer emails and try dispatch again.",
+    title: "Signing dispatch failed",
+    description: "The agreement PDF was saved but the signing request could not be sent.",
+    recovery: "Review client email and try dispatch again.",
   },
   email_delivery_failure: {
     title: "Email delivery failed",
     description: "The system could not confirm that notification email was sent.",
-    recovery: "Verify email settings and SignWell dashboard.",
+    recovery: "Verify email settings and resend the signing link.",
   },
   generic: {
     title: "Something went wrong",

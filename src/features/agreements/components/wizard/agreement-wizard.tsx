@@ -19,6 +19,7 @@ import {
   markTimelineRunning,
   mergeServerDispatchStages,
 } from "@/lib/dispatch/client-timeline"
+import { isAgreementDispatchSuccess } from "@/lib/signing/dispatch-result"
 import { animateTimelineCompletion } from "@/lib/dispatch/animate-timeline"
 
 import { PageHeader } from "@/components/layout/PageHeader"
@@ -414,14 +415,14 @@ export function AgreementWizard({
 
       setApiResponse(data)
 
-      if (data.signwellResult?.id) {
+      if (isAgreementDispatchSuccess(data)) {
         fetch("/api/agreements/wizard-draft", { method: "DELETE" }).catch(() => {})
         setDispatched(true)
-        notifySuccess("Agreement sent", "PDF generated and signature request dispatched.")
+        notifySuccess("Agreement sent", "PDF generated and signing link dispatched to the client.")
       } else {
         setDispatchPartialSuccess(true)
-        setApiError(data.error || "SignWell dispatch failed. Agreement PDF was saved.")
-        notifyError("SignWell dispatch failed", "Your agreement PDF was saved. You can retry dispatch.")
+        setApiError(data.error || "Signing dispatch failed. Agreement PDF was saved.")
+        notifyError("Signing dispatch failed", "Your agreement PDF was saved. You can retry dispatch.")
       }
     } catch (e: unknown) {
       const err = e as Error & { stages?: DispatchStageRecord[]; supportRef?: string; agreementId?: string; stage?: string }
@@ -430,13 +431,16 @@ export function AgreementWizard({
 
       const pdfSaved =
         err.agreementId &&
-        (err.stage === "signwell_dispatch_failed" || err.stage === "signwell_validation" || err.message.includes("saved"))
+        (err.stage === "signwell_dispatch_failed" ||
+          err.stage === "signwell_validation" ||
+          err.stage === "native_dispatch_failed" ||
+          err.message.includes("saved"))
 
       if (pdfSaved && err.agreementId) {
         setApiResponse({ agreementId: err.agreementId })
         setDispatchPartialSuccess(true)
-        setApiError(err.message || "SignWell dispatch failed. Agreement PDF was saved.")
-        notifyError("SignWell dispatch failed", "Your agreement PDF was saved. You can retry dispatch.")
+        setApiError(err.message || "Signing dispatch failed. Agreement PDF was saved.")
+        notifyError("Signing dispatch failed", "Your agreement PDF was saved. You can retry dispatch.")
       } else {
         setApiError(err.message || "Failed to send agreement.")
         notifyError("Agreement dispatch failed", err.message)

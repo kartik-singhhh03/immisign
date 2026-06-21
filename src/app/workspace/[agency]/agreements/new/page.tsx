@@ -5,6 +5,7 @@ import { AgreementWizard } from '@/features/agreements/components/wizard/agreeme
 import { formatResponsibleAgentRole, RESPONSIBLE_AGENT_ROLES } from '@/features/agreements/constants/matter-field-config';
 import type { AgencyWizardContext, RmaOption, UserWizardContext } from '@/features/agreements/types/wizard';
 import { loadAgencySettings } from '@/lib/settings/load-agency-settings';
+import { ensureAvcAgreementDefaults } from '@/features/agreements/lib/ensure-avc-defaults';
 import type { AgencySettings } from '@/lib/settings/types';
 
 export default async function NewAgreementPage({
@@ -39,6 +40,8 @@ export default async function NewAgreementPage({
     .single();
 
   if (!profile || profile.agency_id !== agency.id) return notFound();
+
+  await ensureAvcAgreementDefaults(adminClient as any, agency.id);
 
   const agencySettings: AgencySettings = await loadAgencySettings(adminClient as any, agency.id);
 
@@ -123,6 +126,7 @@ export default async function NewAgreementPage({
 
   return (
     <AgreementWizard
+      key={searchParams?.resume === '1' ? 'resume' : 'new'}
       agencyId={agency.id}
       agencySlug={agency.slug}
       userId={user.id}

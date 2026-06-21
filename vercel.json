@@ -4,6 +4,18 @@
       "maxDuration": 60,
       "includeFiles": "node_modules/@sparticuz/chromium/**"
     },
+    "src/app/api/agreements/[id]/generate/route.ts": {
+      "maxDuration": 60,
+      "includeFiles": "node_modules/@sparticuz/chromium/**"
+    },
+    "src/app/api/agreements/[id]/regenerate/route.ts": {
+      "maxDuration": 60,
+      "includeFiles": "node_modules/@sparticuz/chromium/**"
+    },
+    "src/app/api/agreements/preview-pdf/route.ts": {
+      "maxDuration": 60,
+      "includeFiles": "node_modules/@sparticuz/chromium/**"
+    },
     "src/app/api/poc/generate-pdf/route.ts": {
       "maxDuration": 60,
       "includeFiles": "node_modules/@sparticuz/chromium/**"
@@ -17,6 +29,14 @@
       "includeFiles": "node_modules/@sparticuz/chromium/**"
     },
     "src/app/api/dev/pdf-smoke/route.ts": {
+      "maxDuration": 60,
+      "includeFiles": "node_modules/@sparticuz/chromium/**"
+    },
+    "src/app/api/public/approval/[token]/route.ts": {
+      "maxDuration": 60,
+      "includeFiles": "node_modules/@sparticuz/chromium/**"
+    },
+    "src/app/api/application-approvals/[id]/record/route.ts": {
       "maxDuration": 60,
       "includeFiles": "node_modules/@sparticuz/chromium/**"
     },

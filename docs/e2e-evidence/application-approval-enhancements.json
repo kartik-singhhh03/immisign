@@ -1,0 +1,174 @@
+{
+  "task": "APPLICATION-APPROVAL-ENHANCEMENTS-1",
+  "timestamp": "2026-06-16T12:56:12.495Z",
+  "baseUrl": "https://immisign.vercel.app",
+  "agencySlug": "ritiklabs",
+  "overall": "PASS",
+  "scenarios": {
+    "SETUP": [
+      {
+        "id": "MIGRATION_COLUMN",
+        "status": "PASS",
+        "msg": "approval_record_storage_path exists",
+        "detail": {}
+      },
+      {
+        "id": "CREATE_DRAFT",
+        "status": "PASS",
+        "msg": "57f7fb98-6507-4f23-ae52-d0c898947733",
+        "detail": {}
+      },
+      {
+        "id": "UPLOAD_PDF",
+        "status": "PASS",
+        "msg": "HTTP 200",
+        "detail": {}
+      },
+      {
+        "id": "SEND",
+        "status": "PASS",
+        "msg": "447d5884-8a51-449a-aff8-e82a39214fe6",
+        "detail": {}
+      }
+    ],
+    "SCENARIO_4": [
+      {
+        "id": "SEND_AUDIT",
+        "status": "PASS",
+        "msg": "resend_id=71cf0ff7-cdca-4889-8a87-bf9e4582096b",
+        "detail": {}
+      },
+      {
+        "id": "RESEND_API",
+        "status": "WARN",
+        "msg": "RESEND_API_KEY missing — audit row only",
+        "detail": {}
+      }
+    ],
+    "SCENARIO_1": [
+      {
+        "id": "DOWNLOAD_TARGET_BLANK",
+        "status": "PASS",
+        "msg": "target=_blank",
+        "detail": {}
+      },
+      {
+        "id": "DOWNLOAD_REL",
+        "status": "PASS",
+        "msg": "rel=noopener noreferrer",
+        "detail": {}
+      },
+      {
+        "id": "NEW_TAB_OPENED",
+        "status": "PASS",
+        "msg": "pages 3 → 4, newTab=true",
+        "detail": {}
+      },
+      {
+        "id": "PORTAL_STAYS_OPEN",
+        "status": "PASS",
+        "msg": "https://immisign.vercel.app/approval/447d5884-8a51-449a-aff8-e82a39214fe6",
+        "detail": {}
+      },
+      {
+        "id": "APPROVE_API",
+        "status": "PASS",
+        "msg": "HTTP 200",
+        "detail": {}
+      },
+      {
+        "id": "APPROVE_SUCCESS",
+        "status": "PASS",
+        "msg": "approved",
+        "detail": {}
+      }
+    ],
+    "SCENARIO_2": [
+      {
+        "id": "FILE_NOTE",
+        "status": "PASS",
+        "msg": "d5b003a9-05de-41e4-9012-e44758df4ffa",
+        "detail": {
+          "metadata": {
+            "type": "Compliance",
+            "title": "Application Approval Received",
+            "category": "Application Approval",
+            "matter_id": "aa65995a-f9ba-4ac0-b361-62240ff9625a",
+            "approval_id": "57f7fb98-6507-4f23-ae52-d0c898947733"
+          }
+        }
+      },
+      {
+        "id": "TIMELINE_EVENT",
+        "status": "PASS",
+        "msg": "client_approved",
+        "detail": {}
+      }
+    ],
+    "SCENARIO_3": [
+      {
+        "id": "RECORD_PATH",
+        "status": "PASS",
+        "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/approvals/57f7fb98-6507-4f23-ae52-d0c898947733/application-approval-record.pdf",
+        "detail": {}
+      },
+      {
+        "id": "STORAGE_OBJECT",
+        "status": "PASS",
+        "msg": "29938 bytes",
+        "detail": {}
+      },
+      {
+        "id": "DOCUMENTS_ROW",
+        "status": "PASS",
+        "msg": "46237374-c2c4-4220-a95a-cf2409a138ca",
+        "detail": {}
+      },
+      {
+        "id": "AGENT_DOWNLOAD",
+        "status": "PASS",
+        "msg": "HTTP 307",
+        "detail": {}
+      }
+    ],
+    "SCENARIO_5": [
+      {
+        "id": "AGENT_NOTIFY_AUDIT",
+        "status": "PASS",
+        "msg": "Application Approved For Lodgement",
+        "detail": {}
+      },
+      {
+        "id": "AGENT_NOTIFIED_EVENT",
+        "status": "PASS",
+        "msg": "3ca3667c-89b8-4394-b7d2-54907e3b0b14",
+        "detail": {}
+      }
+    ],
+    "SCENARIO_6": [
+      {
+        "id": "EMAIL_ATTACHMENT",
+        "status": "WARN",
+        "msg": "RESEND_API_KEY missing",
+        "detail": {}
+      }
+    ]
+  },
+  "ids": {
+    "agentEmail": "nayramalik1018@gmail.com",
+    "agentName": "ritik singh",
+    "approvalId": "57f7fb98-6507-4f23-ae52-d0c898947733",
+    "approvalToken": "447d5884-8a51-449a-aff8-e82a39214fe6"
+  },
+  "screenshots": [
+    "docs\\e2e-evidence\\application-approval-enhancements-screenshots\\01-portal-before-download.png",
+    "docs\\e2e-evidence\\application-approval-enhancements-screenshots\\02-portal-after-download.png",
+    "docs\\e2e-evidence\\application-approval-enhancements-screenshots\\03-approved.png"
+  ],
+  "summary": {
+    "total": 21,
+    "pass": 19,
+    "fail": 0,
+    "warn": 2
+  }
+}

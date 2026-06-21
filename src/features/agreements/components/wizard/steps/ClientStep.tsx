@@ -1,6 +1,5 @@
 "use client"
 
-import { PhoneInput } from "@/components/ui/phone-input"
 import {
   ImmiMateInput,
   ImmiMateSelect,
@@ -29,12 +28,13 @@ type Props = {
 }
 
 export function ClientStep({ form, clients, onChange, onContinue }: Props) {
-  const canContinue = Boolean(form.clientName.trim() && form.clientEmail.trim())
-  const fromLibrary = Boolean(form.clientId)
+  const canContinue = Boolean(form.clientId || form.clientName.trim())
 
   const handleSelectClient = (clientId: string) => {
     if (clientId === "__new__") {
       onChange("clientId", "")
+      onChange("clientName", "")
+      onChange("clientEmail", "")
       return
     }
     const client = clients.find((c) => c.id === clientId)
@@ -48,21 +48,21 @@ export function ClientStep({ form, clients, onChange, onContinue }: Props) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-[#111111]">Client Details</h2>
+        <h2 className="text-xl font-bold text-[#111111]">Client</h2>
         <p className="text-sm text-slate-500 mt-1">
-          Select an existing client from your library or enter details for a new client.
+          Select the client for this agreement. Full identity details are captured at the execution step before signing.
         </p>
       </div>
 
       {clients.length > 0 && (
         <label className="grid gap-2">
-          <FieldLabel>Client from library</FieldLabel>
+          <FieldLabel required>Client from library</FieldLabel>
           <ImmiMateSelect value={form.clientId || "__new__"} onValueChange={handleSelectClient}>
             <ImmiMateSelectTrigger>
               <ImmiMateSelectValue placeholder="Select client" />
             </ImmiMateSelectTrigger>
             <ImmiMateSelectContent>
-              <ImmiMateSelectItem value="__new__">Enter new client manually</ImmiMateSelectItem>
+              <ImmiMateSelectItem value="__new__">Enter client name manually</ImmiMateSelectItem>
               {clients.map((c) => (
                 <ImmiMateSelectItem key={c.id} value={c.id}>
                   {c.name} ({c.email})
@@ -73,49 +73,25 @@ export function ClientStep({ form, clients, onChange, onContinue }: Props) {
         </label>
       )}
 
-      <div className="grid gap-5 md:grid-cols-2">
-        <label className="grid gap-2">
-          <FieldLabel required>Client Full Name</FieldLabel>
+      {!form.clientId && (
+        <label className="grid gap-2 max-w-md">
+          <FieldLabel required>Client Name (reference)</FieldLabel>
           <ImmiMateInput
             placeholder="e.g. Jane Smith"
             value={form.clientName}
             onChange={(e) => onChange("clientName", e.target.value)}
-            readOnly={fromLibrary}
           />
+          <p className="text-[11px] text-slate-400 font-medium">
+            First name, last name, DOB and contact details are entered on the final execution step.
+          </p>
         </label>
-        <label className="grid gap-2">
-          <FieldLabel required>Client Email</FieldLabel>
-          <ImmiMateInput
-            type="email"
-            placeholder="client@email.com"
-            value={form.clientEmail}
-            onChange={(e) => onChange("clientEmail", e.target.value)}
-            readOnly={fromLibrary}
-          />
-        </label>
-        <label className="grid gap-2">
-          <FieldLabel>Phone</FieldLabel>
-          <PhoneInput
-            placeholder="+61 4xx xxx xxx"
-            value={form.clientPhone}
-            onChange={(v) => onChange("clientPhone", v)}
-            readOnly={fromLibrary}
-          />
-        </label>
-        <label className="grid gap-2">
-          <FieldLabel>Address</FieldLabel>
-          <ImmiMateInput
-            placeholder="Street, Suburb, State"
-            value={form.clientAddress}
-            onChange={(e) => onChange("clientAddress", e.target.value)}
-          />
-        </label>
-      </div>
+      )}
 
-      {fromLibrary && (
-        <p className="text-xs font-semibold text-[#111111]">
-          Contact details loaded from client record. Address can still be added for this agreement.
-        </p>
+      {form.clientId && form.clientName && (
+        <div className="rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm">
+          <p className="font-semibold text-[#111111]">{form.clientName}</p>
+          {form.clientEmail && <p className="text-slate-500 text-xs mt-0.5">{form.clientEmail}</p>}
+        </div>
       )}
 
       <WizardNav

@@ -1,0 +1,102 @@
+{
+  "task": "APPLICATION-APPROVAL-FINAL-COMPLIANCE",
+  "timestamp": "2026-06-21T10:31:04.319Z",
+  "baseUrl": "http://localhost:3003",
+  "overall": "FAIL",
+  "checks": [
+    {
+      "id": "sent_at",
+      "status": "PASS",
+      "msg": "2026-06-21T10:31:20.382+00:00",
+      "detail": {}
+    },
+    {
+      "id": "audit_sent",
+      "status": "FAIL",
+      "msg": "missing",
+      "detail": {}
+    },
+    {
+      "id": "audit_sent_provider",
+      "status": "FAIL",
+      "msg": "missing",
+      "detail": {}
+    },
+    {
+      "id": "audit_resend_id",
+      "status": "WARN",
+      "msg": "none",
+      "detail": {}
+    },
+    {
+      "id": "viewed_at",
+      "status": "FAIL",
+      "msg": "missing",
+      "detail": {}
+    },
+    {
+      "id": "audit_viewed",
+      "status": "FAIL",
+      "msg": "missing",
+      "detail": {}
+    },
+    {
+      "id": "approved_at",
+      "status": "FAIL",
+      "msg": "missing",
+      "detail": {}
+    },
+    {
+      "id": "filename",
+      "status": "PASS",
+      "msg": "SC190_ComplianceTest_1782037864319.pdf",
+      "detail": {}
+    },
+    {
+      "id": "audit_signed",
+      "status": "FAIL",
+      "detail": {}
+    },
+    {
+      "id": "audit_acknowledged",
+      "status": "FAIL",
+      "msg": "missing",
+      "detail": {}
+    },
+    {
+      "id": "audit_generated",
+      "status": "WARN",
+      "msg": "missing",
+      "detail": {}
+    },
+    {
+      "id": "audit_filename_meta",
+      "status": "FAIL",
+      "detail": {}
+    },
+    {
+      "id": "file_note",
+      "status": "FAIL",
+      "detail": {}
+    },
+    {
+      "id": "audit_api_sent",
+      "status": "PASS",
+      "msg": "2026-06-21T10:31:20.382+00:00",
+      "detail": {}
+    },
+    {
+      "id": "audit_api_provider",
+      "status": "PASS",
+      "msg": "all Immimate Approval Portal",
+      "detail": {}
+    },
+    {
+      "id": "approval_record_download",
+      "status": "FAIL",
+      "msg": "HTTP 500",
+      "detail": {}
+    }
+  ],
+  "approvalId": "81d230f8-2346-435a-9962-26a8ff0390dd"
+}

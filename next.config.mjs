@@ -43,6 +43,18 @@ const nextConfig = {
       '/api/poc/generate-pdf': [
         './node_modules/@sparticuz/chromium/**',
       ],
+      '/api/documents/send': [
+        './node_modules/@sparticuz/chromium/**',
+      ],
+      '/api/documents/send-document-preview': [
+        './node_modules/@sparticuz/chromium/**',
+      ],
+      '/api/public/approval/[token]': [
+        './node_modules/@sparticuz/chromium/**',
+      ],
+      '/api/application-approvals/[id]/record': [
+        './node_modules/@sparticuz/chromium/**',
+      ],
     },
   },
   async headers() {

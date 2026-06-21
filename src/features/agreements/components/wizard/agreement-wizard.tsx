@@ -36,8 +36,15 @@ import { SendStep } from "./steps/SendStep"
 import { WizardSidebar } from "./WizardSidebar"
 
 import type { AgencySettings, MatterTypeConfig } from '@/lib/settings/types'
-import type { AgreementFeeItemDraft } from "../../types/wizard"
-import { normalizeFeeItemsFromForm } from "../../lib/fee-items"
+import type { AgreementFeeItemDraft, GovernmentFeeDraft, ProfessionalFeeBlockDraft } from "../../types/wizard"
+import {
+  defaultGovernmentFees,
+  flattenFeesForPersistence,
+  normalizeFeeItemsFromForm,
+  normalizeGovernmentFeesFromForm,
+  normalizeProfessionalBlocksFromForm,
+} from "../../lib/fee-items"
+import { composeClientFullName, splitClientName } from "../../types/wizard"
 
 import { defaultSelectedClauseIds, resolveSelectedClauses } from '@/lib/settings/load-agency-settings'
 
@@ -85,7 +92,7 @@ export function AgreementWizard({
 }: Props) {
 
   const [currentStep, setCurrentStep] = React.useState(0)
-  const [draftReady, setDraftReady] = React.useState(!resumeDraft)
+  const [draftReady, setDraftReady] = React.useState(false)
 
   const [saving, setSaving] = React.useState(false)
   const [dispatchStages, setDispatchStages] = React.useState<DispatchStageRecord[]>([])
@@ -99,6 +106,7 @@ export function AgreementWizard({
   const [matterTypes, setMatterTypes] = React.useState<MatterTypeConfig[]>(agencySettings.matterTypes)
 
   const [dispatched, setDispatched] = React.useState(false)
+  const [dispatchPartialSuccess, setDispatchPartialSuccess] = React.useState(false)
 
   const [apiResponse, setApiResponse] = React.useState<any>(null)
 
@@ -153,6 +161,24 @@ export function AgreementWizard({
         if (!resumeDraft) {
           await fetch('/api/agreements/wizard-draft', { method: 'DELETE' })
           if (!cancelled) {
+            setFormData((prev) => {
+              const initial = createInitialWizardForm(user, agency, {
+                defaults: agencySettings.defaults,
+                defaultSelectedClauseIds: defaultSelectedClauseIds(agencySettings),
+              })
+              const defaultRma = rmaOptions.find((r) => r.isDefault) || rmaOptions[0]
+              if (defaultRma) initial.responsibleRma = defaultRma.id
+              if (initialClientId) {
+                const picked = clients.find((c) => c.id === initialClientId)
+                if (picked) {
+                  initial.clientId = picked.id
+                  initial.clientName = picked.name
+                  initial.clientEmail = picked.email
+                  initial.clientPhone = picked.phone || ''
+                }
+              }
+              return initial
+            })
             setCurrentStep(0)
             setDraftReady(true)
           }
@@ -177,6 +203,15 @@ export function AgreementWizard({
                   : prev.selectedClauseIds,
               }
               merged.feeItems = normalizeFeeItemsFromForm(merged)
+              if (!merged.professionalFeeBlocks?.length) {
+                merged.professionalFeeBlocks = normalizeProfessionalBlocksFromForm(merged)
+              }
+              if (!merged.governmentFees?.length) {
+                merged.governmentFees = normalizeGovernmentFeesFromForm(merged)
+              }
+              if (!merged.governmentFees?.length) {
+                merged.governmentFees = defaultGovernmentFees()
+              }
               return merged
             })
 
@@ -254,20 +289,27 @@ export function AgreementWizard({
 
 
   React.useEffect(() => {
-
-    if (!formData.primaryApplicantName && formData.clientName) {
-
-      setFormData((prev) => ({ ...prev, primaryApplicantName: prev.clientName }))
-
-    }
-
-  }, [formData.clientName, formData.primaryApplicantName])
-
-
+    if (currentStep !== 5 || formData.clientFirstName) return
+    if (!formData.clientName) return
+    const split = splitClientName(formData.clientName)
+    setFormData((prev) => ({
+      ...prev,
+      clientFirstName: split.clientFirstName,
+      clientMiddleName: split.clientMiddleName,
+      clientLastName: split.clientLastName,
+    }))
+  }, [currentStep, formData.clientName, formData.clientFirstName])
 
   const handleFieldChange = (
     field: keyof AgreementWizardFormData,
-    value: string | boolean | string[] | Record<string, string> | AgreementFeeItemDraft[],
+    value:
+      | string
+      | boolean
+      | string[]
+      | Record<string, string>
+      | AgreementFeeItemDraft[]
+      | ProfessionalFeeBlockDraft[]
+      | GovernmentFeeDraft[],
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
@@ -306,47 +348,34 @@ export function AgreementWizard({
       setSaving(true)
       setApiError(null)
       setDispatchSupportRef(null)
+      setDispatchPartialSuccess(false)
       let stages = createAgreementSendTimeline()
       stages = markTimelineRunning(stages, "agreement")
       setDispatchStages(stages)
 
-      const payload = {
-
-        agreementRef,
-
-        agencySnapshot: agency,
-
-        selectedClauses,
-
-        selectedClauseIds: formData.selectedClauseIds,
-
-        matterTypeConfig,
-
-        formData: {
-
-          ...formData,
-
-          primaryApplicantName: formData.primaryApplicantName || formData.clientName,
-
-        },
-
-        dispatchOptions: {
-
-          ccMe: formData.ccMe,
-
-          autoRemind7Days: formData.autoRemind7Days,
-
-          emailOnComplete: formData.emailOnComplete,
-
-          emailMessage: formData.emailMessage,
-
-          responsibleRmaId: formData.responsibleRma,
-
-        },
-
+      const clientFullName = composeClientFullName(formData) || formData.clientName
+      const executionForm = {
+        ...formData,
+        clientName: clientFullName,
+        primaryApplicantName: clientFullName,
+        feeItems: flattenFeesForPersistence(formData),
       }
 
-
+      const payload = {
+        agreementRef,
+        agencySnapshot: agency,
+        selectedClauses,
+        selectedClauseIds: formData.selectedClauseIds,
+        matterTypeConfig,
+        formData: executionForm,
+        dispatchOptions: {
+          ccMe: formData.ccMe,
+          autoRemind7Days: formData.autoRemind7Days,
+          emailOnComplete: formData.emailOnComplete,
+          emailMessage: formData.emailMessage,
+          responsibleRmaId: formData.responsibleRma,
+        },
+      }
 
       const data = await (async () => {
           const res = await fetch("/api/agreements/standard", {
@@ -361,21 +390,19 @@ export function AgreementWizard({
                 (json.stage === "pdf_generation_failed"
                   ? `${json.error} (Agreement ${json.agreementId} saved as draft.)`
                   : `HTTP ${res.status}`),
-            ) as Error & { stages?: DispatchStageRecord[]; supportRef?: string }
+            ) as Error & { stages?: DispatchStageRecord[]; supportRef?: string; agreementId?: string; stage?: string; result?: unknown }
             err.stages = json.stages
             err.supportRef = json.supportRef
+            ;(err as any).agreementId = json.agreementId
+            ;(err as any).stage = json.stage
+            ;(err as any).result = json.result
             throw err
           }
           if (!json.success) {
             throw new Error(json.error || "Agreement dispatch failed")
           }
-          if (!json.signwellResult?.id) {
-            throw new Error("SignWell did not return a document id. Agreement was not sent.")
-          }
           return json
         })()
-
-
 
       if (data.supportRef) setDispatchSupportRef(data.supportRef)
       const merged = data.stages?.length
@@ -385,20 +412,38 @@ export function AgreementWizard({
       await animateTimelineCompletion(stages, merged, setDispatchStages)
       await new Promise((r) => setTimeout(r, 400))
 
-      fetch("/api/agreements/wizard-draft", { method: "DELETE" }).catch(() => {})
       setApiResponse(data)
-      setDispatched(true)
-      notifySuccess("Agreement sent", "PDF generated and signature request dispatched.")
+
+      if (data.signwellResult?.id) {
+        fetch("/api/agreements/wizard-draft", { method: "DELETE" }).catch(() => {})
+        setDispatched(true)
+        notifySuccess("Agreement sent", "PDF generated and signature request dispatched.")
+      } else {
+        setDispatchPartialSuccess(true)
+        setApiError(data.error || "SignWell dispatch failed. Agreement PDF was saved.")
+        notifyError("SignWell dispatch failed", "Your agreement PDF was saved. You can retry dispatch.")
+      }
     } catch (e: unknown) {
-      const err = e as Error & { stages?: DispatchStageRecord[]; supportRef?: string }
+      const err = e as Error & { stages?: DispatchStageRecord[]; supportRef?: string; agreementId?: string; stage?: string }
       if (err.supportRef) setDispatchSupportRef(err.supportRef)
       if (err.stages?.length) setDispatchStages(mergeServerDispatchStages(dispatchStages, err.stages))
-      setApiError(err.message || "Failed to send agreement.")
-      notifyError("Agreement dispatch failed", err.message)
+
+      const pdfSaved =
+        err.agreementId &&
+        (err.stage === "signwell_dispatch_failed" || err.stage === "signwell_validation" || err.message.includes("saved"))
+
+      if (pdfSaved && err.agreementId) {
+        setApiResponse({ agreementId: err.agreementId })
+        setDispatchPartialSuccess(true)
+        setApiError(err.message || "SignWell dispatch failed. Agreement PDF was saved.")
+        notifyError("SignWell dispatch failed", "Your agreement PDF was saved. You can retry dispatch.")
+      } else {
+        setApiError(err.message || "Failed to send agreement.")
+        notifyError("Agreement dispatch failed", err.message)
+      }
     } finally {
       setSaving(false)
     }
-
   }
 
 
@@ -535,6 +580,7 @@ export function AgreementWizard({
               dispatchSupportRef={dispatchSupportRef}
 
               dispatched={dispatched}
+              dispatchPartialSuccess={dispatchPartialSuccess}
 
               apiError={apiError}
 

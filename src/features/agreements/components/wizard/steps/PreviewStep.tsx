@@ -33,7 +33,7 @@ export function PreviewStep({
   const [error, setError] = React.useState<string | null>(null)
 
   const selectedRma = rmaOptions.find((r) => r.id === form.responsibleRma) || rmaOptions.find((r) => r.isDefault) || rmaOptions[0] || null
-  const totals = calculateFeeTotals(form.feeItems || [])
+  const totals = calculateFeeTotals(form)
 
   React.useEffect(() => {
     let revoked: string | null = null
@@ -119,12 +119,17 @@ export function PreviewStep({
           </dl>
           <div className="pt-3 border-t border-slate-200 space-y-1.5 text-xs">
             <p className="font-bold uppercase tracking-wide text-slate-400">Fee Summary</p>
-            <div className="flex justify-between"><span className="text-slate-500">Professional</span><span className="font-bold">{formatCurrencyAud(totals.professionalFees)}</span></div>
-            <div className="flex justify-between"><span className="text-slate-500">Government</span><span className="font-bold">{formatCurrencyAud(totals.governmentFees)}</span></div>
-            <div className="flex justify-between"><span className="text-slate-500">Disbursements</span><span className="font-bold">{formatCurrencyAud(totals.disbursements)}</span></div>
+            {totals.professionalFees > 0 && (
+              <div className="flex justify-between"><span className="text-slate-500">Professional</span><span className="font-bold">{formatCurrencyAud(totals.professionalFees)}</span></div>
+            )}
+            {totals.governmentFees > 0 && (
+              <div className="flex justify-between"><span className="text-slate-500">Government</span><span className="font-bold">{formatCurrencyAud(totals.governmentFees)}</span></div>
+            )}
+            {(totals.professionalFees > 0 || totals.governmentFees > 0) && (
             <div className="flex justify-between pt-2 border-t border-slate-200 font-black text-[#111111]">
               <span>Total</span><span>{formatCurrencyAud(totals.grandTotal)}</span>
             </div>
+            )}
           </div>
         </aside>
 

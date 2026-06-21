@@ -10,8 +10,22 @@ export type ResendSendPayload = {
   subject: string;
   html?: string;
   text?: string;
+  replyTo?: string | string[];
+  attachments?: Array<{
+    filename: string;
+    content: string;
+    contentType?: string;
+  }>;
   tags?: Array<{ name: string; value: string }>;
 };
+
+/** Branded display name while keeping platform sender address for deliverability. */
+export function formatBrandedSender(agentName: string, agencyName: string): string {
+  const fromEmail = getResendFromEmail();
+  const safeAgent = (agentName || 'Agent').replace(/"/g, "'");
+  const safeAgency = (agencyName || 'ImmiSign').replace(/"/g, "'");
+  return `${safeAgent} - ${safeAgency} <${fromEmail}>`;
+}
 
 function maskKey(key: string) {
   if (key.length <= 10) return '***';

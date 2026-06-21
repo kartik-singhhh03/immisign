@@ -2,7 +2,17 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { randomUUID } from 'crypto';
 import { assertSafeEmailUrl, buildApprovalUrl } from '@/lib/app-url';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { getResendFromEmail, sendEmailWithForensicLogging } from '@/lib/email/resend';
+import { getResendFromEmail, sendEmailWithForensicLogging, formatBrandedSender } from '@/lib/email/resend';
+import { recordClientSystemNote } from '@/features/file-notes/services/file-notes.service';
+import {
+  ApprovalRecordService,
+  buildAgentApprovalNotificationHtml,
+  buildApprovalFileNoteBody,
+} from './approval-record.service';
+import {
+  APPROVAL_EMAIL_PROVIDER,
+  recordApplicationApprovalAudit,
+} from '../lib/application-approval-audit';
 import {
   APPROVAL_ALREADY_COMPLETED_MESSAGE,
   ConflictError,
@@ -165,27 +175,54 @@ export class ApplicationApprovalRebuildService {
       : buildApprovalUrl(token);
     assertSafeEmailUrl(reviewUrl, 'approval review link');
 
+    const { data: agent } = await this.supabase
+      .from('users')
+      .select('full_name, email')
+      .eq('id', params.userId)
+      .single();
+
     const { data: agency } = await this.supabase
       .from('agencies')
       .select('name')
       .eq('id', params.agencyId)
       .single();
 
-    await sendEmailWithForensicLogging(
+    const agentName = agent?.full_name || 'Your migration agent';
+    const agencyName = agency?.name || 'ImmiSign';
+
+    const emailResult = await sendEmailWithForensicLogging(
       {
-        from: getResendFromEmail(),
+        from: formatBrandedSender(agentName, agencyName),
+        replyTo: agent?.email || undefined,
         to: client.email,
         subject: updated.message_subject || defaultMessageSubject(updated.matter_reference || ''),
         html: buildApprovalEmailHtml({
-          agencyName: agency?.name || 'ImmiMate',
+          agencyName,
           clientName: client.name,
           matterReference: updated.matter_reference || '',
           messageBody: (updated.message_body || '').replace(/\n/g, '<br/>'),
           reviewUrl,
         }),
       },
-      { emailType: 'application_approval_send', agencyId: params.agencyId },
+      {
+        emailType: 'application_approval_send',
+        agencyId: params.agencyId,
+      },
     );
+
+    const resendId = (emailResult as { data?: { id?: string } })?.data?.id ?? null;
+    await recordApplicationApprovalAudit(this.supabase, updated as ApplicationApprovalRecord, 'sent', {
+      eventTimestamp: now,
+      actorName: agentName,
+      actorEmail: agent?.email || null,
+      provider: APPROVAL_EMAIL_PROVIDER,
+      metadata: {
+        resend_id: resendId,
+        email_delivery_status: resendId ? 'accepted' : 'sent',
+        email_provider: APPROVAL_EMAIL_PROVIDER,
+        recipient: client.email,
+      },
+    });
 
     await this.logEvent({
       agencyId: params.agencyId,
@@ -264,6 +301,12 @@ export class ApplicationApprovalRebuildService {
         ipAddress: ip,
         userAgent,
       });
+
+      await recordApplicationApprovalAudit(admin, approval, 'viewed', {
+        eventTimestamp: now,
+        ipAddress: ip || null,
+        metadata: { user_agent: userAgent || null },
+      });
     }
 
     return this.getByToken(token);
@@ -328,18 +371,262 @@ export class ApplicationApprovalRebuildService {
       category: 'approval',
     });
 
-    await admin.from('document_audit_events').insert({
-      agency_id: approval.agency_id,
-      client_id: approval.client_id,
-      matter_id: approval.matter_id,
-      document_type: 'application_approval',
-      document_id: approval.id,
-      event_type: 'signed',
-      actor_name: params.clientName,
-      ip_address: params.ip || null,
+    await recordApplicationApprovalAudit(admin, approval, 'signed', {
+      eventTimestamp: now,
+      actorName: params.clientName.trim(),
+      ipAddress: params.ip || null,
     });
 
+    await recordApplicationApprovalAudit(admin, approval, 'acknowledged', {
+      eventTimestamp: now,
+      actorName: params.clientName.trim(),
+      ipAddress: params.ip || null,
+      metadata: { declarations_confirmed: true },
+    });
+
+    await this.runPostApprovalEnhancements(admin, approval, params.token, params.clientName, params.ip);
+
     return this.getByToken(params.token);
+  }
+
+  /** UX/compliance enhancements after successful approval — errors are logged, never rolled back. */
+  private async runPostApprovalEnhancements(
+    admin: ReturnType<typeof createAdminClient>,
+    approval: ApplicationApprovalRecord,
+    token: string,
+    clientName: string,
+    ip?: string,
+  ) {
+    try {
+      const fresh = await this.getByToken(token);
+      if (!fresh || fresh.status !== 'approved') return;
+
+      const [{ data: agency }, { data: agent }, { data: client }] = await Promise.all([
+        admin.from('agencies').select('name').eq('id', fresh.agency_id).single(),
+        admin.from('users').select('full_name, email').eq('id', fresh.created_by).single(),
+        admin.from('clients').select('name, email').eq('id', fresh.client_id).single(),
+      ]);
+
+      const agencyName = agency?.name || 'ImmiSign';
+      const agentName = agent?.full_name || 'Agent';
+      const clientDisplay = client?.name || clientName;
+      const approvedAt = fresh.approved_at || new Date().toISOString();
+
+      const { data: existingNote } = await admin
+        .from('file_notes')
+        .select('id')
+        .eq('agency_id', fresh.agency_id)
+        .eq('reference_type', 'application_approval')
+        .eq('reference_id', fresh.id)
+        .eq('is_system_note', true)
+        .limit(1)
+        .maybeSingle();
+
+      if (!existingNote) {
+        await recordClientSystemNote(admin, {
+          agencyId: fresh.agency_id,
+          clientId: fresh.client_id,
+          actorUserId: fresh.created_by,
+          fileSource: 'application_approval',
+          fileId: fresh.id,
+          referenceType: 'application_approval',
+          referenceId: fresh.id,
+          noteType: 'system',
+          recordedAt: approvedAt,
+          body: buildApprovalFileNoteBody({
+            clientName: clientDisplay,
+            matterReference: fresh.matter_reference || '—',
+            approvedAt,
+            confirmedName: fresh.client_name_confirmed || clientName,
+            clientIp: fresh.client_ip,
+            token,
+            filename: fresh.application_file_name,
+          }),
+          metadata: {
+            title: 'Application Approval Received',
+            type: 'Compliance',
+            category: 'Application Approval',
+            approval_id: fresh.id,
+            matter_id: fresh.matter_id,
+          },
+        });
+
+        await recordApplicationApprovalAudit(admin, fresh, 'completed', {
+          eventTimestamp: approvedAt,
+          metadata: { action: 'file_note_created' },
+        });
+      }
+
+      let recordPath = fresh.approval_record_storage_path;
+      let pdfBuffer: Buffer | null = null;
+
+      try {
+        if (!recordPath) {
+          const recordSvc = new ApprovalRecordService(admin);
+          const generated = await recordSvc.generate(fresh.agency_id, fresh.created_by, fresh, {
+            agencyName,
+            agentName,
+            agentEmail: agent?.email || '',
+            clientName: clientDisplay,
+            clientEmail: client?.email || '',
+            token,
+          });
+          recordPath = generated.storagePath;
+          pdfBuffer = generated.pdfBuffer;
+
+          await admin
+            .from('application_approvals')
+            .update({ approval_record_storage_path: recordPath, updated_at: new Date().toISOString() })
+            .eq('id', fresh.id);
+
+          await this.logEvent({
+            agencyId: fresh.agency_id,
+            approvalId: fresh.id,
+            matterId: fresh.matter_id,
+            clientId: fresh.client_id,
+            eventType: 'approval_record_generated',
+            description: 'Application Approval Record PDF generated',
+            actorId: fresh.created_by,
+            metadata: { storage_path: recordPath },
+          });
+
+          await recordApplicationApprovalAudit(admin, fresh, 'generated', {
+            eventTimestamp: generated.generatedAt,
+            metadata: { action: 'approval_record_generated', approval_record_storage_path: recordPath },
+          });
+        }
+      } catch (pdfErr) {
+        console.error('APPROVAL_RECORD_PDF_FAILED', pdfErr);
+      }
+
+      if (agent?.email) {
+        const { data: priorNotify } = await admin
+          .from('application_approval_events')
+          .select('id')
+          .eq('approval_id', fresh.id)
+          .eq('event_type', 'agent_notified')
+          .limit(1)
+          .maybeSingle();
+
+        if (!priorNotify) {
+          if (!pdfBuffer && recordPath) {
+            const { data: fileData } = await admin.storage.from('documents').download(recordPath);
+            if (fileData) pdfBuffer = Buffer.from(await fileData.arrayBuffer());
+          }
+
+          const notifyResult = await sendEmailWithForensicLogging(
+            {
+              from: formatBrandedSender(agentName, agencyName),
+              replyTo: agent.email,
+              to: agent.email,
+              subject: 'Application Approved For Lodgement',
+              html: buildAgentApprovalNotificationHtml({
+                clientName: clientDisplay,
+                matterReference: fresh.matter_reference || '—',
+                approvedAt: new Date(approvedAt).toLocaleString('en-AU'),
+                confirmedName: fresh.client_name_confirmed || clientName,
+                clientIp: fresh.client_ip || ip || null,
+              }),
+              attachments: pdfBuffer
+                ? [
+                    {
+                      filename: 'ApplicationApprovalRecord.pdf',
+                      content: pdfBuffer.toString('base64'),
+                      contentType: 'application/pdf',
+                    },
+                  ]
+                : undefined,
+            },
+            {
+              emailType: 'application_approval_agent_notify',
+              agencyId: fresh.agency_id,
+            },
+          );
+
+          const notifyResendId = (notifyResult as { data?: { id?: string } })?.data?.id ?? null;
+
+          await this.logEvent({
+            agencyId: fresh.agency_id,
+            approvalId: fresh.id,
+            matterId: fresh.matter_id,
+            clientId: fresh.client_id,
+            eventType: 'agent_notified',
+            description: `Agent notified: application approved for lodgement`,
+            actorId: fresh.created_by,
+          });
+
+          await recordApplicationApprovalAudit(admin, fresh, 'completed', {
+            eventTimestamp: new Date().toISOString(),
+            actorEmail: agent.email,
+            provider: APPROVAL_EMAIL_PROVIDER,
+            metadata: {
+              action: 'agent_notified',
+              resend_id: notifyResendId,
+              email_delivery_status: notifyResendId ? 'accepted' : 'sent',
+              recipient: agent.email,
+            },
+          });
+        }
+      }
+    } catch (err) {
+      console.error('POST_APPROVAL_ENHANCEMENTS_FAILED', err);
+    }
+  }
+
+  async logDownload(token: string, ip?: string, userAgent?: string) {
+    const admin = createAdminClient();
+    const approval = await this.getByToken(token);
+    if (!approval) return;
+
+    await this.logEvent({
+      agencyId: approval.agency_id,
+      approvalId: approval.id,
+      matterId: approval.matter_id,
+      clientId: approval.client_id,
+      eventType: 'client_downloaded',
+      description: 'Client downloaded application',
+      ipAddress: ip,
+      userAgent,
+    });
+
+    await recordApplicationApprovalAudit(admin, approval, 'completed', {
+      eventTimestamp: new Date().toISOString(),
+      ipAddress: ip || null,
+      metadata: { action: 'application_downloaded', user_agent: userAgent || null },
+    });
+  }
+
+  async getApprovalRecordDownloadUrl(agencyId: string, approvalId: string) {
+    const approval = await this.getById(agencyId, approvalId);
+    if (!approval) throw new NotFoundError('Approval not found');
+    if (approval.status !== 'approved') throw new Error('Approval record available only after client approval');
+
+    let path = approval.approval_record_storage_path;
+    if (!path) {
+      const admin = createAdminClient();
+      const [{ data: agency }, { data: agent }, { data: client }] = await Promise.all([
+        admin.from('agencies').select('name').eq('id', approval.agency_id).single(),
+        admin.from('users').select('full_name, email').eq('id', approval.created_by).single(),
+        admin.from('clients').select('name, email').eq('id', approval.client_id).single(),
+      ]);
+      const recordSvc = new ApprovalRecordService(admin);
+      const generated = await recordSvc.generate(approval.agency_id, approval.created_by, approval, {
+        agencyName: agency?.name || 'ImmiSign',
+        agentName: agent?.full_name || 'Agent',
+        agentEmail: agent?.email || '',
+        clientName: client?.name || approval.client_name_confirmed || 'Client',
+        clientEmail: client?.email || '',
+        token: approval.approval_token || approvalId,
+      });
+      path = generated.storagePath;
+      await admin
+        .from('application_approvals')
+        .update({ approval_record_storage_path: path, updated_at: new Date().toISOString() })
+        .eq('id', approval.id);
+    }
+
+    const recordSvc = new ApprovalRecordService(createAdminClient());
+    return recordSvc.getSignedDownloadUrl(path);
   }
 
   async requestChangesByToken(params: {
@@ -392,23 +679,17 @@ export class ApplicationApprovalRebuildService {
       category: 'approval',
     });
 
-    return this.getByToken(params.token);
-  }
-
-  async logDownload(token: string, ip?: string, userAgent?: string) {
-    const approval = await this.getByToken(token);
-    if (!approval) return;
-
-    await this.logEvent({
-      agencyId: approval.agency_id,
-      approvalId: approval.id,
-      matterId: approval.matter_id,
-      clientId: approval.client_id,
-      eventType: 'client_downloaded',
-      description: 'Client downloaded application',
-      ipAddress: ip,
-      userAgent,
+    await recordApplicationApprovalAudit(admin, approval, 'completed', {
+      eventTimestamp: now,
+      ipAddress: params.ip || null,
+      metadata: {
+        action: 'changes_requested',
+        change_reason: params.reason.trim(),
+        changes_requested_at: now,
+      },
     });
+
+    return this.getByToken(params.token);
   }
 
   async getSignedDownloadUrl(approval: ApplicationApprovalRecord) {

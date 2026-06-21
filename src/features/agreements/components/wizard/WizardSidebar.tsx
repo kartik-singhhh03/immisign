@@ -26,7 +26,7 @@ export function WizardSidebar({
   currentStep,
   dispatched,
 }: Props) {
-  const totals = calculateFeeTotals(form.feeItems || [])
+  const totals = calculateFeeTotals(form)
   const agent = rmaOptions.find((r) => r.id === form.responsibleRma) || rmaOptions.find((r) => r.isDefault)
 
   const saveLabel = React.useMemo(() => {
@@ -80,27 +80,29 @@ export function WizardSidebar({
           </div>
         </dl>
 
+        {(totals.professionalFees > 0 || totals.governmentFees > 0) && (
         <div className="pt-4 border-t border-slate-100 space-y-2">
           <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Fee Totals</p>
           <div className="space-y-1.5 text-xs">
-            <div className="flex justify-between">
-              <span className="text-slate-500">Professional</span>
-              <span className="font-bold text-[#111111]">{formatCurrencyAud(totals.professionalFees)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-500">Government</span>
-              <span className="font-bold text-[#111111]">{formatCurrencyAud(totals.governmentFees)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-500">Disbursements</span>
-              <span className="font-bold text-[#111111]">{formatCurrencyAud(totals.disbursements)}</span>
-            </div>
+            {totals.professionalFees > 0 && (
+              <div className="flex justify-between">
+                <span className="text-slate-500">Professional</span>
+                <span className="font-bold text-[#111111]">{formatCurrencyAud(totals.professionalFees)}</span>
+              </div>
+            )}
+            {totals.governmentFees > 0 && (
+              <div className="flex justify-between">
+                <span className="text-slate-500">Government</span>
+                <span className="font-bold text-[#111111]">{formatCurrencyAud(totals.governmentFees)}</span>
+              </div>
+            )}
             <div className="flex justify-between pt-2 border-t border-slate-100">
               <span className="font-bold text-[#111111]">Grand Total</span>
               <span className="font-black text-[#111111]">{formatCurrencyAud(totals.grandTotal)}</span>
             </div>
           </div>
         </div>
+        )}
       </div>
     </aside>
   )

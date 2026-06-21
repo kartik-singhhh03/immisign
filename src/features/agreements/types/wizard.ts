@@ -8,6 +8,21 @@ export type AgreementFeeItemDraft = {
   sortOrder: number
 }
 
+export type ProfessionalFeeBlockDraft = {
+  id: string
+  blockNumber: number
+  description: string
+  /** GST-inclusive amount (AUD) */
+  amount: string
+}
+
+export type GovernmentFeeDraft = {
+  id: string
+  key: 'first_vac' | 'second_vac' | 'additional_vac'
+  label: string
+  amount: string
+}
+
 export type ClientPickerOption = {
   id: string
   name: string
@@ -16,18 +31,26 @@ export type ClientPickerOption = {
 }
 
 export type AgreementWizardFormData = {
-  // Step 1 — Client
+  // Step 1 — Client (selection only; identity captured at execution)
   clientId: string
   clientName: string
   clientEmail: string
   clientPhone: string
   clientAddress: string
 
+  // Step 6 — Execution / signing identity
+  clientFirstName: string
+  clientMiddleName: string
+  clientLastName: string
+  clientDob: string
+
   // Step 2 — Matter
   responsibleRma: string
   matterTypeId: string
   matterType: string
   visaSubclass: string
+  /** e.g. Partner Visa, Aged Parent — shown after subclass in agreement matter line */
+  visaStreamLabel: string
   primaryApplicantName: string
   primaryApplicantDob: string
   secondaryApplicantName: string
@@ -44,11 +67,12 @@ export type AgreementWizardFormData = {
   dependant3Email: string
   sponsorName: string
   sponsorEmail: string
-  fileLodgementRef: string
   agreementDate: string
   matterFieldValues: Record<string, string>
 
-  // Step 3 — Fees (dynamic rows; legacy scalar fields kept for draft migration)
+  // Step 3 — Fees (block-based; legacy feeItems kept for draft migration)
+  professionalFeeBlocks: ProfessionalFeeBlockDraft[]
+  governmentFees: GovernmentFeeDraft[]
   feeItems: AgreementFeeItemDraft[]
   professionalFee: string
   estimatedDisbursements: string
@@ -134,10 +158,16 @@ export function createInitialWizardForm(
     clientPhone: '',
     clientAddress: '',
 
+    clientFirstName: '',
+    clientMiddleName: '',
+    clientLastName: '',
+    clientDob: '',
+
     responsibleRma: '',
     matterTypeId: '',
     matterType: '',
     visaSubclass: '',
+    visaStreamLabel: '',
     primaryApplicantName: '',
     primaryApplicantDob: '',
     secondaryApplicantName: '',
@@ -154,10 +184,11 @@ export function createInitialWizardForm(
     dependant3Email: '',
     sponsorName: '',
     sponsorEmail: '',
-    fileLodgementRef: '',
     agreementDate: formatAustralianDate(),
     matterFieldValues: {},
 
+    professionalFeeBlocks: [],
+    governmentFees: [],
     feeItems: [],
     professionalFee: settings?.defaults?.professionalFee || '',
     estimatedDisbursements: '',
@@ -179,6 +210,33 @@ export function createInitialWizardForm(
 export function generateProvisionalAgreementRef(prefix = 'AGR'): string {
   const year = new Date().getFullYear()
   return `${prefix.toUpperCase().slice(0, 12)}-${year}-DRAFT`
+}
+
+export function composeClientFullName(
+  form: Pick<AgreementWizardFormData, 'clientFirstName' | 'clientMiddleName' | 'clientLastName' | 'clientName'>,
+): string {
+  const parts = [form.clientFirstName, form.clientMiddleName, form.clientLastName]
+    .map((s) => s?.trim())
+    .filter(Boolean)
+  if (parts.length) return parts.join(' ')
+  return form.clientName?.trim() || ''
+}
+
+/** Split a full name into first / middle / last for execution prefill. */
+export function splitClientName(fullName: string): {
+  clientFirstName: string
+  clientMiddleName: string
+  clientLastName: string
+} {
+  const parts = fullName.trim().split(/\s+/).filter(Boolean)
+  if (parts.length === 0) return { clientFirstName: '', clientMiddleName: '', clientLastName: '' }
+  if (parts.length === 1) return { clientFirstName: parts[0], clientMiddleName: '', clientLastName: '' }
+  if (parts.length === 2) return { clientFirstName: parts[0], clientMiddleName: '', clientLastName: parts[1] }
+  return {
+    clientFirstName: parts[0],
+    clientMiddleName: parts.slice(1, -1).join(' '),
+    clientLastName: parts[parts.length - 1],
+  }
 }
 
 /** @deprecated Use generateProvisionalAgreementRef */

@@ -148,4 +148,18 @@ export class SignWellClient {
   }
 }
 
-export const signwellClient = new SignWellClient();
+let clientInstance: SignWellClient | null = null;
+
+export function getSignwellClient(): SignWellClient {
+  if (!clientInstance) clientInstance = new SignWellClient();
+  return clientInstance;
+}
+
+/** Lazy singleton — avoids throwing during Next.js build when env is absent at import time. */
+export const signwellClient: SignWellClient = new Proxy({} as SignWellClient, {
+  get(_target, prop: string | symbol) {
+    const client = getSignwellClient();
+    const value = client[prop as keyof SignWellClient];
+    return typeof value === 'function' ? value.bind(client) : value;
+  },
+});

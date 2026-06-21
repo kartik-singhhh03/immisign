@@ -1,6 +1,6 @@
 {
   "task": "AGREEMENT-PRODUCTION-E2E",
-  "timestamp": "2026-06-13T22:01:25.037Z",
+  "timestamp": "2026-06-13T22:42:38.778Z",
   "baseUrl": "https://immisign.vercel.app",
   "agencySlug": "ritiklabs",
   "strictMode": true,
@@ -10,14 +10,20 @@
     "agencyId": "3cd3a307-b7e5-4984-82d4-bf757e834afd",
     "userId": "2cab360f-fd21-461a-8a57-67573dee0530",
     "agentEmail": "nayramalik1018@gmail.com",
-    "agreementId": "6a904d90-3603-4bf6-8a20-514d8de0180b",
-    "clientId": "d333165c-e7e5-486e-86a3-c3ab504ebb9f",
-    "matterId": "4f782f79-d955-4ac5-965c-3dbfc5bae54a",
-    "testEmail": "agr.dash.e2e.1781388085036@immimate.au"
+    "agreementId": "3f28dab3-e8e0-4c95-b147-886eeffed9dd",
+    "clientId": "6138d0ad-3123-426c-bcd1-8d7bcccbeb89",
+    "matterId": "cd54075e-4598-43b6-9bb9-21e85b5c3973",
+    "testEmail": "agr.dash.e2e.1781390558777@immimate.au",
+    "wizardAgreementId": "bd55d1b3-0c1e-4b5e-91c0-52b61298c988",
+    "signwellDocumentId": null
   },
   "screenshots": [
     "docs\\e2e-evidence\\agreement-production-screenshots\\agreement-step1.png",
-    "docs\\e2e-evidence\\agreement-production-screenshots\\agreement-step2-resume.png"
+    "docs\\e2e-evidence\\agreement-production-screenshots\\agreement-step2-resume.png",
+    "docs\\e2e-evidence\\agreement-production-screenshots\\agreement-send.png",
+    "docs\\e2e-evidence\\agreement-production-screenshots\\agreement-success.png",
+    "docs\\e2e-evidence\\agreement-production-screenshots\\dashboard-home.png",
+    "docs\\e2e-evidence\\agreement-production-screenshots\\dashboard-quick-actions.png"
   ],
   "phases": {
     "PART1_WIZARD": [
@@ -47,8 +53,8 @@
       },
       {
         "id": "NEW_AGAIN_STEP1",
-        "status": "FAIL",
-        "msg": "fresh new step=1",
+        "status": "PASS",
+        "msg": "fresh new step=0",
         "detail": {}
       },
       {
@@ -62,7 +68,7 @@
       {
         "id": "ONBOARDING",
         "status": "PASS",
-        "msg": "6a904d90-3603-4bf6-8a20-514d8de0180b",
+        "msg": "3f28dab3-e8e0-4c95-b147-886eeffed9dd",
         "detail": {}
       },
       {
@@ -73,42 +79,243 @@
       },
       {
         "id": "GENERATE_API",
-        "status": "FAIL",
-        "msg": "The input directory \"/var/task/node_modules/@sparticuz/chromium/bin\" does not exist. If you are using a bundler (esbuild, webpack, etc.), you must externalize @sparticuz/chromium so it is not relocated. See: https://github.com/Sparticuz/chromium#bundler-configuration",
+        "status": "PASS",
+        "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/agreements/3f28dab3-e8e0-4c95-b147-886eeffed9dd/agreement-AGR-2026-0035.pdf",
         "detail": {}
       },
       {
         "id": "DOCUMENTS_ROW",
-        "status": "FAIL",
-        "msg": "none",
+        "status": "PASS",
+        "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/agreements/3f28dab3-e8e0-4c95-b147-886eeffed9dd/agreement-AGR-2026-0035.pdf",
         "detail": {}
       },
       {
         "id": "STORAGE_OBJECT",
-        "status": "FAIL",
-        "msg": "no file_url",
+        "status": "PASS",
+        "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/agreements/3f28dab3-e8e0-4c95-b147-886eeffed9dd/agreement-AGR-2026-0035.pdf",
+        "detail": {}
+      },
+      {
+        "id": "PDF_VALID",
+        "status": "PASS",
+        "msg": "79466 bytes",
+        "detail": {}
+      },
+      {
+        "id": "PDF_DOWNLOAD",
+        "status": "PASS",
+        "msg": "HTTP 200",
         "detail": {}
       }
     ],
-    "ERROR": [
+    "PART3_SEND": [
       {
-        "id": "UNHANDLED",
+        "id": "WIZARD_REACHED_SEND",
+        "status": "PASS",
+        "msg": "step=5",
+        "detail": {}
+      },
+      {
+        "id": "TIMELINE_VISIBLE",
+        "status": "PASS",
+        "msg": "snapshots=24",
+        "detail": {}
+      },
+      {
+        "id": "STAGES_SEQUENTIAL",
+        "status": "PASS",
+        "msg": "Generating Agreement → Uploading Storage → Creating SignWell Draft → Sending Agreement",
+        "detail": {}
+      },
+      {
+        "id": "NO_FULL_OVERLAY",
+        "status": "PASS",
+        "msg": "inline timeline only",
+        "detail": {}
+      },
+      {
+        "id": "SUCCESS_CARD",
         "status": "FAIL",
-        "msg": "Waiting for selector `input[placeholder=\"e.g. Jane Smith\"]` failed",
+        "msg": "check screenshot",
+        "detail": {}
+      },
+      {
+        "id": "SEND_BROWSER",
+        "status": "FAIL",
+        "msg": "no signwell id",
+        "detail": {}
+      },
+      {
+        "id": "ACTIVITY_AFTER_SEND",
+        "status": "PASS",
+        "msg": "1 entries",
+        "detail": {}
+      }
+    ],
+    "PART4_SIGNWELL": [
+      {
+        "id": "SIGNWELL_ID",
+        "status": "FAIL",
+        "msg": "missing",
+        "detail": {}
+      }
+    ],
+    "PART10_PERF": [
+      {
+        "id": "DASHBOARD_LOAD_MS",
+        "status": "FAIL",
+        "msg": "6498ms",
+        "detail": {}
+      }
+    ],
+    "PART5_DASHBOARD": [
+      {
+        "id": "QA_NEW_SERVICE_AGREEMENT",
+        "status": "PASS",
+        "msg": "visible",
+        "detail": {}
+      },
+      {
+        "id": "QA_NEW_APPLICATION_APPROVAL",
+        "status": "PASS",
+        "msg": "visible",
+        "detail": {}
+      },
+      {
+        "id": "QA_SEND_DOCUMENT_FOR_SIGNATURE",
+        "status": "PASS",
+        "msg": "visible",
+        "detail": {}
+      },
+      {
+        "id": "QA_CREATE_FILE_NOTE",
+        "status": "PASS",
+        "msg": "visible",
+        "detail": {}
+      },
+      {
+        "id": "QA_CREATE_SOS",
+        "status": "PASS",
+        "msg": "visible",
+        "detail": {}
+      },
+      {
+        "id": "QA_NAV_NEW",
+        "status": "PASS",
+        "msg": "/workspace/ritiklabs/agreements/new",
+        "detail": {}
+      },
+      {
+        "id": "QA_NAV_NEW",
+        "status": "PASS",
+        "msg": "/workspace/ritiklabs/approvals/new",
+        "detail": {}
+      },
+      {
+        "id": "QA_NAV_SEND",
+        "status": "PASS",
+        "msg": "/workspace/ritiklabs/documents/send",
+        "detail": {}
+      }
+    ],
+    "PART7_PIPELINE": [
+      {
+        "id": "WIDGETS_API",
+        "status": "PASS",
+        "msg": "{\"pending\":6,\"sent\":14,\"awaitingSignature\":0,\"signed\":12}",
+        "detail": {}
+      },
+      {
+        "id": "WIDGETS_DB_DRAFT",
+        "status": "PASS",
+        "msg": "API=6 DB=6",
+        "detail": {}
+      },
+      {
+        "id": "WIDGETS_DB_SIGNED",
+        "status": "PASS",
+        "msg": "API=12 DB=12",
+        "detail": {}
+      },
+      {
+        "id": "WIDGET_FILTER_NAV",
+        "status": "PASS",
+        "msg": "widget click or filtered list",
+        "detail": {}
+      }
+    ],
+    "PART6_TODAY": [
+      {
+        "id": "SUMMARY_API",
+        "status": "PASS",
+        "msg": "dashboard summary",
+        "detail": {}
+      },
+      {
+        "id": "PENDING_SIG_COUNT",
+        "status": "PASS",
+        "msg": "UI~0 DB~null",
+        "detail": {}
+      },
+      {
+        "id": "APPROVAL_WIDGETS",
+        "status": "PASS",
+        "msg": "{\"pendingReview\":2,\"viewed\":3,\"approved\":4,\"changesRequested\":2}",
+        "detail": {}
+      },
+      {
+        "id": "RECENT_ACTIVITY",
+        "status": "PASS",
+        "msg": "UI=0 DB=177",
+        "detail": {}
+      }
+    ],
+    "PART8_NOTIFICATIONS": [
+      {
+        "id": "NOTIFICATIONS_10",
+        "status": "PASS",
+        "msg": "UI=0 DB=90",
+        "detail": {}
+      }
+    ],
+    "PART9_CLIENTS": [
+      {
+        "id": "RECENT_CLIENTS_DB",
+        "status": "PASS",
+        "msg": "5 clients",
+        "detail": {}
+      },
+      {
+        "id": "RECENT_CLIENTS_ORDER",
+        "status": "PASS",
+        "msg": "fresh client in top 5",
+        "detail": {}
+      }
+    ],
+    "PART11_CONSOLE": [
+      {
+        "id": "CONSOLE_ERRORS",
+        "status": "FAIL",
+        "msg": "1 errors",
         "detail": {
-          "stack": [
-            "TimeoutError: Waiting for selector `input[placeholder=\"e.g. Jane Smith\"]` failed",
-            "    at CSSQueryHandler.waitFor (file:///C:/Users/Lenovo/Desktop/immisign/node_modules/puppeteer-core/lib/puppeteer/common/QueryHandler.js:211:46)",
-            "    at async CdpFrame.waitForSelector (file:///C:/Users/Lenovo/Desktop/immisign/node_modules/puppeteer-core/lib/puppeteer/api/Frame.js:541:21)",
-            "    at async CdpPage.waitForSelector (file:///C:/Users/Lenovo/Desktop/immisign/node_modules/puppeteer-core/lib/puppeteer/api/Page.js:1387:20)"
+          "errors": [
+            "Failed to load resource: the server responded with a status of 502 ()"
           ]
         }
+      },
+      {
+        "id": "CONSOLE_WARNINGS",
+        "status": "PASS",
+        "msg": "0 warnings",
+        "detail": {}
       }
     ]
   },
-  "consoleErrors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 502 ()"
+  ],
   "consoleWarnings": [],
-  "dashboardLoadMs": null,
+  "dashboardLoadMs": 6498,
   "results": [
     {
       "phase": "PART1_WIZARD",
@@ -116,7 +323,7 @@
       "status": "PASS",
       "msg": "https://immisign.vercel.app",
       "detail": {},
-      "ts": "2026-06-13T22:01:25.302Z"
+      "ts": "2026-06-13T22:42:39.632Z"
     },
     {
       "phase": "PART1_WIZARD",
@@ -124,7 +331,7 @@
       "status": "PASS",
       "msg": "detected step index 0 (summary panel)",
       "detail": {},
-      "ts": "2026-06-13T22:01:37.192Z"
+      "ts": "2026-06-13T22:42:48.020Z"
     },
     {
       "phase": "PART1_WIZARD",
@@ -132,7 +339,7 @@
       "status": "PASS",
       "msg": "step=1",
       "detail": {},
-      "ts": "2026-06-13T22:02:00.957Z"
+      "ts": "2026-06-13T22:43:11.784Z"
     },
     {
       "phase": "PART1_WIZARD",
@@ -140,15 +347,15 @@
       "status": "PASS",
       "msg": "resume step=1",
       "detail": {},
-      "ts": "2026-06-13T22:02:32.729Z"
+      "ts": "2026-06-13T22:43:41.504Z"
     },
     {
       "phase": "PART1_WIZARD",
       "id": "NEW_AGAIN_STEP1",
-      "status": "FAIL",
-      "msg": "fresh new step=1",
+      "status": "PASS",
+      "msg": "fresh new step=0",
       "detail": {},
-      "ts": "2026-06-13T22:02:39.416Z"
+      "ts": "2026-06-13T22:43:46.791Z"
     },
     {
       "phase": "PART1_WIZARD",
@@ -156,15 +363,15 @@
       "status": "PASS",
       "msg": "did not auto-jump to Send",
       "detail": {},
-      "ts": "2026-06-13T22:02:39.416Z"
+      "ts": "2026-06-13T22:43:46.791Z"
     },
     {
       "phase": "PART2_GENERATION",
       "id": "ONBOARDING",
       "status": "PASS",
-      "msg": "6a904d90-3603-4bf6-8a20-514d8de0180b",
+      "msg": "3f28dab3-e8e0-4c95-b147-886eeffed9dd",
       "detail": {},
-      "ts": "2026-06-13T22:02:48.086Z"
+      "ts": "2026-06-13T22:43:54.953Z"
     },
     {
       "phase": "PART2_GENERATION",
@@ -172,46 +379,291 @@
       "status": "PASS",
       "msg": "draft",
       "detail": {},
-      "ts": "2026-06-13T22:02:48.356Z"
+      "ts": "2026-06-13T22:43:55.220Z"
     },
     {
       "phase": "PART2_GENERATION",
       "id": "GENERATE_API",
-      "status": "FAIL",
-      "msg": "The input directory \"/var/task/node_modules/@sparticuz/chromium/bin\" does not exist. If you are using a bundler (esbuild, webpack, etc.), you must externalize @sparticuz/chromium so it is not relocated. See: https://github.com/Sparticuz/chromium#bundler-configuration",
+      "status": "PASS",
+      "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/agreements/3f28dab3-e8e0-4c95-b147-886eeffed9dd/agreement-AGR-2026-0035.pdf",
       "detail": {},
-      "ts": "2026-06-13T22:02:51.280Z"
+      "ts": "2026-06-13T22:44:06.108Z"
     },
     {
       "phase": "PART2_GENERATION",
       "id": "DOCUMENTS_ROW",
-      "status": "FAIL",
-      "msg": "none",
+      "status": "PASS",
+      "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/agreements/3f28dab3-e8e0-4c95-b147-886eeffed9dd/agreement-AGR-2026-0035.pdf",
       "detail": {},
-      "ts": "2026-06-13T22:02:54.049Z"
+      "ts": "2026-06-13T22:44:08.890Z"
     },
     {
       "phase": "PART2_GENERATION",
       "id": "STORAGE_OBJECT",
-      "status": "FAIL",
-      "msg": "no file_url",
+      "status": "PASS",
+      "msg": "3cd3a307-b7e5-4984-82d4-bf757e834afd/agreements/3f28dab3-e8e0-4c95-b147-886eeffed9dd/agreement-AGR-2026-0035.pdf",
       "detail": {},
-      "ts": "2026-06-13T22:02:54.049Z"
+      "ts": "2026-06-13T22:44:09.456Z"
     },
     {
-      "phase": "ERROR",
-      "id": "UNHANDLED",
+      "phase": "PART2_GENERATION",
+      "id": "PDF_VALID",
+      "status": "PASS",
+      "msg": "79466 bytes",
+      "detail": {},
+      "ts": "2026-06-13T22:44:10.530Z"
+    },
+    {
+      "phase": "PART2_GENERATION",
+      "id": "PDF_DOWNLOAD",
+      "status": "PASS",
+      "msg": "HTTP 200",
+      "detail": {},
+      "ts": "2026-06-13T22:44:10.530Z"
+    },
+    {
+      "phase": "PART3_SEND",
+      "id": "WIZARD_REACHED_SEND",
+      "status": "PASS",
+      "msg": "step=5",
+      "detail": {},
+      "ts": "2026-06-13T22:44:54.297Z"
+    },
+    {
+      "phase": "PART3_SEND",
+      "id": "TIMELINE_VISIBLE",
+      "status": "PASS",
+      "msg": "snapshots=24",
+      "detail": {},
+      "ts": "2026-06-13T22:45:20.709Z"
+    },
+    {
+      "phase": "PART3_SEND",
+      "id": "STAGES_SEQUENTIAL",
+      "status": "PASS",
+      "msg": "Generating Agreement → Uploading Storage → Creating SignWell Draft → Sending Agreement",
+      "detail": {},
+      "ts": "2026-06-13T22:45:20.709Z"
+    },
+    {
+      "phase": "PART3_SEND",
+      "id": "NO_FULL_OVERLAY",
+      "status": "PASS",
+      "msg": "inline timeline only",
+      "detail": {},
+      "ts": "2026-06-13T22:45:20.709Z"
+    },
+    {
+      "phase": "PART3_SEND",
+      "id": "SUCCESS_CARD",
       "status": "FAIL",
-      "msg": "Waiting for selector `input[placeholder=\"e.g. Jane Smith\"]` failed",
+      "msg": "check screenshot",
+      "detail": {},
+      "ts": "2026-06-13T22:45:20.709Z"
+    },
+    {
+      "phase": "PART3_SEND",
+      "id": "SEND_BROWSER",
+      "status": "FAIL",
+      "msg": "no signwell id",
+      "detail": {},
+      "ts": "2026-06-13T22:46:28.165Z"
+    },
+    {
+      "phase": "PART3_SEND",
+      "id": "ACTIVITY_AFTER_SEND",
+      "status": "PASS",
+      "msg": "1 entries",
+      "detail": {},
+      "ts": "2026-06-13T22:46:28.401Z"
+    },
+    {
+      "phase": "PART4_SIGNWELL",
+      "id": "SIGNWELL_ID",
+      "status": "FAIL",
+      "msg": "missing",
+      "detail": {},
+      "ts": "2026-06-13T22:46:28.401Z"
+    },
+    {
+      "phase": "PART10_PERF",
+      "id": "DASHBOARD_LOAD_MS",
+      "status": "FAIL",
+      "msg": "6498ms",
+      "detail": {},
+      "ts": "2026-06-13T22:46:35.040Z"
+    },
+    {
+      "phase": "PART5_DASHBOARD",
+      "id": "QA_NEW_SERVICE_AGREEMENT",
+      "status": "PASS",
+      "msg": "visible",
+      "detail": {},
+      "ts": "2026-06-13T22:46:35.041Z"
+    },
+    {
+      "phase": "PART5_DASHBOARD",
+      "id": "QA_NEW_APPLICATION_APPROVAL",
+      "status": "PASS",
+      "msg": "visible",
+      "detail": {},
+      "ts": "2026-06-13T22:46:35.041Z"
+    },
+    {
+      "phase": "PART5_DASHBOARD",
+      "id": "QA_SEND_DOCUMENT_FOR_SIGNATURE",
+      "status": "PASS",
+      "msg": "visible",
+      "detail": {},
+      "ts": "2026-06-13T22:46:35.041Z"
+    },
+    {
+      "phase": "PART5_DASHBOARD",
+      "id": "QA_CREATE_FILE_NOTE",
+      "status": "PASS",
+      "msg": "visible",
+      "detail": {},
+      "ts": "2026-06-13T22:46:35.041Z"
+    },
+    {
+      "phase": "PART5_DASHBOARD",
+      "id": "QA_CREATE_SOS",
+      "status": "PASS",
+      "msg": "visible",
+      "detail": {},
+      "ts": "2026-06-13T22:46:35.041Z"
+    },
+    {
+      "phase": "PART5_DASHBOARD",
+      "id": "QA_NAV_NEW",
+      "status": "PASS",
+      "msg": "/workspace/ritiklabs/agreements/new",
+      "detail": {},
+      "ts": "2026-06-13T22:46:35.153Z"
+    },
+    {
+      "phase": "PART5_DASHBOARD",
+      "id": "QA_NAV_NEW",
+      "status": "PASS",
+      "msg": "/workspace/ritiklabs/approvals/new",
+      "detail": {},
+      "ts": "2026-06-13T22:46:35.156Z"
+    },
+    {
+      "phase": "PART5_DASHBOARD",
+      "id": "QA_NAV_SEND",
+      "status": "PASS",
+      "msg": "/workspace/ritiklabs/documents/send",
+      "detail": {},
+      "ts": "2026-06-13T22:46:35.159Z"
+    },
+    {
+      "phase": "PART7_PIPELINE",
+      "id": "WIDGETS_API",
+      "status": "PASS",
+      "msg": "{\"pending\":6,\"sent\":14,\"awaitingSignature\":0,\"signed\":12}",
+      "detail": {},
+      "ts": "2026-06-13T22:46:36.519Z"
+    },
+    {
+      "phase": "PART7_PIPELINE",
+      "id": "WIDGETS_DB_DRAFT",
+      "status": "PASS",
+      "msg": "API=6 DB=6",
+      "detail": {},
+      "ts": "2026-06-13T22:46:37.222Z"
+    },
+    {
+      "phase": "PART7_PIPELINE",
+      "id": "WIDGETS_DB_SIGNED",
+      "status": "PASS",
+      "msg": "API=12 DB=12",
+      "detail": {},
+      "ts": "2026-06-13T22:46:37.222Z"
+    },
+    {
+      "phase": "PART7_PIPELINE",
+      "id": "WIDGET_FILTER_NAV",
+      "status": "PASS",
+      "msg": "widget click or filtered list",
+      "detail": {},
+      "ts": "2026-06-13T22:46:44.868Z"
+    },
+    {
+      "phase": "PART6_TODAY",
+      "id": "SUMMARY_API",
+      "status": "PASS",
+      "msg": "dashboard summary",
+      "detail": {},
+      "ts": "2026-06-13T22:46:46.489Z"
+    },
+    {
+      "phase": "PART6_TODAY",
+      "id": "PENDING_SIG_COUNT",
+      "status": "PASS",
+      "msg": "UI~0 DB~null",
+      "detail": {},
+      "ts": "2026-06-13T22:46:46.754Z"
+    },
+    {
+      "phase": "PART6_TODAY",
+      "id": "APPROVAL_WIDGETS",
+      "status": "PASS",
+      "msg": "{\"pendingReview\":2,\"viewed\":3,\"approved\":4,\"changesRequested\":2}",
+      "detail": {},
+      "ts": "2026-06-13T22:46:48.680Z"
+    },
+    {
+      "phase": "PART6_TODAY",
+      "id": "RECENT_ACTIVITY",
+      "status": "PASS",
+      "msg": "UI=0 DB=177",
+      "detail": {},
+      "ts": "2026-06-13T22:46:48.955Z"
+    },
+    {
+      "phase": "PART8_NOTIFICATIONS",
+      "id": "NOTIFICATIONS_10",
+      "status": "PASS",
+      "msg": "UI=0 DB=90",
+      "detail": {},
+      "ts": "2026-06-13T22:46:49.231Z"
+    },
+    {
+      "phase": "PART9_CLIENTS",
+      "id": "RECENT_CLIENTS_DB",
+      "status": "PASS",
+      "msg": "5 clients",
+      "detail": {},
+      "ts": "2026-06-13T22:46:49.494Z"
+    },
+    {
+      "phase": "PART9_CLIENTS",
+      "id": "RECENT_CLIENTS_ORDER",
+      "status": "PASS",
+      "msg": "fresh client in top 5",
+      "detail": {},
+      "ts": "2026-06-13T22:46:49.494Z"
+    },
+    {
+      "phase": "PART11_CONSOLE",
+      "id": "CONSOLE_ERRORS",
+      "status": "FAIL",
+      "msg": "1 errors",
       "detail": {
-        "stack": [
-          "TimeoutError: Waiting for selector `input[placeholder=\"e.g. Jane Smith\"]` failed",
-          "    at CSSQueryHandler.waitFor (file:///C:/Users/Lenovo/Desktop/immisign/node_modules/puppeteer-core/lib/puppeteer/common/QueryHandler.js:211:46)",
-          "    at async CdpFrame.waitForSelector (file:///C:/Users/Lenovo/Desktop/immisign/node_modules/puppeteer-core/lib/puppeteer/api/Frame.js:541:21)",
-          "    at async CdpPage.waitForSelector (file:///C:/Users/Lenovo/Desktop/immisign/node_modules/puppeteer-core/lib/puppeteer/api/Page.js:1387:20)"
+        "errors": [
+          "Failed to load resource: the server responded with a status of 502 ()"
         ]
       },
-      "ts": "2026-06-13T22:03:15.516Z"
+      "ts": "2026-06-13T22:46:49.494Z"
+    },
+    {
+      "phase": "PART11_CONSOLE",
+      "id": "CONSOLE_WARNINGS",
+      "status": "PASS",
+      "msg": "0 warnings",
+      "detail": {},
+      "ts": "2026-06-13T22:46:49.494Z"
     }
   ]
 }

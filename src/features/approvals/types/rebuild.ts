@@ -34,6 +34,7 @@ export type ApplicationApprovalRecord = {
   matter_reference: string | null;
   visa_subclass: string | null;
   visa_stream: string | null;
+  approval_record_storage_path: string | null;
   created_at: string;
   updated_at: string;
   clients?: { name: string; email: string; phone?: string | null } | null;

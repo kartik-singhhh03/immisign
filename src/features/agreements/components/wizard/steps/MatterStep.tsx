@@ -98,7 +98,7 @@ export function MatterStep({ form, rmaOptions, matterTypes, onChange, onMatterTy
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-bold text-[#111111]">Matter Details</h2>
-        <p className="text-sm text-slate-500 mt-1">Configure the visa matter and applicant details.</p>
+        <p className="text-sm text-slate-500 mt-1">Configure the visa matter type and subclass.</p>
       </div>
 
       <label className="grid gap-2">
@@ -149,27 +149,26 @@ export function MatterStep({ form, rmaOptions, matterTypes, onChange, onMatterTy
         <label className="grid gap-2">
           <FieldLabel>Visa Subclass</FieldLabel>
           <ImmiMateInput
-            placeholder={matterConfig?.subclassPlaceholder || "e.g. 820, 190, 482, 838"}
+            placeholder={matterConfig?.subclassPlaceholder || "e.g. 820, 804, 482"}
             value={form.visaSubclass}
             onChange={(e) => onChange("visaSubclass", e.target.value)}
             onBlur={onBlurSave}
           />
         </label>
 
-        <label className="grid gap-2">
-          <FieldLabel>Primary Applicant Name</FieldLabel>
+        <label className="grid gap-2 md:col-span-2">
+          <FieldLabel>Visa Stream / Description</FieldLabel>
           <ImmiMateInput
-            value={form.primaryApplicantName}
-            onChange={(e) => onChange("primaryApplicantName", e.target.value)}
+            placeholder="e.g. Partner Visa, Aged Parent"
+            value={form.visaStreamLabel}
+            onChange={(e) => onChange("visaStreamLabel", e.target.value)}
+            onBlur={onBlurSave}
           />
-        </label>
-        <label className="grid gap-2">
-          <FieldLabel>Primary Applicant Date of Birth</FieldLabel>
-          <ImmiMateInput
-            type="date"
-            value={form.primaryApplicantDob}
-            onChange={(e) => onChange("primaryApplicantDob", e.target.value)}
-          />
+          <p className="text-[11px] text-slate-400 font-medium">
+            Agreement will show: {form.matterType || "Matter Type"}
+            {form.visaSubclass ? ` - ${form.visaSubclass}` : ""}
+            {form.visaStreamLabel ? ` ${form.visaStreamLabel}` : ""}
+          </p>
         </label>
 
         {matterConfig?.showSecondaryApplicant && (
@@ -182,14 +181,6 @@ export function MatterStep({ form, rmaOptions, matterTypes, onChange, onMatterTy
               />
             </label>
             <label className="grid gap-2">
-              <FieldLabel>Secondary Applicant Date of Birth</FieldLabel>
-              <ImmiMateInput
-                type="date"
-                value={form.secondaryApplicantDob}
-                onChange={(e) => onChange("secondaryApplicantDob", e.target.value)}
-              />
-            </label>
-            <label className="grid gap-2 md:col-span-2">
               <FieldLabel>Secondary Applicant Email (for signing)</FieldLabel>
               <ImmiMateInput
                 type="email"
@@ -225,7 +216,6 @@ export function MatterStep({ form, rmaOptions, matterTypes, onChange, onMatterTy
           <>
             {[1, 2, 3].map((n) => {
               const nameKey = `dependant${n}Name` as keyof AgreementWizardFormData
-              const dobKey = `dependant${n}Dob` as keyof AgreementWizardFormData
               const emailKey = `dependant${n}Email` as keyof AgreementWizardFormData
               return (
                 <React.Fragment key={n}>
@@ -237,14 +227,6 @@ export function MatterStep({ form, rmaOptions, matterTypes, onChange, onMatterTy
                     />
                   </label>
                   <label className="grid gap-2">
-                    <FieldLabel>{`Dependant ${n} — Date of Birth`}</FieldLabel>
-                    <ImmiMateInput
-                      type="date"
-                      value={form[dobKey] as string}
-                      onChange={(e) => onChange(dobKey, e.target.value)}
-                    />
-                  </label>
-                  <label className="grid gap-2 md:col-span-2">
                     <FieldLabel>{`Dependant ${n} — Email (for signing)`}</FieldLabel>
                     <ImmiMateInput
                       type="email"
@@ -266,14 +248,6 @@ export function MatterStep({ form, rmaOptions, matterTypes, onChange, onMatterTy
             onChange={(v) => handleFieldValueChange(def.key, v)}
           />
         ))}
-
-        <label className="grid gap-2">
-          <FieldLabel>File / Lodgement Ref</FieldLabel>
-          <ImmiMateInput
-            value={form.fileLodgementRef}
-            onChange={(e) => onChange("fileLodgementRef", e.target.value)}
-          />
-        </label>
       </div>
 
       <MatterTypesWorkflowModal

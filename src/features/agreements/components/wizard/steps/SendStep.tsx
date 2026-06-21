@@ -1,16 +1,29 @@
 "use client"
 
 import Link from "next/link"
-import { CheckCircle2, Lock, PenLine } from "lucide-react"
+import { CheckCircle2, FileText, Lock, PenLine } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { DispatchTimeline } from "@/components/ui/standards"
 import type { DispatchStageRecord } from "@/lib/dispatch/stage-tracker"
 import { ProfessionalErrorPanel } from "@/components/errors/professional-error"
+import { PhoneInput } from "@/components/ui/phone-input"
+import { ImmiMateInput } from "@/components/ui/immimate-form"
 import type { AgencyWizardContext, AgreementWizardFormData, RmaOption } from "../../../types/wizard"
-import { calculateFeeTotals, formatCurrencyAud } from "../../../lib/fee-items"
+import { composeClientFullName } from "../../../types/wizard"
+import { calculateFeeTotals, formatCurrencyAud, formatMatterDisplayLine } from "../../../lib/fee-items"
 import { AgreementLifecycleTimeline } from "../../AgreementLifecycleTimeline"
+import React from "react"
+
+function FieldLabel({ children, required }: { children: React.ReactNode; required?: boolean }) {
+  return (
+    <span className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
+      {children}
+      {required && <span className="text-rose-500 ml-0.5">*</span>}
+    </span>
+  )
+}
 
 type Props = {
   form: AgreementWizardFormData
@@ -21,6 +34,7 @@ type Props = {
   dispatchStages: DispatchStageRecord[]
   dispatchSupportRef?: string | null
   dispatched: boolean
+  dispatchPartialSuccess?: boolean
   apiError: string | null
   apiResponse: any
   agencySlug: string
@@ -38,6 +52,7 @@ export function SendStep({
   dispatchStages,
   dispatchSupportRef,
   dispatched,
+  dispatchPartialSuccess,
   apiError,
   apiResponse,
   agencySlug,
@@ -46,7 +61,15 @@ export function SendStep({
   onSend,
 }: Props) {
   const selectedRma = rmaOptions.find((r) => r.id === form.responsibleRma) || rmaOptions.find((r) => r.isDefault) || rmaOptions[0]
-  const feeTotals = calculateFeeTotals(form.feeItems || [])
+  const feeTotals = calculateFeeTotals(form)
+  const clientFullName = composeClientFullName(form)
+  const matterLine = formatMatterDisplayLine(form)
+
+  const executionValid =
+    Boolean(form.clientFirstName.trim()) &&
+    Boolean(form.clientLastName.trim()) &&
+    Boolean(form.clientEmail.trim()) &&
+    Boolean(form.clientDob.trim())
 
   return (
     <AnimatePresence mode="wait">
@@ -63,7 +86,7 @@ export function SendStep({
             </div>
             <h2 className="section-title text-2xl text-center">Agreement sent for signature</h2>
             <p className="mt-3 text-slate-600 text-sm text-center max-w-md mx-auto">
-              The agreement has been generated with the responsible agent signature applied automatically. Only client signers were sent via SignWell.
+              The agreement has been generated with the responsible agent details applied automatically. Only client signers were sent via SignWell.
             </p>
             <div className="mt-6 text-xs font-semibold text-slate-600 space-y-2 border-y border-[#E7E7E7] py-4">
               <div className="flex justify-between"><span className="text-slate-400">Agreement Ref</span><span className="font-mono">{agreementRef}</span></div>
@@ -75,6 +98,39 @@ export function SendStep({
             <div className="mt-6 flex justify-center">
               <Button asChild variant="outline" className="rounded-xl font-bold">
                 <Link href={`/workspace/${agencySlug}/agreements`}>View Agreements</Link>
+              </Button>
+            </div>
+          </Card>
+        </motion.div>
+      ) : dispatchPartialSuccess && apiResponse?.agreementId ? (
+        <motion.div
+          key="partial"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-6"
+        >
+          <Card className="rounded-2xl border border-amber-200 bg-amber-50/80 p-8 shadow-sm">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-white text-amber-700 border border-amber-200 mb-6">
+              <FileText className="h-10 w-10" />
+            </div>
+            <h2 className="section-title text-2xl text-center">Agreement saved — SignWell dispatch failed</h2>
+            <p className="mt-3 text-slate-700 text-sm text-center max-w-lg mx-auto">
+              Your agreement PDF was generated and saved. No data was lost. SignWell could not send the signing request
+              {apiError ? `: ${apiError}` : '.'}
+            </p>
+            <div className="mt-6 text-xs font-semibold text-slate-600 space-y-2 border-y border-amber-200/60 py-4">
+              <div className="flex justify-between"><span className="text-slate-400">Agreement Ref</span><span className="font-mono">{agreementRef}</span></div>
+              <div className="flex justify-between"><span className="text-slate-400">Agreement ID</span><span className="font-mono">{apiResponse.agreementId}</span></div>
+              {dispatchSupportRef && (
+                <div className="flex justify-between"><span className="text-slate-400">Support Ref</span><span className="font-mono">{dispatchSupportRef}</span></div>
+              )}
+            </div>
+            <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+              <Button onClick={onSend} className="rounded-xl font-bold bg-[#111111] hover:bg-[#222222]">
+                Retry SignWell Dispatch
+              </Button>
+              <Button asChild variant="outline" className="rounded-xl font-bold">
+                <Link href={`/workspace/${agencySlug}/agreements/${apiResponse.agreementId}`}>Open Agreement</Link>
               </Button>
             </div>
           </Card>
@@ -96,7 +152,7 @@ export function SendStep({
               supportRef={dispatchSupportRef || undefined}
             />
           )}
-          {apiError && (
+          {apiError && !dispatchPartialSuccess && (
             <ProfessionalErrorPanel
               kind="signwell_failure"
               detail={apiError}
@@ -117,18 +173,77 @@ export function SendStep({
           className="space-y-6"
         >
           <div>
-            <h2 className="text-xl font-bold text-[#111111]">Send</h2>
-            <p className="text-sm text-slate-500 mt-1">PDF is generated first, then sent via SignWell.</p>
+            <h2 className="text-xl font-bold text-[#111111]">Execution &amp; Send</h2>
+            <p className="text-sm text-slate-500 mt-1">Confirm client identity, then generate the PDF and send for signature.</p>
           </div>
 
           <AgreementLifecycleTimeline status="pending" hasPdf className="py-1" />
 
+          <div className="rounded-2xl border border-slate-200 p-5 space-y-5">
+            <div>
+              <h3 className="text-sm font-bold text-[#111111]">Client Identity (for execution)</h3>
+              <p className="text-xs text-slate-500 mt-0.5">These details appear on the agreement and signature block.</p>
+            </div>
+            <div className="grid gap-4 md:grid-cols-3">
+              <label className="grid gap-2">
+                <FieldLabel required>First Name</FieldLabel>
+                <ImmiMateInput
+                  value={form.clientFirstName}
+                  onChange={(e) => onChange("clientFirstName", e.target.value)}
+                />
+              </label>
+              <label className="grid gap-2">
+                <FieldLabel>Middle Name</FieldLabel>
+                <ImmiMateInput
+                  value={form.clientMiddleName}
+                  onChange={(e) => onChange("clientMiddleName", e.target.value)}
+                />
+              </label>
+              <label className="grid gap-2">
+                <FieldLabel required>Last Name</FieldLabel>
+                <ImmiMateInput
+                  value={form.clientLastName}
+                  onChange={(e) => onChange("clientLastName", e.target.value)}
+                />
+              </label>
+              <label className="grid gap-2">
+                <FieldLabel required>Date of Birth</FieldLabel>
+                <ImmiMateInput
+                  type="date"
+                  value={form.clientDob}
+                  onChange={(e) => onChange("clientDob", e.target.value)}
+                />
+              </label>
+              <label className="grid gap-2 md:col-span-2">
+                <FieldLabel required>Email</FieldLabel>
+                <ImmiMateInput
+                  type="email"
+                  value={form.clientEmail}
+                  onChange={(e) => onChange("clientEmail", e.target.value)}
+                />
+              </label>
+              <label className="grid gap-2">
+                <FieldLabel>Mobile</FieldLabel>
+                <PhoneInput
+                  value={form.clientPhone}
+                  onChange={(v) => onChange("clientPhone", v)}
+                />
+              </label>
+              <label className="grid gap-2 md:col-span-2">
+                <FieldLabel>Address</FieldLabel>
+                <ImmiMateInput
+                  placeholder="Street, Suburb, State, Postcode"
+                  value={form.clientAddress}
+                  onChange={(e) => onChange("clientAddress", e.target.value)}
+                />
+              </label>
+            </div>
+          </div>
+
           <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-5 space-y-3 text-sm">
             <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-              <div><span className="text-slate-400 text-xs font-bold uppercase">Client</span><p className="font-semibold text-[#111111]">{form.clientName}</p></div>
-              <div><span className="text-slate-400 text-xs font-bold uppercase">Email</span><p className="font-semibold text-[#111111]">{form.clientEmail}</p></div>
-              <div><span className="text-slate-400 text-xs font-bold uppercase">Matter</span><p className="font-semibold text-[#111111]">{form.matterType}</p></div>
-              <div><span className="text-slate-400 text-xs font-bold uppercase">Subclass</span><p className="font-semibold text-[#111111]">{form.visaSubclass || "—"}</p></div>
+              <div><span className="text-slate-400 text-xs font-bold uppercase">Client</span><p className="font-semibold text-[#111111]">{clientFullName || form.clientName}</p></div>
+              <div><span className="text-slate-400 text-xs font-bold uppercase">Matter</span><p className="font-semibold text-[#111111]">{matterLine}</p></div>
               <div><span className="text-slate-400 text-xs font-bold uppercase">Grand Total</span><p className="font-semibold text-[#111111]">{formatCurrencyAud(feeTotals.grandTotal)}</p></div>
               <div><span className="text-slate-400 text-xs font-bold uppercase">Agent</span><p className="font-semibold text-[#111111]">{selectedRma?.name || "—"}</p></div>
             </div>
@@ -137,8 +252,8 @@ export function SendStep({
           <div className="flex items-start gap-3 rounded-xl border border-[#111111]/20 bg-[#FAFAFA]/50 p-4 text-sm text-slate-700">
             <Lock className="h-5 w-5 shrink-0 text-[#111111] mt-0.5" />
             <p>
-              <strong>{selectedRma?.name || "The responsible agent"}</strong> signature is applied automatically on the PDF.
-              SignWell signing links go to <strong>external client signers only</strong> (not the agent).
+              <strong>{selectedRma?.name || "The responsible agent"}</strong> — name, MARN and agency are applied automatically on the PDF.
+              Only the client signs electronically via SignWell.
             </p>
           </div>
 
@@ -171,7 +286,7 @@ export function SendStep({
 
           <Button
             type="button"
-            disabled={saving}
+            disabled={saving || !executionValid}
             onClick={onSend}
             className="w-full h-14 rounded-xl bg-[#111111] font-black text-white hover:bg-[#222222] shadow-md text-base"
           >

@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-06-21T11:27:48.917Z",
+  "method": "supabase_schema_probe",
+  "note": "Direct Postgres (schema_migrations) unavailable — inferred from schema probes",
+  "focus": [
+    {
+      "version": "20260620130000_application_approval_rebuild",
+      "file": "20260620130000_application_approval_rebuild.sql",
+      "label": "application_approval_rebuild columns",
+      "applied": true,
+      "error": null
+    },
+    {
+      "version": "20260616100000_application_approval_enhancements",
+      "file": "20260616100000_application_approval_enhancements.sql",
+      "label": "approval_record_storage_path column",
+      "applied": true,
+      "error": null
+    },
+    {
+      "version": "20260622100000_agreement_rebuild_v2",
+      "file": "20260622100000_agreement_rebuild_v2.sql",
+      "label": "AVC matter types + agreement_clauses seeded",
+      "applied": true,
+      "error": null
+    }
+  ],
+  "allApplied": true
+}

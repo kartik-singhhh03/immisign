@@ -24,6 +24,7 @@ import { recordClientSystemNote } from '@/features/file-notes/services/file-note
 import { createAdminClient } from '@/lib/supabase/admin';
 import { recordComplianceEvent } from '@/lib/compliance/compliance-events.service';
 import { calculateFeeTotals, normalizeFeeItemsFromForm } from '@/features/agreements/lib/fee-items';
+import { composeClientFullName } from '@/features/agreements/types/wizard';
 
 function agreementSupportRef() {
   return `AGR-${Date.now().toString(36).toUpperCase()}`;
@@ -145,6 +146,7 @@ export async function POST(req: NextRequest) {
     const templateId = await resolveServiceAgreementTemplateId(supabase as any, agencyId);
 
     // 2. Resolve or Create Client
+    const clientDisplayName = composeClientFullName(formData) || formData.clientName || 'Unnamed Client';
     let clientId = formData.clientId || null;
     if (!clientId && formData.clientEmail) {
        const { data: existingClient } = await (supabase as any).from('clients').select('id').eq('agency_id', agencyId).eq('email', formData.clientEmail).limit(1).single();
@@ -155,7 +157,7 @@ export async function POST(req: NextRequest) {
            const clientNumber = await allocateClientNumber(agencyId);
            const { data: newClient, error: clientErr } = await (supabase as any).from('clients').insert({
                agency_id: agencyId,
-               name: formData.clientName || 'Unnamed Client',
+               name: clientDisplayName,
                email: formData.clientEmail,
                phone: formData.clientPhone || null,
                client_number: clientNumber,
@@ -178,19 +180,21 @@ export async function POST(req: NextRequest) {
       matter_type_config: matterTypeConfig || null,
       matter_type: formData.matterType,
       visa_subclass: formData.visaSubclass,
+      visa_stream_label: formData.visaStreamLabel,
       sponsor_name: formData.sponsorName,
-      file_lodgement_ref: formData.fileLodgementRef,
       agreement_date: formData.agreementDate,
       client_address: formData.clientAddress,
+      client_dob: formData.clientDob,
       scope_of_services: formData.scopeOfServices,
       special_terms: formData.specialTerms,
-      estimated_disbursements: formData.estimatedDisbursements,
+      professional_fee_blocks: formData.professionalFeeBlocks || [],
+      government_fees: formData.governmentFees || [],
       fee_items: normalizeFeeItemsFromForm(formData),
       dispatch_options: dispatchOptions || {},
     };
 
     const feeItems = normalizeFeeItemsFromForm(formData);
-    const feeTotals = calculateFeeTotals(feeItems);
+    const feeTotals = calculateFeeTotals(formData);
 
     const agreementNumber = agreementRef;
 
@@ -207,8 +211,8 @@ export async function POST(req: NextRequest) {
       template_id: templateId,
       matter_type_id: matterTypeId,
       agreement_number: agreementNumber,
-      title: `Service Agreement - ${formData.clientName}`,
-      client_name: formData.clientName,
+      title: `Service Agreement - ${clientDisplayName}`,
+      client_name: clientDisplayName,
       client_email: formData.clientEmail,
       client_phone: formData.clientPhone || '',
       status: 'draft',

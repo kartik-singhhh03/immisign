@@ -1,4 +1,5 @@
 import type { AgreementWizardFormData } from '../types/wizard';
+import { composeClientFullName } from '../types/wizard';
 
 export type WizardSigner = {
   role: string;
@@ -33,7 +34,7 @@ export function buildSignersFromWizard(form: AgreementWizardFormData): WizardSig
   pushSigner(signers, seen, {
     role: 'primary_applicant',
     signwellRole: 'Primary Applicant',
-    name: form.primaryApplicantName || form.clientName,
+    name: composeClientFullName(form) || form.primaryApplicantName || form.clientName,
     email: form.clientEmail,
     routing_order: 1,
   });

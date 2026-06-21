@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowLeft, FileText } from "lucide-react"
+import { ArrowLeft, Download, FileText } from "lucide-react"
 import { ApprovalStatusBadge } from "../status-badge"
 import type { ApplicationApprovalRecord } from "../../types/rebuild"
 
@@ -47,6 +47,20 @@ export function ApprovalDetailRebuild({
         <ApprovalStatusBadge status={approval.status} />
       </div>
 
+      {approval.status === "approved" && (
+        <div className="rounded-2xl border border-mate-border bg-white p-4">
+          <a
+            href={`/api/application-approvals/${approval.id}/record`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-xl bg-mate-primary px-5 py-2.5 text-sm font-semibold text-white"
+          >
+            <Download className="h-4 w-4" />
+            Download Approval Record
+          </a>
+        </div>
+      )}
+
       <div className="grid gap-6 lg:grid-cols-2">
         <section className="rounded-2xl border border-mate-border bg-white p-6">
           <h2 className="text-sm font-bold text-mate-primary">Details</h2>
@@ -55,6 +69,9 @@ export function ApprovalDetailRebuild({
             <DetailRow label="Email" value={approval.clients?.email || "—"} />
             <DetailRow label="Matter" value={approval.matter_reference || "—"} />
             <DetailRow label="Visa subclass" value={approval.visa_subclass || "—"} />
+            {approval.application_file_name && (
+              <DetailRow label="Attached file" value={approval.application_file_name} />
+            )}
             <DetailRow
               label="Sent"
               value={approval.sent_at ? new Date(approval.sent_at).toLocaleString() : "—"}
@@ -153,6 +170,8 @@ function formatEventType(type: string) {
     client_downloaded: "Client downloaded application",
     client_approved: "Client approved application",
     client_requested_changes: "Client requested changes",
+    approval_record_generated: "Approval record PDF generated",
+    agent_notified: "Agent notified of approval",
   }
   return map[type] || type.replace(/_/g, " ")
 }

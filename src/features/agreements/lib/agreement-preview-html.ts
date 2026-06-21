@@ -1,7 +1,12 @@
 import type { AgencyWizardContext, AgreementWizardFormData, RmaOption } from '../types/wizard'
-import { generateProvisionalAgreementRef } from '../types/wizard'
+import { composeClientFullName, generateProvisionalAgreementRef } from '../types/wizard'
 import type { MatterTypeConfig } from '@/lib/settings/types'
-import { calculateFeeTotals, normalizeFeeItemsFromForm } from './fee-items'
+import {
+  calculateFeeTotals,
+  formatMatterDisplayLine,
+  normalizeGovernmentFeesFromForm,
+  normalizeProfessionalBlocksFromForm,
+} from './fee-items'
 import {
   buildPdfRunningHeaderCss,
   buildPdfRunningHeaderHtml,
@@ -360,38 +365,23 @@ export function buildAgreementPreviewHtml(ctx: AgreementPreviewContext): string 
   const principalName = agency.principalName || agentName
   const agencyDisplayName = agency.legalName || agency.name
 
-  const clientName = form.clientName || form.primaryApplicantName || ''
-  const primaryApplicant = form.primaryApplicantName || form.clientName || ''
+  const clientName = composeClientFullName(form) || form.clientName || form.primaryApplicantName || ''
+  const matterLine = formatMatterDisplayLine(form)
   const matterConfig = ctx.matterTypeConfig
 
   const matterRows = [
-    fieldRow('Matter Type', form.matterType),
-    fieldRow('Visa Subclass', form.visaSubclass),
-    fieldRow('Primary Applicant', primaryApplicant),
-    form.primaryApplicantDob ? fieldRow('Primary Applicant Date of Birth', form.primaryApplicantDob) : '',
+    fieldRow('Matter', matterLine),
+    fieldRow('Responsible Agent', agentName),
     matterConfig?.showSecondaryApplicant && form.secondaryApplicantName
       ? fieldRow('Secondary Applicant', form.secondaryApplicantName)
       : '',
-    matterConfig?.showSecondaryApplicant && form.secondaryApplicantDob && form.secondaryApplicantName
-      ? fieldRow('Secondary Applicant Date of Birth', form.secondaryApplicantDob)
-      : '',
-    matterConfig?.showDependants && form.dependant1Name ? fieldRow('Dependant 1', form.dependant1Name) : '',
-    matterConfig?.showDependants && form.dependant1Dob && form.dependant1Name
-      ? fieldRow('Dependant 1 Date of Birth', form.dependant1Dob)
-      : '',
-    matterConfig?.showDependants && form.dependant2Name ? fieldRow('Dependant 2', form.dependant2Name) : '',
-    matterConfig?.showDependants && form.dependant2Dob && form.dependant2Name
-      ? fieldRow('Dependant 2 Date of Birth', form.dependant2Dob)
-      : '',
-    matterConfig?.showDependants && form.dependant3Name ? fieldRow('Dependant 3', form.dependant3Name) : '',
-    matterConfig?.showDependants && form.dependant3Dob && form.dependant3Name
-      ? fieldRow('Dependant 3 Date of Birth', form.dependant3Dob)
-      : '',
     matterConfig?.showSponsor && form.sponsorName ? fieldRow('Sponsor Name', form.sponsorName) : '',
+    matterConfig?.showDependants && form.dependant1Name ? fieldRow('Dependant 1', form.dependant1Name) : '',
+    matterConfig?.showDependants && form.dependant2Name ? fieldRow('Dependant 2', form.dependant2Name) : '',
+    matterConfig?.showDependants && form.dependant3Name ? fieldRow('Dependant 3', form.dependant3Name) : '',
     ...(matterConfig?.fields || []).map((def) =>
       fieldRow(def.label, form.matterFieldValues?.[def.key] || '')
     ),
-    fieldRow('File / Lodgement Reference', form.fileLodgementRef),
   ].filter(Boolean).join('')
 
   const specialTermsBlock = form.specialTerms?.trim()
@@ -467,6 +457,7 @@ export function buildAgreementPreviewHtml(ctx: AgreementPreviewContext): string 
         <div class="party-head">The Client</div>
         <div class="party-body">
           <p class="name">${escapeHtml(clientName || '—')}</p>
+          ${form.clientDob ? `<p><strong>Date of Birth:</strong> ${escapeHtml(form.clientDob)}</p>` : ''}
           ${form.clientEmail ? `<p>${escapeHtml(form.clientEmail)}</p>` : ''}
           ${form.clientAddress ? `<p>${escapeHtml(form.clientAddress)}</p>` : ''}
           ${form.clientPhone ? `<p>${escapeHtml(form.clientPhone)}</p>` : ''}
@@ -489,43 +480,61 @@ export function buildAgreementPreviewHtml(ctx: AgreementPreviewContext): string 
     </section>
 
     <section class="clause">
-      <h2 class="clause-title"><span class="clause-num">Section 3</span> Professional Fees &amp; Disbursements</h2>
+      <h2 class="clause-title"><span class="clause-num">Section 3</span> Professional Fees &amp; Government Charges</h2>
       ${(() => {
-        const feeItems = normalizeFeeItemsFromForm(form)
-        const totals = calculateFeeTotals(feeItems)
-        if (!feeItems.length) {
+        const blocks = normalizeProfessionalBlocksFromForm(form)
+        const govFees = normalizeGovernmentFeesFromForm(form).filter((g) => {
+          const n = parseFloat(String(g.amount || '0').replace(/,/g, ''))
+          return Number.isFinite(n) && n > 0
+        })
+        const totals = calculateFeeTotals(form)
+        if (!blocks.some((b) => b.description?.trim() && parseFloat(b.amount || '0') > 0) && !govFees.length) {
           return '<p class="muted">No fee items specified.</p>'
         }
-        const rows = feeItems.map((item) => `
+
+        const profRows = blocks
+          .filter((b) => b.description?.trim() || parseFloat(b.amount || '0') > 0)
+          .map((block) => `
           <tr>
-            <td>${escapeHtml(item.description || '—')}</td>
-            <td class="value">${formatCurrencyAud(item.amount)}</td>
-            <td>${escapeHtml(item.dueTrigger || '—')}</td>
-            <td>${escapeHtml(item.category || '—')}</td>
-            <td>${escapeHtml(item.notes || '—')}</td>
+            <td><strong>Block ${block.blockNumber}</strong><br/>${escapeHtml(block.description || '—')}</td>
+            <td class="value">${formatCurrencyAud(block.amount)}<br/><span class="muted" style="font-size:9pt;font-weight:normal;">GST included</span></td>
           </tr>
         `).join('')
-        return `
-      <table class="fees-table" style="width:100%; margin-bottom: 16px;">
-        <thead>
+
+        const govRows = govFees.map((g) => `
           <tr>
-            <th>Description</th>
-            <th>Amount</th>
-            <th>Due Trigger</th>
-            <th>Category</th>
-            <th>Notes</th>
+            <td>${escapeHtml(g.label)}</td>
+            <td class="value">${formatCurrencyAud(g.amount)}</td>
           </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>
-      <table class="fees-table">
-        <tbody>
-          <tr><th>Professional fees</th><td class="value">$${totals.professionalFees.toLocaleString('en-AU', { minimumFractionDigits: 2 })} AUD</td></tr>
-          <tr><th>Government fees</th><td class="value">$${totals.governmentFees.toLocaleString('en-AU', { minimumFractionDigits: 2 })} AUD</td></tr>
-          <tr><th>Disbursements</th><td class="value">$${totals.disbursements.toLocaleString('en-AU', { minimumFractionDigits: 2 })} AUD</td></tr>
-          <tr><th>Grand total</th><td class="value">$${totals.grandTotal.toLocaleString('en-AU', { minimumFractionDigits: 2 })} AUD</td></tr>
-        </tbody>
-      </table>`
+        `).join('')
+
+        const totalRows = [
+          totals.professionalFees > 0
+            ? `<tr><th>Total professional fees (GST included)</th><td class="value">$${totals.professionalFees.toLocaleString('en-AU', { minimumFractionDigits: 2 })} AUD</td></tr>`
+            : '',
+          totals.governmentFees > 0
+            ? `<tr><th>Total government charges</th><td class="value">$${totals.governmentFees.toLocaleString('en-AU', { minimumFractionDigits: 2 })} AUD</td></tr>`
+            : '',
+          (totals.professionalFees > 0 || totals.governmentFees > 0)
+            ? `<tr><th>Grand total</th><td class="value">$${totals.grandTotal.toLocaleString('en-AU', { minimumFractionDigits: 2 })} AUD</td></tr>`
+            : '',
+        ].filter(Boolean).join('')
+
+        return `
+      ${profRows ? `
+      <h3 style="font-size:11pt;margin:16px 0 8px;">Professional Fees</h3>
+      <table class="fees-table" style="width:100%; margin-bottom: 16px;">
+        <thead><tr><th>Description</th><th>Amount (GST included)</th></tr></thead>
+        <tbody>${profRows}</tbody>
+      </table>` : ''}
+      ${govRows ? `
+      <h3 style="font-size:11pt;margin:16px 0 8px;">Government Charges</h3>
+      <p class="muted" style="font-size:9pt;margin-bottom:8px;">Visa application charges are not subject to GST.</p>
+      <table class="fees-table" style="width:100%; margin-bottom: 16px;">
+        <thead><tr><th>Charge</th><th>Amount</th></tr></thead>
+        <tbody>${govRows}</tbody>
+      </table>` : ''}
+      ${totalRows ? `<table class="fees-table"><tbody>${totalRows}</tbody></table>` : ''}`
       })()}
     </section>
 
@@ -537,15 +546,12 @@ export function buildAgreementPreviewHtml(ctx: AgreementPreviewContext): string 
       <h2 class="signature-title">Signatures</h2>
       <p class="signature-sub">I HAVE READ AND UNDERSTOOD THE TERMS OF THIS AGREEMENT</p>
       <div class="sig-grid">
-        <div class="sig-card ${agentSig?.completed ? 'sig-completed' : ''}">
-          <h3>Agent Signature</h3>
-          <p class="sig-label">Signature</p>
-          ${agentSig?.completed
-            ? `<div class="sig-applied">${agentSig.imageHtml}</div>`
-            : '<div class="sig-box">Sign here</div>'}
+        <div class="sig-card sig-completed">
+          <h3>Agent</h3>
           <p class="sig-name">${escapeHtml(agentName || '—')}</p>
           ${agentMarn ? `<p class="sig-meta">MARN: ${escapeHtml(agentMarn)}</p>` : '<p class="sig-meta">&nbsp;</p>'}
-          <div class="sig-date">Date Signed: ${agentSig?.completed ? escapeHtml(agentSig.signedAt) : '_______________________________'}</div>
+          <p class="sig-meta">${escapeHtml(agencyDisplayName)}</p>
+          <div class="sig-date">Date: ${escapeHtml(formatDisplayDateForSignature(form.agreementDate || new Date()))}</div>
         </div>
         <div class="sig-card ${ctx.clientSigned ? 'sig-completed' : ''}">
           <h3>Client Signature</h3>
